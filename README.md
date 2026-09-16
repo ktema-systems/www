@@ -41,6 +41,27 @@ Two figures are computed at build time rather than transcribed:
 - `Competition.astro` places its points on a base-10 scale from the published
   byte figures.
 
+## Deploy
+
+The site is on Cloudflare Pages as `ktema-www`, served at
+`https://ktema-www.pages.dev`.
+
+`.github/workflows/deploy-cf-pages.yml` builds on every pull request and deploys
+on every push to `main`. It needs two repository secrets on
+`ktema-systems/www` before the first run:
+
+| Secret | |
+|---|---|
+| `CF_PAGES_DEPLOY` | a Cloudflare API token with the Account / Cloudflare Pages / Edit permission |
+| `CF_ACCOUNT_ID` | the Cloudflare account ID |
+
+For a local deploy, log Wrangler in and push the built output:
+
+```
+npm run build
+npx wrangler@4 pages deploy dist --project-name=ktema-www
+```
+
 ## Not yet set
 
 `astro.config.mjs` leaves `site` unset, because the production domain is not
