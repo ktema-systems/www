@@ -1,0 +1,97 @@
+---
+import AddressFigure from './AddressFigure.astro';
+import { site } from '../config';
+
+const metrics = [
+  {
+    value: '4,309 B',
+    label: 'live peak heap for a write and a read round trip on a RISC-V target with no operating system',
+  },
+  { value: '760 B', label: 'largest single allocation in that round trip' },
+  { value: '478', label: 'cells in the coordinate decoder, verified on an FPGA' },
+  { value: '0.93 ms', label: 'three-axis query over a one-day window at 100,000 records' },
+];
+---
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="hero__head">
+      <p class="eyebrow">Pre-seed · {site.legalName}</p>
+      <h1>{site.tagline}</h1>
+      <p class="hero__lede">
+        On-device spatiotemporal queries without a database or an operating system.
+      </p>
+      <p class="hero__body">
+        Ktema is a storage engine for devices that cannot run a database. A machine is asked
+        about its own past, and on a server that question is a query with an index behind it. A
+        microcontroller has tens of kilobytes of SRAM and no room for the index. Ktema answers
+        the question on the device.
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--accent" href="#round">Investor briefing</a>
+        <a class="btn" href="#proof">See the measurements</a>
+      </div>
+    </div>
+    <ul class="metrics">
+      {
+        metrics.map((metric) => (
+          <li class="metric">
+            <span class="metric__value">{metric.value}</span>
+            <span class="metric__label">{metric.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+  <div class="wrap hero__figure">
+    <AddressFigure />
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: 84px;
+  }
+
+  .hero__head {
+    max-width: 44rem;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 1.4rem + 4.2vw, 4rem);
+    letter-spacing: -0.03em;
+    margin: 0;
+  }
+
+  .hero__lede {
+    font-size: clamp(1.1rem, 1rem + 0.6vw, 1.35rem);
+    line-height: 1.5;
+    color: var(--ink-2);
+    text-wrap: pretty;
+    margin: 0;
+  }
+
+  .hero__body {
+    color: var(--ink-2);
+    margin: 0;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 6px;
+  }
+
+  .hero .metrics {
+    margin-top: 52px;
+  }
+
+  .hero__figure {
+    padding-top: 64px;
+    padding-bottom: 76px;
+  }
+</style>

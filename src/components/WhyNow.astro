@@ -1,0 +1,56 @@
+---
+import Section from './Section.astro';
+---
+
+<Section
+  id="why-now"
+  label="Why now"
+  title="Physical AI sets the requirement, and the toolchain arrived with it"
+>
+  <div class="stack">
+    <h3>Robots and instruments have to answer on the device</h3>
+    <div class="prose">
+      <p>
+        Robots, actuators, instruments, and sensor nodes have to capture and query multimodal
+        streams on the device, with no cloud in the path and no operating system under it. They
+        carry the constraints cloud infrastructure was never built for: power interruption,
+        flash wear, telemetry workloads, and operational lifetimes of ten to thirty years.
+      </p>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>Compliance follows the product, not the vendor’s address</h3>
+    <div class="prose">
+      <p>
+        A device placed on the European market carries the Cyber Resilience Act duties wherever
+        it was built, so a firmware team that sells worldwide meets them as a procurement
+        requirement. The reporting duties are already in force, and the main obligations,
+        including the software bill of materials, apply from December 2027. A record that
+        carries its own origin and time is the evidence those duties ask for.
+      </p>
+    </div>
+    <p class="note">
+      The reporting duties apply from 11 September 2026, and the main obligations from 11
+      December 2027. Penalties reach €15M or 2.5% of worldwide turnover.
+    </p>
+  </div>
+
+  <div class="stack">
+    <h3>The coordinate space is new, and so is the toolchain that carries it</h3>
+    <div class="prose">
+      <p>
+        It was defined this year, and the layers around it now build without a standard library,
+        so a device with no operating system can compute the address. The decoder is verified on
+        an FPGA, and continuous integration runs the engine and enforces the footprint budget on
+        every change.
+      </p>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .stack > * + * {
+    margin-top: 18px;
+  }
+</style>

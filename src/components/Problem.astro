@@ -1,0 +1,103 @@
+---
+import Section from './Section.astro';
+
+const questions = [
+  {
+    device: 'Motor drive',
+    question:
+      'which frames showed vibration, winding temperature, and current moving together, before the bearing fails',
+  },
+  {
+    device: 'Robot zone',
+    question: 'what this zone saw, from the zone controller’s own memory',
+  },
+  {
+    device: 'ECU',
+    question: 'the sensor burst from before the reset, absorbed without a compaction pause',
+  },
+  {
+    device: 'Patient monitor',
+    question: 'why an alarm fired, from the record it kept',
+  },
+];
+
+const costs = [
+  {
+    title: 'It stops working when the link is down',
+    body: 'The machine keeps running through the outage. The record of what it did does not.',
+  },
+  {
+    title: 'Its latency depends on a network',
+    body: 'A question about the last few milliseconds has to survive a round trip to answer it.',
+  },
+  {
+    title: 'The record sits on someone else’s infrastructure',
+    body: 'What the machine did ends up held by a gateway, a cloud, or the vendor’s own service.',
+  },
+];
+---
+
+<Section
+  id="problem"
+  label="Problem"
+  title="A machine is asked about its own past"
+  lede="Different buyers, the same shape. Each question is a filter on three axes at once: an origin, an event, and a time window."
+>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>The question it has to answer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          questions.map((row) => (
+            <tr>
+              <td class="lead">{row.device}</td>
+              <td>{row.question}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <p>
+      A server answers questions like these with an index. A B-tree, a hash table, or an LSM tree
+      holds the axes, and the server has the memory to keep it. A microcontroller has tens of
+      kilobytes of SRAM. In our pilot engine a single leaf of the index cost 134,064 bytes on a
+      32-bit target, for two small records. That is why the index does not fit.
+    </p>
+  </div>
+
+  <div class="stack">
+    <h3>The workaround moves the data off the device</h3>
+    <div class="cards cards--3">
+      {
+        costs.map((cost) => (
+          <div class="card">
+            <h3>{cost.title}</h3>
+            <p>{cost.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="prose">
+    <p>
+      Microcontrollers already have storage, from flash drivers to small filesystems and
+      key-value stores. What they lack is a store that answers multi-axis questions inside the
+      memory they have. That gap calls for a different addressing model.
+    </p>
+  </div>
+</Section>
+
+<style>
+  .stack > * + * {
+    margin-top: 18px;
+  }
+</style>

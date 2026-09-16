@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Problem from '../components/Problem.astro';
+import WhyNow from '../components/WhyNow.astro';
+import Insight from '../components/Insight.astro';
+import Product from '../components/Product.astro';
+import Proof from '../components/Proof.astro';
+import Market from '../components/Market.astro';
+import Competition from '../components/Competition.astro';
+import Moat from '../components/Moat.astro';
+import Founder from '../components/Founder.astro';
+import Round from '../components/Round.astro';
+import { site } from '../config';
+---
+
+<Base title={`${site.name}: ${site.tagline}`} description={site.description}>
+  <Hero />
+  <Problem />
+  <WhyNow />
+  <Insight />
+  <Product />
+  <Proof />
+  <Market />
+  <Competition />
+  <Moat />
+  <Founder />
+  <Round />
+</Base>

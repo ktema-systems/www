@@ -1,0 +1,89 @@
+---
+import Section from './Section.astro';
+import { papers } from '../config';
+
+const pillars = [
+  {
+    title: 'A decoder a controller can read',
+    body: 'The coordinate decoder is a small fixed circuit, 478 cells, checked against every valid code point. A storage controller in an FPGA or an ASIC can read Ktema addresses directly. The hardware IP will be a licence that sits beside the library.',
+  },
+  {
+    title: 'A primitive with a publication record',
+    body: 'The primitive has three preprints across six months, a verified decoder, and a coordinate space shared across the SSCCS stack, which no content-addressed store has.',
+  },
+  {
+    title: 'Conformance is the specification',
+    body: 'Any conforming implementation can read a volume Ktema wrote, including the neXus and chton layers of the same stack. A second implementation has to pass the same suite, and each deployment adds to the value of the others.',
+  },
+];
+---
+
+<Section
+  id="moat"
+  label="Moat"
+  title="A coordinate carries origin, event, and time in one value"
+  lede="Content addressing is the precedent: Git, IPFS, Nix, and casync each derive an address from content, and none of them derives one from a coordinate that carries those axes."
+>
+  <div class="cards cards--3">
+    {
+      pillars.map((pillar) => (
+        <div class="card">
+          <h3>{pillar.title}</h3>
+          <p>{pillar.body}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <div>
+    <h3>The publication record</h3>
+    <ul class="papers">
+      {
+        papers.map((paper) => (
+          <li>
+            <span class="papers__when">{paper.when}</span>
+            <a href={paper.href}>{paper.title}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <div class="prose">
+    <p>
+      Qdrant Edge and MoteDB bring vector and multimodal search to embedded systems. Ktema is the
+      layer beneath them: the multi-axis coordinate store that fits in 4.2 KB of live heap.
+    </p>
+  </div>
+</Section>
+
+<style>
+  .papers {
+    list-style: none;
+    padding: 0;
+    margin-top: 14px;
+    border-top: 1px solid var(--rule-2);
+  }
+
+  .papers li {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 20px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 15px;
+  }
+
+  .papers__when {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 720px) {
+    .papers li {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+    }
+  }
+</style>

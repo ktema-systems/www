@@ -1,0 +1,145 @@
+---
+import Section from './Section.astro';
+
+const INDEX_BYTES = 362121;
+const ENGINE_BYTES = 4309;
+const SRAM_BUDGET = 65536;
+
+const share = (value: number) => `${((value / INDEX_BYTES) * 100).toFixed(2)}%`;
+
+const bars = [
+  {
+    label: 'index on',
+    bytes: INDEX_BYTES,
+    value: '362,121 B',
+    fill: 'bar__fill--index',
+  },
+  {
+    label: '64 KB SRAM budget',
+    bytes: SRAM_BUDGET,
+    value: '65,536 B',
+    fill: 'bar__fill--budget',
+  },
+  {
+    label: 'index off',
+    bytes: ENGINE_BYTES,
+    value: '4,309 B',
+    fill: 'bar__fill--engine',
+  },
+];
+
+const measurements = [
+  { what: 'Live peak heap, two facts and a read back', value: '4,309 bytes' },
+  { what: 'Cumulative allocation over the round trip', value: '12,150 bytes' },
+  { what: 'Largest single allocation', value: '760 bytes' },
+  { what: 'Static SRAM used, inside a 64 KB budget', value: '32,812 bytes' },
+  { what: 'Firmware text (flash)', value: '144,842 bytes' },
+];
+
+const latency = [
+  { scale: '100,000 records', indexed: '25.4 to 26.3 µs', scan: '915 to 941 µs' },
+  { scale: '1,000,000 records', indexed: '226.6 to 229.5 µs', scan: '18.6 to 19.4 ms' },
+];
+---
+
+<Section
+  id="proof"
+  label="Proof"
+  title="Running without an operating system is a measurement"
+  lede="A firmware image boots in emulation on a RISC-V target with no operating system and no runtime, completes a write and a read, and peaks at 4,309 bytes of live heap."
+>
+  <div class="prose">
+    <p>
+      The largest single allocation in that round trip is 760 bytes, inside a 64 KB SRAM budget
+      the build enforces. A second build compiles the C surface and runs the same test. Both run
+      in continuous integration on every change.
+    </p>
+  </div>
+
+  <div class="bars">
+    {
+      bars.map((bar) => (
+        <div class:list={['bar', bar.label === 'index off' && 'bar--engine']}>
+          <span class="bar__label">{bar.label}</span>
+          <span class="bar__track">
+            <span class:list={['bar__fill', bar.fill]} style={`width:${share(bar.bytes)}`} />
+          </span>
+          <span class="bar__value">{bar.value}</span>
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="note">
+    Live peak heap for the MCU round trip with the structural index on and off, on one scale. The
+    optional index costs about 354 KB of live heap, which is why the reference build leaves it
+    off and keeps the engine in the 64 KB class.
+  </p>
+
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Measurement</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          measurements.map((row) => (
+            <tr>
+              <td class="lead">{row.what}</td>
+              <td class="num">{row.value}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div>
+    <h3>Three-axis query latency</h3>
+    <div class="prose">
+      <p>
+        A three-axis query over a one-day window answers in about 0.93 ms at 100,000 records and
+        about 18.9 ms at one million, from the same structure that holds every other axis, and
+        the cost grows with the number of records.
+      </p>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Scale</th>
+          <th>Structural index</th>
+          <th>Scan path</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          latency.map((row) => (
+            <tr>
+              <td class="lead">{row.scale}</td>
+              <td class="num">{row.indexed}</td>
+              <td class="num">{row.scan}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="note">
+    Those figures come from a virtual test environment, a release build, and the median of ten
+    samples from the Criterion harness. The device runs the same scan path. The on-target cost
+    is not yet measured, and the scan path is the one the read path uses.
+  </p>
+</Section>
+
+<style>
+  .bar--engine .bar__label {
+    color: var(--accent);
+  }
+</style>

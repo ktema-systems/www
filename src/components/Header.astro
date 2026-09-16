@@ -1,0 +1,20 @@
+---
+import { nav, site } from '../config';
+---
+
+<header class="masthead">
+  <div class="wrap masthead__inner">
+    <a class="brand" href="#top">
+      <img class="brand__mark" src={site.logo} alt="" width="315" height="270" />
+      <span>{site.name}</span>
+    </a>
+    <nav class="masthead__nav" aria-label="Sections">
+      {
+        nav.map((item) => (
+          <a href={`#${item.id}`}>{item.label}</a>
+        ))
+      }
+    </nav>
+    <a class="btn btn--accent" href="#round">Investor briefing</a>
+  </div>
+</header>

@@ -1,0 +1,362 @@
+---
+// One question answered in two places. The server panel probes an index per
+// axis and matches the records one by one; the device panel computes the
+// address as a coordinate and reads the matches directly. Both panels are
+// labelled with the same three axes so the shape carries across the bridge.
+
+type Point = [number, number, number];
+type Bounds = [number, number][];
+
+const SCALE = 235;
+const ORIGIN: [number, number] = [100, 330];
+
+// Orthographic projection at elevation 22 and azimuth -56 degrees, the view the
+// pitch figure uses. The vertical component is negated because SVG grows down.
+const AZIMUTH = (-56 * Math.PI) / 180;
+const ELEVATION = (22 * Math.PI) / 180;
+const BASIS: [number, number][] = [
+  [-Math.sin(AZIMUTH), -Math.cos(AZIMUTH) * Math.sin(ELEVATION)],
+  [Math.cos(AZIMUTH), -Math.sin(AZIMUTH) * Math.sin(ELEVATION)],
+  [0, Math.cos(ELEVATION)],
+];
+
+const project = ([x, y, z]: Point): [number, number] => [
+  ORIGIN[0] + SCALE * (x * BASIS[0][0] + y * BASIS[1][0] + z * BASIS[2][0]),
+  ORIGIN[1] - SCALE * (x * BASIS[0][1] + y * BASIS[1][1] + z * BASIS[2][1]),
+];
+
+const round = (value: number) => Math.round(value * 10) / 10;
+
+// Every edge of an axis-aligned box: for each axis, its two extreme values,
+// crossed with the four corners of the other two axes.
+const boxEdges = (bounds: Bounds): [Point, Point][] => {
+  const edges: [Point, Point][] = [];
+  for (let axis = 0; axis < 3; axis += 1) {
+    const others = [0, 1, 2].filter((candidate) => candidate !== axis);
+    for (const first of [0, 1]) {
+      for (const second of [0, 1]) {
+        const start: Point = [0, 0, 0];
+        start[axis] = bounds[axis][0];
+        start[others[0]] = bounds[others[0]][first];
+        start[others[1]] = bounds[others[1]][second];
+        const end: Point = [...start];
+        end[axis] = bounds[axis][1];
+        edges.push([start, end]);
+      }
+    }
+  }
+  return edges;
+};
+
+const toPath = (edges: [Point, Point][]) =>
+  edges
+    .map(([start, end]) => {
+      const [x0, y0] = project(start);
+      const [x1, y1] = project(end);
+      return `M${round(x0)} ${round(y0)}L${round(x1)} ${round(y1)}`;
+    })
+    .join('');
+
+const VOLUME: Bounds = [
+  [0, 1],
+  [0, 1],
+  [0, 1],
+];
+
+// The window the query asks for, on the three axes.
+const QUERY: Bounds = [
+  [0.3, 0.72],
+  [0.18, 0.55],
+  [0.25, 0.62],
+];
+
+// Records inside the window, in (time, event, origin) order.
+const MATCHES: Point[] = [
+  [0.38, 0.26, 0.34],
+  [0.52, 0.44, 0.55],
+  [0.64, 0.32, 0.44],
+  [0.46, 0.35, 0.58],
+];
+
+// Records outside it. Placed so that none lands on the query window, on the
+// two annotation lines, or outside the volume outline at any rendered size.
+const OTHERS: Point[] = [
+  [0.75, 0.43, 0.07],
+  [0.69, 0.71, 0.66],
+  [0.33, 0.82, 0.88],
+  [0.05, 0.1, 0.29],
+  [0.86, 0.57, 0.57],
+  [0.61, 0.89, 0.17],
+  [0.41, 0.33, 0.05],
+  [0.13, 0.14, 0.53],
+  [0.05, 0.87, 0.89],
+  [0.08, 0.19, 0.05],
+  [0.94, 0.71, 0.65],
+  [0.72, 0.89, 0.8],
+];
+
+const midpoint = (start: Point, end: Point): [number, number] =>
+  project([(start[0] + end[0]) / 2, (start[1] + end[1]) / 2, (start[2] + end[2]) / 2]);
+
+const label = project([0.7, 0.175, 0.95]);
+const axisNames = [
+  { text: 'time', at: midpoint([0, 0, 0], [1, 0, 0]), dx: -20, dy: 32, anchor: 'middle' },
+  { text: 'event', at: midpoint([1, 0, 0], [1, 1, 0]), dx: 50, dy: 19, anchor: 'middle' },
+  { text: 'origin', at: midpoint([0, 0, 0], [0, 0, 1]), dx: -22, dy: 0, anchor: 'end' },
+];
+---
+
+<figure class="figure">
+  <div class="figure__panels">
+    <div class="figure__panel">
+      <div class="figure__panel-inner">
+        <p class="figure__panel-name">server</p>
+        <svg viewBox="14 36 314 289" role="img" aria-labelledby="fig-lookup-title">
+        <title id="fig-lookup-title"
+          >A server answers the query by walking an index once per axis, then matching every
+          record in turn</title
+        >
+        <defs>
+          <pattern
+            id="fig-hatch"
+            width="6"
+            height="6"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            <line class="fig-hatch-line" x1="0" y1="0" x2="0" y2="6"></line>
+          </pattern>
+        </defs>
+
+        <text class="fig-query-label" x="137.1" y="65.8" text-anchor="middle"
+          >origin AND event AND time</text
+        >
+        <path class="fig-rule" d="M137.1 72.1V93"></path>
+        <path class="fig-head" d="M133.6 93 137.1 101 140.6 93Z"></path>
+        <text class="fig-note" x="148.6" y="90.6">one walk per axis</text>
+
+        <rect class="fig-hatch" x="22.9" y="106.6" width="228.6" height="78"></rect>
+        <text class="fig-panel-name" x="137.1" y="140" text-anchor="middle">index</text>
+        <text class="fig-mono" x="137.1" y="167.6" text-anchor="middle">134,064 bytes</text>
+
+        <path class="fig-rule" d="M137.1 189.1V199.5"></path>
+        <path class="fig-head" d="M133.6 199.5 137.1 207.5 140.6 199.5Z"></path>
+        <text class="fig-note" x="148.6" y="202.3">intersect</text>
+
+        <rect class="fig-hair" x="22.9" y="208.6" width="294.3" height="69"></rect>
+        <path
+          class="fig-hair"
+          d="M22.9 231.1H317.2M91.4 208.6V277.6M171.4 208.6V277.6M251.4 208.6V277.6"
+        ></path>
+        <text class="fig-column" x="57.1" y="223.7" text-anchor="middle">origin</text>
+        <text class="fig-column" x="131.4" y="223.7" text-anchor="middle">event</text>
+        <text class="fig-column" x="211.4" y="223.7" text-anchor="middle">time</text>
+        <text class="fig-column" x="284.3" y="223.7" text-anchor="middle">value</text>
+        <path
+          class="fig-bar-strong"
+          d="M28.6 237.1H85.7V243.1H28.6ZM97.1 237.1H165.7V243.1H97.1ZM177.1 237.1H245.7V243.1H177.1ZM257.1 237.1H311.4V243.1H257.1Z"
+        ></path>
+        <path
+          class="fig-bar-soft"
+          d="M28.6 252.1H85.7V258.1H28.6ZM97.1 252.1H165.7V258.1H97.1ZM177.1 252.1H245.7V258.1H177.1ZM257.1 252.1H311.4V258.1H257.1Z"
+        ></path>
+        <text class="fig-row-label" x="170" y="302.4" text-anchor="middle"
+          >every record is matched in turn</text
+        >
+      </svg>
+      <p class="figure__caption">the address is looked up</p>
+      </div>
+    </div>
+
+    <div class="figure__bridge">
+      <span>the same query</span>
+      <svg
+        class="figure__arrow only-wide"
+        width="120"
+        height="16"
+        viewBox="0 0 120 16"
+        aria-hidden="true"
+      >
+        <path class="fig-rule" d="M2 8H106"></path>
+        <path class="fig-head" d="M106 3 116 8 106 13Z"></path>
+      </svg>
+      <svg
+        class="figure__arrow only-narrow"
+        width="16"
+        height="120"
+        viewBox="0 0 16 120"
+        aria-hidden="true"
+      >
+        <path class="fig-rule" d="M8 2V106"></path>
+        <path class="fig-head" d="M3 106 8 116 13 106Z"></path>
+      </svg>
+    </div>
+
+    <div class="figure__panel">
+      <div class="figure__panel-inner">
+        <p class="figure__panel-name">device with no operating system</p>
+        <svg viewBox="32 28 404 372" role="img" aria-labelledby="fig-compute-title">
+        <title id="fig-compute-title"
+          >A device computes the address as a coordinate on the same three axes and reads the
+          matching records directly</title
+        >
+        <path class="fig-rule" d={toPath(boxEdges(VOLUME))}></path>
+        <path class="fig-query" d={toPath(boxEdges(QUERY))}></path>
+        <g class="fig-dot-other">
+          {
+            OTHERS.map((point) => {
+              const [x, y] = project(point);
+              return <circle cx={round(x)} cy={round(y)} r="2.8" />;
+            })
+          }
+        </g>
+        <g class="fig-dot-match">
+          {
+            MATCHES.map((point) => {
+              const [x, y] = project(point);
+              return <circle cx={round(x)} cy={round(y)} r="4" />;
+            })
+          }
+        </g>
+        {
+          axisNames.map((name) => (
+            <text
+              class="fig-axis"
+              x={round(name.at[0] + name.dx)}
+              y={round(name.at[1] + name.dy)}
+              text-anchor={name.anchor}
+            >
+              {name.text}
+            </text>
+          ))
+        }
+        <text class="fig-query-label" x={round(label[0])} y={round(label[1] - 27.5)} text-anchor="middle"
+          >origin AND event AND time</text
+        >
+        <text class="fig-accent" x={round(label[0])} y={round(label[1] + 4)} text-anchor="middle"
+          >the records that match</text
+        >
+      </svg>
+      <p class="figure__caption">the address is computed</p>
+      </div>
+    </div>
+  </div>
+
+  <figcaption class="figure__foot">
+    The same three fields are the axes in both panels. On the left they are held in an index, and
+    a leaf of it cost 134,064 bytes on a 32-bit target for two small records. On the right they
+    are the coordinate itself, so a reader computes the address instead of looking it up. The
+    single index leaf is a pilot engine measurement on a 32-bit target.
+  </figcaption>
+</figure>
+
+<style>
+  .figure__panel-name {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-2);
+    margin-bottom: 6px;
+  }
+
+  .figure__panel svg {
+    color: var(--ink);
+  }
+
+  .figure__panel text {
+    font-family: var(--sans);
+  }
+
+  .fig-rule {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+    stroke-linejoin: miter;
+  }
+
+  .fig-query {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.3;
+    stroke-linejoin: miter;
+  }
+
+  .fig-hair {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 0.9;
+  }
+
+  .fig-head {
+    fill: var(--ink);
+  }
+
+  .fig-hatch {
+    fill: url(#fig-hatch);
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  .fig-hatch-line {
+    stroke: var(--ink);
+    stroke-width: 0.9;
+  }
+
+  .fig-bar-strong {
+    fill: var(--ink);
+  }
+
+  .fig-bar-soft {
+    fill: #bbbbbb;
+  }
+
+  .fig-dot-other circle {
+    fill: #9a9a9a;
+  }
+
+  .fig-dot-match circle {
+    fill: var(--ink);
+  }
+
+  .fig-query-label {
+    font-size: 12px;
+    fill: var(--ink);
+  }
+
+  .fig-panel-name {
+    font-size: 14px;
+    fill: var(--ink);
+  }
+
+  .fig-mono {
+    font-family: var(--mono);
+    font-size: 11px;
+    fill: var(--ink-2);
+  }
+
+  .fig-note,
+  .fig-column,
+  .fig-row-label {
+    font-size: 10px;
+    fill: var(--ink-2);
+  }
+
+  .fig-column,
+  .fig-row-label {
+    font-size: 11px;
+  }
+
+  .fig-row-label {
+    font-size: 11.5px;
+    fill: var(--ink);
+  }
+
+  .fig-axis {
+    font-size: 11.5px;
+    fill: var(--ink);
+  }
+
+  .fig-accent {
+    font-size: 12px;
+    fill: var(--accent);
+  }
+</style>

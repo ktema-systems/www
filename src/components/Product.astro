@@ -1,0 +1,63 @@
+---
+import Section from './Section.astro';
+import { site } from '../config';
+
+const spec = [
+  {
+    term: 'Delivery',
+    detail: 'A Rust library with a C interface, so an integrator links it into an existing firmware.',
+  },
+  {
+    term: 'Carries',
+    detail:
+      'The on-media format, the state contract, the media channels, and the C surface.',
+  },
+  {
+    term: 'Record kinds',
+    detail: 'Facts, intents, and hints.',
+  },
+  {
+    term: 'Portability',
+    detail:
+      'The format fixes the layout, the keys, the encoding, and how identifiers are derived, so a volume moves between machines without a conversion step.',
+  },
+];
+---
+
+<Section
+  id="product"
+  label="Product"
+  title="A Rust library with a C interface"
+  lede="Ktema ships to firmware teams as something they link, not as something they port."
+>
+  <dl class="spec">
+    {
+      spec.map((row) => (
+        <>
+          <dt>{row.term}</dt>
+          <dd>{row.detail}</dd>
+        </>
+      ))
+    }
+  </dl>
+
+  <div>
+    <h3>Rem, the reference product</h3>
+    <div class="prose">
+      <p>
+        Rem is an offline spatial AI memory that runs the engine over a real FAT32 medium from a
+        desktop application, a CLI, and an MCP client. It exercises the engine against real
+        media, which is how the format is validated outside the firmware target.
+      </p>
+    </div>
+    <p class="link-row"><a href={site.rem}>rem.ssccs.org</a></p>
+  </div>
+</Section>
+
+<style>
+  .link-row {
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 14px;
+  }
+</style>
