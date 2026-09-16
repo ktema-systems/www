@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import { nav, site } from '../config';
+---
+
+<Base
+  title={`Nothing at this address: ${site.name}`}
+  description="The page you asked for is not here."
+>
+  <section class="section">
+    <div class="wrap section__grid">
+      <p class="section__label">404</p>
+      <div class="section__body">
+        <div class="section__head">
+          <h2>There is nothing at this address</h2>
+          <p class="lede">
+            The page you asked for is not here. Every section of the pitch is on the one page.
+          </p>
+        </div>
+        <ul class="links">
+          <li><a href="/">{site.name} from the top</a></li>
+          {
+            nav.map((item) => (
+              <li>
+                <a href={`/#${item.id}`}>{item.label}</a>
+              </li>
+            ))
+          }
+          <li><a href={`/#round`}>Round</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .links a {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid var(--rule-2);
+    border-radius: 2px;
+    font-size: 14.5px;
+    text-decoration: none;
+  }
+
+  .links a:hover {
+    border-color: var(--ink-3);
+  }
+</style>
