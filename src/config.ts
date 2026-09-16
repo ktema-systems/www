@@ -8,7 +8,6 @@ export const site = {
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ssccs.org',
   rem: 'https://rem.ssccs.org',
-  linkedin: 'https://www.linkedin.com/in/stells',
   // The shared address on the SSCCS documentation footer.
   contact: 'contact@ssccs.org',
 } as const;
@@ -20,6 +19,8 @@ export const nav = [
   { id: 'product', label: 'Product' },
   { id: 'proof', label: 'Proof' },
   { id: 'market', label: 'Market' },
+  { id: 'competition', label: 'Competition' },
+  { id: 'moat', label: 'Moat' },
   { id: 'founder', label: 'Founder' },
 ] as const;
 

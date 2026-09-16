@@ -222,6 +222,7 @@ svg {
 }
 
 .brand {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -239,21 +240,32 @@ svg {
   width: auto;
 }
 
+/* Nine section anchors do not fit beside the brand and the call to action at
+   every width, so the strip takes the space that is left and scrolls inside
+   itself instead of pushing the button past the edge of the page. */
 .masthead__nav {
   display: flex;
   align-items: center;
-  gap: 26px;
+  gap: 20px;
   margin-left: auto;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  scrollbar-width: thin;
 }
 
 .masthead__nav a {
   color: var(--ink-2);
-  font-size: 14.5px;
+  font-size: 14px;
   text-decoration: none;
 }
 
 .masthead__nav a:hover {
   color: var(--ink);
+}
+
+.masthead .btn {
+  flex: 0 0 auto;
 }
 
 /* Sections */
