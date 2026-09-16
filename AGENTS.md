@@ -1,22 +1,86 @@
-## Development
+# AI Agent Instructions
 
-When starting the dev server, use background mode:
+All code, text content, output, and comments must be written in English.
+
+## Reasoning Constraints
+
+- Limit all inferences to given premises or widely verified facts; when uncertain, explicitly mark the boundary between fact and conjecture.
+- Deconstruct claims, surface hidden assumptions, evaluate logical coherence, and consider alternatives. Every suggestion must be accompanied by a reasoning chain that exposes potential weaknesses and counterarguments.
+- Explicitly label analytic conclusions vs. value judgments/practical recommendations. Keep the latter minimal and hedged.
+
+## Markdown Format
+
+- Do not use `---` between paragraphs. A horizontal rule is allowed only directly before a final reference or license section.
+- Minimize bold. Use it only to highlight the single most critical point in the entire document.
+- Do not use em dashes (`—`).
+- Do not prefix headings with numbers; use plain headings.
+
+## Documentation Guidelines
+
+- Don't put emojis.
+- When a sentence would contain `.ss`, rewrite to use the full technical term appropriate to the context.
+- Avoid sequential enumerations like “Week 1, Week 2”. Use numbered experiments, phases, or milestones instead.
+- Avoid negated‑affirmation pairs (“not A, B..”). Express logic directly through affirmative, sequential, or conditional structures.
+
+### Quarto
+
+- Default .qmd template:
+
+```qmd
+---
+title: text
+subtitle: text
+metadata-files:
+  - path/to/_include/author.yml
+abstract: |
+  text
+---
+
+{{< include [relative_path_to]/_include/_title_meta_items.qmd >}}
+
+\`\`\`{python}
+#| include: false
+#| context: local
+%run [relative_path_to]/_include/_graphviz.py
+\`\`\`
+
+... contents
 
 ```
-astro dev --background
+
+- Use Python-DOT code blocks for necessary visualizations: the default template of DOT code in .qmd file:
+
+```{python}
+#| label: fig-label
+#| fig-cap: text
+dot("""
+digraph DOTGraph {
+... DOT Code ...
+}
+""")
 ```
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+- When code DOT, do not use `graph` for node or class name.
 
-## Documentation
+## Git
 
-Full documentation: https://docs.astro.build
+- Do not push.
+- Do not merge a pull request or any branch.
+- When starting a new task subject:
+    1. Create a GitHub Issue, add relevant labels, then link the branch that will contain the work.
+    2. Create a branch with the format `{issue-number}-{subject-alphabets-with-one-or-two-dashes}` excepting when create docs files: keep current branch for md, qmd, ...
+- The pull request title format must be: `PR: {category}: {message}`. (Include `#{issue}` after the category only in PR branches; omit it in the main branch.)
+- Do not test by pushing to GitHub.
 
-Consult these guides before working on related tasks:
+### Commit Message Format
 
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+- `{category}: {message}`. Include `#{issue}` after the category only in PR branches (omit in main branch).
+
+## Code
+
+- When exploring the folder structure or searching files, exclude paths ignored by `.gitignore` from the search scope to save tokens.
+- Implement → Review → Apply feedback & fix → Build/Test (clean) → Commit → Propose next direction → Await user signal → Repeat
+- Focus on the accuracy of the goal.
+- Code as pessimistically and critically as possible.
+- Do not generate unnecessary code. Produce only what is **essential** for the goal.
+- Do not use text characters to draw diagrams (e.g., trees or boxes using ╔═) in code comments.
