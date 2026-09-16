@@ -1,0 +1,38 @@
+---
+import Section from './Section.astro';
+import { site } from '../config';
+---
+
+<Section
+  id="contact"
+  label="Contact"
+  title="Get in touch"
+  lede="Every machine that has to answer for what it did is now software: robots and medical devices, spacecraft and defense platforms, industrial controllers and patient monitors, and every system a regulator, an insurer, or a court will one day ask to prove what happened."
+  band
+>
+  <div class="prose">
+    <p>
+      That range is wider than any single market. Every system that joins the physical world to
+      software ends up holding a record of its own past, and the further it sits from a server, the
+      more that record matters and the less room there is to keep it. Ktema answers multi-axis
+      questions about that record on the device, inside the few kilobytes the device actually has.
+    </p>
+    <p>
+      The first design partners are being chosen from across that range. If you are building a
+      machine that has to answer for itself, write to us. 
+    </p>
+  </div>
+
+  <div class="actions">
+    <a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a>
+    <a class="btn" href={site.docs}>Read the documentation</a>
+  </div>
+</Section>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

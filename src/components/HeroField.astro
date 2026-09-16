@@ -1,0 +1,125 @@
+---
+/*
+  The hero's coordinate field: the mark's own construction, the hexagon, the inner
+  diamond and the connector lines, repeated at three scales and traced in the accent.
+  It sits behind the copy as a texture rather than as motion, so the opacity is kept
+  low enough that body text stays far above its contrast floor.
+
+  Pure SVG and CSS. No client JavaScript, and the global reduced-motion rule already
+  collapses the two rotations.
+*/
+---
+
+<div class="field" aria-hidden="true">
+  <div class="field__fade">
+    <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
+    <defs>
+      <g id="ktema-field">
+        <polygon points="85,-147.22 170,0 85,147.22 -85,147.22 -170,0 -85,-147.22" />
+        <polygon points="35,-60.62 60.62,35 -35,60.62 -60.62,-35" />
+        <line x1="85" y1="-147.22" x2="35" y2="-60.62" />
+        <line x1="-85" y1="147.22" x2="-35" y2="60.62" />
+        <line x1="-85" y1="-147.22" x2="-60.62" y2="-35" />
+        <line x1="170" y1="0" x2="60.62" y2="35" />
+        <line x1="-170" y1="0" x2="-60.62" y2="-35" />
+        <line x1="85" y1="147.22" x2="60.62" y2="35" />
+        <line x1="-85" y1="-147.22" x2="35" y2="-60.62" />
+        <line x1="170" y1="0" x2="35" y2="-60.62" />
+        <line x1="-170" y1="0" x2="-35" y2="60.62" />
+        <line x1="85" y1="147.22" x2="-35" y2="60.62" />
+        <line x1="85" y1="-147.22" x2="-60.62" y2="-35" />
+        <line x1="85" y1="-147.22" x2="60.62" y2="35" />
+        <line x1="-85" y1="147.22" x2="-60.62" y2="-35" />
+        <line x1="-85" y1="147.22" x2="60.62" y2="35" />
+      </g>
+    </defs>
+
+      <g class="field__layer field__layer--frame">
+        <polygon
+          points="885,-113.63 1170,380 885,873.63 315,873.63 30,380 315,-113.63"
+        />
+      </g>
+
+      <g class="field__layer field__layer--near">
+        <use href="#ktema-field" transform="translate(870 210) scale(1.6)" />
+      </g>
+
+      <g class="field__layer field__layer--far">
+        <use href="#ktema-field" transform="translate(300 600) scale(1.35)" />
+      </g>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .field {
+    position: absolute;
+    inset: 0 0 auto 0;
+    z-index: 0;
+    height: min(78vh, 840px);
+    pointer-events: none;
+    overflow: hidden;
+    /* The copy sits in a fixed left column, so the field is held back there and
+       only reaches full strength on the open side. Several of the mark's lines
+       meet at each hexagon vertex, and those points stack to roughly three times
+       the strength of a single stroke, which is what this ramp is sized against. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.45) 0%,
+      rgba(0, 0, 0, 0.45) 52%,
+      #000 80%
+    );
+    mask-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.45) 0%,
+      rgba(0, 0, 0, 0.45) 52%,
+      #000 80%
+    );
+  }
+
+  .field__fade {
+    width: 100%;
+    height: 100%;
+    /* Melt the bottom edge into the page instead of ending on a hard line. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+  }
+
+  .field svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--accent);
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  /* Each layer spins about its own centre, slow enough to read as drift rather
+     than as animation. */
+  .field__layer {
+    transform-box: view-box;
+  }
+
+  .field__layer--frame {
+    opacity: 0.09;
+  }
+
+  .field__layer--near {
+    transform-origin: 870px 210px;
+    opacity: 0.17;
+    animation: field-spin 120s linear infinite;
+  }
+
+  .field__layer--far {
+    transform-origin: 300px 600px;
+    opacity: 0.13;
+    animation: field-spin 180s linear infinite reverse;
+  }
+
+  @keyframes field-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+</style>

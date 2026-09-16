@@ -1,5 +1,6 @@
 ---
 import AddressFigure from './AddressFigure.astro';
+import HeroField from './HeroField.astro';
 import { site } from '../config';
 
 const metrics = [
@@ -14,21 +15,21 @@ const metrics = [
 ---
 
 <section class="hero" id="top">
+  <HeroField />
   <div class="wrap">
-    <div class="hero__head">
-      <p class="eyebrow">Pre-seed · {site.legalName}</p>
+    <div class="hero__head">      
       <h1>{site.tagline}</h1>
       <p class="hero__lede">
-        On-device spatiotemporal queries without a database or an operating system.
+        On-device storage engine for spatiotemporal queries,<br/>without a database and an operating system.
       </p>
       <p class="hero__body">
         Ktema is a storage engine for devices that cannot run a database. A machine is asked
         about its own past, and on a server that question is a query with an index behind it. A
         microcontroller has tens of kilobytes of SRAM and no room for the index. Ktema answers
-        the question on the device.
+        the question on the device. The coordinate is the index.
       </p>
       <div class="hero__actions">
-        <a class="btn btn--accent" href="#round">Investor briefing</a>
+        <a class="btn btn--accent" href="#contact">Get in touch</a>
         <a class="btn" href="#proof">See the measurements</a>
       </div>
     </div>
@@ -50,7 +51,15 @@ const metrics = [
 
 <style>
   .hero {
+    position: relative;
+    overflow: hidden;
     padding-top: 84px;
+  }
+
+  /* The field is the only layer below; everything in a .wrap sits above it. */
+  .hero > .wrap {
+    position: relative;
+    z-index: 1;
   }
 
   .hero__head {
@@ -60,22 +69,50 @@ const metrics = [
     gap: 20px;
   }
 
+  /* The lockup is the masthead mark at hero scale. The mark is the same asset,
+     masked so it takes currentColor rather than the black it carries as an img. */
+  .hero__lockup {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 2.5vw, 28px);
+  }
+
+  .hero__mark {
+    flex: none;
+    display: block;
+    width: clamp(84px, 13.5vw, 152px);
+    aspect-ratio: 1;
+    background: var(--fg);
+    -webkit-mask: url(/logo.svg) 50% / contain no-repeat;
+    mask: url(/logo.svg) 50% / contain no-repeat;
+  }
+
+  .hero__word {
+    font-family: var(--text);
+    font-weight: 600;
+    font-stretch: 115%;
+    font-size: clamp(48px, 7.5vw, 84px);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--fg);
+  }
+
   .hero h1 {
     font-size: clamp(2.5rem, 1.4rem + 4.2vw, 4rem);
-    letter-spacing: -0.03em;
+    letter-spacing: -0.008em;
     margin: 0;
   }
 
   .hero__lede {
     font-size: clamp(1.1rem, 1rem + 0.6vw, 1.35rem);
     line-height: 1.5;
-    color: var(--ink-2);
+    color: var(--fg-2);
     text-wrap: pretty;
     margin: 0;
   }
 
   .hero__body {
-    color: var(--ink-2);
+    color: var(--fg-2);
     margin: 0;
   }
 

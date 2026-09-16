@@ -5,7 +5,7 @@ import { nav, site } from '../config';
 <header class="masthead">
   <div class="wrap masthead__inner">
     <a class="brand" href="#top">
-      <img class="brand__mark" src={site.logo} alt="" width="315" height="270" />
+      <span class="brand__mark" aria-hidden="true"></span>
       <span>{site.name}</span>
     </a>
     <nav class="masthead__nav" aria-label="Sections">
@@ -15,6 +15,6 @@ import { nav, site } from '../config';
         ))
       }
     </nav>
-    <a class="btn btn--accent" href="#round">Investor briefing</a>
+    <a class="btn btn--accent" href="#contact">Get in touch</a>
   </div>
 </header>

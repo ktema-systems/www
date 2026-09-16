@@ -200,23 +200,25 @@ const axisNames = [
           >A device computes the address as a coordinate on the same three axes and reads the
           matching records directly</title
         >
-        <path class="fig-rule" d={toPath(boxEdges(VOLUME))}></path>
-        <path class="fig-query" d={toPath(boxEdges(QUERY))}></path>
-        <g class="fig-dot-other">
-          {
-            OTHERS.map((point) => {
-              const [x, y] = project(point);
-              return <circle cx={round(x)} cy={round(y)} r="2.8" />;
-            })
-          }
-        </g>
-        <g class="fig-dot-match">
-          {
-            MATCHES.map((point) => {
-              const [x, y] = project(point);
-              return <circle cx={round(x)} cy={round(y)} r="4" />;
-            })
-          }
+        <g class="fig-space">
+          <path class="fig-rule" d={toPath(boxEdges(VOLUME))}></path>
+          <path class="fig-query" d={toPath(boxEdges(QUERY))}></path>
+          <g class="fig-dot-other">
+            {
+              OTHERS.map((point) => {
+                const [x, y] = project(point);
+                return <circle cx={round(x)} cy={round(y)} r="2.8" />;
+              })
+            }
+          </g>
+          <g class="fig-dot-match">
+            {
+              MATCHES.map((point) => {
+                const [x, y] = project(point);
+                return <circle cx={round(x)} cy={round(y)} r="4" />;
+              })
+            }
+          </g>
         </g>
         {
           axisNames.map((name) => (
@@ -254,21 +256,21 @@ const axisNames = [
   .figure__panel-name {
     font-family: var(--mono);
     font-size: 12.5px;
-    color: var(--ink-2);
+    color: var(--fg-2);
     margin-bottom: 6px;
   }
 
   .figure__panel svg {
-    color: var(--ink);
+    color: var(--fg);
   }
 
   .figure__panel text {
-    font-family: var(--sans);
+    font-family: var(--text);
   }
 
   .fig-rule {
     fill: none;
-    stroke: var(--ink);
+    stroke: var(--fg);
     stroke-width: 1;
     stroke-linejoin: miter;
   }
@@ -282,62 +284,62 @@ const axisNames = [
 
   .fig-hair {
     fill: none;
-    stroke: var(--ink);
+    stroke: var(--fg);
     stroke-width: 0.9;
   }
 
   .fig-head {
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-hatch {
     fill: url(#fig-hatch);
-    stroke: var(--ink);
+    stroke: var(--fg);
     stroke-width: 1;
   }
 
   .fig-hatch-line {
-    stroke: var(--ink);
+    stroke: var(--fg);
     stroke-width: 0.9;
   }
 
   .fig-bar-strong {
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-bar-soft {
-    fill: #bbbbbb;
+    fill: rgb(110, 109, 107);
   }
 
   .fig-dot-other circle {
-    fill: #9a9a9a;
+    fill: rgb(122, 121, 119);
   }
 
   .fig-dot-match circle {
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-query-label {
     font-size: 12px;
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-panel-name {
     font-size: 14px;
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-mono {
     font-family: var(--mono);
     font-size: 11px;
-    fill: var(--ink-2);
+    fill: var(--fg-2);
   }
 
   .fig-note,
   .fig-column,
   .fig-row-label {
     font-size: 10px;
-    fill: var(--ink-2);
+    fill: var(--fg-2);
   }
 
   .fig-column,
@@ -347,16 +349,44 @@ const axisNames = [
 
   .fig-row-label {
     font-size: 11.5px;
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-axis {
     font-size: 11.5px;
-    fill: var(--ink);
+    fill: var(--fg);
   }
 
   .fig-accent {
     font-size: 12px;
     fill: var(--accent);
+  }
+
+  /* The coordinate space turns slowly as the figure passes, driven by scroll
+     position. The range is left at its default, which covers the whole pass, and
+     a browser without animation-timeline support shows the space straight.
+     Longhands for the same reason as the section fade in global.css: the minifier
+     would otherwise put view() inside the animation shorthand, which is invalid. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .fig-space {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation-name: fig-turn;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+      }
+    }
+  }
+
+  @keyframes fig-turn {
+    from {
+      transform: rotate(-4deg);
+    }
+    to {
+      transform: rotate(4deg);
+    }
   }
 </style>
