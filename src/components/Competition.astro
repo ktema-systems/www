@@ -41,6 +41,14 @@ const ticks = units.map(([bytes, label]) => ({ x: xOf(bytes), label }));
 
 const mcuRight = xOf(65536);
 
+// The band's label is centred in the band, where the row rule for "multi-axis
+// indexed" runs through it. The mask, in the band's own colour, clears the rule
+// across the label, so the gap reads as the label interrupting the rule. It is
+// wider than the measured label (48.24 units at 10px) so the rule stops short of
+// the glyphs.
+const BAND_LABEL = { x: (LEFT + mcuRight) / 2, y: 165 };
+const BAND_LABEL_MASK = { y: 157, height: 6, halfWidth: 26 };
+
 const rows = [
   {
     system: 'FlashDB',
@@ -93,9 +101,11 @@ const rows = [
   },
   {
     system: 'Qdrant Edge',
+    // The vendor documents no background services, not no operating system: the
+    // targets it names are robots, kiosks, home assistants, and phones.
     model: 'vector, in-process',
     index: 'HNSW',
-    os: 'none',
+    os: 'needs one',
     memory: 'minimal footprint, not published',
   },
   {
@@ -120,7 +130,6 @@ const rows = [
     >
 
     <rect class="chart__band" x={LEFT} y="40" width={mcuRight - LEFT} height="250"></rect>
-    <text class="chart__band-label" x={(LEFT + mcuRight) / 2} y="56">MCU class</text>
 
     {
       Object.values(ROW_Y).map((y) => (
@@ -129,6 +138,15 @@ const rows = [
     }
     <line class="chart__axis" x1={LEFT} y1="40" x2={LEFT} y2="290" />
     <line class="chart__axis" x1={LEFT} y1="290" x2={RIGHT} y2="290" />
+
+    <rect
+      class="chart__band-mask"
+      x={BAND_LABEL.x - BAND_LABEL_MASK.halfWidth}
+      y={BAND_LABEL_MASK.y}
+      width={BAND_LABEL_MASK.halfWidth * 2}
+      height={BAND_LABEL_MASK.height}
+    ></rect>
+    <text class="chart__band-label" x={BAND_LABEL.x} y={BAND_LABEL.y}>MCU class</text>
 
     {
       rowLabels.map((row) => (
@@ -240,10 +258,17 @@ const rows = [
     fill: var(--panel);
   }
 
+  /* Drawn between the grid and the label, so it clears the rule without hiding
+     the label. */
+  .chart__band-mask {
+    fill: var(--panel);
+  }
+
   .chart__band-label {
     font-size: 10px;
     fill: var(--fg-3);
     text-anchor: middle;
+    dominant-baseline: middle;
   }
 
   .chart__grid {
