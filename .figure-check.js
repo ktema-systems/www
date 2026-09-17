@@ -153,5 +153,46 @@
         right: round(ink.right),
       };
     }),
+    // Every table's text has to land on the column of prose above it, whatever the
+    // row rules do, and a highlighted row's band has to have room inside itself:
+    // those two are what the padding and the overhang are for.
+    tables: [...document.querySelectorAll('table.data')].map((table) => {
+      const section = table.closest('section');
+      const boxOf = (node) => {
+        const ink = node.getBoundingClientRect();
+        return { left: round(ink.left), right: round(ink.right) };
+      };
+      const textBox = (node) => {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const ink = range.getBoundingClientRect();
+        return { left: round(ink.left), right: round(ink.right) };
+      };
+      const cellAt = (row, index) => [...row.querySelectorAll('td')].at(index);
+      const rows = [...table.querySelectorAll('tbody tr')];
+      const banded = rows.find((row) => row.classList.contains('feature'));
+      const prose = section.querySelector('.prose p');
+      const tableBox = boxOf(table);
+      const wrap = boxOf(table.closest('.table-wrap'));
+      const bandedCells = banded ? [...banded.querySelectorAll('td')] : null;
+      return {
+        section: section.id,
+        table: tableBox,
+        wrap,
+        prose: boxOf(prose),
+        // the widest text in the last column is the one that ends at the edge
+        firstColumnText: Math.min(...rows.map((row) => textBox(cellAt(row, 0)).left)),
+        lastColumnText: Math.max(...rows.map((row) => textBox(cellAt(row, -1)).right)),
+        bandRoom: bandedCells
+          ? {
+              left: round(textBox(bandedCells[0]).left - tableBox.left),
+              right: round(tableBox.right - textBox(bandedCells.at(-1)).right),
+              // the band is the cells' own boxes, so it reaches to the table's box
+              bandLeft: round(boxOf(bandedCells[0]).left - tableBox.left),
+              bandRight: round(boxOf(bandedCells.at(-1)).right - tableBox.right),
+            }
+          : null,
+      };
+    }),
   };
 })()
