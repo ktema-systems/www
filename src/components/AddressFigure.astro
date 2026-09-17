@@ -302,9 +302,11 @@ const axisNames = [
     stroke-width: 0.9;
   }
 
-  /* The record the query returns wears the same accent the right panel gives
-     its matches, so the two panels' answers read as one thing. The row below it
-     keeps the grey the right panel gives the records outside the window. */
+  /* One colour language across the two panels. The accent is the answer: the
+     window the query cuts and the records inside it, on the right, and the record
+     the index returns, on the left. One grey is a record the query does not
+     return, whether that is a row of the table or a point in the space, and the
+     ink every other mark is drawn in says nothing about membership. */
   .fig-bar-strong {
     fill: var(--accent);
   }
@@ -314,11 +316,11 @@ const axisNames = [
   }
 
   .fig-dot-other circle {
-    fill: rgb(122, 121, 119);
+    fill: rgb(110, 109, 107);
   }
 
   .fig-dot-match circle {
-    fill: var(--fg);
+    fill: var(--accent);
   }
 
   .fig-query-label {
@@ -337,24 +339,17 @@ const axisNames = [
     fill: var(--fg-2);
   }
 
-  .fig-note,
-  .fig-column,
-  .fig-row-label {
+  .fig-note {
     font-size: 10px;
     fill: var(--fg-2);
   }
 
+  /* The three axis names are the figure's one piece of shared vocabulary, and the
+     foot claims the same three fields are the axes in both panels, so they are
+     drawn the same wherever they appear. */
   .fig-column,
+  .fig-axis,
   .fig-row-label {
-    font-size: 11px;
-  }
-
-  .fig-row-label {
-    font-size: 11.5px;
-    fill: var(--fg);
-  }
-
-  .fig-axis {
     font-size: 11.5px;
     fill: var(--fg);
   }
