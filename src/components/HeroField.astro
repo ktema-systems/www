@@ -41,12 +41,9 @@
       </g>
 
       <g class="field__layer field__layer--near">
-        <use href="#ktema-field" transform="translate(870 210) scale(1.6)" />
+        <use href="#ktema-field" transform="translate(870 210) scale(1.8)" />
       </g>
 
-      <g class="field__layer field__layer--far">
-        <use href="#ktema-field" transform="translate(300 600) scale(1.35)" />
-      </g>
     </svg>
   </div>
 </div>
@@ -59,30 +56,15 @@
     height: min(78vh, 840px);
     pointer-events: none;
     overflow: hidden;
-    /* The copy sits in a fixed left column, so the field is held back there and
-       only reaches full strength on the open side. Several of the mark's lines
-       meet at each hexagon vertex, and those points stack to roughly three times
-       the strength of a single stroke, which is what this ramp is sized against. */
-    -webkit-mask-image: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.45) 0%,
-      rgba(0, 0, 0, 0.45) 52%,
-      #000 80%
-    );
-    mask-image: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.45) 0%,
-      rgba(0, 0, 0, 0.45) 52%,
-      #000 80%
-    );
   }
 
   .field__fade {
     width: 100%;
     height: 100%;
-    /* Melt the bottom edge into the page instead of ending on a hard line. */
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+    /* The drawing runs to the edges of its box and is cut off there, so the last of
+       it is melted into the page rather than left as a row of stroke ends. */
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
   }
 
   .field svg {
@@ -101,19 +83,24 @@
     transform-box: view-box;
   }
 
+  /* The drawing is not held back by a mask any more, so these values are what keeps
+     the copy above its contrast floor. The binding case is a hexagon vertex, where
+     three lines meet and stack to about three times one stroke: at these values
+     that point leaves body text at roughly 4.6:1, and a single stroke sits far
+     above it. */
   .field__layer--frame {
-    opacity: 0.09;
+    opacity: 0.08;
   }
 
   .field__layer--near {
     transform-origin: 870px 210px;
-    opacity: 0.17;
+    opacity: 0.15;
     animation: field-spin 120s linear infinite;
   }
 
   .field__layer--far {
     transform-origin: 300px 600px;
-    opacity: 0.13;
+    opacity: 0.115;
     animation: field-spin 180s linear infinite reverse;
   }
 

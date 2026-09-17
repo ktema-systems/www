@@ -20,6 +20,17 @@ const { title, description } = Astro.props;
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#131210" />
+    <script is:inline>
+      // The masthead's settle state has to be right in the first frame, or a
+      // reload part way down the page would draw the brand at the wrong size and
+      // then correct it. The stylesheet turns this offset into the progress value
+      // the brand and the bar's chrome are drawn from, and takes the chrome off
+      // entirely at zero.
+      const root = document.documentElement;
+      const offset = window.scrollY || 0;
+      root.style.setProperty('--masthead-scroll', String(offset));
+      root.classList.toggle('is-at-top', offset <= 0);
+    </script>
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

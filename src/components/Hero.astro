@@ -28,10 +28,6 @@ const metrics = [
         microcontroller has tens of kilobytes of SRAM and no room for the index. Ktema answers
         the question on the device. The coordinate is the index, and that is not a platform-specific optimization: the same library builds for a data center machine.
       </p>
-      <div class="hero__actions">
-        <a class="btn btn--accent" href="#contact">Get in touch</a>
-        <a class="btn" href="#proof">See the measurements</a>
-      </div>
     </div>
     <ul class="metrics">
       {
@@ -53,7 +49,14 @@ const metrics = [
   .hero {
     position: relative;
     overflow: hidden;
-    padding-top: 84px;
+    /* The masthead floats over the page, so the field behind it starts at the top of
+       the window and this padding is what holds the copy clear of the bar. It is set
+       so the air under the lockup matches the air above it at the top of the page:
+       twice the lockup's lift, plus the bar's own height, less the headline's leading
+       above its cap. */
+    padding-top: calc(
+      var(--masthead-h) + var(--brand-lift-top) * 2 - var(--headline-size) * -0.156
+    );
   }
 
   /* The field is the only layer below; everything in a .wrap sits above it. */
@@ -66,7 +69,7 @@ const metrics = [
     max-width: 44rem;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
   }
 
   /* The lockup is the masthead mark at hero scale. The mark is the same asset,
@@ -98,9 +101,19 @@ const metrics = [
   }
 
   .hero h1 {
-    font-size: clamp(2.5rem, 1.4rem + 4.2vw, 4rem);
+    font-size: var(--headline-size);
     letter-spacing: -0.008em;
     margin: 0;
+  }
+
+  /* The tagline is a display line rather than a paragraph, so it is allowed to run
+     past the measure the copy under it is held to. The line measures 11.9em, which
+     fits one line down to 640px; under that it is wider than the page and wraps
+     like any other heading. */
+  @media (min-width: 640px) {
+    .hero h1 {
+      width: max-content;
+    }
   }
 
   .hero__lede {

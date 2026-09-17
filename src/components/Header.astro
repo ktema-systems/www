@@ -18,3 +18,32 @@ import { nav, site } from '../config';
     <a class="btn btn--accent" href="#contact">Get in touch</a>
   </div>
 </header>
+
+<script>
+  // The masthead's brand is at its largest at the top of the page and settles as
+  // the page moves. Only the scroll offset is written here, and the stylesheet
+  // turns it into the progress value the brand and the bar's own chrome are drawn
+  // from, so the distance the settle takes sits with the styles it drives. The
+  // offset is written once per frame at most, so a fast wheel cannot outrun it.
+  const root = document.documentElement;
+  let queued = false;
+
+  function write() {
+    queued = false;
+    const offset = window.scrollY;
+    root.style.setProperty('--masthead-scroll', String(offset));
+    root.classList.toggle('is-at-top', offset <= 0);
+  }
+
+  function schedule() {
+    if (queued) {
+      return;
+    }
+    queued = true;
+    window.requestAnimationFrame(write);
+  }
+
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  write();
+</script>

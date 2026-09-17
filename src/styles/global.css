@@ -183,6 +183,29 @@
   /* The sticky masthead's height sets two offsets that must move with it: where
      an anchor jump lands, and where the section labels stick. */
   --masthead-h: 72px;
+  /* The masthead is at its largest at the top of the page and settles over this
+     many pixels of scroll. Both numbers are unitless because the progress below
+     is a ratio; the offset defaults to the far end of the ramp, so a page whose
+     scripts never run is drawn settled. */
+  --masthead-ramp: 140;
+  --masthead-scroll: 140;
+  /* The brand's two ends. The small one is exact, and the large one is page scale
+     rather than header scale, so the lockup reads as part of the page before it
+     contracts into a menu. */
+  --masthead-progress: clamp(0, calc(var(--masthead-scroll) / var(--masthead-ramp)), 1);
+  --brand-settled: 22px;
+  --brand-top: clamp(26px, 3.7vw, 54px);
+  --brand-size: calc(
+    var(--brand-settled) + (var(--brand-top) - var(--brand-settled)) * (1 - var(--masthead-progress))
+  );
+  /* The room the lockup is given above it. Both the top of the page and part way down
+     are cut from the same figure, so the room exists only while the lockup is large,
+     and the hero can size itself against what the lockup will be on load. */
+  --brand-lift-top: calc((var(--brand-top) - var(--brand-settled)) * 1.75);
+  --brand-lift: calc(var(--brand-lift-top) * (1 - var(--masthead-progress)));
+  /* Named because the room the masthead leaves below the lockup is measured against
+     the headline's leading. */
+  --headline-size: clamp(2.5rem, 1.4rem + 4.2vw, 4rem);
   --label-col: 168px;
   --label-gap: 56px;
   --section-y: 88px;
@@ -379,12 +402,39 @@ svg {
 /* Masthead */
 
 .masthead {
+  /* Room above the lockup only, so the bar grows downwards rather than both ways: the
+     room it needs is at the top of the page, and a shorter drawn box keeps the glass
+     off the copy below for longer. The whole box is handed back as a negative margin,
+     so the page starts at the top of the window and nothing below moves as the bar
+     changes height. */
+  padding-top: var(--brand-lift);
   position: sticky;
   top: 0;
   z-index: 10;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid var(--line);
+  margin-bottom: calc(-1 * (var(--masthead-h) + 1px + var(--brand-lift)));
+  /* At the top of the page the bar is part of the page: it has no surface and no
+     rule, and the saturation is scaled with the ramp rather than left at its full
+     value, which would tint the page under a bar that is meant to be invisible.
+     Past that it becomes glass, and glass has to stay see-through: at a higher
+     opacity the page under the bar lifts by only a couple of steps, so the bar
+     reads as a slab laid over the page instead of a pane the page moves behind.
+     The value is set by what the links need over the brightest thing that can pass
+     under them, which is white text: they keep roughly 5:1 in that case. */
+  background: color-mix(in srgb, var(--bg-2) calc(var(--masthead-progress) * 65%), transparent);
+  backdrop-filter: saturate(calc(100% + var(--masthead-progress) * 80%))
+    blur(calc(var(--masthead-progress) * 14px));
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--line) calc(var(--masthead-progress) * 100%), transparent);
+}
+
+/* At the very top the bar is given nothing at all: no surface, no rule, and no
+   filter. An identity filter is not the same as no filter, because a bar carrying
+   one is still composited against a backdrop, and the hero's field is directly
+   behind it. */
+:root.is-at-top .masthead {
+  background: none;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
 }
 
 .masthead__inner {
@@ -398,21 +448,24 @@ svg {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: calc(var(--brand-size) * 0.4);
   color: var(--fg);
   text-decoration: none;
+  /* The wide cut the hero's headline is set in, so the name and the line under it
+     read as one typeface rather than two widths of one. */
   font-family: var(--text);
-  font-size: 22px;
+  font-stretch: 115%;
+  font-size: var(--brand-size);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.008em;
 }
 
 /* The mark is masked rather than embedded, so it takes the colour of whatever
    it sits in and the shipped asset stays a single file. */
 .brand__mark {
   display: block;
-  width: 32px;
-  height: 32px;
+  width: calc(var(--brand-size) * 1.4545);
+  height: calc(var(--brand-size) * 1.4545);
   background: currentColor;
   -webkit-mask: url("/logo.svg") center / contain no-repeat;
   mask: url("/logo.svg") center / contain no-repeat;
@@ -420,11 +473,13 @@ svg {
 
 /* Nine section anchors do not fit beside the brand and the call to action at
    every width, so the strip takes the space that is left and scrolls inside
-   itself instead of pushing the button past the edge of the page. */
+   itself instead of pushing the button past the edge of the page. Its spacing
+   closes up while the brand is at page scale, which is what pays for the larger
+   lockup at the top without clipping a link, and relaxes as the brand settles. */
 .masthead__nav {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: calc(15px + var(--masthead-progress) * 7px);
   margin-left: auto;
   min-width: 0;
   overflow-x: auto;
@@ -902,6 +957,12 @@ svg {
     display: none;
   }
 
+  /* With the strip gone the call to action is the only thing after the brand, and
+     it belongs at the far edge of the row rather than beside the name. */
+  .masthead .btn {
+    margin-left: auto;
+  }
+
   .cards--3 {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -921,6 +982,13 @@ svg {
 }
 
 @media (max-width: 720px) {
+  /* Below 900px the row is the brand and the call to action and nothing else, and
+     the wide cut makes the name wide enough that the page would scroll sideways at
+     the narrowest widths. */
+  .masthead__inner {
+    gap: 20px;
+  }
+
   .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
