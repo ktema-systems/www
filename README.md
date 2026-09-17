@@ -33,6 +33,11 @@ The copy is drawn from `ktema/docs/pitch.qmd`, and the numbers quoted on the pag
 (heap, flash, the cell count, query latency, market size) come from that document.
 When the pitch changes, change the page with it.
 
+The page is allowed to be lighter than the pitch, and never heavier: a claim the
+deck does not make or measure does not belong here, and a claim the deck makes
+three times belongs here once, where it carries its reasoning. Numbers are quoted
+exactly, in both directions.
+
 Two figures are computed at build time rather than transcribed:
 
 - `AddressFigure.astro` projects its points from the `(time, event, origin)`

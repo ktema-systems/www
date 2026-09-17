@@ -14,6 +14,10 @@
  * ink box of a text node in the SVG's own user units, which is the space every
  * coordinate in the source is written in, so the answer is arithmetic rather
  * than a reading of pixels.
+ *
+ * Point it at the built output served on a free port. A dev server left running
+ * can answer on the port a static server was told to use, and its own cache can
+ * then hand back CSS the build no longer contains.
  */
 
 import { spawn } from 'node:child_process';
