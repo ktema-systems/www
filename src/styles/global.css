@@ -581,6 +581,11 @@ svg {
 
 .table-wrap {
   overflow-x: auto;
+  /* The rules of a table, and the band a highlighted row is drawn with, run past
+     the column of prose above it by one cell of padding. That overhang is what
+     gives a band its room inside: the band is the cells' own background, so the
+     only way it can be wider than the text is for the box it is drawn in to be. */
+  margin-inline: -13px;
 }
 
 .data {
@@ -592,7 +597,7 @@ svg {
 }
 
 .data th {
-  padding: 0 20px 10px 0;
+  padding: 0 7px 10px 13px;
   border-bottom: 1px solid var(--line-2);
   font-family: var(--mono);
   font-size: 11px;
@@ -606,7 +611,10 @@ svg {
 }
 
 .data td {
-  padding: 13px 20px 13px 0;
+  /* 7px on the right of one cell and 13px on the left of the next still leave the
+     20px two columns had, and the 13px at each end of a row is the room a band
+     pads itself with. */
+  padding: 13px 7px 13px 13px;
   border-bottom: 1px solid var(--line);
   color: var(--fg-2);
   vertical-align: top;
@@ -614,7 +622,7 @@ svg {
 
 .data th:last-child,
 .data td:last-child {
-  padding-right: 0;
+  padding-right: 13px;
 }
 
 .data tbody tr:last-child td {
