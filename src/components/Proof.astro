@@ -132,9 +132,10 @@ const latency = [
   </div>
 
   <p class="note">
-    Those figures come from a virtual test environment, a release build, and the median of ten
-    samples from the Criterion harness. The device runs the same scan path. The on-target cost
-    is not yet measured, and the scan path is the one the read path uses.
+    Those figures come from a virtual test environment, over volumes of a hundred thousand records
+    and up, and are the median of ten samples from the Criterion harness on a release build. The
+    scan path is the one the read path uses, and the device runs it over the records it holds; the
+    on-target cost is not yet measured.
   </p>
 </Section>
 
