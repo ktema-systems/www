@@ -1,5 +1,5 @@
 /**
- * Two ways to inspect the running page, both over the DevTools protocol.
+ * Three ways to inspect the running page, all over the DevTools protocol.
  *
  * The earlier harness used --virtual-time-budget, which starves the frame loop,
  * so the masthead's requestAnimationFrame never ran and every scroll read was
@@ -7,6 +7,13 @@
  *
  *   node .masthead-check.mjs styles <url> [width...]
  *   node .masthead-check.mjs shot <url> <width> <scrollY> <out.png> [extra css]
+ *   node .masthead-check.mjs probe <url> <width> <expression.js>
+ *
+ * probe evaluates the file as a single expression and prints its value as JSON.
+ * It is how a figure is checked for collisions and colours: getBBox gives the
+ * ink box of a text node in the SVG's own user units, which is the space every
+ * coordinate in the source is written in, so the answer is arithmetic rather
+ * than a reading of pixels.
  */
 
 import { spawn } from 'node:child_process';
@@ -225,8 +232,23 @@ try {
     const shot = await cdp.send('Page.captureScreenshot', { format: 'png' });
     writeFileSync(out, Buffer.from(shot.data, 'base64'));
     console.log('wrote ' + out);
+  } else if (mode === 'probe') {
+    const [width, path] = rest;
+    await open(Number(width));
+    const result = await cdp.send('Runtime.evaluate', {
+      expression: readFileSync(path, 'utf8'),
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    if (result.exceptionDetails) {
+      console.log('threw: ' + JSON.stringify(result.exceptionDetails.exception));
+    } else {
+      console.log(JSON.stringify(result.result.value, null, 2));
+    }
   } else {
-    console.log('usage: styles <url> [width...] | shot <url> <width> <scrollY> <out.png> [css]');
+    console.log(
+      'usage: styles <url> [width...] | shot <url> <width> <scrollY> <out.png> [css] | probe <url> <width> <expression.js>',
+    );
   }
 } finally {
   cdp.close();
