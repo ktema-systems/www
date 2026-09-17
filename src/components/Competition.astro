@@ -17,7 +17,7 @@ const ROW_Y: Record<number, number> = { 4: 70, 3: 160, 2: 250 };
 
 const systems = [
   { name: 'FlashDB', bytes: 256, row: 2, highlight: false },
-  { name: 'Ktema', bytes: 4309, row: 4, highlight: true },
+  { name: 'Ktema', bytes: 2163, row: 4, highlight: true },
   { name: 'SQLite, minimum', bytes: 102400, row: 3, highlight: false },
   { name: 'MoteDB', bytes: 35 * 1024 ** 2, row: 3, highlight: false },
   { name: 'remdb', bytes: 128 * 1024 ** 2, row: 2, highlight: false },
@@ -103,7 +103,7 @@ const rows = [
     model: 'multi-axis over a coordinate space',
     index: 'none',
     os: 'none',
-    memory: '4,309 B heap, 141 KB flash',
+    memory: '2,163 B heap, 121 KB flash',
     feature: true,
   },
 ];
@@ -191,7 +191,7 @@ const rows = [
       and spatio index on Linux and work in tens of megabytes. Every multi-axis system in the
       table except Ktema carries an index, and the ones with published figures need an operating
       system or more memory than a microcontroller carries. Ktema answers the same three-axis
-      query from a 4,309 B heap with no index and no operating system.
+      query from a 2,163 B heap with no index and no operating system.
     </p>
   </div>
 

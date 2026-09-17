@@ -5,12 +5,15 @@ import { site } from '../config';
 
 const metrics = [
   {
-    value: '4,309 B',
+    value: '2,163 B',
     label: 'live peak heap for a write and a read round trip on a RISC-V target with no operating system',
   },
-  { value: '760 B', label: 'largest single allocation in that round trip' },
+  { value: '244 B', label: 'largest single allocation in that round trip' },
   { value: '478', label: 'cells in the coordinate decoder, verified on an FPGA' },
-  { value: '0.93 ms', label: 'three-axis query over a one-day window at 100,000 records' },
+  {
+    value: '0.93 ms',
+    label: 'three-axis query over a one-day window at 100,000 records, in a virtual test environment',
+  },
 ];
 ---
 

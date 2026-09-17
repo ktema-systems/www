@@ -7,7 +7,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'The machine answers.',
   description:
-    'Ktema answers multi-axis queries on a device with no operating system. The coordinate is the index: 4,309 bytes of live heap, no index structure, no OS.',
+    'Ktema answers multi-axis queries on a device with no operating system. The coordinate is the index: 2,163 bytes of live heap, no index structure, no OS.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
