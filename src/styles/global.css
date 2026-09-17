@@ -194,7 +194,7 @@
      contracts into a menu. */
   --masthead-progress: clamp(0, calc(var(--masthead-scroll) / var(--masthead-ramp)), 1);
   --brand-settled: 22px;
-  --brand-top: clamp(26px, 3.7vw, 54px);
+  --brand-top: clamp(26px, 3.7vw, 34px);
   --brand-size: calc(
     var(--brand-settled) + (var(--brand-top) - var(--brand-settled)) * (1 - var(--masthead-progress))
   );
