@@ -302,8 +302,11 @@ const axisNames = [
     stroke-width: 0.9;
   }
 
+  /* The record the query returns wears the same accent the right panel gives
+     its matches, so the two panels' answers read as one thing. The row below it
+     keeps the grey the right panel gives the records outside the window. */
   .fig-bar-strong {
-    fill: var(--fg);
+    fill: var(--accent);
   }
 
   .fig-bar-soft {
