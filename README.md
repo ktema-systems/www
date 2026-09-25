@@ -33,6 +33,11 @@ The copy is drawn from `ktema/docs/pitch.qmd`, and the numbers quoted on the pag
 (heap, flash, the cell count, query latency, market size) come from that document.
 When the pitch changes, change the page with it.
 
+The page is allowed to be lighter than the pitch, and never heavier: a claim the
+deck does not make or measure does not belong here, and a claim the deck makes
+three times belongs here once, where it carries its reasoning. Numbers are quoted
+exactly, in both directions.
+
 Two figures are computed at build time rather than transcribed:
 
 - `AddressFigure.astro` projects its points from the `(time, event, origin)`
@@ -40,6 +45,27 @@ Two figures are computed at build time rather than transcribed:
   stays clear of the query window and the labels at any rendered size.
 - `Competition.astro` places its points on a base-10 scale from the published
   byte figures.
+
+## Deploy
+
+The site is on Cloudflare Pages as `ktema-www`, served at
+`https://ktema-www.pages.dev`.
+
+`.github/workflows/deploy-cf-pages.yml` builds on every pull request and deploys
+on every push to `main`. It needs two repository secrets on
+`ktema-systems/www` before the first run:
+
+| Secret | |
+|---|---|
+| `CF_PAGES_DEPLOY` | a Cloudflare API token with the Account / Cloudflare Pages / Edit permission |
+| `CF_ACCOUNT_ID` | the Cloudflare account ID |
+
+For a local deploy, log Wrangler in and push the built output:
+
+```
+npm run build
+npx wrangler@4 pages deploy dist --project-name=ktema-www
+```
 
 ## Not yet set
 

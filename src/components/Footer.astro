@@ -7,14 +7,12 @@ const year = new Date().getFullYear();
 <footer class="footer">
   <div class="wrap footer__inner">
     <p>
-      {year} {site.legalName}. Ktema is proprietary. The layers beneath it, neXus,
-      chton, and syntagma, are Apache 2.0.
+      © {year} {site.legalName}, {site.legalStatus}. {site.base}.
     </p>
     <nav class="footer__links" aria-label="Elsewhere">
       <a href={`mailto:${site.contact}`}>{site.contact}</a>
-      <a href={site.github}>GitHub</a>
-      <a href={site.docs}>docs.ssccs.org</a>
-      <a href={site.rem}>Rem</a>
+      <a href={site.github}>GitHub (Pre-Release)</a>
+      <!--<a href={site.docs}>Documentation</a>-->
     </nav>
   </div>
 </footer>

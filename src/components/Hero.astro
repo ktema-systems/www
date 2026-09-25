@@ -1,36 +1,34 @@
 ---
 import AddressFigure from './AddressFigure.astro';
+import HeroField from './HeroField.astro';
 import { site } from '../config';
 
 const metrics = [
   {
-    value: '4,309 B',
+    value: '2,163 B',
     label: 'live peak heap for a write and a read round trip on a RISC-V target with no operating system',
   },
-  { value: '760 B', label: 'largest single allocation in that round trip' },
-  { value: '478', label: 'cells in the coordinate decoder, verified on an FPGA' },
-  { value: '0.93 ms', label: 'three-axis query over a one-day window at 100,000 records' },
+  { value: '244 B', label: 'largest single allocation in that round trip' },
+  { value: '64 KB', label: 'SRAM budget the build enforces' },
+  {
+    value: '0.93 ms',
+    label: 'three-axis query over a one-day window at 100,000 records',
+  },
 ];
 ---
 
 <section class="hero" id="top">
+  <HeroField />
   <div class="wrap">
-    <div class="hero__head">
-      <p class="eyebrow">Pre-seed · {site.legalName}</p>
+    <div class="hero__head">      
       <h1>{site.tagline}</h1>
       <p class="hero__lede">
-        On-device spatiotemporal queries without a database or an operating system.
+        On-device storage engine for multi-dimensional queries,<br/>without a database or an operating system.
       </p>
       <p class="hero__body">
-        Ktema is a storage engine for devices that cannot run a database. A machine is asked
-        about its own past, and on a server that question is a query with an index behind it. A
-        microcontroller has tens of kilobytes of SRAM and no room for the index. Ktema answers
-        the question on the device.
+        Ktema puts spatiotemporal answers on a device that cannot run a database. A motor drive, a robot joint, a medical monitor, or an ECU can answer its own multi-axis questions, such as which readings moved together before the failure and what happened in the last seconds, without a server, a network, or a cloud round trip. The same engine scales from a microcontroller to the richest data center, and out to space systems.
       </p>
-      <div class="hero__actions">
-        <a class="btn btn--accent" href="#round">Investor briefing</a>
-        <a class="btn" href="#proof">See the measurements</a>
-      </div>
+      
     </div>
     <ul class="metrics">
       {
@@ -42,6 +40,10 @@ const metrics = [
         ))
       }
     </ul>
+    <p class="metrics__note">
+      Published benchmark: release build, median of ten samples from the Criterion harness, in a
+      virtual test environment. Query figures are for the read path.
+    </p>
   </div>
   <div class="wrap hero__figure">
     <AddressFigure />
@@ -50,32 +52,85 @@ const metrics = [
 
 <style>
   .hero {
-    padding-top: 84px;
+    position: relative;
+    overflow: hidden;
+    /* The masthead floats over the page, so the field behind it starts at the top of
+       the window and this padding is what holds the copy clear of the bar. It is set
+       so the air under the lockup matches the air above it at the top of the page:
+       twice the lockup's lift, plus the bar's own height, less the headline's leading
+       above its cap. */
+    padding-top: calc(
+      var(--masthead-h) + var(--brand-lift-top) * 2 - var(--headline-size) * -0.156
+    );
+  }
+
+  /* The field is the only layer below; everything in a .wrap sits above it. */
+  .hero > .wrap {
+    position: relative;
+    z-index: 1;
   }
 
   .hero__head {
     max-width: 44rem;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
+  }
+
+  /* The lockup is the masthead mark at hero scale. The mark is the same asset,
+     masked so it takes currentColor rather than the black it carries as an img. */
+  .hero__lockup {
+    display: flex;
+    align-items: center;
+    gap: clamp(16px, 2.5vw, 28px);
+  }
+
+  .hero__mark {
+    flex: none;
+    display: block;
+    width: clamp(84px, 13.5vw, 152px);
+    aspect-ratio: 1;
+    background: var(--fg);
+    -webkit-mask: url(/logo.svg) 50% / contain no-repeat;
+    mask: url(/logo.svg) 50% / contain no-repeat;
+  }
+
+  .hero__word {
+    font-family: var(--text);
+    font-weight: 600;
+    font-stretch: 115%;
+    font-size: clamp(48px, 7.5vw, 84px);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    color: var(--fg);
   }
 
   .hero h1 {
-    font-size: clamp(2.5rem, 1.4rem + 4.2vw, 4rem);
-    letter-spacing: -0.03em;
+    font-size: var(--headline-size);
+    letter-spacing: -0.008em;
     margin: 0;
+  }
+
+  /* The tagline is a display line rather than a paragraph, so it is allowed to run
+     past the measure the copy under it is held to. The line measures 11.9em, which
+     fits one line down to 640px; under that it is wider than the page and wraps
+     like any other heading. */
+  @media (min-width: 640px) {
+    .hero h1 {
+      width: max-content;
+    }
   }
 
   .hero__lede {
     font-size: clamp(1.1rem, 1rem + 0.6vw, 1.35rem);
     line-height: 1.5;
-    color: var(--ink-2);
+    color: var(--fg-2);
     text-wrap: pretty;
     margin: 0;
   }
 
   .hero__body {
-    color: var(--ink-2);
+    color: var(--fg-2);
     margin: 0;
   }
 
@@ -93,5 +148,11 @@ const metrics = [
   .hero__figure {
     padding-top: 64px;
     padding-bottom: 76px;
+  }
+
+  .metrics__note {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--fg-3);
   }
 </style>

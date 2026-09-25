@@ -1,42 +1,49 @@
 export const site = {
   name: 'Ktema',
   legalName: 'Ktema Systems',
-  tagline: 'The coordinate is the index.',
+  // The company does not exist yet, so wherever the entity is named as if it did
+  // it carries this qualifier. The preprints use the same one on the affiliation
+  // line.
+  legalStatus: 'pre-incorporation',
+  // The base the company runs from. The site states where the team works, not
+  // where the entity may be registered.
+  base: 'Europe',
+  tagline: 'The machine answers.',
   description:
-    'Ktema answers multi-axis queries on a device with no operating system. The coordinate is the index: 4,309 bytes of live heap, no index structure, no OS.',
-  logo: '/logo.png',
+    'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
   github: 'https://github.com/ktema-systems',
-  docs: 'https://docs.ssccs.org',
-  rem: 'https://rem.ssccs.org',
-  linkedin: 'https://www.linkedin.com/in/stells',
-  // The shared address on the SSCCS documentation footer.
-  contact: 'contact@ssccs.org',
+  docs: 'https://docs.ktema.systems',
+  // The address published on the documentation footer.
+  contact: 'hello@ktema.systems',
 } as const;
 
 export const nav = [
-  { id: 'problem', label: 'Problem' },
-  { id: 'why-now', label: 'Why now' },
-  { id: 'insight', label: 'Insight' },
   { id: 'product', label: 'Product' },
   { id: 'proof', label: 'Proof' },
-  { id: 'market', label: 'Market' },
-  { id: 'founder', label: 'Founder' },
+  { id: 'why-now', label: 'Why now' },
+  { id: 'competition', label: 'Competition' },
 ] as const;
 
 export const papers = [
   {
-    title: 'SSCCS, the computing model the coordinate space belongs to',
+    title: 'Schema–Segment Composition Computing System',
     when: 'February 2026',
     href: 'https://doi.org/10.5281/zenodo.18759106',
   },
   {
-    title: 'Tagma, the hashless coordinate space',
+    title: 'Tagma: Hashless spatial primitive on a fixed 16-bit Unicode, 3-axis composition space',
     when: 'July 2026',
     href: 'https://doi.org/10.5281/zenodo.21302508',
   },
   {
-    title: 'The applied measurement',
+    title: "Coordinate-indexed addressing for ROOT TTree I/O overhead for CERN's HEP analytics",
     when: 'August 2026',
     href: 'https://doi.org/10.5281/zenodo.21888670',
+  },
+  {
+    title:
+      'neXus: A heterogeneous coordinate-addressed runtime network for agents and executable systems',
+    when: 'September 2026',
+    href: 'https://doi.org/10.5281/zenodo.22303887',
   },
 ] as const;

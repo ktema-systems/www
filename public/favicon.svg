@@ -1,7 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Ktema">
-  <rect width="32" height="32" fill="#ffffff"/>
-  <g fill="none" stroke="#2c6f8f" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square">
-    <path d="M5.5 24.5 17.9 27.6 26.3 23 26.3 9.1 13.9 5.9 5.5 10.6Z"/>
-    <path d="M17.9 13.7 5.5 10.6M17.9 13.7v13.9M17.9 13.7 26.3 9.1"/>
+  <!-- The mark from /logo.svg: the same hexagon, the same inner diamond at the
+       logo's 70/170 radius, and the six spokes that join them. Scaled to a 32
+       unit box and drawn at 2 units, roughly four times the logo's stroke in
+       proportion, so it survives being rasterised at 16 px.
+       An SVG loaded as a favicon cannot read a CSS variable, so the stroke is
+       the accent token value written out: oklch(0.65 0.095 255). -->
+  <g fill="none" stroke="#6792c8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <polygon points="22.5,4.74 29,16 22.5,27.26 9.5,27.26 3,16 9.5,4.74" />
+    <polygon points="18.68,11.36 20.64,18.68 13.32,20.64 11.36,13.32" />
+    <line x1="22.5" y1="4.74" x2="18.68" y2="11.36" />
+    <line x1="9.5" y1="27.26" x2="13.32" y2="20.64" />
+    <line x1="9.5" y1="4.74" x2="11.36" y2="13.32" />
+    <line x1="29" y1="16" x2="20.64" y2="18.68" />
+    <line x1="3" y1="16" x2="11.36" y2="13.32" />
+    <line x1="22.5" y1="27.26" x2="20.64" y2="18.68" />
   </g>
 </svg>

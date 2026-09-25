@@ -19,3 +19,7 @@ dist/
 # Editors and operating systems
 .DS_Store
 .idea/
+.vscode/
+
+# Local Wrangler state, written by `wrangler pages deploy`
+.wrangler/
