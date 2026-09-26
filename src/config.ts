@@ -31,7 +31,7 @@ export const papers = [
     href: 'https://doi.org/10.5281/zenodo.18759106',
   },
   {
-    title: 'Tagma: Hashless spatial primitive on a fixed 16-bit Unicode, 3-axis composition space',
+    title: 'Tagma: Hashless spatial primitive on a fixed 16-bit, 3-axis Unicode composition space',
     when: 'July 2026',
     href: 'https://doi.org/10.5281/zenodo.21302508',
   },
