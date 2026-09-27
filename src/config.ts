@@ -42,7 +42,7 @@ export const papers = [
   },
   {
     title:
-      'neXus: A heterogeneous coordinate-addressed runtime network for agents and executable systems',
+      'neXus: Peer-to-peer state fabric for agents and storage, from microcontrollers to data centers',
     when: 'September 2026',
     href: 'https://doi.org/10.5281/zenodo.22303887',
   },
