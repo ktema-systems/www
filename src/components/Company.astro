@@ -1,0 +1,45 @@
+---
+import Section from './Section.astro';
+
+const axes = [
+  {
+    name: 'Storage',
+    detail: 'The board, held by the engine on this page and shared by every attached device.',
+  },
+  {
+    name: 'Agents',
+    detail: 'The swarm-agent system that reads and writes that board.',
+  },
+  {
+    name: 'Judgment',
+    detail: 'The judgment and abstraction layer over both.',
+  },
+];
+---
+
+<Section
+  id="company"
+  label="Company"
+  title="Ktema Systems"
+  lede="A company building spatiotemporal computing infrastructure, from the MCU to the data centers."
+>
+  <div class="prose">
+    <p>
+        Together the three axes will act as one intelligent executor that passes between devices,
+        carries its state and its spatiotemporal history, and resumes as the same executor.
+    </p>
+  </div>
+
+  <div class="cards cards--3">
+    {
+      axes.map((axis) => (
+        <div class="card">
+          <span class="card__value">{axis.name}</span>
+          <p>{axis.detail}</p>
+        </div>
+      ))
+    }
+  </div>
+
+  <p class="note">Ktema Systems is pre-incorporation.</p>
+</Section>

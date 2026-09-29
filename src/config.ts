@@ -22,6 +22,7 @@ export const nav = [
   { id: 'proof', label: 'Proof' },
   { id: 'why-now', label: 'Why now' },
   { id: 'competition', label: 'Competition' },
+  { id: 'company', label: 'Company' },
 ] as const;
 
 export const papers = [
