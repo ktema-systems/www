@@ -71,10 +71,17 @@ const metrics = [
   }
 
   .hero__head {
-    max-width: 44rem;
     display: flex;
     flex-direction: column;
     gap: 24px;
+  }
+
+  /* The copy under the display line is held to this measure; the display line
+     itself may use the full width of the page. */
+  .hero__lede,
+  .hero__body,
+  .hero__actions {
+    max-width: 44rem;
   }
 
   /* The lockup is the masthead mark at hero scale. The mark is the same asset,
@@ -109,16 +116,11 @@ const metrics = [
     font-size: var(--headline-size);
     letter-spacing: -0.008em;
     margin: 0;
-  }
-
-  /* The tagline is a display line rather than a paragraph, so it is allowed to run
-     past the measure the copy under it is held to. The line measures 11.9em, which
-     fits one line down to 640px; under that it is wider than the page and wraps
-     like any other heading. */
-  @media (min-width: 640px) {
-    .hero h1 {
-      width: max-content;
-    }
+    /* The tagline is a display line rather than a paragraph, so it may run past
+       the 44rem measure the copy under it is held to. It stays on one line while
+       the page can carry it, and wraps to balanced lines when the page is
+       narrower. */
+    text-wrap: balance;
   }
 
   .hero__lede {

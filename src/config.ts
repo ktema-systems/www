@@ -5,10 +5,7 @@ export const site = {
   // it carries this qualifier. The preprints use the same one on the affiliation
   // line.
   legalStatus: 'pre-incorporation',
-  // The base the company runs from. The site states where the team works, not
-  // where the entity may be registered.
-  base: 'Europe',
-  tagline: 'The machine answers.',
+  tagline: 'The machine answers from its own record.',
   description:
     'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
   github: 'https://github.com/ktema-systems',
