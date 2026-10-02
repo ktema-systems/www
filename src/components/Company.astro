@@ -1,18 +1,18 @@
 ---
 import Section from './Section.astro';
 
-const axes = [
+const layers = [
   {
     name: 'Storage',
-    detail: 'The board, held by the engine on this page and shared by every attached device.',
+    detail: 'A machine answers for its own past, on the machine, with no server in the path.',
   },
   {
-    name: 'Agents',
-    detail: 'The swarm-agent system that reads and writes that board.',
+    name: 'Execution',
+    detail: 'It moves five kinds of work: agents, signals, machines, people, and outside systems.',
   },
   {
-    name: 'Judgment',
-    detail: 'The judgment and abstraction layer over both.',
+    name: 'Governance',
+    detail: 'It governs the other two: which model answers, at what cost, and on which terms.',
   },
 ];
 ---
@@ -21,21 +21,20 @@ const axes = [
   id="company"
   label="Company"
   title="Ktema Systems"
-  lede="A company building spatiotemporal computing infrastructure, from the MCU to the data centers."
+  lede="A company building software infrastructure that lets a machine keep its own record and answer from it, from a chip with no operating system to a data center."
 >
   <div class="prose">
     <p>
-        Together the three axes will act as one intelligent executor that passes between devices,
-        carries its state and its spatiotemporal history, and resumes as the same executor.
+      Three layers share one record: Ktema keeps it, Kletos moves the work, and Krisis governs what the other two do. The storage engine is the first of the three.
     </p>
   </div>
 
   <div class="cards cards--3">
     {
-      axes.map((axis) => (
+      layers.map((layer) => (
         <div class="card">
-          <span class="card__value">{axis.name}</span>
-          <p>{axis.detail}</p>
+          <span class="card__value">{layer.name}</span>
+          <p>{layer.detail}</p>
         </div>
       ))
     }
