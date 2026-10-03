@@ -5,7 +5,7 @@ export const site = {
   // it carries this qualifier. The preprints use the same one on the affiliation
   // line.
   legalStatus: 'pre-incorporation',
-  tagline: 'The machine answers from its own record.',
+  tagline: 'The machine answers.',
   description:
     'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
   github: 'https://github.com/ktema-systems',
