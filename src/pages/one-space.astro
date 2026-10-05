@@ -1,0 +1,554 @@
+---
+// A pilot page: the idea as one field.
+//
+// The records, the relations, and the positions are made for this page and the caption says
+// so; the measured figures live on the product page. Nothing links here and the page carries
+// noindex, so its url is the whole of its reach.
+
+import Base from '../layouts/Base.astro';
+import { site } from '../config';
+
+const description =
+  'A pilot view of one coordinate space holding records of every kind, with no layer between them.';
+---
+
+<Base title={`One space, no layers: ${site.name}`} description={description} noindex>
+  <header class="pilot wrap">
+    <p class="eyebrow">Pilot</p>
+    <h1>One space, no layers</h1>
+    <p class="lede">
+      A fact, an intent, a hint, a judgment, a turn, and the agent that ran it are the same kind
+      of thing here: a record at an address. Nothing routes between them, because there is no
+      layer between them to route through. An address is a coordinate, a coordinate is a place,
+      and a place is where a reader looks.
+    </p>
+  </header>
+
+  <figure class="field-figure wrap">
+    <div class="field" id="field">
+      <canvas
+        id="field-canvas"
+        role="img"
+        aria-label="Records of six kinds placed at the addresses they carry, joined by the relations between them, turning slowly."
+      ></canvas>
+      <p class="field__hint">Drag to turn the space.</p>
+      <p class="field__axes">time &middot; event &middot; origin</p>
+    </div>
+
+    <div class="legend">
+      <div class="legend__group">
+        <p class="legend__title">records</p>
+        <ul class="legend__list">
+          <li>
+            <span class="swatch swatch--fact"></span><span class="legend__name">fact</span>
+            <span class="legend__note">an observation, addressed by what it holds</span>
+          </li>
+          <li>
+            <span class="swatch swatch--intent"></span><span class="legend__name">intent</span>
+            <span class="legend__note">work proposed, waiting for a claim</span>
+          </li>
+          <li>
+            <span class="swatch swatch--hint"></span><span class="legend__name">hint</span>
+            <span class="legend__note">a bound the environment put on the work</span>
+          </li>
+          <li>
+            <span class="swatch swatch--judgment"></span><span class="legend__name">judgment</span>
+            <span class="legend__note">a decision recorded over a turn or a fact</span>
+          </li>
+          <li>
+            <span class="swatch swatch--turn"></span><span class="legend__name">turn</span>
+            <span class="legend__note">work performed, written when it settles</span>
+          </li>
+          <li>
+            <span class="swatch swatch--node"></span><span class="legend__name">node</span>
+            <span class="legend__note">a program holding part of the space</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="legend__group">
+        <p class="legend__title">relations</p>
+        <ul class="legend__list legend__list--links">
+          <li><span class="legend__name">derive</span><span class="legend__note">an intent starts from a fact</span></li>
+          <li><span class="legend__name">claim</span><span class="legend__note">a node takes an intent</span></li>
+          <li><span class="legend__name">conclude</span><span class="legend__note">a fact owes to the intent it answered</span></li>
+          <li><span class="legend__name">bound</span><span class="legend__note">a hint narrowed a turn</span></li>
+          <li><span class="legend__name">judge</span><span class="legend__note">a judgment stands over a turn</span></li>
+          <li><span class="legend__name">mention</span><span class="legend__note">a turn reached for a fact</span></li>
+        </ul>
+        <p class="legend__note legend__note--standfirst">
+          The brighter filaments and the traffic along them are one record and everything it
+          touches, which is how the field is read.
+        </p>
+      </div>
+    </div>
+
+    <figcaption class="field-figure__foot">
+      The field illustrates the shape of the idea. Its records, its relations, and its positions
+      are made for this page. The three axes are the ones a record carries: time, event, and
+      origin. What is measured, the query cost and the round trip on a 32-bit target, is on the
+      product page.
+    </figcaption>
+  </figure>
+
+  <section class="section">
+    <div class="wrap section__grid">
+      <p class="section__label">The idea</p>
+      <div class="section__body prose">
+        <p>
+          Storage, execution, and judgment are three programs. In this space they are one
+          addressable set: a device that cannot run a database answers a question about its own
+          past, an agent that did the work is a record beside the record it produced, and a
+          judgment sits on the same axes as the facts it decides over.
+        </p>
+        <p>
+          From far enough away there is one computer. The seams between the programs are where the
+          addresses are, which is why a change of program is a change of address rather than a
+          migration, a queue, or a schema.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .pilot {
+      padding-block: 132px 40px;
+    }
+
+    .pilot h1 {
+      margin-top: 16px;
+      font-size: clamp(2rem, 1.3rem + 3.4vw, 3.4rem);
+      line-height: 1.04;
+      letter-spacing: -0.015em;
+    }
+
+    .pilot .lede {
+      max-width: 64ch;
+      margin-top: 20px;
+    }
+
+    .field-figure {
+      margin: 0;
+    }
+
+    /* One window onto the space. Its own background is darker than the page's so the field
+       reads as a place looked into rather than a panel laid on top. */
+    .field {
+      position: relative;
+      height: min(72vh, 640px);
+      border: 1px solid var(--line-2);
+      border-radius: 10px;
+      background: rgb(14, 13, 12);
+      overflow: hidden;
+
+      /* The one palette, read by the stylesheet for the swatches and by the field's own script
+         for the records, so a colour is stated once. */
+      --k-fact: oklch(0.74 0.1 255);
+      --k-intent: oklch(0.72 0.08 205);
+      --k-hint: oklch(0.7 0.045 95);
+      --k-judgment: oklch(0.72 0.1 305);
+      --k-turn: oklch(0.74 0.075 155);
+      --k-node: oklch(0.74 0.07 25);
+      --k-link: rgba(255, 255, 255, 0.1);
+    }
+
+    .field canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .field canvas:active {
+      cursor: grabbing;
+    }
+
+    .field__hint,
+    .field__axes {
+      position: absolute;
+      bottom: 12px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--fg-3);
+    }
+
+    .field__hint {
+      right: 14px;
+    }
+
+    /* The axes are named here rather than on the cube, because the space turns and a label
+       pinned to an edge would wander across the field and off it. */
+    .field__axes {
+      left: 14px;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px var(--label-gap);
+      margin-top: 26px;
+    }
+
+    .legend__title {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg-3);
+    }
+
+    .legend__list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 9px;
+    }
+
+    .legend__list li {
+      display: grid;
+      grid-template-columns: 12px minmax(0, 92px) minmax(0, 1fr);
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    /* The relations carry no swatch, so their name column starts where the records' does
+       and the note takes the room the swatch left. */
+    .legend__list--links li {
+      grid-template-columns: minmax(0, 92px) minmax(0, 1fr);
+      gap: 10px 12px;
+    }
+
+    .legend__name {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--fg);
+    }
+
+    .legend__note {
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: var(--fg-3);
+    }
+
+    .legend__note--standfirst {
+      margin-top: 14px;
+      max-width: 46ch;
+    }
+
+    .swatch {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      transform: translateY(-1px);
+    }
+
+    .swatch--fact {
+      background: var(--k-fact);
+    }
+
+    .swatch--intent {
+      background: var(--k-intent);
+    }
+
+    .swatch--hint {
+      background: var(--k-hint);
+    }
+
+    .swatch--judgment {
+      background: var(--k-judgment);
+    }
+
+    .swatch--turn {
+      background: var(--k-turn);
+    }
+
+    .swatch--node {
+      background: var(--k-node);
+    }
+
+    .swatch--fact,
+    .swatch--intent,
+    .swatch--hint,
+    .swatch--judgment,
+    .swatch--turn,
+    .swatch--node {
+      margin-right: -2px;
+    }
+
+    .field-figure__foot {
+      margin-top: 24px;
+      padding-left: 14px;
+      border-left: 2px solid var(--line-2);
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--fg-3);
+    }
+
+    @media (max-width: 720px) {
+      .legend {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+
+  <script is:inline>
+    // The field is drawn rather than simulated: a record's position is the address it carries
+    // on three axes, so the shape of the space is the shape of the addressing and not the
+    // shape of a force law. What moves is the camera and the traffic along the relations.
+    (() => {
+      const field = document.getElementById('field');
+      const canvas = document.getElementById('field-canvas');
+      if (!field || !canvas) return;
+
+      const context = canvas.getContext('2d');
+      const style = getComputedStyle(field);
+      const colour = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
+
+      const KIND_COLOURS = {
+        fact: colour('--k-fact', '#8fb0ff'),
+        intent: colour('--k-intent', '#7fc7d9'),
+        hint: colour('--k-hint', '#b8b09a'),
+        judgment: colour('--k-judgment', '#b79ae0'),
+        turn: colour('--k-turn', '#8fd0a8'),
+        node: colour('--k-node', '#e0a292'),
+      };
+      const LINK = colour('--k-link', 'rgba(255,255,255,0.1)');
+      const ACCENT = colour('--accent', '#8fb0ff');
+      const INK = colour('--fg-3', 'rgb(150,148,144)');
+
+      // A recorded source, so the field is the same on every load: a figure rather than a mood.
+      const source = (seed) => {
+        let state = seed >>> 0;
+        return () => {
+          state = (state * 1664525 + 1013904223) >>> 0;
+          return state / 4294967296;
+        };
+      };
+      const random = source(20260930);
+
+      const KINDS = ['fact', 'intent', 'hint', 'judgment', 'turn', 'node'];
+      const nodes = Array.from({ length: 138 }, (_, index) => ({
+        index,
+        kind: KINDS[Math.floor(random() * KINDS.length)],
+        at: [random(), random(), random()],
+      }));
+      const ofKind = (kind) => nodes.filter((node) => node.kind === kind);
+
+      const RELATIONS = [
+        { name: 'derive', from: 'intent', to: 'fact', count: 34 },
+        { name: 'claim', from: 'node', to: 'intent', count: 26 },
+        { name: 'conclude', from: 'fact', to: 'intent', count: 30 },
+        { name: 'bound', from: 'hint', to: 'turn', count: 22 },
+        { name: 'judge', from: 'judgment', to: 'turn', count: 20 },
+        { name: 'mention', from: 'turn', to: 'fact', count: 28 },
+      ];
+      const links = [];
+      for (const relation of RELATIONS) {
+        const from = ofKind(relation.from);
+        const to = ofKind(relation.to);
+        if (!from.length || !to.length) continue;
+        for (let i = 0; i < relation.count; i += 1) {
+          links.push({
+            from: from[Math.floor(random() * from.length)],
+            to: to[Math.floor(random() * to.length)],
+          });
+        }
+      }
+
+      // One record and everything it touches. The field is read through it, which is what the
+      // brighter filaments and the traffic along them are.
+      const focus = ofKind('intent')
+        .map((node) => ({
+          node,
+          degree: links.filter((link) => link.from === node || link.to === node).length,
+        }))
+        .sort((left, right) => right.degree - left.degree)[0];
+      const isFocus = (link) =>
+        Boolean(focus) && (link.from === focus.node || link.to === focus.node);
+
+      let azimuth = (-58 * Math.PI) / 180;
+      let elevation = (20 * Math.PI) / 180;
+      let dragging = null;
+      let width = 0;
+      let height = 0;
+      let scale = 1;
+      let centreX = 0;
+      let centreY = 0;
+
+      const reduceMotion =
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // The same orthographic basis the figures on the product page use, so the space reads
+      // the same wherever it appears.
+      const basis = () => [
+        [-Math.sin(azimuth), -Math.cos(azimuth) * Math.sin(elevation)],
+        [Math.cos(azimuth), -Math.sin(azimuth) * Math.sin(elevation)],
+        [0, Math.cos(elevation)],
+      ];
+
+      const project = (point, frame) => [
+        centreX + scale * (point[0] * frame[0][0] + point[1] * frame[1][0] + point[2] * frame[2][0] - 0.5),
+        centreY - scale * (point[0] * frame[0][1] + point[1] * frame[1][1] + point[2] * frame[2][1] - 0.5),
+      ];
+
+      const resize = () => {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        width = field.clientWidth;
+        height = field.clientHeight;
+        canvas.width = Math.round(width * ratio);
+        canvas.height = Math.round(height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        scale = Math.min(width, height) * 0.78;
+        centreX = width / 2;
+        centreY = height / 2;
+      };
+
+      // Every edge of the unit cube, so the three axes are visible and the records read as
+      // points in a space rather than as a cloud.
+      const CUBE = (() => {
+        const corners = [
+          [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1],
+          [1, 1, 0], [1, 0, 1], [0, 1, 1], [1, 1, 1],
+        ];
+        const edges = [];
+        for (let i = 0; i < corners.length; i += 1) {
+          for (let j = i + 1; j < corners.length; j += 1) {
+            let differs = 0;
+            for (let axis = 0; axis < 3; axis += 1) {
+              if (corners[i][axis] !== corners[j][axis]) differs += 1;
+            }
+            if (differs === 1) edges.push([corners[i], corners[j]]);
+          }
+        }
+        return edges;
+      })();
+
+      const draw = (now) => {
+        const frame = basis();
+        const right = [frame[0][0], frame[1][0], frame[2][0]];
+        const up = [frame[0][1], frame[1][1], frame[2][1]];
+        // The camera's own axis: what depth is measured along. The sign only decides which
+        // side of the space the bright records are on.
+        const forward = [
+          right[1] * up[2] - right[2] * up[1],
+          right[2] * up[0] - right[0] * up[2],
+          right[0] * up[1] - right[1] * up[0],
+        ];
+        const depth = (point) =>
+          point[0] * forward[0] + point[1] * forward[1] + point[2] * forward[2];
+        const depths = nodes.map((node) => depth(node.at));
+        const lowest = Math.min(...depths);
+        const span = Math.max(...depths) - lowest || 1;
+        // Depth as a fraction, and the near end is the end the darker half of the space is not.
+        const near = (value) => (depth(value) - lowest) / span;
+
+        context.clearRect(0, 0, width, height);
+
+        context.lineWidth = 1;
+        context.strokeStyle = LINK;
+        context.beginPath();
+        for (const [start, end] of CUBE) {
+          const [x0, y0] = project(start, frame);
+          const [x1, y1] = project(end, frame);
+          context.moveTo(x0, y0);
+          context.lineTo(x1, y1);
+        }
+        context.stroke();
+
+        for (const link of links) {
+          const focused = isFocus(link);
+          const middle = near([
+            (link.from.at[0] + link.to.at[0]) / 2,
+            (link.from.at[1] + link.to.at[1]) / 2,
+            (link.from.at[2] + link.to.at[2]) / 2,
+          ]);
+          context.strokeStyle = focused ? ACCENT : LINK;
+          context.globalAlpha = focused ? 0.5 : 0.16 + middle * 0.28;
+          const [x0, y0] = project(link.from.at, frame);
+          const [x1, y1] = project(link.to.at, frame);
+          context.beginPath();
+          context.moveTo(x0, y0);
+          context.lineTo(x1, y1);
+          context.stroke();
+        }
+        context.globalAlpha = 1;
+
+        const ordered = [...nodes].sort((left, right2) => near(left.at) - near(right2.at));
+        for (const node of ordered) {
+          const closeness = near(node.at);
+          const [x, y] = project(node.at, frame);
+          context.globalAlpha = 0.22 + closeness * 0.78;
+          context.fillStyle = KIND_COLOURS[node.kind] || INK;
+          context.beginPath();
+          context.arc(x, y, 1.5 + closeness * 2.1, 0, Math.PI * 2);
+          context.fill();
+        }
+
+        // Traffic along the focused relations, which is what makes the field read as live
+        // rather than as a diagram.
+        if (focus) {
+          context.fillStyle = ACCENT;
+          for (const [index, link] of links.filter(isFocus).entries()) {
+            const phase = ((now / 2400 + index * 0.23) % 1 + 1) % 1;
+            const at = [
+              link.from.at[0] + (link.to.at[0] - link.from.at[0]) * phase,
+              link.from.at[1] + (link.to.at[1] - link.from.at[1]) * phase,
+              link.from.at[2] + (link.to.at[2] - link.from.at[2]) * phase,
+            ];
+            const [x, y] = project(at, frame);
+            context.globalAlpha = 0.9;
+            context.beginPath();
+            context.arc(x, y, 2.2, 0, Math.PI * 2);
+            context.fill();
+          }
+          context.globalAlpha = 1;
+        }
+      };
+
+      let previous = performance.now();
+      const frame = (now) => {
+        const elapsed = now - previous;
+        previous = now;
+        if (!dragging) azimuth += elapsed * 0.00006;
+        draw(now);
+        if (!reduceMotion) window.requestAnimationFrame(frame);
+      };
+
+      canvas.addEventListener('pointerdown', (event) => {
+        dragging = { x: event.clientX, y: event.clientY };
+        canvas.setPointerCapture(event.pointerId);
+      });
+      canvas.addEventListener('pointermove', (event) => {
+        if (!dragging) return;
+        azimuth -= (event.clientX - dragging.x) * 0.006;
+        elevation = Math.max(
+          -1.25,
+          Math.min(1.25, elevation + (event.clientY - dragging.y) * 0.006),
+        );
+        dragging = { x: event.clientX, y: event.clientY };
+        if (reduceMotion) draw(performance.now());
+      });
+      const release = () => {
+        dragging = null;
+      };
+      canvas.addEventListener('pointerup', release);
+      canvas.addEventListener('pointercancel', release);
+
+      window.addEventListener('resize', () => {
+        resize();
+        if (reduceMotion) draw(performance.now());
+      });
+
+      resize();
+      previous = performance.now();
+      if (reduceMotion) {
+        draw(previous);
+      } else {
+        window.requestAnimationFrame(frame);
+      }
+    })();
+  </script>
+</Base>

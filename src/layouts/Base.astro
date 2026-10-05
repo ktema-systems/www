@@ -6,9 +6,12 @@ import Footer from '../components/Footer.astro';
 interface Props {
   title: string;
   description: string;
+  // A page that is reachable by its url and listed nowhere: no navigation entry points at
+  // it, and this keeps a crawler from adding one.
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,6 +21,7 @@ const { title, description } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="theme-color" content="#131210" />
     <script is:inline>
