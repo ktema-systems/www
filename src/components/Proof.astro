@@ -8,55 +8,28 @@ const SRAM_BUDGET = 65536;
 const share = (value: number) => `${((value / INDEX_BYTES) * 100).toFixed(2)}%`;
 
 const bars = [
+  { label: 'with the index', bytes: INDEX_BYTES, value: '~354 KB', fill: 'bar__fill--index' },
+  { label: 'the 64 KB budget', bytes: SRAM_BUDGET, value: '65,536 B', fill: 'bar__fill--budget' },
   {
-    label: 'index on',
-    bytes: INDEX_BYTES,
-    value: '~354 KB',
-    fill: 'bar__fill--index',
-  },
-  {
-    label: '64 KB SRAM budget',
-    bytes: SRAM_BUDGET,
-    value: '65,536 B',
-    fill: 'bar__fill--budget',
-  },
-  {
-    label: 'index off',
+    label: 'without the index',
     bytes: ENGINE_BYTES,
     value: '2,163 B',
     fill: 'bar__fill--engine',
+    engine: true,
   },
-];
-
-const measurements = [
-  { what: 'Live peak heap, two facts and a read back', value: '2,163 bytes' },
-  { what: 'Static SRAM used, inside a 64 KB budget', value: 'about 32 KB' },
-  { what: 'Firmware text (flash)', value: 'about 121 KB' },
-];
-
-const latency = [
-  { scale: '100,000 records', indexed: '25.4 to 26.3 µs', scan: '915 to 941 µs' },
-  { scale: '1,000,000 records', indexed: '226.6 to 229.5 µs', scan: '18.6 to 19.4 ms' },
 ];
 ---
 
 <Section
   id="proof"
   label="Proof"
-  title="Running without an operating system is a measurement"
-  lede="A firmware image boots in emulation on a RISC-V target with no operating system and no runtime, completes a write and a read, and peaks at 2,163 bytes of live heap."
+  title="Runs on a bare RISC-V target"
+  lede="A firmware image of about 121 KB boots in emulation with no operating system, writes a record, reads it back, and answers a three-axis query."
 >
-  <div class="prose">
-    <p>
-      The build enforces a 64 KB SRAM budget on the constrained path. A second build compiles the
-      C surface and runs the same test. Both run in continuous integration on every change.
-    </p>
-  </div>
-
   <div class="bars">
     {
       bars.map((bar) => (
-        <div class:list={['bar', bar.label === 'index off' && 'bar--engine']}>
+        <div class:list={['bar', bar.engine && 'bar--engine']}>
           <span class="bar__label">{bar.label}</span>
           <span class="bar__track">
             <span class:list={['bar__fill', bar.fill]} style={`width:${share(bar.bytes)}`} />
@@ -68,72 +41,8 @@ const latency = [
   </div>
 
   <p class="note">
-    Published benchmark. Live peak heap for the MCU round trip with the structural index on and off,
-    on one scale. The optional index costs about 354 KB of live heap, which is why the reference
-    build leaves it off and keeps the engine in the 64 KB class. The reproduction conditions are
-    given below.
-  </p>
-
-  <div class="table-wrap">
-    <table class="data">
-      <thead>
-        <tr>
-          <th>Measurement</th>
-          <th>Result</th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          measurements.map((row) => (
-            <tr>
-              <td class="lead">{row.what}</td>
-              <td class="num">{row.value}</td>
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <div>
-    <h3>Three-axis query latency</h3>
-    <div class="prose">
-      <p>
-        A three-axis query over a one-day window answers in about 0.93 ms at 100,000 records and
-        about 18.9 ms at one million, from the same structure that holds every other axis, and
-        the cost grows with the number of records.
-      </p>
-    </div>
-  </div>
-
-  <div class="table-wrap">
-    <table class="data">
-      <thead>
-        <tr>
-          <th>Scale</th>
-          <th>Structural index</th>
-          <th>Scan path</th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          latency.map((row) => (
-            <tr>
-              <td class="lead">{row.scale}</td>
-              <td class="num">{row.indexed}</td>
-              <td class="num">{row.scan}</td>
-            </tr>
-          ))
-        }
-      </tbody>
-    </table>
-  </div>
-
-  <p class="note">
-    Published benchmark. Those figures come from a virtual test environment, over volumes of a
-    hundred thousand records and up, and are the median of ten samples from the Criterion harness on
-    a release build. The scan path is the one the read path uses, and the device runs it over the
-    records it holds; the on-target cost is not yet measured.
+    Static SRAM use is about 32 KB inside the budget, and the optional index answers the same query
+    in about 26 µs. Both builds run in continuous integration on every change.
   </p>
 </Section>
 

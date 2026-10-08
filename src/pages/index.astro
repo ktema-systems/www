@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import Metrics from '../components/Metrics.astro';
 import Product from '../components/Product.astro';
 import Proof from '../components/Proof.astro';
 import WhyNow from '../components/WhyNow.astro';
@@ -12,6 +13,7 @@ import { site } from '../config';
 
 <Base title={`${site.name}: ${site.tagline}`} description={site.description}>
   <Hero />
+  <Metrics />
   <Product />
   <Proof />
   <WhyNow />

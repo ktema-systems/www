@@ -1,0 +1,45 @@
+---
+const metrics = [
+  {
+    value: '2,163 B',
+    label: 'live peak heap for a write and a read round trip on a RISC-V target with no operating system',
+  },
+  { value: '244 B', label: 'largest single allocation in that round trip' },
+  { value: '64 KB', label: 'SRAM budget the build enforces' },
+  {
+    value: '0.93 ms',
+    label: 'three-axis query over a one-day window at 100,000 records',
+  },
+];
+---
+
+<section class="metrics-band" aria-label="Measured footprint">
+  <div class="wrap">
+    <ul class="metrics">
+      {
+        metrics.map((metric) => (
+          <li class="metric">
+            <span class="metric__value">{metric.value}</span>
+            <span class="metric__label">{metric.label}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="metrics__note">
+      Published benchmarks: release build, median of ten samples, measured in a virtual test
+      environment. Query figures are for the read path.
+    </p>
+  </div>
+</section>
+
+<style>
+  .metrics-band {
+    padding-bottom: 44px;
+  }
+
+  .metrics__note {
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--fg-3);
+  }
+</style>

@@ -2,19 +2,6 @@
 import AddressFigure from './AddressFigure.astro';
 import HeroField from './HeroField.astro';
 import { site } from '../config';
-
-const metrics = [
-  {
-    value: '2,163 B',
-    label: 'live peak heap for a write and a read round trip on a RISC-V target with no operating system',
-  },
-  { value: '244 B', label: 'largest single allocation in that round trip' },
-  { value: '64 KB', label: 'SRAM budget the build enforces' },
-  {
-    value: '0.93 ms',
-    label: 'three-axis query over a one-day window at 100,000 records',
-  },
-];
 ---
 
 <section class="hero" id="top">
@@ -26,27 +13,13 @@ const metrics = [
           On-device storage engine for the record that autonomous machinery and physical agents act on, without an operating system or a database.
       </p>
       <p class="hero__body">
-        A software agent, a robot, a drive, or a medical monitor writes its own history and
-        reads it back — which readings moved together before the failure, what happened in the
-        last seconds — with no server, no network, and no cloud round trip. The same engine
-        runs from a microcontroller to a data centre, and out to space systems.
+        A software agent, a robot, a drive, or a medical monitor keeps its own history and
+        answers from it: which readings moved together before the failure, what happened in the
+        last seconds. No server, no network, no cloud round trip. The same engine runs from a
+        microcontroller to a data center, and out to space systems.
       </p>
       
     </div>
-    <ul class="metrics">
-      {
-        metrics.map((metric) => (
-          <li class="metric">
-            <span class="metric__value">{metric.value}</span>
-            <span class="metric__label">{metric.label}</span>
-          </li>
-        ))
-      }
-    </ul>
-    <p class="metrics__note">
-      Published benchmark: release build, median of ten samples from the Criterion harness, in a
-      virtual test environment. Query figures are for the read path.
-    </p>
   </div>
   <div class="wrap hero__figure">
     <AddressFigure />
@@ -146,18 +119,8 @@ const metrics = [
     padding-top: 6px;
   }
 
-  .hero .metrics {
-    margin-top: 52px;
-  }
-
   .hero__figure {
     padding-top: 64px;
     padding-bottom: 76px;
-  }
-
-  .metrics__note {
-    margin-top: 18px;
-    font-size: 13px;
-    color: var(--fg-3);
   }
 </style>
