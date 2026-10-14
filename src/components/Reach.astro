@@ -1,0 +1,330 @@
+---
+/*
+  The engine's reach: one hexagon per kind of host, the same engine on every one,
+  and the hosts joined to one another. Each tile carries the icon of the host it
+  stands for, and the hexagon around it is the Ktema mark drawn at the size of a
+  host, so the mark itself is what says the engine is there.
+
+  The ring is laid back on a plane and viewed from above at an angle, so the
+  arrangement reads as three dimensions and the figure is wider than it is tall.
+  Everything is computed in the flat layout first and then projected: a point's
+  depth is its flat height times sin(tilt), and the projection divides by the depth
+  to the camera, so a host at the back is a little smaller. Labels are placed by the
+  projection and drawn at their own size, so no glyph is squashed.
+
+  Pure SVG, no client JavaScript, and no mechanism: no coordinate, no index, no
+  record layout.
+*/
+
+const DEG = Math.PI / 180;
+const round = (value: number) => Math.round(value * 10) / 10;
+
+const TILT = 45 * DEG;
+const SIN_T = Math.sin(TILT);
+const COS_T = Math.cos(TILT);
+const FOCAL = 2000;
+// The host icons are drawn in a space of their own, a little under eighty units
+// across, and this is what sizes one to its tile: at this value the largest of them
+// reaches about forty per cent of the way out from the tile's centre, so the hexagon
+// stays the shape a reader sees first and the glyph reads as what is inside it.
+const ICON_SCALE = 0.52;
+
+const OX = 430;
+const OY = 179;
+
+// A point of the flat layout, at (u) right and (h) up from the ring's centre, and
+// its projection. (p) is the depth scale the point is drawn at.
+const project = (u: number, h: number) => {
+  const p = FOCAL / (FOCAL + h * SIN_T);
+  return { x: OX + u * p, y: OY - h * COS_T * p, p };
+};
+
+// The six corners of a pointy-top hexagon in the flat layout.
+const flatHex = (cu: number, ch: number, radius: number) => {
+  const shoulder = radius * Math.sqrt(3) / 2;
+  return [
+    [cu, ch + radius],
+    [cu + shoulder, ch + radius / 2],
+    [cu + shoulder, ch - radius / 2],
+    [cu, ch - radius],
+    [cu - shoulder, ch - radius / 2],
+    [cu - shoulder, ch + radius / 2],
+  ];
+};
+
+const asPoints = (corners: number[][]) =>
+  corners.map(([u, h]) => `${round(u)},${round(h)}`).join(' ');
+
+const projectedHex = (cu: number, ch: number, radius: number) =>
+  asPoints(flatHex(cu, ch, radius).map(([u, h]) => {
+    const point = project(u, h);
+    return [point.x, point.y];
+  }));
+
+// Distance from the centre of a flat pointy-top hexagon to its own edge along a
+// ray at this angle. Used to stop the joins at the two outlines.
+const edgeAt = (angleDeg: number, radius: number) => {
+  const delta = ((((angleDeg + 30) % 60) + 60) % 60) - 30;
+  return (radius * Math.cos(30 * DEG)) / Math.cos(delta * DEG);
+};
+
+const RING_X = 310;
+const RING_Y = 165;
+const HOST_R = 58;
+const CORE_R = 74;
+
+const hosts = [
+  { kind: 'robot', label: 'ROS robot', angle: 90, place: 'above' },
+  { kind: 'drone', label: 'MCU drone', angle: 30, place: 'right' },
+  { kind: 'laptop', label: 'Laptop and mobile', angle: -30, place: 'right' },
+  { kind: 'monitor', label: 'Medical device', angle: -90, place: 'below' },
+  { kind: 'rack', label: 'Data center', angle: -150, place: 'left' },
+  { kind: 'space', label: 'Space system', angle: 150, place: 'left' },
+].map((host) => {
+  const u = RING_X * Math.cos(host.angle * DEG);
+  const h = RING_Y * Math.sin(host.angle * DEG);
+  const direction = (Math.atan2(h, u) * 180) / Math.PI;
+  const outward = { u: Math.cos(direction * DEG), h: Math.sin(direction * DEG) };
+  const coreEdge = edgeAt(direction, CORE_R);
+  const hostEdge = edgeAt(direction, HOST_R);
+  const from = project(coreEdge * outward.u, coreEdge * outward.h);
+  const to = project(u - hostEdge * outward.u, h - hostEdge * outward.h);
+  // The tile holds nothing but this, so the icon sits at its centre.
+  const icon = project(u, h);
+
+  const labelPos = (() => {
+    if (host.place === 'above') {
+      const at = project(u, h + HOST_R + 12);
+      return { x: at.x, y: at.y, anchor: 'middle' };
+    }
+    if (host.place === 'below') {
+      const at = project(u, h - HOST_R - 20);
+      return { x: at.x, y: at.y, anchor: 'middle' };
+    }
+    if (host.place === 'right') {
+      const at = project(u + HOST_R * 0.866 + 14, h);
+      return { x: at.x, y: at.y + 4, anchor: 'start' };
+    }
+    const at = project(u - HOST_R * 0.866 - 14, h);
+    return { x: at.x, y: at.y + 4, anchor: 'end' };
+  })();
+
+  return {
+    ...host,
+    u,
+    h,
+    tile: projectedHex(u, h, HOST_R),
+    iconAt: `translate(${round(icon.x)} ${round(icon.y)}) scale(${round(icon.p * ICON_SCALE * 1000) / 1000})`,
+    spoke: { x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) },
+    labelPos,
+  };
+});
+
+// The hosts are joined to one another around the ring, each pair running between
+// the two tile outlines.
+const joins = [
+  [0, 1],
+  [1, 2],
+  [2, 3],
+  [3, 4],
+  [4, 5],
+  [5, 0],
+].map(([a, b]) => {
+  const A = hosts[a];
+  const B = hosts[b];
+  const direction = (Math.atan2(B.h - A.h, B.u - A.u) * 180) / Math.PI;
+  const ux = Math.cos(direction * DEG);
+  const uy = Math.sin(direction * DEG);
+  const reach = edgeAt(direction, HOST_R);
+  const from = project(A.u + reach * ux, A.h + reach * uy);
+  const to = project(B.u - reach * ux, B.h - reach * uy);
+  return { x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) };
+});
+
+const core = project(0, 0);
+---
+
+<figure class="reach">
+  <svg viewBox="0 0 900 384" role="img" aria-labelledby="reach-title">
+    <title id="reach-title"
+      >Six kinds of host, each running the same Ktema engine: a robot, a
+      microcontroller drone, a laptop, a medical device, a data center, and a space
+      system, joined to one another</title
+    >
+
+    {
+      hosts.map((host) => (
+        <line
+          class="reach__spoke"
+          x1={host.spoke.x1}
+          y1={host.spoke.y1}
+          x2={host.spoke.x2}
+          y2={host.spoke.y2}
+        />
+      ))
+    }
+
+    {joins.map((join) => <line class="reach__join" x1={join.x1} y1={join.y1} x2={join.x2} y2={join.y2} />)}
+
+    {
+      hosts.map((host) => (
+        <>
+          <polygon class="reach__tile" points={host.tile} />
+          <g class="reach__icon" transform={host.iconAt}>
+            {host.kind === 'robot' && (
+              <>
+                <line x1="0" y1="-38" x2="0" y2="-30" />
+                <rect x="-13" y="-30" width="26" height="15" rx="3" />
+                <circle cx="-5" cy="-23" r="1.8" />
+                <circle cx="5" cy="-23" r="1.8" />
+                <rect x="-21" y="-11" width="42" height="24" rx="3" />
+                <line x1="-21" y1="1" x2="21" y2="1" />
+                <circle cx="-13" cy="19" r="5" />
+                <circle cx="13" cy="19" r="5" />
+              </>
+            )}
+            {host.kind === 'drone' && (
+              <>
+                <rect x="-7" y="-5" width="14" height="10" rx="2" />
+                <line x1="-7" y1="0" x2="-25" y2="-14" />
+                <line x1="7" y1="0" x2="25" y2="-14" />
+                <line x1="-30" y1="-15" x2="-12" y2="-15" />
+                <line x1="12" y1="-15" x2="30" y2="-15" />
+                <line x1="-5" y1="5" x2="-11" y2="18" />
+                <line x1="5" y1="5" x2="11" y2="18" />
+              </>
+            )}
+            {host.kind === 'laptop' && (
+              <>
+                <rect x="-22" y="-24" width="44" height="28" rx="2" />
+                <line x1="-14" y1="-16" x2="14" y2="-16" />
+                <path d="M-28 4 H28 L34 14 H-34 Z" />
+              </>
+            )}
+            {host.kind === 'monitor' && (
+              <>
+                <rect x="-24" y="-20" width="48" height="34" rx="3" />
+                <path d="M-18 0 H-9 L-4 -9 L3 9 L8 -3 H18" />
+                <line x1="0" y1="14" x2="0" y2="22" />
+                <line x1="-9" y1="22" x2="9" y2="22" />
+              </>
+            )}
+            {host.kind === 'rack' && (
+              <>
+                <rect x="-17" y="-28" width="34" height="56" rx="2" />
+                <line x1="-17" y1="-14" x2="17" y2="-14" />
+                <line x1="-17" y1="0" x2="17" y2="0" />
+                <line x1="-17" y1="14" x2="17" y2="14" />
+                <circle cx="-11" cy="-21" r="1.5" />
+                <circle cx="-11" cy="-7" r="1.5" />
+                <circle cx="-11" cy="7" r="1.5" />
+              </>
+            )}
+            {host.kind === 'space' && (
+              <>
+                <rect x="-8" y="-6" width="16" height="20" rx="2" />
+                <rect x="-30" y="-2" width="18" height="12" />
+                <rect x="12" y="-2" width="18" height="12" />
+                <line x1="-12" y1="4" x2="-8" y2="4" />
+                <line x1="8" y1="4" x2="12" y2="4" />
+                <line x1="0" y1="-6" x2="0" y2="-18" />
+                <circle cx="0" cy="-21" r="2.4" />
+              </>
+            )}
+          </g>
+          <text
+            class="reach__label"
+            x={round(host.labelPos.x)}
+            y={round(host.labelPos.y)}
+            text-anchor={host.labelPos.anchor}
+          >
+            {host.label}
+          </text>
+        </>
+      ))
+    }
+
+    <polygon class="reach__core" points={projectedHex(0, 0, CORE_R)} />
+    <text class="reach__core-name" x={round(core.x)} y={round(core.y + 6)} text-anchor="middle"
+      >Ktema</text
+    >
+  </svg>
+
+  <figcaption class="reach__caption">
+    One engine on every host, and the hosts joined to one another. A record written on one is read
+    on another, and each host answers from its own copy.
+  </figcaption>
+</figure>
+
+<style>
+  .reach {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .reach svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* The hexagons carry the accent, so the shape a reader sees first is also the mark.
+     Everything else is white, and rank among those lines is carried by weight alone:
+     the glyphs inside the tiles sit a step under them, and the ring's own edges are
+     the lightest and step back from the hosts they join. */
+  .reach__spoke {
+    stroke: var(--fg);
+    stroke-width: 1.35;
+  }
+
+  .reach__icon {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 1.6;
+    /* The glyphs are drawn at their own scale, so the stroke is held at the width the
+       tile outlines are drawn at rather than carried down with the transform. */
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .reach__join {
+    stroke: var(--fg);
+    stroke-width: 1.05;
+    opacity: 0.62;
+  }
+
+  .reach__tile {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+
+  .reach__core {
+    fill: var(--bg);
+    stroke: var(--accent);
+    stroke-width: 1.8;
+  }
+
+  .reach__core-name {
+    font-family: var(--text);
+    font-size: 17px;
+    font-weight: 600;
+    fill: var(--fg);
+  }
+
+  .reach__label {
+    font-family: var(--text);
+    font-size: 11.5px;
+    fill: var(--fg);
+  }
+
+  .reach__caption {
+    max-width: 56rem;
+    margin: 20px auto 0;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--fg-3);
+    text-align: center;
+  }
+</style>

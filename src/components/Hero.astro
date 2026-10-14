@@ -1,11 +1,9 @@
 ---
-import AddressFigure from './AddressFigure.astro';
-import HeroField from './HeroField.astro';
+import Reach from './Reach.astro';
 import { site } from '../config';
 ---
 
 <section class="hero" id="top">
-  <HeroField />
   <div class="wrap">
     <div class="hero__head">      
       <h1>{site.tagline}</h1>
@@ -22,7 +20,7 @@ import { site } from '../config';
     </div>
   </div>
   <div class="wrap hero__figure">
-    <AddressFigure />
+    <Reach />
   </div>
 </section>
 
@@ -30,20 +28,13 @@ import { site } from '../config';
   .hero {
     position: relative;
     overflow: hidden;
-    /* The masthead floats over the page, so the field behind it starts at the top of
-       the window and this padding is what holds the copy clear of the bar. It is set
-       so the air under the lockup matches the air above it at the top of the page:
-       twice the lockup's lift, plus the bar's own height, less the headline's leading
-       above its cap. */
+    /* The masthead floats over the page, so the copy starts at the top of the window
+       and this padding is what holds it clear of the bar. It is set so the air under
+       the lockup matches the air above it at the top of the page: twice the lockup's
+       lift, plus the bar's own height, less the headline's leading above its cap. */
     padding-top: calc(
       var(--masthead-h) + var(--brand-lift-top) * 2 - var(--headline-size) * -0.156
     );
-  }
-
-  /* The field is the only layer below; everything in a .wrap sits above it. */
-  .hero > .wrap {
-    position: relative;
-    z-index: 1;
   }
 
   .hero__head {
