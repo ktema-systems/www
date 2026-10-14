@@ -1,0 +1,70 @@
+---
+import Section from './Section.astro';
+import { papers } from '../config';
+
+const record = [
+  "Building Ktema Systems end to end: the storage engine, the execution layer, and the governance layer as one system, and the coordinate addressing and state fabric beneath them. Four technical preprints in seven months.",
+  'Rebuilt the payment core of a mobile banking app at Commerzbank (19.8M installs, BaFin, GDPR, PSD2), inside a roughly €700M transformation.',
+  'Founded and bootstrapped StellarStep, shipping camera products over four years: Elie and Live Focus were both featured by Apple, MemoCam shipped on-photo text interaction years before Live Text, and Delta controlled a camera by coordinate rather than by menu, the principle Ktema now runs on.',
+  "Led Android, web, desktop, and cloud work at Kakao, serving 45M+ monthly users, and built Korea's largest street-view VR map.",
+  'Korean citizenship and German permanent residence, which let the founder work in both Asia and Europe.',
+];
+---
+
+<Section
+  id="founder"
+  label="Founder"
+  title="Taeho Lee"
+  lede="Founder and first engineer, and the architect of the record format and the engine."
+>
+  <ul class="points">
+    {record.map((line) => <li>{line}</li>)}
+  </ul>
+
+  <div class="stack">
+    <h3>Published research</h3>
+    <div class="prose">
+      <p>
+        The layers the engine stands on are documented in the open, so anyone can check them and
+        build against them. The commercial layer inherits what survives that.
+      </p>
+    </div>
+    <ul class="papers">
+      {
+        papers.map((paper) => (
+          <li>
+            <a href={paper.href}>{paper.title}</a>
+            <span class="papers__when">{paper.when}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Section>
+
+<style>
+  .stack > * + * {
+    margin-top: 18px;
+  }
+
+  .papers {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .papers li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    font-size: 15px;
+  }
+
+  .papers__when {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--fg-3);
+  }
+</style>

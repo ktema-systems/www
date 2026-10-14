@@ -365,6 +365,33 @@ svg {
   color: var(--fg-3);
 }
 
+/* A short list of statements. The marker is a small square rather than a glyph, so
+   it sits with the figures and the tables, which carry no bullets either. */
+.points {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.points > li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-2);
+}
+
+.points > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -471,6 +498,12 @@ svg {
   background: currentColor;
   -webkit-mask: url("/logo.svg") center / contain no-repeat;
   mask: url("/logo.svg") center / contain no-repeat;
+}
+
+/* The short name, for the widths where the whole one, the strip and the call to
+   action cannot share one row. Which of the two is drawn is set below 720px. */
+.brand__short {
+  display: none;
 }
 
 /* Nine section anchors do not fit beside the brand and the call to action at
@@ -997,6 +1030,14 @@ svg {
      the narrowest widths. */
   .masthead__inner {
     gap: 20px;
+  }
+
+  .brand__name {
+    display: none;
+  }
+
+  .brand__short {
+    display: inline;
   }
 
   .metrics {

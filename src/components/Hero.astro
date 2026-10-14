@@ -1,28 +1,32 @@
 ---
-import AddressFigure from './AddressFigure.astro';
 import HeroField from './HeroField.astro';
-import { site } from '../config';
+
+// The hero is shared by the two pages: the field behind it, the copy, and a figure
+// the caller hands in. A page states its own line and its own title image, because
+// the company's hero and the engine's hero say different things over the same
+// ground.
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede: string;
+  body?: string;
+}
+
+const { eyebrow, title, lede, body } = Astro.props;
 ---
 
 <section class="hero" id="top">
   <HeroField />
   <div class="wrap">
-    <div class="hero__head">      
-      <h1>{site.tagline}</h1>
-      <p class="hero__lede">
-          On-device storage engine for the record that autonomous machinery and physical agents act on, without an operating system or a database.
-      </p>
-      <p class="hero__body">
-        A software agent, a robot, a drive, or a medical monitor keeps its own history and
-        answers from it: which readings moved together before the failure, what happened in the
-        last seconds. No server, no network, no cloud round trip. The same engine runs from a
-        microcontroller to a data center, and out to space systems.
-      </p>
-      
+    <div class="hero__head">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      <p class="hero__lede">{lede}</p>
+      {body && <p class="hero__body">{body}</p>}
     </div>
   </div>
   <div class="wrap hero__figure">
-    <!-- <AddressFigure /> -->
+    <slot name="figure" />
   </div>
 </section>
 
@@ -92,10 +96,9 @@ import { site } from '../config';
     font-size: var(--headline-size);
     letter-spacing: -0.008em;
     margin: 0;
-    /* The tagline is a display line rather than a paragraph, so it may run past
-       the 44rem measure the copy under it is held to. It stays on one line while
-       the page can carry it, and wraps to balanced lines when the page is
-       narrower. */
+    /* The display line is a line rather than a paragraph, so it may run past the
+       44rem measure the copy under it is held to. It stays on one line while the
+       page can carry it, and wraps to balanced lines when the page is narrower. */
     text-wrap: balance;
   }
 

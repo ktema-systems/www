@@ -1,5 +1,11 @@
+// The company's own site: the root is Ktema Systems, and the engine has its own
+// page under it. Everything that names the entity, its products, or its links is
+// read from here, so the two pages cannot drift apart.
 export const site = {
-  name: 'Ktema',
+  name: 'Ktema Systems',
+  // The masthead carries the whole name while the bar has room for it and the short
+  // one below that, because the name, the strip and the call to action share one row.
+  short: 'Ktema',
   legalName: 'Ktema Systems',
   // The company does not exist yet, so wherever the entity is named as if it did
   // it carries this qualifier. The preprints use the same one on the affiliation
@@ -7,20 +13,46 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'The machine answers.',
   description:
-    'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
+    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, and the judgement over both, down to hardware that cannot run a database.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
   contact: 'hello@ktema.systems',
 } as const;
 
-export const nav = [
-  { id: 'product', label: 'Product' },
-  { id: 'proof', label: 'Proof' },
-  { id: 'why-now', label: 'Why now' },
-  { id: 'competition', label: 'Competition' },
-  { id: 'company', label: 'Company' },
-] as const;
+// The storage engine, which is the first product and the one with a page of its
+// own. Its description is the engine's own claim, and it is what the product page
+// publishes in its metadata.
+export const product = {
+  name: 'Ktema',
+  href: '/ktema',
+  description:
+    'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
+} as const;
+
+export type NavItem = { label: string; href: string };
+
+// Each page carries its own strip, and the anchor hrefs are relative to the page
+// that renders them. The strip is what the masthead scrolls sideways, and the call
+// to action beside it is the one link the page is trying to earn.
+export const companyNav: readonly NavItem[] = [
+  { label: 'Problem', href: '#problem' },
+  { label: 'Products', href: '#products' },
+  { label: 'Market', href: '#market' },
+  { label: 'Proof', href: '#stage' },
+  { label: 'Company', href: '#company' },
+];
+
+export const companyCta: NavItem = { label: 'The engine', href: product.href };
+
+export const productNav: readonly NavItem[] = [
+  { label: 'Product', href: '#product' },
+  { label: 'Proof', href: '#proof' },
+  { label: 'Why now', href: '#why-now' },
+  { label: 'Competition', href: '#competition' },
+];
+
+export const productCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const papers = [
   {

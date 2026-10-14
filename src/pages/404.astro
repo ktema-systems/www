@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { nav, site } from '../config';
+import { companyNav, product, site } from '../config';
 ---
 
 <Base
@@ -14,18 +14,20 @@ import { nav, site } from '../config';
         <div class="section__head">
           <h2>There is nothing at this address</h2>
           <p class="lede">
-            The page you asked for is not here. Every section is on the one page.
+            The page you asked for is not here. The company page carries the sections, and the
+            engine has a page of its own.
           </p>
         </div>
         <ul class="links">
           <li><a href="/">{site.name} from the top</a></li>
           {
-            nav.map((item) => (
+            companyNav.map((item) => (
               <li>
-                <a href={`/#${item.id}`}>{item.label}</a>
+                <a href={`/${item.href}`}>{item.label}</a>
               </li>
             ))
           }
+          <li><a href={product.href}>The engine</a></li>
         </ul>
       </div>
     </div>

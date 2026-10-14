@@ -2,16 +2,21 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { type NavItem } from '../config';
 
 interface Props {
   title: string;
   description: string;
+  // The page's own strip and call to action. A page that passes neither gets the
+  // company home's, which is what the header defaults to.
+  nav?: readonly NavItem[];
+  cta?: NavItem;
   // A page that is reachable by its url and listed nowhere: no navigation entry points at
   // it, and this keeps a crawler from adding one.
   noindex?: boolean;
 }
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, nav, cta, noindex = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -45,7 +50,7 @@ const { title, description, noindex = false } = Astro.props;
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Header />
+    <Header items={nav} cta={cta} />
     <main id="main">
       <slot />
     </main>

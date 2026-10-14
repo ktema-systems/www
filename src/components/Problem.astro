@@ -1,0 +1,68 @@
+---
+import Section from './Section.astro';
+
+// The agents the record has to answer for, and the question each one carries. They
+// share a shape, which is the sentence under the table.
+const agents = [
+  { agent: 'Robot', question: 'which decision led to the failure, and who authorized it' },
+  {
+    agent: 'Drone',
+    question: 'what the sensors saw before the link dropped, and whether the operator was warned',
+  },
+  {
+    agent: 'Vehicle',
+    question: 'which sensor and which model agreed before the intervention, and which did not',
+  },
+  { agent: 'Monitor', question: 'why the alarm fired, and which readings moved before it' },
+  {
+    agent: 'Pump',
+    question:
+      'how the dose and the response moved together over the last 24 hours, and whether the alarm was justified',
+  },
+  {
+    agent: 'Sensor',
+    question: 'how moisture and salinity moved after the last irrigation, and whether the budget was met',
+  },
+  { agent: 'Software agent', question: 'which model answered, at what cost, and on whose authority' },
+];
+---
+
+<Section
+  id="problem"
+  label="Problem"
+  title="The record cannot stay where it was made"
+  lede="An edge device, a controller, or a sensor node produces a record of what it did and cannot run a database. Its own history is lost, or shipped to a cloud outside the site and outside the country."
+>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Agent</th>
+          <th>The question it has to answer</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          agents.map((row) => (
+            <tr>
+              <td class="lead">{row.agent}</td>
+              <td>{row.question}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="prose">
+    <p>
+      Every question has the same shape: an origin, an event, and a time window, combined at once.
+      The index a database answers with does not fit in the memory these agents have, so the
+      workaround is to move the data off the device.
+    </p>
+    <p>
+      This stayed contained while the actor was a person or a fixed program. The actor is a model
+      now, and nothing binds the ask to the act.
+    </p>
+  </div>
+</Section>

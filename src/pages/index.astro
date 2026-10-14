@@ -1,23 +1,44 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Metrics from '../components/Metrics.astro';
-import Product from '../components/Product.astro';
-import Proof from '../components/Proof.astro';
+import Reach from '../components/Reach.astro';
+import Problem from '../components/Problem.astro';
+import Insight from '../components/Insight.astro';
+import Layers from '../components/Layers.astro';
 import WhyNow from '../components/WhyNow.astro';
-import Competition from '../components/Competition.astro';
-import Company from '../components/Company.astro';
+import Market from '../components/Market.astro';
+import Stage from '../components/Stage.astro';
+import Founder from '../components/Founder.astro';
+import Venture from '../components/Venture.astro';
 import Contact from '../components/Contact.astro';
-import { site } from '../config';
+import { companyCta, companyNav, site } from '../config';
+
+// The company's page. The engine has its own page under it, and every section here
+// is a statement about the company rather than about one product: the problem it
+// addresses, the insight it is built on, the layers it sells, the buyer, what runs
+// today, the founder, and the venture.
 ---
 
-<Base title={`${site.name}: ${site.tagline}`} description={site.description}>
-  <Hero />
-  <Metrics />
-  <Product />
-  <Proof />
+<Base
+  title={`${site.name}: ${site.tagline}`}
+  description={site.description}
+  nav={companyNav}
+  cta={companyCta}
+>
+  <Hero
+    title="Accountable agentic AI infrastructure, down to where no database can run."
+    lede="Ktema Systems builds the layers a machine runs on to keep its own record: Ktema holds it, Kletos performs the work, and Krisis governs what the other two do, with Delta as the cockpit over them."
+    body="Multiple agents, physical and software, act on systems that cannot run a database, so the record cannot stay where it was made and answer from there. Those systems have to keep their own history and answer from it, with no server in the path."
+  >
+    <Reach slot="figure" />
+  </Hero>
+  <Problem />
+  <Insight />
+  <Layers />
   <WhyNow />
-  <Competition />
-  <Company />
+  <Market />
+  <Stage />
+  <Founder />
+  <Venture />
   <Contact />
 </Base>

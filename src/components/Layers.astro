@@ -1,0 +1,91 @@
+---
+import Section from './Section.astro';
+import { product } from '../config';
+
+// Three layers on one record, and the cockpit over them. The stages are the ones the
+// pitch states, so a reader can tell what runs today from what is being written.
+const layers = [
+  {
+    name: 'Ktema',
+    meta: 'memory layer',
+    stage: 'working build, measured end to end',
+    detail:
+      'The storage engine. A machine answers for its own past, on the machine, with no server in the path. It ships as a Rust library with a C interface, so a team links it into the firmware it already builds.',
+    href: product.href,
+    link: 'The engine',
+  },
+  {
+    name: 'Kletos',
+    meta: 'execution layer',
+    stage: 'running on the founder\'s own project today',
+    detail:
+      'Work is stated, claimed, performed, and deposited as a fact on the same record, with a derivation that ties it to the intent that proposed it. It moves across agents, signals, machines, people, and outside systems.',
+  },
+  {
+    name: 'Krisis',
+    meta: 'governance layer',
+    stage: 'in development',
+    detail:
+      'It governs storage and execution together, and decides which model answers, at what cost, and on which terms. The terms are written with the deployment and checked against the record, so an audit reads a rule and a record.',
+  },
+];
+---
+
+<Section
+  id="products"
+  label="Products"
+  title="Three layers on one record, and the cockpit over them"
+  lede="Each layer stands on the record the one below it keeps, and each can be adopted on its own. Delta is where a deployment becomes one tool a team runs."
+>
+  <div class="cards cards--layers">
+    <div class="card card--wide">
+      <span class="card__value">Delta</span>
+      <p class="card__meta">operation cockpit, the surface a person sees</p>
+      <p>
+        It shows what is running, who claimed what, what bounded it, and what it left behind. That
+        is a reading of the system's state, which is what a person needs once the actors are
+        models, and it is the part a buyer can watch work today.
+      </p>
+    </div>
+    {
+      layers.map((layer) => (
+        <div class="card">
+          <span class="card__value">{layer.name}</span>
+          <p class="card__meta">
+            {layer.meta}, {layer.stage}
+          </p>
+          <p>{layer.detail}</p>
+          {layer.href && (
+            <p>
+              <a href={layer.href}>{layer.link}</a>
+            </p>
+          )}
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  /* The three layers sit side by side under the cockpit, over one record. */
+  .cards--layers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .card__meta {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+  }
+
+  @media (max-width: 900px) {
+    .cards--layers {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
