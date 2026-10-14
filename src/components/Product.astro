@@ -4,27 +4,29 @@ import { site } from '../config';
 
 const spec = [
   {
-    term: 'Delivery',
-    detail: 'A Rust library with a C interface, so an integrator links it into an existing firmware.',
-  },
-  {
-    term: 'Carries',
+    term: 'Shipped as',
     detail:
-      'The on-media format, the state contract, the media channels, and the C surface.',
+      'A component your team adds to the build it already ships. There is nothing to port and no platform to stand up.',
   },
   {
-    term: 'Record kinds',
-    detail: 'Facts, intents, and hints.',
-  },
-  {
-    term: 'Portability',
+    term: 'Self-contained',
     detail:
-      'The format fixes the layout, the keys, the encoding, and how identifiers are derived, so a volume moves between machines without a conversion step.',
+      'One component carries the whole job: the record, the way it is laid out, what each entry means, and how it reads back.',
   },
   {
-    term: 'Range',
+    term: 'Keeps',
     detail:
-      'There is no operating system dependency and no index to size, so the library is not bounded by the small end. The build that runs on a bare microcontroller builds for a server or a data center machine.',
+      'Facts, intents, and hints: what was observed, what work was proposed, and the bound that applies to it.',
+  },
+  {
+    term: 'Travels',
+    detail:
+      'A record written on one machine reads on another, with no conversion step and no export.',
+  },
+  {
+    term: 'Reaches',
+    detail:
+      'The same build runs on a bare chip and on a machine in a data center, so one product line carries one way to remember.',
   },
 ];
 ---
@@ -32,8 +34,8 @@ const spec = [
 <Section
   id="product"
   label="Product"
-  title="A Rust library with a C interface"
-  lede="Ktema ships to firmware teams as something they link, not as something they port."
+  title="Runs inside the product you already ship"
+  lede="Your team adds Ktema to the build it already has, and the product keeps its own record from then on."
 >
   <dl class="spec">
     {
@@ -50,9 +52,9 @@ const spec = [
     <h3>Rem, the reference product</h3>
     <div class="prose">
       <p>
-        Rem is an offline spatial AI memory that runs the engine over a real FAT32 medium from a
-        desktop application, a CLI, and an MCP client. It exercises the engine against real
-        media, which is how the format is validated outside the firmware target.
+        Rem is an offline memory for spatial AI, with everything it knows kept on the machine it
+        runs on. It drives the engine from a desktop app, a command line, and an AI assistant, and
+        it is how the engine is proven outside the chip.
       </p>
     </div>
   </div>

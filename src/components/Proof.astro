@@ -23,8 +23,8 @@ const bars = [
 <Section
   id="proof"
   label="Proof"
-  title="Runs on a bare RISC-V target"
-  lede="A firmware image of about 121 KB boots in emulation with no operating system, writes a record, reads it back, and answers a three-axis query."
+  title="Runs on a bare chip with no operating system"
+  lede="A build of about 121 KB starts on a bare RISC-V chip, writes a record, reads it back, and answers a question about its own past."
 >
   <div class="bars">
     {
@@ -41,8 +41,8 @@ const bars = [
   </div>
 
   <p class="note">
-    Static SRAM use is about 32 KB inside the budget, and the optional index answers the same query
-    in about 26 µs. Both builds run in continuous integration on every change.
+    The build holds about 32 KB of memory inside that budget, and the optional index answers the
+    same question in about 26 microseconds. Every change is checked against both builds.
   </p>
 </Section>
 
