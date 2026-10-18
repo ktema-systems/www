@@ -41,7 +41,7 @@
       </g>
 
       <g class="field__layer field__layer--near">
-        <use href="#ktema-field" transform="translate(870 210) scale(1.8)" />
+        <use href="#ktema-field" transform="translate(870 380) scale(1.3)" />
       </g>
 
     </svg>
@@ -51,9 +51,8 @@
 <style>
   .field {
     position: absolute;
-    inset: 0 0 auto 0;
+    inset: 0;
     z-index: 0;
-    height: min(78vh, 840px);
     pointer-events: none;
     overflow: hidden;
   }
@@ -61,47 +60,48 @@
   .field__fade {
     width: 100%;
     height: 100%;
-    /* The drawing runs to the edges of its box and is cut off there, so the last of
-       it is melted into the page rather than left as a row of stroke ends. */
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
+    /* Only the outer edge fades, so the rotating hexagon stays whole. */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
   }
 
   .field svg {
     display: block;
     width: 100%;
     height: 100%;
+    overflow: visible;
     fill: none;
     stroke: var(--accent);
     stroke-linejoin: round;
     stroke-linecap: round;
   }
 
-  /* Each layer spins about its own centre, slow enough to read as drift rather
-     than as animation. */
   .field__layer {
     transform-box: view-box;
   }
 
-  /* The drawing is not held back by a mask any more, so these values are what keeps
-     the copy above its contrast floor. The binding case is a hexagon vertex, where
-     three lines meet and stack to about three times one stroke: at these values
-     that point leaves body text at roughly 4.6:1, and a single stroke sits far
-     above it. */
+  /* Opacity is set by the copy's contrast floor: a hexagon vertex stacks three
+     strokes, and this leaves body text near 4.6:1. */
   .field__layer--frame {
     opacity: 0.08;
   }
 
   .field__layer--near {
-    transform-origin: 870px 210px;
+    transform-origin: 870px 380px;
     opacity: 0.15;
     animation: field-spin 120s linear infinite;
-  }
-
-  .field__layer--far {
-    transform-origin: 300px 600px;
-    opacity: 0.115;
-    animation: field-spin 180s linear infinite reverse;
   }
 
   @keyframes field-spin {

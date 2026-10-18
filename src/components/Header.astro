@@ -10,6 +10,7 @@ interface Props {
 }
 
 const { items = companyNav, cta = companyCta } = Astro.props;
+const menu = items.find((item) => item.items)?.items;
 ---
 
 <header class="masthead">
@@ -21,13 +22,42 @@ const { items = companyNav, cta = companyCta } = Astro.props;
     </a>
     <nav class="masthead__nav" aria-label="Sections">
       {
-        items.map((item) => (
-          <a href={item.href}>{item.label}</a>
-        ))
+        items.map((item) =>
+          item.items ? (
+            <div class="masthead__item">
+              <a
+                href={item.href}
+                data-products-trigger
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="products-menu"
+              >
+                {item.label}
+                <span class="masthead__caret" aria-hidden="true" />
+              </a>
+            </div>
+          ) : (
+            <a href={item.href}>{item.label}</a>
+          )
+        )
       }
     </nav>
     <a class="btn btn--accent" href={cta.href}>{cta.label}</a>
   </div>
+  {
+    menu && (
+      <div class="product-menu" id="products-menu" data-products-menu>
+        <div class="wrap product-menu__inner">
+          {menu.map((entry) => (
+            <a href={entry.href}>
+              <span class="product-menu__name">{entry.label}</span>
+              {entry.note && <span class="product-menu__note">{entry.note}</span>}
+            </a>
+          ))}
+        </div>
+      </div>
+    )
+  }
 </header>
 
 <script>
@@ -57,4 +87,44 @@ const { items = companyNav, cta = companyCta } = Astro.props;
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule);
   write();
+
+  // The Products panel opens on contact and closes on a short delay, so the pointer
+  // can cross from the label to the panel without the panel closing under it.
+  const masthead = document.querySelector<HTMLElement>('.masthead');
+  const trigger = masthead?.querySelector<HTMLElement>('[data-products-trigger]');
+  const menu = masthead?.querySelector<HTMLElement>('[data-products-menu]');
+
+  if (masthead && trigger && menu) {
+    let timer: number | undefined;
+
+    const open = () => {
+      window.clearTimeout(timer);
+      masthead.classList.add('is-open');
+      trigger.setAttribute('aria-expanded', 'true');
+    };
+
+    const close = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        masthead.classList.remove('is-open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }, 140);
+    };
+
+    trigger.addEventListener('pointerenter', open);
+    trigger.addEventListener('pointerleave', close);
+    trigger.addEventListener('focus', open);
+    trigger.addEventListener('blur', close);
+    menu.addEventListener('pointerenter', open);
+    menu.addEventListener('pointerleave', close);
+    menu.addEventListener('focusin', open);
+    menu.addEventListener('focusout', close);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        close();
+        trigger.blur();
+      }
+    });
+  }
 </script>

@@ -1,6 +1,6 @@
 # www
 
-The Ktema Systems site. Astro, static output, no client-side JavaScript.
+The Ktema Systems site. Astro, static output, with a scroll-driven deck and a product menu on the home page.
 
 The root is the company. The engine has a page of its own under it, at `/ktema`,
 and the two share one masthead, one footer, and one set of components.

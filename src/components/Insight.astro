@@ -4,20 +4,20 @@ import Section from './Section.astro';
 
 <Section
   id="insight"
-  label="Insight"
-  title="The address is computed from the record"
-  lede="A database finds a record by walking an index, a catalogue that grows with every entry. This engine computes the address from the record itself, so there is no index to size, store, or repair."
+  label="How it works"
+  title="No index to build, store, or repair"
+  lede="The engine computes where a record lives from the record itself. There is no catalogue to grow with the data, and no structure to rebuild after a power cut."
 >
   <div class="prose">
     <p>
-      Two systems that observe the same thing arrive at the same address without talking to each
-      other, so a record can be checked by recomputing its address, without trusting the system
-      that wrote it.
+      Two machines that observe the same thing arrive at the same address without talking to each
+      other, so a record can be checked by recomputing its address. The check does not depend on
+      trusting the system that wrote it.
     </p>
     <p>
-      Time is one of the axes, so a time window is answered from the same structure as every other
-      question. The memory an answer costs does not grow with the number of records, which is what
-      lets the engine run inside the memory a small part carries.
+      Time is one of the axes, so a window is a query rather than a reconstruction. The memory an
+      answer costs stays flat as the record grows, which is what lets the engine run inside the
+      memory a small part carries.
     </p>
   </div>
 </Section>

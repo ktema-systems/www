@@ -25,23 +25,25 @@ const { eyebrow, title, lede, body } = Astro.props;
       {body && <p class="hero__body">{body}</p>}
     </div>
   </div>
-  <div class="wrap hero__figure">
-    <slot name="figure" />
-  </div>
+  {
+    Astro.slots.has('figure') && (
+      <div class="wrap hero__figure">
+        <slot name="figure" />
+      </div>
+    )
+  }
 </section>
 
 <style>
   .hero {
     position: relative;
     overflow: hidden;
-    /* The masthead floats over the page, so the field behind it starts at the top of
-       the window and this padding is what holds the copy clear of the bar. It is set
-       so the air under the lockup matches the air above it at the top of the page:
-       twice the lockup's lift, plus the bar's own height, less the headline's leading
-       above its cap. */
-    padding-top: calc(
-      var(--masthead-h) + var(--brand-lift-top) * 2 - var(--headline-size) * -0.156
-    );
+    /* The bar floats over the page, so the field starts at the top of the window
+       and this padding holds the copy clear of it. The air under the bar is the
+       page's, not the bar's: it grows with the window and stops before the copy
+       drifts away from the top of the screen. */
+    padding-top: calc(var(--masthead-h) + var(--brand-lift-top) + clamp(72px, 11vh, 148px));
+    padding-bottom: clamp(36px, 5vh, 64px);
   }
 
   /* The field is the only layer below; everything in a .wrap sits above it. */
@@ -53,7 +55,15 @@ const { eyebrow, title, lede, body } = Astro.props;
   .hero__head {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: clamp(18px, 2.4vh, 30px);
+  }
+
+  /* The tagline is three sentences, so it is set as a line rather than a label. */
+  .hero .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    line-height: 1.4;
+    text-transform: none;
   }
 
   /* The copy under the display line is held to this measure; the display line
@@ -61,53 +71,27 @@ const { eyebrow, title, lede, body } = Astro.props;
   .hero__lede,
   .hero__body,
   .hero__actions {
-    max-width: 44rem;
-  }
-
-  /* The lockup is the masthead mark at hero scale. The mark is the same asset,
-     masked so it takes currentColor rather than the black it carries as an img. */
-  .hero__lockup {
-    display: flex;
-    align-items: center;
-    gap: clamp(16px, 2.5vw, 28px);
-  }
-
-  .hero__mark {
-    flex: none;
-    display: block;
-    width: clamp(84px, 13.5vw, 152px);
-    aspect-ratio: 1;
-    background: var(--fg);
-    -webkit-mask: url(/logo.svg) 50% / contain no-repeat;
-    mask: url(/logo.svg) 50% / contain no-repeat;
-  }
-
-  .hero__word {
-    font-family: var(--text);
-    font-weight: 600;
-    font-stretch: 115%;
-    font-size: clamp(48px, 7.5vw, 84px);
-    letter-spacing: -0.01em;
-    line-height: 1;
-    color: var(--fg);
+    max-width: 40rem;
   }
 
   .hero h1 {
     font-size: var(--headline-size);
-    letter-spacing: -0.008em;
+    letter-spacing: -0.022em;
+    line-height: 1.06;
+    max-width: 18em;
     margin: 0;
     /* The display line is a line rather than a paragraph, so it may run past the
-       44rem measure the copy under it is held to. It stays on one line while the
-       page can carry it, and wraps to balanced lines when the page is narrower. */
+       measure the copy under it is held to. It stays on one line while the page can
+       carry it, and wraps to balanced lines when the page is narrower. */
     text-wrap: balance;
   }
 
   .hero__lede {
-    font-size: clamp(1.1rem, 1rem + 0.6vw, 1.35rem);
-    line-height: 1.5;
     color: var(--fg-2);
     text-wrap: pretty;
     margin: 0;
+    font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
+    line-height: 1.55;
   }
 
   .hero__body {
@@ -116,14 +100,14 @@ const { eyebrow, title, lede, body } = Astro.props;
   }
 
   .hero__actions {
-    display: flex;
     flex-wrap: wrap;
     gap: 12px;
     padding-top: 6px;
+    display: flex;
   }
 
   .hero__figure {
-    padding-top: 64px;
-    padding-bottom: 76px;
+    padding-top: clamp(40px, 6vh, 72px);
+    padding-bottom: clamp(24px, 4vh, 56px);
   }
 </style>

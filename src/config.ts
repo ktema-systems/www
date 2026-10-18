@@ -30,17 +30,38 @@ export const product = {
     'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
 } as const;
 
-export type NavItem = { label: string; href: string };
+// The three lines that state the three layers. The first two are the wings as they
+// are already published; the third completes them for the governance layer.
+export const creed = [
+  { product: 'Ktema', line: 'The machine answers.' },
+  { product: 'Kletos', line: 'Intent delivers.' },
+  { product: 'Krisis', line: 'Judgment governs.' },
+] as const;
+
+// The three lines as one, for the masthead-height slot on the home page.
+export const creedLine = creed.map((entry) => entry.line).join(' ');
+
+export type NavLink = { label: string; href: string; note?: string };
+
+export type NavItem = { label: string; href: string; items?: readonly NavLink[] };
+
+// The products the strip's Products item opens. Each link is an anchor on the
+// company page, so the menu is a shortcut to a section rather than a second page.
+export const productMenu: readonly NavLink[] = [
+  { label: 'Ktema', note: 'the record', href: '#product-ktema' },
+  { label: 'Kletos', note: 'the execution', href: '#product-kletos' },
+  { label: 'Krisis', note: 'the constraints and judgment', href: '#product-krisis' },
+  { label: 'Delta', note: 'the cockpit', href: '#product-delta' },
+];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
 // that renders them. The strip is what the masthead scrolls sideways, and the call
 // to action beside it is the one link the page is trying to earn.
 export const companyNav: readonly NavItem[] = [
-  { label: 'Problem', href: '#problem' },
-  { label: 'Products', href: '#products' },
-  { label: 'Market', href: '#market' },
-  { label: 'Proof', href: '#stage' },
-  { label: 'Company', href: '#company' },
+  { label: 'Cases', href: '#cases' },
+  { label: 'Products', href: '#products', items: productMenu },
+  { label: 'Business', href: '#business' },
+  { label: 'Contact', href: '#contact' },
 ];
 
 export const companyCta: NavItem = { label: 'The engine', href: product.href };
