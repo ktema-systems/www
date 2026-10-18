@@ -1,0 +1,142 @@
+---
+// The run as a loop: the operator enters intent while the work is moving.
+---
+
+<figure class="loop" data-loop aria-labelledby="loop-title">
+  <div class="loop__stage">
+    <span class="loop__ring" data-loop-ring aria-hidden="true"></span>
+    <span class="loop__center">The run</span>
+    <span class="loop__node loop__node--intent" data-loop-node>Intent enters</span>
+    <span class="loop__node loop__node--claim" data-loop-node>Work is claimed</span>
+    <span class="loop__node loop__node--result" data-loop-node>Result is written</span>
+    <span class="loop__node loop__node--read" data-loop-node>Operator reads</span>
+    <span class="loop__operator">Operator</span>
+  </div>
+
+  <figcaption id="loop-title">
+    The operator can enter intent at any point in the run. What the machine does is the sum of
+    those entries.
+  </figcaption>
+</figure>
+
+<style>
+  .loop {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 26px 20px;
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+
+  .loop__stage {
+    position: relative;
+    height: 280px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .loop__ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 220px;
+    height: 220px;
+    border: 1px dashed var(--line-2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .loop__center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 14px 20px;
+    border: 1px solid var(--accent);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .loop__node {
+    position: absolute;
+    padding: 7px 11px;
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+    color: var(--fg-2);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .loop__node--intent {
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+  }
+
+  .loop__node--claim {
+    left: calc(50% + 130px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .loop__node--result {
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+  }
+
+  .loop__node--read {
+    right: calc(50% + 130px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .loop__operator {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 7px 11px;
+    border: 1px solid var(--accent);
+    background: var(--bg);
+    color: var(--accent);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .loop figcaption {
+    margin-top: 14px;
+    padding-top: 12px;
+    color: var(--fg-3);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 720px) {
+    .loop {
+      padding: 20px 18px 18px;
+    }
+
+    .loop__stage {
+      height: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .loop__ring,
+    .loop__center,
+    .loop__operator {
+      display: none;
+    }
+
+    .loop__node {
+      position: static;
+      transform: none;
+      text-align: center;
+    }
+  }
+</style>

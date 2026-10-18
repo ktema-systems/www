@@ -12,7 +12,7 @@
 
 <div class="field" aria-hidden="true">
   <div class="field__fade">
-    <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
+    <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMin meet" stroke-width="1.8">
     <defs>
       <g id="ktema-field">
         <polygon points="85,-147.22 170,0 85,147.22 -85,147.22 -170,0 -85,-147.22" />
@@ -35,13 +35,11 @@
     </defs>
 
       <g class="field__layer field__layer--frame">
-        <polygon
-          points="885,-113.63 1170,380 885,873.63 315,873.63 30,380 315,-113.63"
-        />
+        <polygon points="500,40 960,300 960,700 500,960 40,700 40,300" />
       </g>
 
       <g class="field__layer field__layer--near">
-        <use href="#ktema-field" transform="translate(870 210) scale(1.8)" />
+        <use href="#ktema-field" transform="translate(650 500) scale(1.3)" />
       </g>
 
     </svg>
@@ -51,20 +49,33 @@
 <style>
   .field {
     position: absolute;
-    inset: 0 0 auto 0;
+    inset: 0;
     z-index: 0;
-    height: min(78vh, 840px);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
     pointer-events: none;
     overflow: hidden;
   }
 
   .field__fade {
-    width: 100%;
-    height: 100%;
-    /* The drawing runs to the edges of its box and is cut off there, so the last of
-       it is melted into the page rather than left as a row of stroke ends. */
-    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
-    mask-image: linear-gradient(to bottom, #000 0%, #000 85%, transparent 100%);
+    width: min(100%, 100vh);
+    height: min(100%, 100vh);
+    /* Only the outer edge fades, so the rotating hexagon stays whole. */
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 8%,
+      #000 92%,
+      transparent 100%
+    );
   }
 
   .field svg {
@@ -77,31 +88,20 @@
     stroke-linecap: round;
   }
 
-  /* Each layer spins about its own centre, slow enough to read as drift rather
-     than as animation. */
   .field__layer {
     transform-box: view-box;
   }
 
-  /* The drawing is not held back by a mask any more, so these values are what keeps
-     the copy above its contrast floor. The binding case is a hexagon vertex, where
-     three lines meet and stack to about three times one stroke: at these values
-     that point leaves body text at roughly 4.6:1, and a single stroke sits far
-     above it. */
+  /* Opacity is set by the copy's contrast floor: a hexagon vertex stacks three
+     strokes, and this leaves body text near 4.6:1. */
   .field__layer--frame {
     opacity: 0.08;
   }
 
   .field__layer--near {
-    transform-origin: 870px 210px;
+    transform-origin: 650px 500px;
     opacity: 0.15;
     animation: field-spin 120s linear infinite;
-  }
-
-  .field__layer--far {
-    transform-origin: 300px 600px;
-    opacity: 0.115;
-    animation: field-spin 180s linear infinite reverse;
   }
 
   @keyframes field-spin {

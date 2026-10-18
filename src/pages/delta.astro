@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import DeltaDeck from '../components/DeltaDeck.astro';
+import Section from '../components/Section.astro';
+import { delta, deltaCta, deltaNav, site } from '../config';
+
+// Delta's page: the cockpit where intent enters the run.
+---
+
+<Base
+  title={`${delta.name}: ${delta.title}`}
+  description={delta.description}
+  nav={deltaNav}
+  cta={deltaCta}
+>
+  <Hero
+    eyebrow="Delta"
+    title={delta.tagline}
+    lede="Autonomous systems do not run on a single command. Work keeps moving while a person adds a new intent, a new limit, or a stop. Delta is the surface where those entries reach the run."
+    body="What the machine does is the sum of the intents that enter the loop."
+  />
+
+  <DeltaDeck />
+
+  <Section
+    id="cockpit"
+    label="Cockpit"
+    title="What the operator sees and changes"
+    lede="Delta shows the run as it is, and gives the operator a way into it."
+  >
+    <dl class="spec">
+      <dt>What the operator can change</dt>
+      <dd>A new intent, a new limit, or a stop, entered while the work is moving.</dd>
+      <dt>What is running</dt>
+      <dd>The work in flight, where it stands, and what it is waiting on.</dd>
+      <dt>Who is acting</dt>
+      <dd>The agent or machine on the work, the claim it holds, and who authorized it.</dd>
+      <dt>What bounded it</dt>
+      <dd>The limits in force and the intent that set them.</dd>
+    </dl>
+
+    <p class="note">
+      Scrub back through the run and the state follows. The operator can enter the next intent from
+      any point in it.
+    </p>
+  </Section>
+
+  <Section
+    id="contact"
+    label="Contact"
+    title="Bring a run to the cockpit."
+    lede="If you run a system where intent changes while the work is moving, we are choosing the first design partners. Write to us."
+    band
+  >
+    <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
+  </Section>
+</Base>

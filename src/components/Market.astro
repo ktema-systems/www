@@ -1,0 +1,125 @@
+---
+import Section from './Section.astro';
+
+// What the market funds, and where the engine sits under it. The directions are
+// listed above the smallest systems, which is the ground the engine holds.
+const directions = [
+  {
+    direction: 'Quality intelligence',
+    supplies: 'the fault question answered on the line: which readings moved together in the seconds before it',
+  },
+  {
+    direction: 'Adaptive operations and supply',
+    supplies: "the system's own recent history, queried with no round trip",
+  },
+  {
+    direction: 'Operations data backbone',
+    supplies: 'the source record below MES, PLC, ERP and LIMS, held on the system',
+  },
+  {
+    direction: 'Autonomous and flexible operations',
+    supplies: 'an accountable record on the system itself, with no server in the loop',
+  },
+  {
+    direction: 'Product and supply provenance',
+    supplies: 'origin, event, and time in one address, checked by recomputation',
+  },
+];
+
+const markets = [
+  {
+    market: 'Embedded database systems',
+    figure: 'US$ 11.71B in 2025 to US$ 23.55B in 2034, 8.08% a year',
+  },
+  { market: 'Physical AI', figure: 'US$ 0.89B in 2025 to US$ 15.28B in 2032, 47.2% a year' },
+];
+---
+
+<Section
+  id="market"
+  label="Market"
+  title="The buyer carries the system long after it ships"
+  lede="The buyer is the organization that builds an autonomous system and carries responsibility for it long after it ships. A product company licenses the engine and ships it inside its own system. A technology partner licenses it once and uses it across the systems it delivers to several clients."
+>
+  <div class="prose">
+    <p>
+      That buyer sits in every field the product serves: a defense program, a medical device
+      maker, a vehicle program, and an energy operator. Each carries a different duty, and the
+      requirement is one: the system has to hold its own record and answer from it.
+    </p>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th>Direction the market funds</th>
+          <th>What the engine supplies beneath it</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          directions.map((row) => (
+            <tr>
+              <td class="lead">{row.direction}</td>
+              <td>{row.supplies}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="stack">
+    <h3>Size of the field</h3>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Market</th>
+            <th>Published estimate</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            markets.map((row) => (
+              <tr>
+                <td class="lead">{row.market}</td>
+                <td>{row.figure}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="note">
+      Both figures are third-party published estimates, for the embedded database system market
+      and for physical AI.
+    </p>
+  </div>
+
+  <div class="stack">
+    <h3>The wedge</h3>
+    <div class="prose">
+      <p>
+        Roughly 10,000 firmware teams worldwide, in industrial equipment, instruments, and
+        modules, where the memory budget is the purchase requirement. The count is derived from
+        published figures on industrial automation equipment makers, IoT device manufacturers, and
+        embedded system companies, narrowed to those that ship a microcontroller product with a
+        multi-axis history requirement.
+      </p>
+      <p>
+        Moving the record off the system costs the buyer cloud egress for the life of the product,
+        answers that stop when the link is down, and the engineering months a team spends building
+        a multi-axis store in-house. Europe is a natural first market, where the German-speaking
+        industrial base is the densest concentration of the buyer profile in the wedge.
+      </p>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .stack > * + * {
+    margin-top: 18px;
+  }
+</style>

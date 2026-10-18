@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import AddressFigure from '../components/AddressFigure.astro';
+import Metrics from '../components/Metrics.astro';
+import Product from '../components/Product.astro';
+import Proof from '../components/Proof.astro';
+import Contact from '../components/Contact.astro';
+import { product, productCta, productNav } from '../config';
+
+// The engine's page: what it is, what it measures, and how it ships. The market
+// case and the comparison against other stores stay in the pitch.
+---
+
+<Base
+  title={`${product.name}: on-device storage engine`}
+  description={product.description}
+  nav={productNav}
+  cta={productCta}
+>
+  <Hero
+    eyebrow="Ktema"
+    title="The record your machine keeps on its own."
+    lede="Ktema is an on-device storage engine for the history that autonomous machinery and physical agents act on. It runs without an operating system or a database."
+    body="A software agent, a robot, a drive, or a medical monitor keeps its own history and answers from it: which readings moved together before the failure, what happened in the last seconds. No server, no network, no cloud round trip. The same engine runs from a microcontroller to a data center, and out to space systems."
+  >
+    <AddressFigure slot="figure" />
+  </Hero>
+  <Metrics />
+  <Product />
+  <Proof />
+  <Contact />
+</Base>

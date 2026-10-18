@@ -1,0 +1,372 @@
+---
+// The homepage's deck: one screen, one situation at a time, walked by the page's
+// own scroll. The panels are real markup, so the section reads as a list without
+// a script and as a deck once the scroll drives it.
+
+const cases = [
+  {
+    agent: 'Pump',
+    stamp: '03:14',
+    line: 'The dose was held.',
+    question:
+      'How did the dose and the response move together over the last 24 hours, and was the alarm justified?',
+    record:
+      'Three weeks of readings on the pump itself, the earlier occlusion they match, and the entry that held the next dose.',
+  },
+  {
+    agent: 'Robot',
+    stamp: '14:22',
+    line: 'The line stopped.',
+    question: 'Which decision led to the failure, and who authorized it?',
+    record:
+      'The ask, who took it, what was produced, and who approved it.',
+  },
+  {
+    agent: 'Drone',
+    stamp: '09:41',
+    line: 'The link dropped.',
+    question: 'What did the sensors see before it, and was the operator warned?',
+    record:
+      'The readings on the airframe, ordered by time, with the last acknowledged command.',
+  },
+  {
+    agent: 'Vehicle',
+    stamp: '21:07',
+    line: 'The system intervened.',
+    question: 'Which sensor and which model agreed before the intervention, and which did not?',
+    record: 'Both readings, the model’s answer, and the rule that allowed the action.',
+  },
+  {
+    agent: 'Monitor',
+    stamp: '06:00',
+    line: 'The alarm fired.',
+    question: 'Why did it fire, and which readings moved before it?',
+    record: 'The window before the alarm, read from the device that raised it.',
+  },
+  {
+    agent: 'Software agent',
+    stamp: '11:48',
+    line: 'The agent answered.',
+    question: 'Which model answered, at what cost, and on whose authority?',
+    record: 'The model, the price, and the authority, in one record beside the result.',
+  },
+];
+---
+
+<section class="cases" id="cases" data-cases style={`--cases: ${cases.length}`}>
+  <div class="cases__stage" data-cases-stage>
+    <div class="wrap cases__grid">
+      <header class="cases__head">
+        <p class="eyebrow">Cases</p>
+        <h2>The record, read back</h2>
+        <p class="lede">
+          Situations the system is built for. Each is a question the machine can answer from its own
+          record, even offline.
+        </p>
+      </header>
+
+      <ol class="cases__list">
+        {
+          cases.map((item, index) => (
+            <li class:list={['case', index === 0 && 'is-active']} data-case>
+              <p class="case__meta">
+                <span>{item.agent}</span>
+                <span class="case__stamp">{item.stamp}</span>
+              </p>
+              <p class="case__line">{item.line}</p>
+              <p class="case__q">
+                <span class="case__k">The question</span>
+                {item.question}
+              </p>
+              <p class="case__r">
+                <span class="case__k">The record</span>
+                {item.record}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="cases__foot">
+        <p class="cases__count">
+          <span data-case-now>01</span>
+          <span class="cases__of">/ {String(cases.length).padStart(2, '0')}</span>
+        </p>
+        <div class="cases__rail"><span class="cases__bar" data-case-bar></span></div>
+        <p class="cases__cue">Scroll</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cases {
+    position: relative;
+  }
+
+  .cases__stage {
+    display: grid;
+    align-items: center;
+    min-height: 100svh;
+    padding-block: calc(var(--masthead-h) + 32px) 48px;
+  }
+
+  .cases__grid {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: clamp(24px, 4vh, 44px);
+    min-height: min(72svh, 720px);
+  }
+
+  .cases__head {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .cases__head h2 {
+    margin: 0;
+    font-size: clamp(1.7rem, 1.2rem + 2vw, 2.6rem);
+    font-stretch: 115%;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+  }
+
+  .cases__head .lede {
+    max-width: 44rem;
+  }
+
+  .cases__list {
+    display: grid;
+    align-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .case {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .case + .case {
+    margin-top: 40px;
+    padding-top: 40px;
+  }
+
+  .case__meta {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .case__stamp {
+    color: var(--fg-3);
+  }
+
+  .case__line {
+    margin: 0;
+    max-width: 34rem;
+    font-size: clamp(1.9rem, 1.2rem + 2.4vw, 3rem);
+    font-weight: 600;
+    font-stretch: 115%;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .case__q,
+  .case__r {
+    margin: 0;
+    max-width: 44rem;
+  }
+
+  .case__q {
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+    color: var(--fg-2);
+  }
+
+  .case__r {
+    padding-left: 16px;
+    border-left: 2px solid var(--line-2);
+    color: var(--fg-3);
+  }
+
+  .case__k {
+    display: block;
+    margin-bottom: 4px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .cases__foot {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--fg-3);
+  }
+
+  .cases__count {
+    margin: 0;
+    color: var(--fg);
+  }
+
+  .cases__of {
+    margin-left: 4px;
+    color: var(--fg-3);
+  }
+
+  .cases__rail {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+  }
+
+  .cases__bar {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .cases__cue {
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  /* The deck. The section gains the walk's length only once the script has taken
+     it, so a reader without JavaScript keeps a plain list. */
+  .cases.is-live {
+    height: calc(100svh + var(--cases) * 62svh);
+  }
+
+  .cases.is-live .cases__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
+
+  .cases.is-live .cases__list {
+    display: grid;
+  }
+
+  .cases.is-live .case + .case {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .cases.is-live .case {
+    grid-area: 1 / 1;
+    opacity: 0;
+    transform: translateY(28px);
+    pointer-events: none;
+    transition:
+      opacity 480ms var(--ease),
+      transform 640ms var(--ease);
+  }
+
+  .cases.is-live .case.is-active {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  .cases.is-live .case.is-past {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cases.is-live {
+      height: auto;
+    }
+
+    .cases.is-live .cases__stage {
+      position: static;
+      height: auto;
+    }
+
+    .cases.is-live .case {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    .cases__rail,
+    .cases__cue {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import ScrollTrigger from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const region = document.querySelector<HTMLElement>('[data-cases]');
+  const panels = region ? Array.from(region.querySelectorAll<HTMLElement>('[data-case]')) : [];
+  const bar = region?.querySelector<HTMLElement>('[data-case-bar]');
+  const now = region?.querySelector<HTMLElement>('[data-case-now]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const setActive = (index: number) => {
+    panels.forEach((panel, i) => {
+      panel.classList.toggle('is-active', i === index);
+      panel.classList.toggle('is-past', i < index);
+      panel.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+    });
+
+    if (now) {
+      now.textContent = String(index + 1).padStart(2, '0');
+    }
+  };
+
+  if (region && panels.length > 0) {
+    if (reduce.matches) {
+      panels.forEach((panel) => {
+        panel.classList.add('is-active');
+        panel.setAttribute('aria-hidden', 'false');
+      });
+    } else {
+      region.classList.add('is-live');
+      setActive(0);
+
+      ScrollTrigger.create({
+        trigger: region,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => {
+          const progress = self.progress;
+          region.style.setProperty('--case-progress', progress.toFixed(4));
+
+          if (bar) {
+            bar.style.transform = `scaleX(${progress})`;
+          }
+
+          const index = Math.min(panels.length - 1, Math.floor(progress * panels.length));
+          if (!panels[index]?.classList.contains('is-active')) {
+            setActive(index);
+          }
+        },
+      });
+    }
+  }
+</script>

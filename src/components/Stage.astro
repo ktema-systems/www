@@ -1,0 +1,30 @@
+---
+import Section from './Section.astro';
+import { product } from '../config';
+
+// What runs today, and what has been checked. The footprint itself is on the
+// engine's page, so this reads as a stage rather than as a second copy of it.
+const proof = [
+  'The engine runs on a bare RISC-V chip, inside a 64 KB memory budget, with 2,163 B of working memory for a write and a read back.',
+  'The Delta cockpit carries the field system, MCU-included drone and hexapod robot demo.',
+  'The Kletos fleet runs dozens of instances on one host.',
+  'The decoder is checked completely, over every valid input rather than a test set.',
+  "What the system keeps is the agent's own memory, so a reader opens the record the agent wrote.",
+];
+---
+
+<Section
+  id="stage"
+  label="Proof"
+  title="Closed beta, with the engine running on the target"
+  lede="The engine is a working build, measured end to end, and the layers above it run on it."
+>
+  <ul class="points">
+    {proof.map((line) => <li>{line}</li>)}
+  </ul>
+
+  <p class="note">
+    The measurement table, the query figures, and the comparison against other stores are on
+    <a href={product.href}>the engine's page</a>.
+  </p>
+</Section>

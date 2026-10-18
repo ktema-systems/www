@@ -1,0 +1,125 @@
+---
+import Section from './Section.astro';
+
+// How the team grows, and what the current round reaches. The count is looked at
+// beside the fleet, which is what makes the small numbers honest.
+const phases = [
+  {
+    phase: '1',
+    when: 'Q4 2026 to Q1 2027',
+    what: 'Ship the storage engine and the first pilot deployments. Set up engineering, and begin talks with design partners.',
+    hiring: '2 engineers',
+  },
+  {
+    phase: '2',
+    when: 'Q1 to Q2 2027',
+    what: 'First paid deployments. Expand the engine to a second class of system.',
+    hiring: '2 engineers, 1 partnerships',
+  },
+  {
+    phase: '3',
+    when: 'Q3 2027',
+    what: 'Regional expansion. First IP licensing talks with a company running AI at the edge.',
+    hiring: '3 engineers',
+  },
+];
+
+const milestones = [
+  'Ktema Systems incorporated, within 12 months.',
+  'The record format complete at version 0.1.',
+  'The first design partner signed, with the engine entering their product.',
+];
+---
+
+<Section
+  id="company"
+  label="Company"
+  title="Ktema Systems"
+  lede="Ktema Systems is the name of the venture, and no company exists today. The jurisdiction of incorporation is not fixed yet, and it will be decided with the lead investor."
+>
+  <div class="stack">
+    <h3>What the entity holds</h3>
+    <div class="prose">
+      <p>
+        The entity will hold the engine and its implementations, the hardware kernels, the
+        conformance suite, and the marks. It will sell the licensed build with the certification
+        included, and license the decoder to silicon vendors later.
+      </p>
+      <p>
+        The format and the research layers beneath the products are documented, so a conforming
+        implementation can recompute an address and a deployment can be checked independently. The
+        conformance suite is the specification a second implementation has to pass, and
+        conformance runs through the company.
+      </p>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>The team</h3>
+    <div class="prose">
+      <p>
+        The fleet already runs for our own agentic development process: dozens of lightweight
+        agent instances on a single host. The hires below are the engineers who work alongside it,
+        and the team is built around the founder's industry experience across Korea, Europe, and
+        beyond.
+      </p>
+    </div>
+    <div class="table-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>When</th>
+            <th>What</th>
+            <th>Hiring</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            phases.map((row) => (
+              <tr>
+                <td class="lead">{row.phase}</td>
+                <td>{row.when}</td>
+                <td>{row.what}</td>
+                <td>{row.hiring}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="stack">
+    <h3>The round</h3>
+    <div class="prose">
+      <p>
+        The company is raising a pre-seed round. It funds the commercial layer and the engineering
+        items the first design partner needs: tighter memory bounds, a smaller footprint in flash,
+        and a second independent implementation. The instrument and the terms are expected to be
+        set with the lead investor. That round reaches three milestones:
+      </p>
+    </div>
+    <ul class="points">
+      {milestones.map((line) => <li>{line}</li>)}
+    </ul>
+  </div>
+
+  <div class="stack">
+    <h3>What comes next</h3>
+    <div class="prose">
+      <p>
+        Ktema is the first product, and the rest follow it into the same deployments. The endgame
+        is a device that can account for its own history, with no server in the path. A natural
+        long-term extension is space systems, where nothing can be serviced and the record has to
+        stay on the machine.
+      </p>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .stack > * + * {
+    margin-top: 18px;
+  }
+</style>

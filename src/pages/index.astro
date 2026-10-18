@@ -1,23 +1,169 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import Metrics from '../components/Metrics.astro';
-import Product from '../components/Product.astro';
-import Proof from '../components/Proof.astro';
-import WhyNow from '../components/WhyNow.astro';
-import Competition from '../components/Competition.astro';
-import Company from '../components/Company.astro';
-import Contact from '../components/Contact.astro';
-import { site } from '../config';
+import CaseDeck from '../components/CaseDeck.astro';
+import Layers from '../components/Layers.astro';
+import Reach from '../components/Reach.astro';
+import Section from '../components/Section.astro';
+import { companyCta, companyNav, creedLine, site } from '../config';
+
+// The company's landing page: the promise, the situations the product is built for,
+// the products, the partners, the footprint, and one way in. The detail lives on the
+// engine's page and in the pitch.
 ---
 
-<Base title={`${site.name}: ${site.tagline}`} description={site.description}>
-  <Hero />
-  <Metrics />
-  <Product />
-  <Proof />
-  <WhyNow />
-  <Competition />
-  <Company />
-  <Contact />
+<Base
+  title={`${site.name}: ${site.tagline}`}
+  description={site.description}
+  nav={companyNav}
+  cta={companyCta}
+>
+  <Hero
+    eyebrow={creedLine}
+    title="Accountable infrastructure for agentic AI, even where no database can run."
+    lede="An insulin pump holds a dose. A drone turns back. A robot stops a line. Later, someone asks why. The machine has to show what it was asked, what it did, and what limited it. On a device with no room for a database, that account is usually lost. When a model is the one deciding, the reasoning is usually a log no one can check."
+  />
+
+  <section class="reach-band" aria-label="Where the engine runs">
+    <div class="wrap">
+      <Reach />
+    </div>
+  </section>
+
+  <CaseDeck />
+
+  <Layers />
+
+  <Section
+    id="partners"
+    label="Partners"
+    title="Built for the maker of the machine"
+    lede="We work with the teams that build autonomous systems and stand behind them after they ship."
+  >
+    <div class="biz">
+      <div>
+        <p class="biz__k">Who builds with it</p>
+        <p>Teams that build autonomous systems and carry responsibility for them long after they ship: industrial equipment, instruments, modules, medical devices, vehicles, and mission-critical programs.</p>
+      </div>
+      <div>
+        <p class="biz__k">Why now</p>
+        <p>
+          Physical AI puts the requirement on the device, and buyers now ask for a record they can
+          check.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="proof"
+    label="Proof"
+    title="What runs today"
+    lede="Measured on the machine, end to end."
+  >
+    <ul class="facts">
+      <li>
+        <span class="facts__value">64 KB</span>
+        <span class="facts__label">the memory class the engine stays inside</span>
+      </li>
+      <li>
+        <span class="facts__value">2,163 B</span>
+        <span class="facts__label">memory a write and a read back cost</span>
+      </li>
+      <li>
+        <span class="facts__value">244 B</span>
+        <span class="facts__label">the largest single allocation in that round trip</span>
+      </li>
+      <li>
+        <span class="facts__value">19 MB</span>
+        <span class="facts__label">the execution node, resident</span>
+      </li>
+    </ul>
+  </Section>
+
+  <Section
+    id="contact"
+    label="Contact"
+    title="Building a machine that has to answer for itself?"
+    lede="Write to us. We are choosing the first design partners now."
+    band
+  >
+    <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
+  </Section>
 </Base>
+
+<style>
+  .reach-band {
+    padding-block: 4px clamp(40px, 6vh, 80px);
+  }
+
+  .biz {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .biz > div {
+    background: var(--bg);
+    padding: 22px 24px;
+  }
+
+  .biz p {
+    margin: 0;
+  }
+
+  .biz p + p {
+    margin-top: 8px;
+    color: var(--fg-2);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .biz__k {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    list-style: none;
+    margin: clamp(36px, 5vh, 48px) 0 0;
+    padding: 0;
+  }
+
+  .facts li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg);
+    padding: 22px 24px;
+  }
+
+  .facts__value {
+    font-family: var(--mono);
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .facts__label {
+    color: var(--fg-3);
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 820px) {
+    .biz,
+    .facts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

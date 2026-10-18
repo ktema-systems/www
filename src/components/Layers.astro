@@ -1,0 +1,105 @@
+---
+import Section from './Section.astro';
+import { creed, delta } from '../config';
+
+// The three product roles, each able to run alone; the stage tells a reader what
+// ships today and what is being written.
+const layers = [
+  {
+    name: 'Ktema',
+    meta: 'the record, working build',
+    line: 'The machine keeps its own history and answers from it, even when the link is down.',
+    href: '#contact',
+    link: 'Contact',
+  },
+  {
+    name: 'Kletos',
+    meta: 'the work, running today',
+    line: 'The work is claimed, performed, and written back to the same record.',
+  },
+  {
+    name: 'Krisis',
+    meta: 'the limits, in development',
+    line: 'The limits and the decision: which model answers, at what cost, and on which terms.',
+  },
+];
+---
+
+<Section
+  id="products"
+  label="Products"
+  title="One record, four products"
+  lede="Ktema keeps the record. Kletos runs the work. Krisis sets the limits. Delta is where a person enters intent. Each product stands on its own; together they cover the whole act."
+>
+  <p class="layers__claim">
+    A card keeps bytes. This record answers questions: across time, source, and outcome,
+    on the device, with no database and no index to maintain.
+  </p>
+
+  <div class="cards cards--layers">
+    <div class="card card--wide" id="product-delta">
+      <span class="card__value">Delta</span>
+      <p class="card__meta">the cockpit</p>
+      <p>The work in flight, the limits in force, and what changed.</p>
+      <p>A person can add intent while the work is moving, and the run changes with it.</p>
+      <p><a href={delta.href}>The cockpit</a></p>
+    </div>
+    {
+      layers.map((layer) => {
+        const motto = creed.find((entry) => entry.product === layer.name)?.line;
+
+        return (
+          <div class="card" id={`product-${layer.name.toLowerCase()}`}>
+            <span class="card__value">{layer.name}</span>
+            {motto && <p class="card__motto">{motto}</p>}
+            <p class="card__meta">{layer.meta}</p>
+            <p>{layer.line}</p>
+            {layer.href && (
+              <p>
+                <a href={layer.href}>{layer.link}</a>
+              </p>
+            )}
+          </div>
+        );
+      })
+    }
+  </div>
+</Section>
+
+<style>
+  .cards--layers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .layers__claim {
+    max-width: 52rem;
+    padding: 2px 0 2px 18px;
+    border-left: 2px solid var(--accent);
+    color: var(--fg);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  .card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .card__meta {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+  }
+
+  .card__motto {
+    color: var(--accent);
+    font-size: 15px;
+    line-height: 1.35;
+  }
+
+  @media (max-width: 900px) {
+    .cards--layers {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

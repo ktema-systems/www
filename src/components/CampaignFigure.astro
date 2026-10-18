@@ -1,0 +1,269 @@
+---
+// The villa run as the cockpit reads it: intent enters while the work is moving.
+const START = 8;
+const END = 176;
+const DEADLINE = 83;
+const LAST = 186;
+
+const entries = [
+  { label: 'Emergency declared', at: 8, kind: 'intent' },
+  { label: 'Operator calls the lift', at: 28, kind: 'intent' },
+  { label: 'Robot reaches the patient', at: 74, kind: 'event' },
+  { label: 'Scan reaches the hospital', at: 80, window: DEADLINE, kind: 'event' },
+  { label: 'Treatment begins', at: 176, kind: 'event' },
+];
+
+const pct = (value: number) => `${(value / LAST) * 100}%`;
+---
+
+<figure
+  class="campaign"
+  data-campaign
+  data-start={START}
+  data-end={END}
+  data-deadline={DEADLINE}
+  aria-labelledby="campaign-title"
+>
+  <div class="campaign__head">
+    <span class="campaign__name" id="campaign-title">Emergency lift</span>
+    <span class="campaign__state">complete</span>
+  </div>
+
+  <div class="campaign__legend" aria-hidden="true">
+    <span><span class="campaign__key campaign__key--intent"></span>Intent enters</span>
+    <span><span class="campaign__key campaign__key--event"></span>The run responds</span>
+  </div>
+
+  <div class="campaign__scale" aria-hidden="true">
+    <span>0s</span>
+    <span>60s</span>
+    <span>120s</span>
+    <span>180s</span>
+  </div>
+
+  <div class="campaign__track" aria-hidden="true">
+    <span
+      class="campaign__span"
+      data-campaign-span
+      style={`left:${pct(START)}; width:${pct(END - START)}`}
+    ></span>
+    <span class="campaign__deadline" data-campaign-deadline style={`left:${pct(DEADLINE)}`}></span>
+  </div>
+
+  <ol class="campaign__rows">
+    {
+      entries.map((entry) => (
+        <li class="campaign__row">
+          <span class="campaign__label">{entry.label}</span>
+          <span class="campaign__lane">
+            {entry.window && (
+              <span
+                class="campaign__window"
+                data-campaign-window
+                style={`left:${pct(START)}; width:${pct(entry.window - START)}`}
+              />
+            )}
+            <span
+              class:list={['campaign__dot', `campaign__dot--${entry.kind}`]}
+              data-campaign-dot
+              data-at={entry.at}
+              style={`left:${pct(entry.at)}`}
+            />
+          </span>
+          <span class="campaign__time">{entry.at}s</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <figcaption>
+    The operator calls the lift at 28s. The hospital's 75-second bound for the scan enters at the
+    start, and the scan reaches it at 80s, three seconds inside the window. Treatment begins at
+    176s.
+  </figcaption>
+</figure>
+
+<style>
+  .campaign {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 26px 22px;
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+
+  .campaign__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .campaign__name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .campaign__state {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .campaign__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 14px;
+    color: var(--fg-3);
+    font-size: 11.5px;
+  }
+
+  .campaign__legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .campaign__key {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .campaign__key--intent {
+    background: var(--accent);
+  }
+
+  .campaign__key--event {
+    background: var(--fg-3);
+  }
+
+  .campaign__scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-3);
+  }
+
+  .campaign__track {
+    position: relative;
+    height: 6px;
+    margin: 8px 0 20px;
+    background: var(--line);
+  }
+
+  .campaign__span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: color-mix(in srgb, var(--accent) 38%, transparent);
+    transform-origin: left center;
+  }
+
+  .campaign__deadline {
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    width: 1px;
+    border-left: 1px dashed var(--fg-3);
+  }
+
+  .campaign__rows {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .campaign__row {
+    display: grid;
+    grid-template-columns: minmax(140px, 220px) minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .campaign__label {
+    color: var(--fg-2);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .campaign__lane {
+    position: relative;
+    height: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .campaign__window {
+    position: absolute;
+    top: 8px;
+    height: 2px;
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+    transform-origin: left center;
+  }
+
+  .campaign__dot {
+    position: absolute;
+    top: 4px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--bg-2);
+    transition: opacity 220ms var(--ease), transform 220ms var(--ease);
+  }
+
+  .campaign__dot--intent {
+    box-shadow: 0 0 0 3px var(--bg-2), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .campaign__dot--event {
+    background: var(--fg-3);
+  }
+
+  .campaign__time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-3);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .campaign figcaption {
+    margin-top: 20px;
+    padding-top: 16px;
+    color: var(--fg-3);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 640px) {
+    .campaign {
+      padding: 20px 18px 18px;
+    }
+
+    .campaign__row {
+      grid-template-columns: minmax(0, 1fr) 40px;
+      gap: 6px 12px;
+    }
+
+    .campaign__label {
+      grid-column: 1 / -1;
+    }
+
+    .campaign__lane {
+      grid-column: 1;
+    }
+
+    .campaign__time {
+      grid-column: 2;
+    }
+  }
+</style>
