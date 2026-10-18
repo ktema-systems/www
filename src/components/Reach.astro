@@ -251,8 +251,8 @@ const core = project(0, 0);
   </svg>
 
   <figcaption class="reach__caption">
-    The same engine on every host, and the hosts connected. A record written on one is read on
-    another; each host answers from its own copy.
+    The same engine on a robot, a drone, a laptop, a medical device, a data center, and a space
+    system. A record written on one is read on another; each host answers from its own copy.
   </figcaption>
 </figure>
 
@@ -326,5 +326,11 @@ const core = project(0, 0);
     line-height: 1.6;
     color: var(--fg-3);
     text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .reach__label {
+      display: none;
+    }
   }
 </style>

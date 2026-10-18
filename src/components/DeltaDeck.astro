@@ -12,7 +12,7 @@ import CampaignFigure from './CampaignFigure.astro';
         <p class="eyebrow">The run</p>
         <h2>Intent enters a moving run</h2>
         <p class="lede">
-          A run is not a command. Scroll to see the loop, then one run where intent enters while the
+          A run is not a command. The loop comes first, then one run where intent enters while the
           work is moving.
         </p>
       </header>
@@ -300,6 +300,7 @@ import CampaignFigure from './CampaignFigure.astro';
   const bar = region?.querySelector<HTMLElement>('[data-deck-bar]');
   const now = region?.querySelector<HTMLElement>('[data-deck-now]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const narrow = window.matchMedia('(max-width: 720px)');
 
   const setActive = (index: number) => {
     panels.forEach((panel, i) => {
@@ -378,7 +379,7 @@ import CampaignFigure from './CampaignFigure.astro';
   };
 
   if (region && panels.length > 0) {
-    if (reduce.matches) {
+    if (reduce.matches || narrow.matches) {
       panels.forEach((panel) => {
         panel.classList.add('is-active');
         panel.setAttribute('aria-hidden', 'false');

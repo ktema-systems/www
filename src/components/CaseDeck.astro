@@ -219,6 +219,10 @@ const cases = [
     color: var(--fg-3);
   }
 
+  .cases:not(.is-live) .cases__foot {
+    display: none;
+  }
+
   .cases__count {
     margin: 0;
     color: var(--fg);
@@ -326,6 +330,7 @@ const cases = [
   const bar = region?.querySelector<HTMLElement>('[data-case-bar]');
   const now = region?.querySelector<HTMLElement>('[data-case-now]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const narrow = window.matchMedia('(max-width: 720px)');
 
   const setActive = (index: number) => {
     panels.forEach((panel, i) => {
@@ -340,7 +345,7 @@ const cases = [
   };
 
   if (region && panels.length > 0) {
-    if (reduce.matches) {
+    if (reduce.matches || narrow.matches) {
       panels.forEach((panel) => {
         panel.classList.add('is-active');
         panel.setAttribute('aria-hidden', 'false');
