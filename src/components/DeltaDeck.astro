@@ -114,8 +114,12 @@ import CampaignFigure from './CampaignFigure.astro';
   }
 
   .deck__panel + .deck__panel {
-    margin-top: 36px;
-    padding-top: 36px;
+    margin-top: 28px;
+    padding-top: 0;
+  }
+
+  .deck:not(.is-live) .deck__list {
+    align-content: start;
   }
 
   .deck__copy {
@@ -301,6 +305,7 @@ import CampaignFigure from './CampaignFigure.astro';
   const now = region?.querySelector<HTMLElement>('[data-deck-now]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const narrow = window.matchMedia('(max-width: 720px)');
+  const short = window.matchMedia('(max-height: 800px)');
 
   const setActive = (index: number) => {
     panels.forEach((panel, i) => {
@@ -379,7 +384,7 @@ import CampaignFigure from './CampaignFigure.astro';
   };
 
   if (region && panels.length > 0) {
-    if (reduce.matches || narrow.matches) {
+    if (reduce.matches || narrow.matches || short.matches) {
       panels.forEach((panel) => {
         panel.classList.add('is-active');
         panel.setAttribute('aria-hidden', 'false');

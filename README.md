@@ -47,6 +47,8 @@ every concept section, not a one-off. The home Cases and Delta's loop are the re
 - The panels are real markup; a reader without JavaScript gets a stacked list.
 - The scroll drives the figure. There is no autoplay.
 - `prefers-reduced-motion` or a narrow viewport collapses the deck to the static list.
+  Delta's deck also collapses on a short viewport, where the sticky stage cannot hold the
+  header, figure, and progress rail together.
 - The copy states the principle. The figure shows it.
 
 ## Content

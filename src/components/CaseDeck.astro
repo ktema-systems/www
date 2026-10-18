@@ -151,8 +151,12 @@ const cases = [
   }
 
   .case + .case {
-    margin-top: 40px;
-    padding-top: 40px;
+    margin-top: 28px;
+    padding-top: 0;
+  }
+
+  .cases:not(.is-live) .cases__list {
+    align-content: start;
   }
 
   .case__meta {
