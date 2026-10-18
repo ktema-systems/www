@@ -11,7 +11,7 @@ export const site = {
   // it carries this qualifier. The preprints use the same one on the affiliation
   // line.
   legalStatus: 'pre-incorporation',
-  tagline: 'The machine answers.',
+  tagline: 'Machine answers.',
   description:
     'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgement over both, and the campaigns it records, down to hardware that cannot run a database.',
   github: 'https://github.com/ktema-systems',
@@ -44,7 +44,7 @@ export const delta = {
 // The three lines that state the three layers. The first two are the wings as they
 // are already published; the third completes them for the governance layer.
 export const creed = [
-  { product: 'Ktema', line: 'The machine answers.' },
+  { product: 'Ktema', line: 'Machine answers.' },
   { product: 'Kletos', line: 'Intent delivers.' },
   { product: 'Krisis', line: 'Judgment governs.' },
 ] as const;
