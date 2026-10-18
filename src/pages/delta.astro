@@ -5,8 +5,8 @@ import CampaignFigure from '../components/CampaignFigure.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: the cockpit, the campaign, the package, and the market. The
-// campaign shape follows the contract in kletos/apps/delta, not a second model.
+// Delta's page: the cockpit, the campaign, and the package. The campaign shape
+// follows the contract in kletos/apps/delta, not a second model.
 const declaration = `{
   "id": "emergency-lift",
   "title": "Emergency lift",
@@ -32,7 +32,7 @@ const declaration = `{
   <Hero
     eyebrow="Delta"
     title={delta.tagline}
-    lede="Delta runs a campaign, reads the record, and packages the result. A campaign is one run inside a project: a situation, a briefing, objectives, and the constraints that bound them. The package is the strategy, and it can be replayed, compared, and licensed."
+    lede="Delta runs a campaign, reads the record, and packages the result. A campaign is one run inside a project: a situation, a briefing, objectives, and the constraints that bound them. The package is the run, and it can be replayed and compared."
     body="The cockpit does not keep a second model of the work. It reads the record the project already holds, so an objective is met when the run says it is."
   >
     <CampaignFigure slot="figure" />
@@ -102,7 +102,7 @@ const declaration = `{
   <Section
     id="package"
     label="Package"
-    title="The run becomes a product"
+    title="The run becomes a package"
     lede="A finished campaign is a package. Ktema writes and addresses the record; Delta runs and reads the campaign; Kletos performs the work."
   >
     <dl class="spec">
@@ -124,40 +124,6 @@ const declaration = `{
       are read in the same coordinate space, so their objectives and records can be compared point
       by point.
     </p>
-  </Section>
-
-  <Section
-    id="market"
-    label="Market"
-    title="A market for strategies"
-    lede="The package is the unit of sale. A maker licenses a campaign to train an operator. A partner distributes a proven playbook. An insurer replays the decisions. A buyer compares two strategies on the same record."
-  >
-    <div class="cards cards--3">
-      <div class="card">
-        <span class="card__value">Author</span>
-        <p>Write the situation, the briefing, and the objectives. Run it. The record is the proof.</p>
-      </div>
-      <div class="card">
-        <span class="card__value">License</span>
-        <p>
-          Sell the package per campaign, per seat, or as a certified library. The engine and the
-          record stay the same.
-        </p>
-      </div>
-      <div class="card">
-        <span class="card__value">Replay</span>
-        <p>
-          The buyer runs the package against its own agents and data, and reads the result at the
-          same coordinates.
-        </p>
-      </div>
-    </div>
-
-    <p class="market-line">
-      The model is a line item. The campaign, the record, and the rules are the asset.
-    </p>
-
-    <p class="note">Pricing and the first catalog are set with the first design partner.</p>
   </Section>
 
   <Section
@@ -194,8 +160,8 @@ const declaration = `{
   <Section
     id="contact"
     label="Contact"
-    title="Bring a campaign, or license the cockpit."
-    lede="We are choosing the first design partners. If you run a situation that has to be trained, certified, or replayed, write to us."
+    title="Bring a campaign to the cockpit."
+    lede="We are choosing the first design partners. If you run a situation that has to be replayed and understood, write to us."
     band
   >
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
@@ -223,12 +189,5 @@ const declaration = `{
     font-size: 0.86em;
   }
 
-  .market-line {
-    max-width: 52rem;
-    padding: 2px 0 2px 18px;
-    border-left: 2px solid var(--accent);
-    color: var(--fg);
-    font-size: 18px;
-    line-height: 1.55;
-  }
+
 </style>

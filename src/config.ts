@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'The machine answers.',
   description:
-    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgement over both, and the campaigns it packages, down to hardware that cannot run a database.',
+    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgement over both, and the campaigns it records, down to hardware that cannot run a database.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -30,15 +30,15 @@ export const product = {
     'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
 } as const;
 
-// Delta is the cockpit and the campaign market. A campaign is one run inside a
-// project, and a finished run is a package that can be replayed and licensed.
+// Delta is the cockpit and its campaigns. A campaign is one run inside a project,
+// and a finished run is a package that can be replayed and compared.
 export const delta = {
   name: 'Delta',
   href: '/delta',
-  title: 'the cockpit and the campaign market',
+  title: 'the cockpit for campaigns',
   tagline: 'The cockpit where a campaign becomes a record.',
   description:
-    'Delta runs a campaign, reads the record, and packages the strategy. A campaign is one run inside a project, with a briefing, objectives, constraints, and a replayable record.',
+    'Delta runs a campaign, reads the record, and packages the result. A campaign is one run inside a project, with a briefing, objectives, constraints, and a replayable record.',
 } as const;
 
 // The three lines that state the three layers. The first two are the wings as they
@@ -62,7 +62,7 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'the record', href: product.href },
   { label: 'Kletos', note: 'the execution', href: '/#product-kletos' },
   { label: 'Krisis', note: 'the constraints and judgment', href: '/#product-krisis' },
-  { label: 'Delta', note: 'the cockpit and the campaign market', href: delta.href },
+  { label: 'Delta', note: 'the cockpit and campaigns', href: delta.href },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
@@ -71,7 +71,7 @@ export const productMenu: readonly NavLink[] = [
 export const companyNav: readonly NavItem[] = [
   { label: 'Cases', href: '#cases' },
   { label: 'Products', href: '#products', items: productMenu },
-  { label: 'Business', href: '#business' },
+  { label: 'Partners', href: '#partners' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -81,7 +81,6 @@ export const deltaNav: readonly NavItem[] = [
   { label: 'Cockpit', href: '#cockpit' },
   { label: 'Campaigns', href: '#campaigns' },
   { label: 'Products', href: '#campaigns', items: productMenu },
-  { label: 'Market', href: '#market' },
   { label: 'Contact', href: '#contact' },
 ];
 

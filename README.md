@@ -21,7 +21,7 @@ npm run preview  # serve the built output
 |---|---|
 | `src/pages/index.astro` | the company home, as an ordered list of sections |
 | `src/pages/ktema.astro` | the engine's page, the same way |
-| `src/pages/delta.astro` | Delta's page: the cockpit, the campaign, the package, and the market |
+| `src/pages/delta.astro` | Delta's page: the cockpit, the campaign, and the package |
 | `src/components/` | one component per section |
 | `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
 | `src/components/Reach.astro` | the engine's reach, drawn as a ring of hexagons |
@@ -37,9 +37,10 @@ Component styles are scoped by Astro. Anything two components share belongs in
 
 ## Content
 
-The copy is drawn from `docs/ktmas/pitch.qmd`, and the numbers quoted on the pages
-(heap, flash, query latency, market size) come from that document. When the pitch
-changes, change the pages with it.
+The public pages draw on the product, proof, and use-case material in
+`docs/ktmas/pitch.qmd`. The business model, pricing, market sizing, and moat stay in
+the pitch and are not published. When the product material changes, change the
+pages with it.
 
 The Delta page follows the campaign contract in `kletos/apps/delta`
 (`src/lib/types.ts`, `src/lib/campaign.ts`), and the villa campaign in
