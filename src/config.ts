@@ -27,7 +27,7 @@ export const product = {
   name: 'Ktema',
   href: '/ktema',
   description:
-    'Ktema is an on-device storage engine that answers multi-axis queries on hardware that cannot run a database. It needs no index structure and no operating system.',
+    'Ktema is an on-device storage engine that answers multi-dimensional queries on hardware that cannot run a database. It needs no index structure and no operating system.',
 } as const;
 
 // Delta is the cockpit and its campaigns. A campaign is one run inside a project,
