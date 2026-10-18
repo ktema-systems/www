@@ -5,22 +5,7 @@ import CampaignFigure from '../components/CampaignFigure.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: the cockpit, the campaign, and the package. The campaign shape
-// follows the contract in kletos/apps/delta, not a second model.
-const declaration = `{
-  "id": "emergency-lift",
-  "title": "Emergency lift",
-  "start": { "fact": "delta-emergency-active" },
-  "end": { "fact": "treatment-started" },
-  "objectives": [
-    {
-      "id": "scan-reported",
-      "title": "the scan reaches the hospital",
-      "when": { "fact": "scan-reported" },
-      "within": 75
-    }
-  ]
-}`;
+// Delta's page: the cockpit, the campaign, and the package.
 ---
 
 <Base
@@ -33,7 +18,7 @@ const declaration = `{
     eyebrow="Delta"
     title={delta.tagline}
     lede="Delta runs a campaign, reads the record, and packages the result. A campaign is one run inside a project: a situation, a briefing, objectives, and the constraints that bound them. The package is the run, and it can be replayed and compared."
-    body="The cockpit does not keep a second model of the work. It reads the record the project already holds, so an objective is met when the run says it is."
+    body="Delta reads the record the project already holds, so the cockpit shows the state the run actually had."
   >
     <CampaignFigure slot="figure" />
   </Hero>
@@ -68,62 +53,46 @@ const declaration = `{
   <Section
     id="campaigns"
     label="Campaigns"
-    title="A campaign is data of the project"
-    lede="A project is the container: its record, its place, its members, and its resources. A campaign is one run inside it, with a start, an end, and the sub-missions that make it up."
+    title="A campaign is one run, start to finish"
+    lede="Set the start, the end, and the objectives that matter. Delta reads the run and shows what was met, what is still open, and what was missed."
   >
     <dl class="spec">
       <dt>Start and end</dt>
-      <dd>
-        Conditions over the record, so a campaign begins when the run says it did, not at a scene
-        boundary.
-      </dd>
+      <dd>The run begins and ends on what the record says, not on a clock the operator sets.</dd>
       <dt>An objective</dt>
-      <dd>
-        A condition over a fact, a hint, an intent, a count, or the run's clock. <code>all</code>,
-        <code>any</code>, and <code>not</code> make it compound.
-      </dd>
-      <dt>A window</dt>
-      <dd>
-        <code>within</code> seconds after the start. The objective is read at the earlier of the
-        cursor and the deadline, so a fact written after the window closes cannot rescue it.
-      </dd>
+      <dd>A goal the record can prove: a reading, a decision, a count, or a time.</dd>
+      <dt>A deadline</dt>
+      <dd>Give an objective a window. A result after the window does not count.</dd>
       <dt>An optional objective</dt>
-      <dd>A miss does not fail the campaign, and the HUD still shows it.</dd>
+      <dd>A missed optional goal does not fail the run.</dd>
     </dl>
 
-    <pre class="campaign-code"><code>{declaration}</code></pre>
-
     <p class="note">
-      The contract refuses a condition it does not know rather than reading it as one that never
-      fires.
+      The cockpit reads the campaign from the same record it is already walking, so the state
+      follows the cursor.
     </p>
   </Section>
 
   <Section
     id="package"
     label="Package"
-    title="The run becomes a package"
-    lede="A finished campaign is a package. Ktema writes and addresses the record; Delta runs and reads the campaign; Kletos performs the work."
+    title="The run stays with you"
+    lede="A finished campaign keeps the full run: what was asked, what was done, what limited it, and how it ended. You can replay it, compare two runs, and hand the record to someone else."
   >
-    <dl class="spec">
-      <dt>Situation</dt>
-      <dd>The project, the place, and the facts that start the run.</dd>
-      <dt>Briefing</dt>
-      <dd>What the operator is told before the run.</dd>
-      <dt>Requirements</dt>
-      <dd>The objectives, their windows, and the constraints.</dd>
-      <dt>Record</dt>
-      <dd>Every fact, intent, claim, and hint, addressed and replayable.</dd>
-      <dt>Result</dt>
-      <dd>The campaign state, the objectives met, and the misses.</dd>
-    </dl>
-
-    <p class="note">
-      The package travels. The record is self-describing and addressed by coordinate, so a run
-      made on one machine reads on another with no conversion step. Two runs of the same package
-      are read in the same coordinate space, so their objectives and records can be compared point
-      by point.
-    </p>
+    <div class="cards cards--3">
+      <div class="card">
+        <span class="card__value">Replay</span>
+        <p>Open the run at any point and see the state the record had then.</p>
+      </div>
+      <div class="card">
+        <span class="card__value">Compare</span>
+        <p>Read two runs side by side at the same objective and the same point.</p>
+      </div>
+      <div class="card">
+        <span class="card__value">Hand over</span>
+        <p>The record is self-contained, so it reads the same on another machine.</p>
+      </div>
+    </div>
   </Section>
 
   <Section
@@ -167,27 +136,3 @@ const declaration = `{
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
   </Section>
 </Base>
-
-<style>
-  .campaign-code {
-    margin: 0;
-    padding: 20px 22px;
-    overflow-x: auto;
-    border: 1px solid var(--line);
-    background: var(--bg-2);
-    color: var(--fg-2);
-    font-family: var(--mono);
-    font-size: 12.5px;
-    line-height: 1.65;
-  }
-
-  .spec code {
-    padding: 1px 5px;
-    border: 1px solid var(--line);
-    background: var(--bg);
-    color: var(--fg);
-    font-size: 0.86em;
-  }
-
-
-</style>

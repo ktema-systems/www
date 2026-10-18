@@ -39,8 +39,8 @@ Component styles are scoped by Astro. Anything two components share belongs in
 
 The public pages draw on the product, proof, and use-case material in
 `docs/ktmas/pitch.qmd`. The business model, pricing, market sizing, and moat stay in
-the pitch and are not published. When the product material changes, change the
-pages with it.
+the pitch and are not published. The internal model and the campaign contract stay in
+`docs/`. When the product material changes, change the pages with it.
 
 The Delta page follows the campaign contract in `kletos/apps/delta`
 (`src/lib/types.ts`, `src/lib/campaign.ts`), and the villa campaign in

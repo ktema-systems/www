@@ -7,19 +7,19 @@ import { creed, delta, product } from '../config';
 const layers = [
   {
     name: 'Ktema',
-    meta: 'record and evidence, working build',
-    line: 'Facts, intents, and hints, held as one record on the machine.',
+    meta: 'the record, working build',
+    line: 'The machine keeps its own history and answers from it, even when the link is down.',
     href: product.href,
     link: 'The engine',
   },
   {
     name: 'Kletos',
-    meta: 'execution, running today',
-    line: 'What was asked is bound to what was done, and the result is written back with what limited it.',
+    meta: 'the work, running today',
+    line: 'The work is claimed, performed, and written back to the same record.',
   },
   {
     name: 'Krisis',
-    meta: 'constraints and judgment, in development',
+    meta: 'the limits, in development',
     line: 'The limits and the decision: which model answers, at what cost, and on which terms.',
   },
 ];
@@ -28,13 +28,12 @@ const layers = [
 <Section
   id="products"
   label="Products"
-  title="One record, three roles"
-  lede="Every act is kept as one record that ties three things together: what was asked, what was done, and what limited it. Ktema holds the record, Kletos performs the work, and Krisis sets the limits and judges the result. Any one runs alone; together they account for the whole act."
+  title="One record, four products"
+  lede="Ktema keeps the record. Kletos runs the work. Krisis sets the limits. Delta is the cockpit over all three. Each product stands alone, and together they answer for the whole act."
 >
   <p class="layers__claim">
-    Storage on a card keeps bytes. This record is a space: a question that spans time,
-    origin, and outcome is answered on the device, with no database and no index to
-    maintain.
+    A card keeps bytes. This record answers questions: across time, source, and outcome,
+    on the device, with no database and no index to maintain.
   </p>
 
   <div class="cards cards--layers">
@@ -42,10 +41,7 @@ const layers = [
       <span class="card__value">Delta</span>
       <p class="card__meta">the cockpit and campaigns</p>
       <p>What is running, who claimed it, what bounded it, and what it left behind.</p>
-      <p>
-        A campaign turns one run into a package: the situation, the briefing, the objectives,
-        and the record. The package can be replayed and compared.
-      </p>
+      <p>A campaign turns one run into a record you can replay and compare.</p>
       <p><a href={delta.href}>The cockpit</a></p>
     </div>
     {
