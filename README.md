@@ -3,7 +3,8 @@
 The Ktema Systems site. Astro, static output, with a scroll-driven deck and a product menu on the home page.
 
 The root is the company. The engine has a page of its own under it, at `/ktema`,
-and the two share one masthead, one footer, and one set of components.
+and Delta has one at `/delta`; the three share one masthead, one footer, and one
+set of components.
 
 ## Run
 
@@ -20,6 +21,7 @@ npm run preview  # serve the built output
 |---|---|
 | `src/pages/index.astro` | the company home, as an ordered list of sections |
 | `src/pages/ktema.astro` | the engine's page, the same way |
+| `src/pages/delta.astro` | Delta's page: the cockpit, the campaign, the package, and the market |
 | `src/components/` | one component per section |
 | `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
 | `src/components/Reach.astro` | the engine's reach, drawn as a ring of hexagons |
@@ -38,6 +40,10 @@ Component styles are scoped by Astro. Anything two components share belongs in
 The copy is drawn from `docs/ktmas/pitch.qmd`, and the numbers quoted on the pages
 (heap, flash, query latency, market size) come from that document. When the pitch
 changes, change the pages with it.
+
+The Delta page follows the campaign contract in `kletos/apps/delta`
+(`src/lib/types.ts`, `src/lib/campaign.ts`), and the villa campaign in
+`projects.json`. When the campaign contract changes, change the page with it.
 
 The pages are allowed to be lighter than the pitch, and never heavier: a claim the
 deck does not make or measure does not belong here, and a claim the deck makes

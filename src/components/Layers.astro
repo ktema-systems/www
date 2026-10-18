@@ -1,6 +1,6 @@
 ---
 import Section from './Section.astro';
-import { creed, product } from '../config';
+import { creed, delta, product } from '../config';
 
 // The three roles as the pitch states them, each able to run alone; the stage
 // tells a reader what ships today and what is being written.
@@ -40,8 +40,13 @@ const layers = [
   <div class="cards cards--layers">
     <div class="card card--wide" id="product-delta">
       <span class="card__value">Delta</span>
-      <p class="card__meta">operation cockpit</p>
+      <p class="card__meta">the cockpit and the campaign market</p>
       <p>What is running, who claimed it, what bounded it, and what it left behind.</p>
+      <p>
+        A campaign turns one run into a package: the situation, the briefing, the objectives,
+        and the record. The package can be replayed, compared, and licensed.
+      </p>
+      <p><a href={delta.href}>The cockpit</a></p>
     </div>
     {
       layers.map((layer) => {

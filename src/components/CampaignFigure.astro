@@ -1,0 +1,208 @@
+---
+// The villa campaign as the cockpit reads it: one run, five objectives, one window.
+const START = 8;
+const END = 176;
+const DEADLINE = 83;
+const LAST = 186;
+
+const objectives = [
+  { label: 'The lift is called', at: 28 },
+  { label: 'The robot reaches the patient', at: 74 },
+  { label: 'The scan reaches the hospital', at: 80, window: DEADLINE },
+  { label: 'The patient reaches the hospital', at: 170 },
+  { label: 'Treatment begins', at: 176 },
+];
+
+const pct = (value: number) => `${(value / LAST) * 100}%`;
+---
+
+<figure class="campaign" aria-labelledby="campaign-title">
+  <div class="campaign__head">
+    <span class="campaign__name" id="campaign-title">Emergency lift</span>
+    <span class="campaign__state">complete</span>
+  </div>
+
+  <div class="campaign__scale" aria-hidden="true">
+    <span>0s</span>
+    <span>60s</span>
+    <span>120s</span>
+    <span>180s</span>
+  </div>
+
+  <div class="campaign__track" aria-hidden="true">
+    <span class="campaign__span" style={`left:${pct(START)}; width:${pct(END - START)}`}></span>
+    <span class="campaign__deadline" style={`left:${pct(DEADLINE)}`}></span>
+  </div>
+
+  <ol class="campaign__rows">
+    {
+      objectives.map((objective) => (
+        <li class="campaign__row">
+          <span class="campaign__label">{objective.label}</span>
+          <span class="campaign__lane">
+            {objective.window && (
+              <span
+                class="campaign__window"
+                style={`left:${pct(START)}; width:${pct(objective.window - START)}`}
+              />
+            )}
+            <span class="campaign__dot" style={`left:${pct(objective.at)}`} />
+          </span>
+          <span class="campaign__time">{objective.at}s</span>
+        </li>
+      ))
+    }
+  </ol>
+
+  <figcaption>
+    The villa evacuation campaign at the end of the run. It starts at 8s and ends at 176s. The
+    scan has 75 seconds from the start, and the record writes it at 80s, three seconds inside the
+    window.
+  </figcaption>
+</figure>
+
+<style>
+  .campaign {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 26px 22px;
+    border: 1px solid var(--line);
+    background: var(--bg-2);
+  }
+
+  .campaign__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .campaign__name {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .campaign__state {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .campaign__scale {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 18px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--fg-3);
+  }
+
+  .campaign__track {
+    position: relative;
+    height: 6px;
+    margin: 8px 0 20px;
+    background: var(--line);
+  }
+
+  .campaign__span {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: color-mix(in srgb, var(--accent) 38%, transparent);
+  }
+
+  .campaign__deadline {
+    position: absolute;
+    top: -5px;
+    bottom: -5px;
+    width: 1px;
+    border-left: 1px dashed var(--fg-3);
+  }
+
+  .campaign__rows {
+    display: grid;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .campaign__row {
+    display: grid;
+    grid-template-columns: minmax(140px, 220px) minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .campaign__label {
+    color: var(--fg-2);
+    font-size: 13px;
+    line-height: 1.35;
+  }
+
+  .campaign__lane {
+    position: relative;
+    height: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .campaign__window {
+    position: absolute;
+    top: 8px;
+    height: 2px;
+    background: color-mix(in srgb, var(--accent) 45%, transparent);
+  }
+
+  .campaign__dot {
+    position: absolute;
+    top: 4px;
+    width: 9px;
+    height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--bg-2);
+  }
+
+  .campaign__time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--fg-3);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .campaign figcaption {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--fg-3);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 640px) {
+    .campaign {
+      padding: 20px 18px 18px;
+    }
+
+    .campaign__row {
+      grid-template-columns: minmax(0, 1fr) 40px;
+      gap: 6px 12px;
+    }
+
+    .campaign__label {
+      grid-column: 1 / -1;
+    }
+
+    .campaign__lane {
+      grid-column: 1;
+    }
+
+    .campaign__time {
+      grid-column: 2;
+    }
+  }
+</style>
