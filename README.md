@@ -24,6 +24,8 @@ npm run preview  # serve the built output
 | `src/pages/delta.astro` | Delta's page: the cockpit, the loop, and the example campaign |
 | `src/components/` | one component per section |
 | `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
+| `src/components/CaseDeck.astro` | the home's scroll-driven cases |
+| `src/components/DeltaDeck.astro` | Delta's scroll-driven loop and example |
 | `src/components/Reach.astro` | the engine's reach, drawn as a ring of hexagons |
 | `src/components/AddressFigure.astro` | the lookup against the computed address, drawn as SVG |
 | `src/components/Section.astro` | the shared section frame: a sticky label and a body |
@@ -34,6 +36,17 @@ npm run preview  # serve the built output
 
 Component styles are scoped by Astro. Anything two components share belongs in
 `global.css` instead.
+
+## Presentation
+
+A concept that needs more than a paragraph is shown as a scroll-driven deck: a sticky
+stage, real panels, and a figure that moves with the scroll. The home Cases and Delta's
+loop are the reference.
+
+- The panels are real markup; a reader without JavaScript gets a stacked list.
+- The scroll drives the figure. There is no autoplay.
+- `prefers-reduced-motion` collapses the deck to the static list.
+- The copy states the principle. The figure shows it.
 
 ## Content
 

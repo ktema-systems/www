@@ -1,12 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import LoopFigure from '../components/LoopFigure.astro';
-import CampaignFigure from '../components/CampaignFigure.astro';
+import DeltaDeck from '../components/DeltaDeck.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: the cockpit where intent enters the run, and an example campaign.
+// Delta's page: the cockpit where intent enters the run.
 ---
 
 <Base
@@ -22,17 +21,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     body="The machine is the sum of the intents that enter the loop."
   />
 
-  <Section
-    id="loop"
-    label="The loop"
-    title="A run is not a command"
-    lede="A command asks for an output and waits. An autonomous system keeps running, and a person can enter at any point with a new intent, a limit, or a correction. The result is the sum of those entries."
-  >
-    <LoopFigure />
-    <p class="note">
-      The cockpit is where the operator reads the run and enters the next intent.
-    </p>
-  </Section>
+  <DeltaDeck />
 
   <Section
     id="cockpit"
@@ -54,39 +43,6 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     <p class="note">
       Scrub the run backwards and the state follows the record. The operator can enter the next
       intent from any point.
-    </p>
-  </Section>
-
-  <Section
-    id="example"
-    label="Example"
-    title="The villa evacuation, an example campaign"
-    lede="An emergency lift on the Monaco coast shows the loop in a run. The operator's intent and the hospital's bound enter while the work is moving. The run starts when the emergency is declared and ends when treatment starts."
-  >
-    <CampaignFigure />
-
-    <ul class="metrics">
-      <li class="metric">
-        <span class="metric__value">1,164</span>
-        <span class="metric__label">records in the run</span>
-      </li>
-      <li class="metric">
-        <span class="metric__value">5</span>
-        <span class="metric__label">objectives, one with a deadline</span>
-      </li>
-      <li class="metric">
-        <span class="metric__value">75 s</span>
-        <span class="metric__label">the scan has to reach the hospital</span>
-      </li>
-      <li class="metric">
-        <span class="metric__value">3</span>
-        <span class="metric__label">checks in the scenario</span>
-      </li>
-    </ul>
-
-    <p class="note">
-      The scan is written at 80 seconds, three seconds inside its window. The campaign line shows
-      five of five met, and the record behind each one.
     </p>
   </Section>
 

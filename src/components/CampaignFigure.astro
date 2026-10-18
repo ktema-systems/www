@@ -16,7 +16,14 @@ const objectives = [
 const pct = (value: number) => `${(value / LAST) * 100}%`;
 ---
 
-<figure class="campaign" aria-labelledby="campaign-title">
+<figure
+  class="campaign"
+  data-campaign
+  data-start={START}
+  data-end={END}
+  data-deadline={DEADLINE}
+  aria-labelledby="campaign-title"
+>
   <div class="campaign__head">
     <span class="campaign__name" id="campaign-title">Emergency lift</span>
     <span class="campaign__state">complete</span>
@@ -30,8 +37,12 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
   </div>
 
   <div class="campaign__track" aria-hidden="true">
-    <span class="campaign__span" style={`left:${pct(START)}; width:${pct(END - START)}`}></span>
-    <span class="campaign__deadline" style={`left:${pct(DEADLINE)}`}></span>
+    <span
+      class="campaign__span"
+      data-campaign-span
+      style={`left:${pct(START)}; width:${pct(END - START)}`}
+    ></span>
+    <span class="campaign__deadline" data-campaign-deadline style={`left:${pct(DEADLINE)}`}></span>
   </div>
 
   <ol class="campaign__rows">
@@ -43,10 +54,16 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
             {objective.window && (
               <span
                 class="campaign__window"
+                data-campaign-window
                 style={`left:${pct(START)}; width:${pct(objective.window - START)}`}
               />
             )}
-            <span class="campaign__dot" style={`left:${pct(objective.at)}`} />
+            <span
+              class="campaign__dot"
+              data-campaign-dot
+              data-at={objective.at}
+              style={`left:${pct(objective.at)}`}
+            />
           </span>
           <span class="campaign__time">{objective.at}s</span>
         </li>
@@ -111,6 +128,7 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
     top: 0;
     bottom: 0;
     background: color-mix(in srgb, var(--accent) 38%, transparent);
+    transform-origin: left center;
   }
 
   .campaign__deadline {
@@ -153,6 +171,7 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
     top: 8px;
     height: 2px;
     background: color-mix(in srgb, var(--accent) 45%, transparent);
+    transform-origin: left center;
   }
 
   .campaign__dot {
@@ -164,6 +183,7 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
     border-radius: 50%;
     background: var(--accent);
     box-shadow: 0 0 0 3px var(--bg-2);
+    transition: opacity 220ms var(--ease), transform 220ms var(--ease);
   }
 
   .campaign__time {
