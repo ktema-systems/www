@@ -1,16 +1,16 @@
 ---
 import Section from './Section.astro';
-import { creed, delta, product } from '../config';
+import { creed, delta } from '../config';
 
-// The three roles as the pitch states them, each able to run alone; the stage
-// tells a reader what ships today and what is being written.
+// The three product roles, each able to run alone; the stage tells a reader what
+// ships today and what is being written.
 const layers = [
   {
     name: 'Ktema',
     meta: 'the record, working build',
     line: 'The machine keeps its own history and answers from it, even when the link is down.',
-    href: product.href,
-    link: 'The engine',
+    href: '#contact',
+    link: 'Contact',
   },
   {
     name: 'Kletos',
@@ -29,7 +29,7 @@ const layers = [
   id="products"
   label="Products"
   title="One record, four products"
-  lede="Ktema keeps the record. Kletos runs the work. Krisis sets the limits. Delta is the cockpit where intent enters. Each product stands alone, and together they answer for the whole act."
+  lede="Ktema keeps the record. Kletos runs the work. Krisis sets the limits. Delta is where a person enters intent. Each product stands on its own; together they cover the whole act."
 >
   <p class="layers__claim">
     A card keeps bytes. This record answers questions: across time, source, and outcome,
@@ -40,8 +40,8 @@ const layers = [
     <div class="card card--wide" id="product-delta">
       <span class="card__value">Delta</span>
       <p class="card__meta">the cockpit</p>
-      <p>What is running, who claimed it, what bounded it, and what changed.</p>
-      <p>A person can enter intent while the work is moving, and the run changes with it.</p>
+      <p>The work in flight, the limits in force, and what changed.</p>
+      <p>A person can add intent while the work is moving, and the run changes with it.</p>
       <p><a href={delta.href}>The cockpit</a></p>
     </div>
     {

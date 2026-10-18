@@ -1,16 +1,16 @@
 ---
-// The villa campaign as the cockpit reads it: one run, five objectives, one window.
+// The villa run as the cockpit reads it: intent enters while the work is moving.
 const START = 8;
 const END = 176;
 const DEADLINE = 83;
 const LAST = 186;
 
-const objectives = [
-  { label: 'The lift is called', at: 28 },
-  { label: 'The robot reaches the patient', at: 74 },
-  { label: 'The scan reaches the hospital', at: 80, window: DEADLINE },
-  { label: 'The patient reaches the hospital', at: 170 },
-  { label: 'Treatment begins', at: 176 },
+const entries = [
+  { label: 'Emergency declared', at: 8, kind: 'intent' },
+  { label: 'Operator calls the lift', at: 28, kind: 'intent' },
+  { label: 'Robot reaches the patient', at: 74, kind: 'event' },
+  { label: 'Scan reaches the hospital', at: 80, window: DEADLINE, kind: 'event' },
+  { label: 'Treatment begins', at: 176, kind: 'event' },
 ];
 
 const pct = (value: number) => `${(value / LAST) * 100}%`;
@@ -27,6 +27,11 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
   <div class="campaign__head">
     <span class="campaign__name" id="campaign-title">Emergency lift</span>
     <span class="campaign__state">complete</span>
+  </div>
+
+  <div class="campaign__legend" aria-hidden="true">
+    <span><span class="campaign__key campaign__key--intent"></span>Intent enters</span>
+    <span><span class="campaign__key campaign__key--event"></span>The run responds</span>
   </div>
 
   <div class="campaign__scale" aria-hidden="true">
@@ -47,34 +52,34 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
 
   <ol class="campaign__rows">
     {
-      objectives.map((objective) => (
+      entries.map((entry) => (
         <li class="campaign__row">
-          <span class="campaign__label">{objective.label}</span>
+          <span class="campaign__label">{entry.label}</span>
           <span class="campaign__lane">
-            {objective.window && (
+            {entry.window && (
               <span
                 class="campaign__window"
                 data-campaign-window
-                style={`left:${pct(START)}; width:${pct(objective.window - START)}`}
+                style={`left:${pct(START)}; width:${pct(entry.window - START)}`}
               />
             )}
             <span
-              class="campaign__dot"
+              class:list={['campaign__dot', `campaign__dot--${entry.kind}`]}
               data-campaign-dot
-              data-at={objective.at}
-              style={`left:${pct(objective.at)}`}
+              data-at={entry.at}
+              style={`left:${pct(entry.at)}`}
             />
           </span>
-          <span class="campaign__time">{objective.at}s</span>
+          <span class="campaign__time">{entry.at}s</span>
         </li>
       ))
     }
   </ol>
 
   <figcaption>
-    The villa evacuation campaign at the end of the run. It starts at 8s and ends at 176s. The
-    scan has 75 seconds from the start, and the record writes it at 80s, three seconds inside the
-    window.
+    The operator calls the lift at 28s. The hospital's 75-second bound for the scan enters at the
+    start, and the scan reaches it at 80s, three seconds inside the window. Treatment begins at
+    176s.
   </figcaption>
 </figure>
 
@@ -105,6 +110,35 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent);
+  }
+
+  .campaign__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 14px;
+    color: var(--fg-3);
+    font-size: 11.5px;
+  }
+
+  .campaign__legend > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .campaign__key {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .campaign__key--intent {
+    background: var(--accent);
+  }
+
+  .campaign__key--event {
+    background: var(--fg-3);
   }
 
   .campaign__scale {
@@ -186,6 +220,14 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
     transition: opacity 220ms var(--ease), transform 220ms var(--ease);
   }
 
+  .campaign__dot--intent {
+    box-shadow: 0 0 0 3px var(--bg-2), 0 0 0 5px color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+
+  .campaign__dot--event {
+    background: var(--fg-3);
+  }
+
   .campaign__time {
     font-family: var(--mono);
     font-size: 11px;
@@ -197,7 +239,6 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
   .campaign figcaption {
     margin-top: 20px;
     padding-top: 16px;
-    border-top: 1px solid var(--line);
     color: var(--fg-3);
     font-size: 12.5px;
     line-height: 1.6;

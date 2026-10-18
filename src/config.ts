@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgement over both, and the cockpit where intent enters, down to hardware that cannot run a database.',
+    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgment over both, and the cockpit where intent enters, even on hardware that cannot run a database.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -27,7 +27,7 @@ export const product = {
   name: 'Ktema',
   href: '/ktema',
   description:
-    'Ktema answers multi-axis queries on a device that cannot run a database. The coordinate is the index, with no index structure and no operating system.',
+    'Ktema is an on-device storage engine that answers multi-axis queries on hardware that cannot run a database. It needs no index structure and no operating system.',
 } as const;
 
 // Delta is the cockpit and its campaigns. A campaign is one run inside a project,
@@ -38,7 +38,7 @@ export const delta = {
   title: 'the cockpit for the run',
   tagline: 'The cockpit where intent enters the run.',
   description:
-    'Delta is the cockpit where a person enters intent while an autonomous system is running. It shows what is moving, who claimed it, what bounded it, and what changed.',
+    'Delta is the cockpit where a person enters intent while an autonomous system is running. It shows the work in flight, the limits in force, and the intent that changes the run.',
 } as const;
 
 // The three lines that state the three layers. The first two are the wings as they
@@ -89,8 +89,7 @@ export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const productNav: readonly NavItem[] = [
   { label: 'Product', href: '#product' },
   { label: 'Proof', href: '#proof' },
-  { label: 'Why now', href: '#why-now' },
-  { label: 'Competition', href: '#competition' },
+  { label: 'Contact', href: '#contact' },
 ];
 
 export const productCta: NavItem = { label: 'Get in touch', href: '#contact' };

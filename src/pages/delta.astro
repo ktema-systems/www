@@ -17,8 +17,8 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   <Hero
     eyebrow="Delta"
     title={delta.tagline}
-    lede="An autonomous system does not run on a single command. A person states intent while the work is moving, and the run changes. Delta is the surface where that intent enters the loop."
-    body="The machine is the sum of the intents that enter the loop."
+    lede="Autonomous systems do not run on a single command. Work keeps moving while a person adds a new intent, a new limit, or a stop. Delta is the surface where those entries reach the run."
+    body="What the machine does is the sum of the intents that enter the loop."
   />
 
   <DeltaDeck />
@@ -27,22 +27,22 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     id="cockpit"
     label="Cockpit"
     title="What the operator sees and changes"
-    lede="Delta shows the state of the run and gives the operator a way into it."
+    lede="Delta shows the run as it is, and gives the operator a way into it."
   >
     <dl class="spec">
       <dt>What the operator can change</dt>
       <dd>A new intent, a new limit, or a stop, entered while the work is moving.</dd>
       <dt>What is running</dt>
-      <dd>The project and the work in flight, with the state the record gives them.</dd>
-      <dt>Who claimed it</dt>
-      <dd>The claim, the operator, and the authority that took the work.</dd>
+      <dd>The work in flight, where it stands, and what it is waiting on.</dd>
+      <dt>Who is acting</dt>
+      <dd>The agent or machine on the work, the claim it holds, and who authorized it.</dd>
       <dt>What bounded it</dt>
-      <dd>The hints and the terms that limited the run.</dd>
+      <dd>The limits in force and the intent that set them.</dd>
     </dl>
 
     <p class="note">
-      Scrub the run backwards and the state follows the record. The operator can enter the next
-      intent from any point.
+      Scrub back through the run and the state follows. The operator can enter the next intent from
+      any point in it.
     </p>
   </Section>
 
@@ -50,7 +50,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     id="contact"
     label="Contact"
     title="Bring a run to the cockpit."
-    lede="We are choosing the first design partners. If you run a situation that has to be replayed and understood, write to us."
+    lede="If you run a system where intent changes while the work is moving, we are choosing the first design partners. Write to us."
     band
   >
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>

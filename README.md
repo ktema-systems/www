@@ -40,8 +40,8 @@ Component styles are scoped by Astro. Anything two components share belongs in
 ## Presentation
 
 A concept that needs more than a paragraph is shown as a scroll-driven deck: a sticky
-stage, real panels, and a figure that moves with the scroll. The home Cases and Delta's
-loop are the reference.
+stage, real panels, and a figure that moves with the scroll. This is the default for
+every concept section, not a one-off. The home Cases and Delta's loop are the reference.
 
 - The panels are real markup; a reader without JavaScript gets a stacked list.
 - The scroll drives the figure. There is no autoplay.
@@ -52,8 +52,10 @@ loop are the reference.
 
 The public pages draw on the product, proof, and use-case material in
 `docs/ktmas/pitch.qmd`. The business model, pricing, market sizing, and moat stay in
-the pitch and are not published. The internal model and the campaign contract stay in
-`docs/`. When the product material changes, change the pages with it.
+the pitch and are not published. A product page describes what the product does, how
+it ships, and what the buyer can check; the rationale, market case, and competition
+stay in the pitch. The internal model and the campaign contract stay in `docs/`. When
+the product material changes, change the pages with it.
 
 The Delta page's example follows the campaign contract in `kletos/apps/delta`
 (`src/lib/types.ts`, `src/lib/campaign.ts`), and the villa campaign in

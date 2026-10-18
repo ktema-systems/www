@@ -12,7 +12,7 @@
 
 <div class="field" aria-hidden="true">
   <div class="field__fade">
-    <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
+    <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMin meet" stroke-width="1.8">
     <defs>
       <g id="ktema-field">
         <polygon points="85,-147.22 170,0 85,147.22 -85,147.22 -170,0 -85,-147.22" />
@@ -35,13 +35,11 @@
     </defs>
 
       <g class="field__layer field__layer--frame">
-        <polygon
-          points="885,-113.63 1170,380 885,873.63 315,873.63 30,380 315,-113.63"
-        />
+        <polygon points="500,40 960,300 960,700 500,960 40,700 40,300" />
       </g>
 
       <g class="field__layer field__layer--near">
-        <use href="#ktema-field" transform="translate(870 380) scale(1.3)" />
+        <use href="#ktema-field" transform="translate(650 500) scale(1.3)" />
       </g>
 
     </svg>
@@ -53,13 +51,16 @@
     position: absolute;
     inset: 0;
     z-index: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
     pointer-events: none;
     overflow: hidden;
   }
 
   .field__fade {
-    width: 100%;
-    height: 100%;
+    width: min(100%, 100vh);
+    height: min(100%, 100vh);
     /* Only the outer edge fades, so the rotating hexagon stays whole. */
     -webkit-mask-image: linear-gradient(
       to bottom,
@@ -98,7 +99,7 @@
   }
 
   .field__layer--near {
-    transform-origin: 870px 380px;
+    transform-origin: 650px 500px;
     opacity: 0.15;
     animation: field-spin 120s linear infinite;
   }

@@ -9,10 +9,11 @@ import CampaignFigure from './CampaignFigure.astro';
   <div class="deck__stage" data-deck-stage>
     <div class="wrap deck__grid">
       <header class="deck__head">
-        <p class="eyebrow">How it works</p>
-        <h2>The loop and the run</h2>
+        <p class="eyebrow">The run</p>
+        <h2>Intent enters a moving run</h2>
         <p class="lede">
-          The loop is the principle. The example is one run through it. Scroll to move through both.
+          A run is not a command. Scroll to see the loop, then one run where intent enters while the
+          work is moving.
         </p>
       </header>
 
@@ -23,8 +24,8 @@ import CampaignFigure from './CampaignFigure.astro';
             <h3>A run is not a command</h3>
             <p class="deck__lede">
               A command asks for an output and waits. An autonomous system keeps running, and a
-              person can enter at any point with a new intent, a limit, or a correction. The result
-              is the sum of those entries.
+              person can enter at any point with a new intent, a limit, or a correction. What the
+              machine does is the sum of those entries.
             </p>
           </div>
           <LoopFigure />
@@ -32,16 +33,16 @@ import CampaignFigure from './CampaignFigure.astro';
 
         <li class="deck__panel" data-deck-panel>
           <div class="deck__copy">
-            <p class="deck__kicker">Example</p>
+            <p class="deck__kicker">Example case</p>
             <h3>The villa evacuation</h3>
             <p class="deck__lede">
-              An emergency lift on the Monaco coast. The operator's intent and the hospital's bound
-              enter while the work is moving. The run starts when the emergency is declared and
-              ends when treatment starts.
+              An emergency lift on the Monaco coast. The operator calls the lift. The hospital adds a
+              75-second bound for the scan. Both enter while the work is moving. The run starts when
+              the emergency is declared and ends when treatment begins.
             </p>
           </div>
           <CampaignFigure />
-          <p class="deck__facts">1,164 records, five objectives, one 75-second window.</p>
+          <p class="deck__facts">One run, three entries, one 75-second bound.</p>
         </li>
       </ol>
 
@@ -60,7 +61,6 @@ import CampaignFigure from './CampaignFigure.astro';
 <style>
   .deck {
     position: relative;
-    border-top: 1px solid var(--line);
   }
 
   .deck__stage {
@@ -116,7 +116,6 @@ import CampaignFigure from './CampaignFigure.astro';
   .deck__panel + .deck__panel {
     margin-top: 36px;
     padding-top: 36px;
-    border-top: 1px solid var(--line);
   }
 
   .deck__copy {
@@ -257,7 +256,6 @@ import CampaignFigure from './CampaignFigure.astro';
     .deck.is-live .deck__panel + .deck__panel {
       margin-top: 36px;
       padding-top: 36px;
-      border-top: 1px solid var(--line);
     }
 
     .deck.is-live .deck__foot {

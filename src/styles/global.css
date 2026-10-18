@@ -632,10 +632,6 @@ svg {
 
 /* Sections */
 
-.section {
-  border-top: 1px solid var(--line);
-}
-
 .section__grid {
   display: grid;
   grid-template-columns: var(--label-col) minmax(0, 1fr);
@@ -669,8 +665,6 @@ svg {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   list-style: none;
   padding: 0;
-  border-top: 1px solid var(--line-2);
-  border-bottom: 1px solid var(--line-2);
 }
 
 .metric {
@@ -902,7 +896,6 @@ svg {
 
 .figure__foot {
   margin-top: 26px;
-  border-top: 1px solid var(--line);
   padding-top: 16px;
   font-size: 13.5px;
   line-height: 1.6;
@@ -995,7 +988,6 @@ svg {
 /* Footer */
 
 .footer {
-  border-top: 1px solid var(--line);
   padding-block: 44px 56px;
 }
 
