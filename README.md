@@ -26,6 +26,7 @@ npm run preview  # serve the built output
 | `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
 | `src/components/CaseDeck.astro` | the home's scroll-driven cases |
 | `src/components/DeltaDeck.astro` | Delta's scroll-driven loop and example |
+| `src/components/CockpitDeck.astro` | Delta's scroll-driven cockpit screenshots |
 | `src/components/Reach.astro` | the engine's reach, drawn as a ring of hexagons |
 | `src/components/AddressFigure.astro` | the lookup against the computed address, drawn as SVG |
 | `src/components/Section.astro` | the shared section frame: a sticky label and a body |

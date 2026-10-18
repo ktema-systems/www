@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
+import CockpitDeck from '../components/CockpitDeck.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
@@ -40,37 +41,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
       <dd>The limits in force and the intent that set them.</dd>
     </dl>
 
-    <figure class="shot">
-      <img
-        src="/delta_scr.png"
-        alt="Development screen of the Delta cockpit from a manufacturing robot demo run, showing a production cell with a conveyor, servo drives, maintenance robots, and two live camera views."
-        width="1767"
-        height="951"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>
-        A development screen from the manufacturing robot demo run. The cell shows a conveyor,
-        servo drives, maintenance robots, and two live camera views, with the operator's intents
-        and claims on the left.
-      </figcaption>
-    </figure>
-
-    <figure class="shot">
-      <img
-        src="/delta_scr.jpeg"
-        alt="Development screen of the Delta cockpit from a drone and aircraft rescue demo run, with intents and claims on the left, the project's space in the middle, and the chain of fact, hint, intent, and claim along the bottom."
-        width="3362"
-        height="2158"
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption>
-        A development screen from the drone and aircraft rescue demo run. Intents and claims sit on
-        the left, the project's space is in the middle with two live camera views, and the chain of
-        fact, hint, intent, and claim runs along the bottom.
-      </figcaption>
-    </figure>
+    <CockpitDeck />
 
     <p class="note">
       Scrub back through the run and the state follows. The operator can enter the next intent from
@@ -88,25 +59,3 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
   </Section>
 </Base>
-
-<style>
-  .shot {
-    margin: 0;
-  }
-
-  .shot img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    background: var(--bg-2);
-  }
-
-  .shot figcaption {
-    padding: 14px 18px 16px;
-    color: var(--fg-3);
-    font-size: 12.5px;
-    line-height: 1.6;
-  }
-</style>
