@@ -21,7 +21,7 @@ npm run preview  # serve the built output
 |---|---|
 | `src/pages/index.astro` | the company home, as an ordered list of sections |
 | `src/pages/ktema.astro` | the engine's page, the same way |
-| `src/pages/delta.astro` | Delta's page: the cockpit, the campaign, and the package |
+| `src/pages/delta.astro` | Delta's page: the cockpit, the loop, and the example campaign |
 | `src/components/` | one component per section |
 | `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
 | `src/components/Reach.astro` | the engine's reach, drawn as a ring of hexagons |
@@ -42,9 +42,10 @@ The public pages draw on the product, proof, and use-case material in
 the pitch and are not published. The internal model and the campaign contract stay in
 `docs/`. When the product material changes, change the pages with it.
 
-The Delta page follows the campaign contract in `kletos/apps/delta`
+The Delta page's example follows the campaign contract in `kletos/apps/delta`
 (`src/lib/types.ts`, `src/lib/campaign.ts`), and the villa campaign in
-`projects.json`. When the campaign contract changes, change the page with it.
+`projects.json`. The detailed contract stays in `docs/delta.qmd`. When the
+contract changes, change the example and the document with it.
 
 The pages are allowed to be lighter than the pitch, and never heavier: a claim the
 deck does not make or measure does not belong here, and a claim the deck makes

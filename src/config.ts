@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgement over both, and the campaigns it records, down to hardware that cannot run a database.',
+    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgement over both, and the cockpit where intent enters, down to hardware that cannot run a database.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -35,10 +35,10 @@ export const product = {
 export const delta = {
   name: 'Delta',
   href: '/delta',
-  title: 'the cockpit for campaigns',
-  tagline: 'The cockpit where a campaign becomes a record.',
+  title: 'the cockpit for the run',
+  tagline: 'The cockpit where intent enters the run.',
   description:
-    'Delta runs a campaign, reads the record, and packages the result. A campaign is one run inside a project, with a briefing, objectives, constraints, and a replayable record.',
+    'Delta is the cockpit where a person enters intent while an autonomous system is running. It shows what is moving, who claimed it, what bounded it, and what changed.',
 } as const;
 
 // The three lines that state the three layers. The first two are the wings as they
@@ -62,7 +62,7 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'the record', href: product.href },
   { label: 'Kletos', note: 'the execution', href: '/#product-kletos' },
   { label: 'Krisis', note: 'the constraints and judgment', href: '/#product-krisis' },
-  { label: 'Delta', note: 'the cockpit and campaigns', href: delta.href },
+  { label: 'Delta', note: 'the cockpit', href: delta.href },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
@@ -78,9 +78,10 @@ export const companyNav: readonly NavItem[] = [
 export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const deltaNav: readonly NavItem[] = [
+  { label: 'The loop', href: '#loop' },
   { label: 'Cockpit', href: '#cockpit' },
-  { label: 'Campaigns', href: '#campaigns' },
-  { label: 'Products', href: '#campaigns', items: productMenu },
+  { label: 'Example', href: '#example' },
+  { label: 'Products', href: '#loop', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
 

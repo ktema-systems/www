@@ -1,11 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import LoopFigure from '../components/LoopFigure.astro';
 import CampaignFigure from '../components/CampaignFigure.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: the cockpit, the campaign, and the package.
+// Delta's page: the cockpit where intent enters the run, and an example campaign.
 ---
 
 <Base
@@ -17,90 +18,53 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   <Hero
     eyebrow="Delta"
     title={delta.tagline}
-    lede="Delta runs a campaign, reads the record, and packages the result. A campaign is one run inside a project: a situation, a briefing, objectives, and the constraints that bound them. The package is the run, and it can be replayed and compared."
-    body="Delta reads the record the project already holds, so the cockpit shows the state the run actually had."
+    lede="An autonomous system does not run on a single command. A person states intent while the work is moving, and the run changes. Delta is the surface where that intent enters the loop."
+    body="The machine is the sum of the intents that enter the loop."
+  />
+
+  <Section
+    id="loop"
+    label="The loop"
+    title="A run is not a command"
+    lede="A command asks for an output and waits. An autonomous system keeps running, and a person can enter at any point with a new intent, a limit, or a correction. The result is the sum of those entries."
   >
-    <CampaignFigure slot="figure" />
-  </Hero>
+    <LoopFigure />
+    <p class="note">
+      The cockpit is where the operator reads the run and enters the next intent.
+    </p>
+  </Section>
 
   <Section
     id="cockpit"
     label="Cockpit"
-    title="One reading of the run"
-    lede="Delta shows the work as the record has it: the project, the claim, the bound, and the result."
-  >
-    <div class="cards cards--3">
-      <div class="card">
-        <span class="card__value">What is running</span>
-        <p>The project and the campaign, with the state the record gives them.</p>
-      </div>
-      <div class="card">
-        <span class="card__value">Who claimed it</span>
-        <p>The claim, the operator, and the authority that took the work.</p>
-      </div>
-      <div class="card">
-        <span class="card__value">What bounded it</span>
-        <p>The hints and the terms that limited the run.</p>
-      </div>
-    </div>
-
-    <p class="note">
-      Scrub the run backwards and an objective returns to open. The cockpit cannot show a state
-      the record does not support.
-    </p>
-  </Section>
-
-  <Section
-    id="campaigns"
-    label="Campaigns"
-    title="A campaign is one run, start to finish"
-    lede="Set the start, the end, and the objectives that matter. Delta reads the run and shows what was met, what is still open, and what was missed."
+    title="What the operator sees and changes"
+    lede="Delta shows the state of the run and gives the operator a way into it."
   >
     <dl class="spec">
-      <dt>Start and end</dt>
-      <dd>The run begins and ends on what the record says, not on a clock the operator sets.</dd>
-      <dt>An objective</dt>
-      <dd>A goal the record can prove: a reading, a decision, a count, or a time.</dd>
-      <dt>A deadline</dt>
-      <dd>Give an objective a window. A result after the window does not count.</dd>
-      <dt>An optional objective</dt>
-      <dd>A missed optional goal does not fail the run.</dd>
+      <dt>What the operator can change</dt>
+      <dd>A new intent, a new limit, or a stop, entered while the work is moving.</dd>
+      <dt>What is running</dt>
+      <dd>The project and the work in flight, with the state the record gives them.</dd>
+      <dt>Who claimed it</dt>
+      <dd>The claim, the operator, and the authority that took the work.</dd>
+      <dt>What bounded it</dt>
+      <dd>The hints and the terms that limited the run.</dd>
     </dl>
 
     <p class="note">
-      The cockpit reads the campaign from the same record it is already walking, so the state
-      follows the cursor.
+      Scrub the run backwards and the state follows the record. The operator can enter the next
+      intent from any point.
     </p>
-  </Section>
-
-  <Section
-    id="package"
-    label="Package"
-    title="The run stays with you"
-    lede="A finished campaign keeps the full run: what was asked, what was done, what limited it, and how it ended. You can replay it, compare two runs, and hand the record to someone else."
-  >
-    <div class="cards cards--3">
-      <div class="card">
-        <span class="card__value">Replay</span>
-        <p>Open the run at any point and see the state the record had then.</p>
-      </div>
-      <div class="card">
-        <span class="card__value">Compare</span>
-        <p>Read two runs side by side at the same objective and the same point.</p>
-      </div>
-      <div class="card">
-        <span class="card__value">Hand over</span>
-        <p>The record is self-contained, so it reads the same on another machine.</p>
-      </div>
-    </div>
   </Section>
 
   <Section
     id="example"
     label="Example"
     title="The villa evacuation, an example campaign"
-    lede="An emergency lift on the Monaco coast shows the campaign from start to finish. It starts when the emergency is declared and ends when treatment starts."
+    lede="An emergency lift on the Monaco coast shows the loop in a run. The operator's intent and the hospital's bound enter while the work is moving. The run starts when the emergency is declared and ends when treatment starts."
   >
+    <CampaignFigure />
+
     <ul class="metrics">
       <li class="metric">
         <span class="metric__value">1,164</span>
@@ -129,7 +93,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   <Section
     id="contact"
     label="Contact"
-    title="Bring a campaign to the cockpit."
+    title="Bring a run to the cockpit."
     lede="We are choosing the first design partners. If you run a situation that has to be replayed and understood, write to us."
     band
   >
