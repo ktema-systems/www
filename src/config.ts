@@ -75,7 +75,7 @@ export const companyNav: readonly NavItem[] = [
   { label: 'Contact', href: '#contact' },
 ];
 
-export const companyCta: NavItem = { label: 'The engine', href: product.href };
+export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const deltaNav: readonly NavItem[] = [
   { label: 'Cockpit', href: '#cockpit' },
