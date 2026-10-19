@@ -6,8 +6,9 @@ import CockpitDeck from '../components/CockpitDeck.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: one space for every kind of autonomous workforce, with the
-// cockpit as the surface where intent enters the run.
+// Delta's page: the Single Space Operation Platform where every kind of
+// autonomous workforce is commanded in one space, with the cockpit as the surface
+// a person enters intent from.
 ---
 
 <Base
@@ -19,7 +20,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   <Hero
     eyebrow="Delta"
     title={delta.tagline}
-    lede="A nervous system for the real world. Agents, signals, machines, people, and outside systems run in one space, and the cockpit is where a person enters intent while the work is moving."
+    lede="Delta is the Single Space Operation Platform: a standalone mission control for robots, drones, codebases, agents, and the people who command them. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable, and the platform becomes the accountable mission control."
     body="What the machine does is the sum of the intents that enter the loop."
   />
 
@@ -29,7 +30,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     id="cockpit"
     label="Cockpit"
     title="What the operator sees and changes"
-    lede="Delta shows the run as it is, and gives the operator a way into it."
+    lede="The cockpit shows the run as it is, and gives the operator a way into it."
   >
     <dl class="spec">
       <dt>What the operator can change</dt>
@@ -51,9 +52,30 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   </Section>
 
   <Section
+    id="campaigns"
+    label="Campaigns"
+    title="A run becomes a campaign"
+    lede="A campaign is one run inside a project: a situation, a briefing, objectives, and the record of what happened. Delta plays it, reads it, and compares it."
+  >
+    <dl class="spec">
+      <dt>What a campaign holds</dt>
+      <dd>The situation, the briefing, the objectives, the constraints, and the record of the run.</dd>
+      <dt>What the platform does</dt>
+      <dd>Plays the run, reads the objectives at the cursor, and compares two runs on the same record.</dd>
+      <dt>What a finished run becomes</dt>
+      <dd>A package that can be replayed and handed to another team.</dd>
+    </dl>
+
+    <p class="note">
+      The first campaign is the villa evacuation, shown above: five objectives, one 75-second window,
+      and 1,164 records.
+    </p>
+  </Section>
+
+  <Section
     id="contact"
     label="Contact"
-    title="Bring a run to the cockpit."
+    title="Bring a run to the platform."
     lede="If you run a system where intent changes while the work is moving, we are choosing the first design partners. Write to us."
     band
   >

@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgment over both, and the space where every kind of autonomous workforce runs, even on hardware that cannot run a database.',
+    'Ktema Systems builds the infrastructure for accountable agentic computing: Ktema, the deterministic storage engine; Kletos, the execution layer; Krisis, the governance layer; and Delta, the Single Space Operation Platform.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -27,19 +27,19 @@ export const product = {
   name: 'Ktema',
   href: '/ktema',
   description:
-    'Ktema is an on-device storage engine that answers multi-dimensional queries on hardware that cannot run a database. It needs no index structure and no operating system.',
+    'Ktema is the deterministic storage engine that answers multi-dimensional queries on hardware that cannot run a database. It needs no index structure and no operating system.',
 } as const;
 
-// Delta is the space an autonomous workforce runs in, with the cockpit as its
-// operating surface. A campaign is one run inside a project, and a finished run
-// is a package that can be replayed and compared.
+// Delta is the Single Space Operation Platform, with the cockpit as the surface a
+// person commands the run from. A campaign is one run inside a project, and a
+// finished run is a package that can be replayed and compared.
 export const delta = {
   name: 'Delta',
   href: '/delta',
-  title: 'the nervous system for the real world',
+  title: 'the Single Space Operation Platform',
   tagline: 'Every kind of autonomous workforce in one space.',
   description:
-    'Delta brings every kind of autonomous workforce into one space: agents, signals, machines, people, and outside systems, run on one record. The cockpit is the surface where a person enters intent while the work is moving.',
+    'Delta is the Single Space Operation Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
 } as const;
 
 // The three lines that state the three layers. The first two are the wings as they
@@ -63,7 +63,7 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'the record', href: product.href },
   { label: 'Kletos', note: 'the execution', href: '/#product-kletos' },
   { label: 'Krisis', note: 'the constraints and judgment', href: '/#product-krisis' },
-  { label: 'Delta', note: 'the operating space', href: delta.href },
+  { label: 'Delta', note: 'the operation platform', href: delta.href },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
@@ -81,6 +81,7 @@ export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const deltaNav: readonly NavItem[] = [
   { label: 'The loop', href: '#loop' },
   { label: 'Cockpit', href: '#cockpit' },
+  { label: 'Campaigns', href: '#campaigns' },
   { label: 'Products', href: '#loop', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
