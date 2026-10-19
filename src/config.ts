@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgment over both, and the cockpit where intent enters, even on hardware that cannot run a database.',
+    'Ktema Systems builds the layers an autonomous system runs on: the record it keeps, the work it performs, the judgment over both, and the space where every kind of autonomous workforce runs, even on hardware that cannot run a database.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -30,15 +30,16 @@ export const product = {
     'Ktema is an on-device storage engine that answers multi-dimensional queries on hardware that cannot run a database. It needs no index structure and no operating system.',
 } as const;
 
-// Delta is the cockpit and its campaigns. A campaign is one run inside a project,
-// and a finished run is a package that can be replayed and compared.
+// Delta is the space an autonomous workforce runs in, with the cockpit as its
+// operating surface. A campaign is one run inside a project, and a finished run
+// is a package that can be replayed and compared.
 export const delta = {
   name: 'Delta',
   href: '/delta',
-  title: 'the cockpit for the run',
-  tagline: 'The cockpit where intent enters the run.',
+  title: 'the nervous system for the real world',
+  tagline: 'Every kind of autonomous workforce in one space.',
   description:
-    'Delta is the cockpit where a person enters intent while an autonomous system is running. It shows the work in flight, the limits in force, and the intent that changes the run.',
+    'Delta brings every kind of autonomous workforce into one space: agents, signals, machines, people, and outside systems, run on one record. The cockpit is the surface where a person enters intent while the work is moving.',
 } as const;
 
 // The three lines that state the three layers. The first two are the wings as they
@@ -62,7 +63,7 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'the record', href: product.href },
   { label: 'Kletos', note: 'the execution', href: '/#product-kletos' },
   { label: 'Krisis', note: 'the constraints and judgment', href: '/#product-krisis' },
-  { label: 'Delta', note: 'the cockpit', href: delta.href },
+  { label: 'Delta', note: 'the operating space', href: delta.href },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
