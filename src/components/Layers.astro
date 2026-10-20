@@ -2,25 +2,30 @@
 import Section from './Section.astro';
 import { creed, delta } from '../config';
 
-// The three product roles, each able to run alone; the stage tells a reader what
-// ships today and what is being written.
+// The four layers, each able to run alone. The business frame is a role in the
+// machine rather than a technical tier, so a buyer can say what each one does.
 const layers = [
   {
     name: 'Ktema',
-    meta: 'the deterministic engine, working build',
-    line: 'The machine answers multi-dimensional questions from its own record, even when the link is down.',
+    meta: 'the black box',
+    line: 'Keeps the record on the machine, with no operating system and no database.',
     href: '#contact',
     link: 'Contact',
   },
   {
     name: 'Kletos',
-    meta: 'the work, running today',
-    line: 'The work is claimed, performed, and written back to the same record.',
+    meta: 'the autopilot',
+    line: 'Turns a stated intent into physical execution, and writes the result back to the same record.',
   },
   {
     name: 'Krisis',
-    meta: 'the limits, in development',
-    line: 'The limits and the decision: which model answers, at what cost, and on which terms.',
+    meta: 'the kill switch',
+    line: 'Sets the authority and the limits, and can stop the work.',
+  },
+  {
+    name: 'Telos',
+    meta: 'the transport layer',
+    line: 'Moves work between agents, people, and spaces, and carries the operator into the machine.',
   },
 ];
 ---
@@ -28,20 +33,20 @@ const layers = [
 <Section
   id="products"
   label="Products"
-  title="One record, four products"
-  lede="Ktema answers multi-dimensional questions from the record. Kletos runs the work. Krisis sets the limits. Delta is the Single Space Agentic AI Operation Platform where every kind of autonomous workforce is commanded in one space. Each product stands on its own; together they cover the whole act."
+  title="One accountable stack for autonomous machines"
+  lede="Five parts, one record. Ktema is the black box that keeps it. Kletos is the autopilot that acts on it. Krisis is the kill switch that bounds it. Telos is the transport layer that moves the work. Delta is the cockpit where a person commands the whole stack."
 >
   <p class="layers__claim">
-    Storage keeps bytes. This record answers questions: across time, source, and outcome, on the
-    device, with no database and no index to maintain.
+    Every part answers to the same record, so a machine can act, be bounded, and be explained from
+    one place.
   </p>
 
   <div class="cards cards--layers">
     <div class="card card--wide" id="product-delta">
       <span class="card__value">Delta</span>
-      <p class="card__meta">the operation platform</p>
+      <p class="card__meta">the cockpit</p>
       <p>Every kind of autonomous workforce in one space: agents, signals, machines, people, and outside systems.</p>
-      <p>A standalone mission control that can run over any backend. On the Ktema stack it becomes the accountable mission control.</p>
+      <p>The platform a person commands the stack from. On the Ktema stack, the cockpit reads the same record the machine wrote.</p>
       <p><a href={delta.href}>Delta</a></p>
     </div>
     {
@@ -68,7 +73,7 @@ const layers = [
 
 <style>
   .cards--layers {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .layers__claim {
@@ -95,6 +100,12 @@ const layers = [
     color: var(--accent);
     font-size: 15px;
     line-height: 1.35;
+  }
+
+  @media (max-width: 1100px) {
+    .cards--layers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   @media (max-width: 900px) {

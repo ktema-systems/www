@@ -60,10 +60,11 @@ export type NavItem = { label: string; href: string; items?: readonly NavLink[] 
 // The products the strip's Products item opens. Each link is an anchor on the
 // company page, so the menu is a shortcut to a section rather than a second page.
 export const productMenu: readonly NavLink[] = [
-  { label: 'Ktema', note: 'the record', href: product.href },
-  { label: 'Kletos', note: 'the execution', href: '/#product-kletos' },
-  { label: 'Krisis', note: 'the constraints and judgment', href: '/#product-krisis' },
-  { label: 'Delta', note: 'the operation platform', href: delta.href },
+  { label: 'Ktema', note: 'the black box', href: product.href },
+  { label: 'Kletos', note: 'the autopilot', href: '/#product-kletos' },
+  { label: 'Krisis', note: 'the kill switch', href: '/#product-krisis' },
+  { label: 'Telos', note: 'the transport layer', href: '/#product-telos' },
+  { label: 'Delta', note: 'the cockpit', href: delta.href },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
