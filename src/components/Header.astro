@@ -96,19 +96,31 @@ const menu = items.find((item) => item.items)?.items;
 
   if (masthead && trigger && menu) {
     let timer: number | undefined;
+    let packTimer: number | undefined;
+
+    // The stylesheet draws the pack from the is-open class; the settling class
+    // exists only for the length of that change, so scrolling never trails.
+    const setOpen = (open: boolean) => {
+      if (masthead.classList.contains('is-open') === open) {
+        return;
+      }
+
+      masthead.classList.add('is-settling');
+      masthead.classList.toggle('is-open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+
+      window.clearTimeout(packTimer);
+      packTimer = window.setTimeout(() => masthead.classList.remove('is-settling'), 480);
+    };
 
     const open = () => {
       window.clearTimeout(timer);
-      masthead.classList.add('is-open');
-      trigger.setAttribute('aria-expanded', 'true');
+      setOpen(true);
     };
 
     const close = () => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => {
-        masthead.classList.remove('is-open');
-        trigger.setAttribute('aria-expanded', 'false');
-      }, 140);
+      timer = window.setTimeout(() => setOpen(false), 140);
     };
 
     trigger.addEventListener('pointerenter', open);
