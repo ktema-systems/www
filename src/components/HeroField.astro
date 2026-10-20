@@ -2,17 +2,18 @@
 /*
   The hero's coordinate field: the mark's own construction, the hexagon, the inner
   diamond and the connector lines, repeated at three scales and traced in the accent.
-  It sits behind the copy as a texture rather than as motion, so the opacity is kept
-  low enough that body text stays far above its contrast floor.
+  It covers the top of the hero and sits slightly right of centre, so the mark reads
+  beside the copy rather than behind it. The opacity is kept low enough that body text
+  stays far above its contrast floor.
 
   Pure SVG and CSS. No client JavaScript, and the global reduced-motion rule already
-  collapses the two rotations.
+  collapses the rotation.
 */
 ---
 
 <div class="field" aria-hidden="true">
   <div class="field__fade">
-    <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMin meet" stroke-width="1.8">
+    <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
     <defs>
       <g id="ktema-field">
         <polygon points="85,-147.22 170,0 85,147.22 -85,147.22 -170,0 -85,-147.22" />
@@ -35,11 +36,11 @@
     </defs>
 
       <g class="field__layer field__layer--frame">
-        <polygon points="500,40 960,300 960,700 500,960 40,700 40,300" />
+        <polygon points="885,-113.63 1170,380 885,873.63 315,873.63 30,380 315,-113.63" />
       </g>
 
       <g class="field__layer field__layer--near">
-        <use href="#ktema-field" transform="translate(650 500) scale(1.3)" />
+        <use href="#ktema-field" transform="translate(870 380) scale(1.3)" />
       </g>
 
     </svg>
@@ -47,33 +48,33 @@
 </div>
 
 <style>
+  /* The height stays under the hero's own height, so the mask finishes fading
+     before the hero's overflow clip can cut a stroke mid-air. On a short hero the
+     field takes the hero's height; on a tall one it stops at the viewport band. */
   .field {
     position: absolute;
-    inset: 0;
+    inset: 0 0 auto 0;
+    height: min(100%, 84vh, 900px);
     z-index: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
     pointer-events: none;
     overflow: hidden;
   }
 
   .field__fade {
-    width: min(100%, 100vh);
-    height: min(100%, 100vh);
-    /* Only the outer edge fades, so the rotating hexagon stays whole. */
+    width: 100%;
+    height: 100%;
+    transform: translateX(2%);
+    /* The field runs to the top and sides and melts into the page at the bottom. */
     -webkit-mask-image: linear-gradient(
       to bottom,
-      transparent 0%,
-      #000 8%,
-      #000 92%,
+      #000 0%,
+      #000 86%,
       transparent 100%
     );
     mask-image: linear-gradient(
       to bottom,
-      transparent 0%,
-      #000 8%,
-      #000 92%,
+      #000 0%,
+      #000 86%,
       transparent 100%
     );
   }
@@ -99,7 +100,7 @@
   }
 
   .field__layer--near {
-    transform-origin: 650px 500px;
+    transform-origin: 870px 380px;
     opacity: 0.15;
     animation: field-spin 120s linear infinite;
   }

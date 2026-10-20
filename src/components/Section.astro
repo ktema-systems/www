@@ -5,13 +5,15 @@ interface Props {
   title: string;
   lede?: string;
   band?: boolean;
+  // A section whose body needs the full page width, such as a screenshot deck.
+  wide?: boolean;
 }
 
-const { id, label, title, lede, band = false } = Astro.props;
+const { id, label, title, lede, band = false, wide = false } = Astro.props;
 ---
 
 <section class:list={['section', band && 'band']} id={id}>
-  <div class="wrap section__grid">
+  <div class:list={['wrap', 'section__grid', wide && 'section__grid--wide']}>
     <p class="section__label">{label}</p>
     <div class="section__body">
       <div class="section__head">
