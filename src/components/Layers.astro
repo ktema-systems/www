@@ -2,9 +2,10 @@
 import Section from './Section.astro';
 import { creed, delta } from '../config';
 
-// The four layers, each able to run alone. The business frame is a role in the
-// machine rather than a technical tier, so a buyer can say what each one does.
-const layers = [
+// The three pillars are the technical core and stand on their own. The platform and
+// the transport layer sit under them in the stack, so they are drawn as two wider
+// cells beneath the three.
+const pillars = [
   {
     name: 'Ktema',
     meta: 'the black box',
@@ -22,6 +23,16 @@ const layers = [
     meta: 'the kill switch',
     line: 'Sets authority and limits, decides which model answers and at what cost, and can stop the work.',
   },
+];
+
+const surface = [
+  {
+    name: 'Delta',
+    meta: 'the cockpit',
+    line: 'The platform a person commands the stack from, for agents, signals, machines, people, and outside systems. On the Ktema stack, the cockpit reads the same record the machine wrote.',
+    href: delta.href,
+    link: 'Delta',
+  },
   {
     name: 'Telos',
     meta: 'the transport layer',
@@ -34,7 +45,7 @@ const layers = [
   id="products"
   label="Products"
   title="One accountable stack for autonomous machines"
-  lede="Five parts, one record. Ktema is the black box that keeps it. Kletos is the autopilot that acts on it. Krisis is the kill switch that bounds it. Telos is the transport layer that moves the work. Delta is the cockpit where a person commands the whole stack."
+  lede="Five parts, one record. Ktema is the black box that keeps it. Kletos is the autopilot that acts on it. Krisis is the kill switch that bounds it. Delta is the cockpit where a person commands the whole stack. Telos is the transport layer that moves the work."
 >
   <p class="layers__claim">
     Storage keeps bytes. This record answers questions across time, source, and outcome, on the
@@ -43,15 +54,8 @@ const layers = [
   </p>
 
   <div class="cards cards--layers">
-    <div class="card card--wide" id="product-delta">
-      <span class="card__value">Delta</span>
-      <p class="card__meta">the cockpit</p>
-      <p>Every kind of autonomous workforce in one space: agents, signals, machines, people, and outside systems.</p>
-      <p>The platform a person commands the stack from. On the Ktema stack, the cockpit reads the same record the machine wrote.</p>
-      <p><a href={delta.href}>Delta</a></p>
-    </div>
     {
-      layers.map((layer) => {
+      pillars.map((layer) => {
         const motto = creed.find((entry) => entry.product === layer.name)?.line;
 
         return (
@@ -69,12 +73,36 @@ const layers = [
         );
       })
     }
+    {
+      surface.map((layer) => (
+        <div class="card card--surface" id={`product-${layer.name.toLowerCase()}`}>
+          <span class="card__value">{layer.name}</span>
+          <p class="card__meta">{layer.meta}</p>
+          <p>{layer.line}</p>
+          {layer.href && (
+            <p>
+              <a href={layer.href}>{layer.link}</a>
+            </p>
+          )}
+        </div>
+      ))
+    }
   </div>
 </Section>
 
 <style>
+  /* Six columns let the three pillars take two each and the two layers under them
+     take three each, so both rows span the full width without a stray cell. */
   .cards--layers {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .cards--layers > .card {
+    grid-column: span 2;
+  }
+
+  .cards--layers > .card--surface {
+    grid-column: span 3;
   }
 
   .layers__claim {
@@ -84,10 +112,6 @@ const layers = [
     color: var(--fg);
     font-size: 17px;
     line-height: 1.6;
-  }
-
-  .card--wide {
-    grid-column: 1 / -1;
   }
 
   .card__meta {
@@ -103,15 +127,14 @@ const layers = [
     line-height: 1.35;
   }
 
-  @media (max-width: 1100px) {
-    .cards--layers {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
   @media (max-width: 900px) {
     .cards--layers {
       grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cards--layers > .card,
+    .cards--layers > .card--surface {
+      grid-column: auto;
     }
   }
 </style>
