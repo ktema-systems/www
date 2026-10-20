@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds the infrastructure for accountable agentic computing: Ktema, the deterministic storage engine; Kletos, the execution layer; Krisis, the governance layer; and Delta, the Single Space Operation Platform.',
+    'Ktema Systems builds the infrastructure for accountable agentic computing: Ktema, the deterministic storage engine; Kletos, the execution layer; Krisis, the governance layer; and Delta, the Single Space Agentic AI Operation Platform.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -30,16 +30,16 @@ export const product = {
     'Ktema is the deterministic storage engine that answers multi-dimensional queries on hardware that cannot run a database. It needs no index structure and no operating system.',
 } as const;
 
-// Delta is the Single Space Operation Platform, with the cockpit as the surface a
+// Delta is the Single Space Agentic AI Operation Platform, with the cockpit as the surface a
 // person commands the run from. A campaign is one run inside a project, and a
 // finished run is a package that can be replayed and compared.
 export const delta = {
   name: 'Delta',
   href: '/delta',
-  title: 'the Single Space Operation Platform',
+  title: 'the Single Space Agentic AI Operation Platform',
   tagline: 'Every kind of autonomous workforce in one space.',
   description:
-    'Delta is the Single Space Operation Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
+    'Delta is the Single Space Agentic AI Operation Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
 } as const;
 
 // The three lines that state the three layers. The first two are the wings as they
