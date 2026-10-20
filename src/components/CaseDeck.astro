@@ -58,9 +58,9 @@ const cases = [
     <div class="wrap cases__grid">
       <header class="cases__head">
         <p class="eyebrow">Cases</p>
-        <h2>The record, read back</h2>
+        <h2>Every incident ends in a question.</h2>
         <p class="lede">
-          Situations the system is built for. Each is a question the machine can answer from its own
+          Situations the system is built for. Each is a question the machine has to answer from its own
           record, even offline.
         </p>
       </header>
@@ -79,7 +79,7 @@ const cases = [
                 {item.question}
               </p>
               <p class="case__r">
-                <span class="case__k">The record</span>
+                <span class="case__k">What the record must hold</span>
                 {item.record}
               </p>
             </li>
@@ -300,6 +300,22 @@ const cases = [
     transform: translateY(-28px);
   }
 
+  /* The list waits below the heading until the section is close, then fades in. */
+  .cases.is-live .cases__list,
+  .cases.is-live .cases__foot {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+  }
+
+  .cases.is-live.is-revealed .cases__list,
+  .cases.is-live.is-revealed .cases__foot {
+    opacity: 1;
+    transform: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .cases.is-live {
       height: auto;
@@ -357,6 +373,17 @@ const cases = [
     } else {
       region.classList.add('is-live');
       setActive(0);
+
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            region.classList.add('is-revealed');
+            reveal.disconnect();
+          }
+        },
+        { rootMargin: '0px 0px -40% 0px' },
+      );
+      reveal.observe(region);
 
       ScrollTrigger.create({
         trigger: region,

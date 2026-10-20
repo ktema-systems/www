@@ -160,21 +160,33 @@ const menu = items.find((item) => item.items)?.items;
 
     const close = () => {
       window.clearTimeout(timer);
-      timer = window.setTimeout(() => setOpen(false), 140);
+      timer = window.setTimeout(() => setOpen(false), 260);
+    };
+
+    const cancelClose = () => window.clearTimeout(timer);
+    const closeNow = () => {
+      cancelClose();
+      setOpen(false);
     };
 
     trigger.addEventListener('pointerenter', open);
-    trigger.addEventListener('pointerleave', close);
     trigger.addEventListener('focus', open);
-    trigger.addEventListener('blur', close);
     menu.addEventListener('pointerenter', open);
-    menu.addEventListener('pointerleave', close);
     menu.addEventListener('focusin', open);
-    menu.addEventListener('focusout', close);
+
+    // The panel belongs to the masthead, so it closes only when the pointer
+    // leaves the whole bar and panel, not when it crosses to an adjacent link.
+    masthead.addEventListener('pointerenter', cancelClose);
+    masthead.addEventListener('pointerleave', close);
+    masthead.addEventListener('focusout', (event) => {
+      if (!masthead.contains(event.relatedTarget as Node | null)) {
+        close();
+      }
+    });
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        close();
+        closeNow();
         trigger.blur();
       }
     });

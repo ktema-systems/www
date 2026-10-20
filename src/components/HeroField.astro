@@ -48,14 +48,28 @@
 <style>
   /* The field takes the hero's height where the hero is short and a viewport band
      where it is tall. The field is scaled to fill that band, so the drawing stays
-     large without a fade. */
+     large. The entrance is a plain fade. */
+  /* The field is a page backdrop: fixed to the viewport, so it has no finite
+     bottom edge inside the content. Do not restore a height cap or the hero's
+     overflow clip; the field must never be cut at a section boundary. */
   .field {
-    position: absolute;
+    position: fixed;
     inset: 0 0 auto 0;
-    height: min(100%, 84vh, 900px);
-    z-index: 0;
+    height: 100vh;
+    height: 100svh;
+    z-index: -1;
     pointer-events: none;
     overflow: hidden;
+    animation: field-fade 700ms var(--ease) both;
+  }
+
+  @keyframes field-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .field svg {
@@ -87,6 +101,13 @@
   @keyframes field-spin {
     to {
       transform: rotate(1turn);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field {
+      animation: none;
+      opacity: 1;
     }
   }
 </style>

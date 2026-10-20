@@ -62,6 +62,10 @@ digraph DOTGraph {
 
 - When code DOT, do not use `graph` for node or class name.
 
+## Site invariants
+
+- The hero field is a page backdrop. It stays fixed to the viewport, or otherwise spans the viewport, and must never be clipped at a finite bottom edge. Do not restore a height cap, `overflow: hidden` on the hero, or a section-height limit that cuts it.
+
 ## Git
 
 - Do not push.

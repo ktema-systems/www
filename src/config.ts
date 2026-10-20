@@ -64,7 +64,7 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Kletos', note: 'the autopilot', href: '/#product-kletos' },
   { label: 'Krisis', note: 'the kill switch', href: '/#product-krisis' },
   { label: 'Delta', note: 'the cockpit', href: delta.href },
-  { label: 'Telos', note: 'the transport layer', href: '/#product-telos' },
+  { label: 'Telos', note: 'the transport', href: '/#product-telos' },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page

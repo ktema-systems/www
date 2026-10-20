@@ -553,7 +553,7 @@ svg {
 /* The mark turns with the panel: the hexagon steps once and takes the accent as
    the menu begins to unfold, so the two read as one gesture. */
 .masthead.is-open .brand__mark {
-  transform: rotate(18deg) scale(1.06);
+  transform: rotate(30deg) scale(1.06);
   background-color: var(--accent);
 }
 
@@ -661,14 +661,15 @@ svg {
   transform: translateY(1px) rotate(225deg);
 }
 
-/* The panel belongs to the page rather than floating over it. It opens inside the
-   masthead's flow, so it pushes the page down as it unfolds, and the animation is
-   the fold's own row rather than an overlay's clip. */
+/* The panel opens inside the masthead's flow, so it parts the page rather than
+   covering it. The glass tint and the blur keep it a sheet rather than a slab. */
 .product-menu {
   position: relative;
   display: grid;
   grid-template-rows: 0fr;
-  background: var(--bg-2);
+  background: color-mix(in srgb, var(--bg-2) 72%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  backdrop-filter: blur(22px) saturate(140%);
   border-bottom: 0 solid var(--line);
   visibility: hidden;
   transition:
@@ -684,16 +685,24 @@ svg {
   overflow: hidden;
 }
 
-/* A thin accent thread runs from the brand's edge across the panel as it opens. */
+/* A thin accent thread runs from the brand's edge across the panel as it opens,
+   then drifts along the rule while the panel stays open. */
 .product-menu::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
-  background: linear-gradient(90deg, var(--accent), transparent 72%);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 30%, transparent) 0%,
+    var(--accent) 50%,
+    color-mix(in srgb, var(--accent) 30%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 0% 0;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 420ms var(--ease);
+  transition: transform 220ms var(--ease);
 }
 
 .masthead.is-open .product-menu {
@@ -705,6 +714,16 @@ svg {
 
 .masthead.is-open .product-menu::before {
   transform: scaleX(1);
+  animation: product-thread 14s ease-in-out infinite alternate;
+}
+
+@keyframes product-thread {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0% 0;
+  }
 }
 
 .product-menu__inner {
@@ -784,6 +803,10 @@ svg {
 
   .masthead.is-open .brand__mark {
     transform: none;
+  }
+
+  .masthead.is-open .product-menu::before {
+    animation: none;
   }
 
   .product-menu a {

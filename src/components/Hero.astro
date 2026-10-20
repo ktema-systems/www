@@ -47,7 +47,8 @@ const { eyebrow, title, lede, body, field = true } = Astro.props;
 <style>
   .hero {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
+    isolation: isolate;
     /* The bar floats over the page, so the field starts at the top of the window
        and this padding holds the copy clear of it. The air under the lockup is the
        page's, not the bar's: it grows with the window and stops before the copy
