@@ -81,7 +81,6 @@ export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const deltaNav: readonly NavItem[] = [
   { label: 'The loop', href: '#loop' },
-  { label: 'Cockpit', href: '#cockpit' },
   { label: 'Campaigns', href: '#campaigns' },
   { label: 'Products', href: '#loop', items: productMenu },
   { label: 'Contact', href: '#contact' },
