@@ -463,7 +463,7 @@ svg {
    one is still composited against a backdrop, and the hero's field is directly
    behind it. An open panel is the exception, because it is a sheet that the bar
    has to meet. */
-:root.is-at-top .masthead:not(.is-open) {
+:root.is-at-top .masthead:not(.is-open):not(.is-menu) {
   background: none;
   backdrop-filter: none;
   border-bottom-color: transparent;
@@ -477,6 +477,12 @@ svg {
   --masthead-progress: 1;
   --brand-size: var(--brand-settled);
   --brand-lift: 0px;
+}
+
+/* The mobile sheet gives the bar the same surface a panel asks for, without
+   resizing the lockup. */
+.masthead.is-menu {
+  --masthead-progress: 1;
 }
 
 .masthead__inner {
@@ -554,6 +560,45 @@ svg {
 /* The short name, for the widths where the whole one, the strip and the call to
    action cannot share one row. Which of the two is drawn is set below 720px. */
 .brand__short {
+  display: none;
+}
+
+/* The strip is replaced by a sheet below 900px, and this is the control that opens
+   it. The two bars turn into a cross while the sheet is open. */
+.masthead__toggle {
+  display: none;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.masthead__toggle-bar {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: currentColor;
+  transition: transform 260ms var(--ease);
+}
+
+.masthead.is-menu .masthead__toggle-bar:first-child {
+  transform: translateY(3px) rotate(45deg);
+}
+
+.masthead.is-menu .masthead__toggle-bar:last-child {
+  transform: translateY(-3px) rotate(-45deg);
+}
+
+.site-menu {
   display: none;
 }
 
@@ -1225,6 +1270,78 @@ svg {
     margin-left: auto;
   }
 
+  .masthead__toggle {
+    display: inline-flex;
+  }
+
+  .site-menu {
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    background: var(--bg-2);
+    transition:
+      grid-template-rows 420ms var(--ease),
+      visibility 0s linear 420ms;
+  }
+
+  .masthead.is-menu .site-menu {
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .site-menu__fold {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .site-menu__inner {
+    padding-block: 6px 22px;
+  }
+
+  .site-menu__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-menu__item > a {
+    display: flex;
+    align-items: center;
+    min-height: 46px;
+    color: var(--fg);
+    font-size: 17px;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .site-menu__sub {
+    margin: 0 0 10px;
+    padding: 2px 0 2px 14px;
+    list-style: none;
+    border-left: 1px solid var(--line-2);
+  }
+
+  .site-menu__sub a {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 44px;
+    color: var(--fg-2);
+    font-size: 15.5px;
+    text-decoration: none;
+  }
+
+  .site-menu__sub a span:first-child {
+    color: var(--fg);
+  }
+
+  .site-menu__note {
+    color: var(--fg-3);
+    font-size: 12.5px;
+  }
+
   .cards--3 {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1243,12 +1360,20 @@ svg {
   }
 }
 
+/* The narrowest rows cannot hold the brand, the call to action and the toggle at
+   once. The contact section is in the sheet, so the button steps out first. */
+@media (max-width: 380px) {
+  .masthead .btn {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   /* Below 900px the row is the brand and the call to action and nothing else, and
      the wide cut makes the name wide enough that the page would scroll sideways at
      the narrowest widths. */
   .masthead__inner {
-    gap: 20px;
+    gap: 14px;
   }
 
   .brand__name {

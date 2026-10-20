@@ -43,6 +43,17 @@ const menu = items.find((item) => item.items)?.items;
       }
     </nav>
     <a class="btn btn--accent" href={cta.href}>{cta.label}</a>
+    <button
+      class="masthead__toggle"
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="site-menu"
+      aria-label="Menu"
+    >
+      <span class="masthead__toggle-bar" aria-hidden="true"></span>
+      <span class="masthead__toggle-bar" aria-hidden="true"></span>
+    </button>
   </div>
   {
     menu && (
@@ -60,6 +71,33 @@ const menu = items.find((item) => item.items)?.items;
       </div>
     )
   }
+  <div class="site-menu" id="site-menu" data-site-menu>
+    <div class="site-menu__fold">
+      <nav class="wrap site-menu__inner" aria-label="Sections">
+        <ul class="site-menu__list">
+          {
+            items.map((item) => (
+              <li class="site-menu__item">
+                <a href={item.href}>{item.label}</a>
+                {item.items && (
+                  <ul class="site-menu__sub">
+                    {item.items.map((entry) => (
+                      <li>
+                        <a href={entry.href}>
+                          <span>{entry.label}</span>
+                          {entry.note && <span class="site-menu__note">{entry.note}</span>}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+  </div>
 </header>
 
 <script>
@@ -138,6 +176,41 @@ const menu = items.find((item) => item.items)?.items;
       if (event.key === 'Escape') {
         close();
         trigger.blur();
+      }
+    });
+  }
+
+  // The strip is hidden below 900px, so the same links are offered in a sheet under
+  // the bar. It opens in the page's flow like the products panel and closes on a
+  // link, on Escape, and when the window grows back past the strip's breakpoint.
+  const menuToggle = masthead?.querySelector<HTMLElement>('[data-menu-toggle]');
+  const siteMenu = masthead?.querySelector<HTMLElement>('[data-site-menu]');
+
+  if (masthead && menuToggle && siteMenu) {
+    const setSiteMenu = (open: boolean) => {
+      masthead.classList.toggle('is-menu', open);
+      menuToggle.setAttribute('aria-expanded', String(open));
+    };
+
+    menuToggle.addEventListener('click', () => {
+      setSiteMenu(!masthead.classList.contains('is-menu'));
+    });
+
+    siteMenu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) {
+        setSiteMenu(false);
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        setSiteMenu(false);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 900) {
+        setSiteMenu(false);
       }
     });
   }
