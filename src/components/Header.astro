@@ -47,13 +47,15 @@ const menu = items.find((item) => item.items)?.items;
   {
     menu && (
       <div class="product-menu" id="products-menu" data-products-menu>
-        <div class="wrap product-menu__inner">
-          {menu.map((entry) => (
-            <a href={entry.href}>
-              <span class="product-menu__name">{entry.label}</span>
-              {entry.note && <span class="product-menu__note">{entry.note}</span>}
-            </a>
-          ))}
+        <div class="product-menu__fold">
+          <div class="wrap product-menu__inner">
+            {menu.map((entry) => (
+              <a href={entry.href}>
+                <span class="product-menu__name">{entry.label}</span>
+                {entry.note && <span class="product-menu__note">{entry.note}</span>}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     )

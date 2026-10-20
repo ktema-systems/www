@@ -225,6 +225,9 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   background: var(--bg);
+  /* The products panel opens inside the page and pushes it down. Anchoring would
+     hold the content still and let the panel cover it instead. */
+  overflow-anchor: none;
 }
 
 body {
@@ -588,10 +591,8 @@ svg {
   font-size: 15.5px;
 }
 
-/* The strip's Products item opens a panel under the bar. The item stretches to the
-   bar's height so the pointer can travel from the label to the panel without
-   leaving the target, and the panel is anchored to the bar rather than to the item,
-   so the strip's own scroll container cannot clip it. */
+/* The strip's Products item stretches to the bar's height, so the pointer can
+   travel from the label to the panel it opens. */
 .masthead__item {
   display: flex;
   align-self: stretch;
@@ -615,23 +616,27 @@ svg {
   transform: translateY(1px) rotate(225deg);
 }
 
+/* The panel belongs to the page rather than floating over it. It opens inside the
+   masthead's flow, so it pushes the page down as it unfolds, and the animation is
+   the fold's own row rather than an overlay's clip. */
 .product-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  position: relative;
+  display: grid;
+  grid-template-rows: 0fr;
   background: var(--bg-2);
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 28px 56px -28px rgb(0 0 0 / 0.72);
-  opacity: 0;
+  border-bottom: 0 solid var(--line);
   visibility: hidden;
-  transform: translateY(-6px);
-  clip-path: inset(0 0 100% 0);
   transition:
-    opacity 160ms var(--ease),
-    transform 260ms var(--ease),
-    clip-path 420ms var(--ease),
-    visibility 0s linear 420ms;
+    grid-template-rows 440ms var(--ease),
+    border-bottom-width 440ms var(--ease),
+    visibility 0s linear 440ms;
+}
+
+/* The fold is the grid item. Its overflow keeps the panel's own padding out of the
+   closed state, where the track is zero. */
+.product-menu__fold {
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* A thin accent thread runs from the brand's edge across the panel as it opens. */
@@ -647,10 +652,9 @@ svg {
 }
 
 .masthead.is-open .product-menu {
-  opacity: 1;
+  grid-template-rows: 1fr;
+  border-bottom-width: 1px;
   visibility: visible;
-  transform: none;
-  clip-path: inset(0 0 0 0);
   transition-delay: 0s;
 }
 
@@ -735,10 +739,6 @@ svg {
 
   .masthead.is-open .brand__mark {
     transform: none;
-  }
-
-  .product-menu {
-    clip-path: none;
   }
 
   .product-menu a {
