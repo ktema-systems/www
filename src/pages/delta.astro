@@ -22,7 +22,33 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     title={delta.tagline}
     lede="Delta is the Single Space Operation Platform: a standalone mission control for robots, drones, codebases, agents, and the people who command them. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable, and the platform becomes the accountable mission control."
     body="What the machine does is the sum of the intents that enter the loop."
-  />
+    field={false}
+  >
+    <div slot="backdrop" class="delta-backdrop">
+      <img
+        src="/delta_scr.jpeg"
+        alt=""
+        width="3362"
+        height="2158"
+        loading="eager"
+        decoding="async"
+      />
+    </div>
+
+    <figure slot="figure" class="delta-shot">
+      <div class="delta-shot__frame">
+        <img
+          src="/delta_scr.png"
+          alt="Delta in a manufacturing robot demo run: the cell shows a conveyor, servo drives, maintenance robots, and two live camera views, with the operator's intents and claims on the left."
+          width="1767"
+          height="951"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+        />
+      </div>
+    </figure>
+  </Hero>
 
   <DeltaDeck />
 
@@ -83,3 +109,63 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
   </Section>
 </Base>
+
+<style>
+  /* The representative run sits behind the copy as a faint bed, at the size and
+     framing a future clip will take. */
+  .delta-backdrop {
+    width: 100%;
+    height: 100%;
+  }
+
+  .delta-backdrop img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 68% 50%;
+    filter: saturate(0.45) brightness(0.4) blur(6px);
+    opacity: 0;
+    animation: delta-backdrop-in 1600ms var(--ease) 80ms forwards;
+  }
+
+  /* The screenshot is the first thing the page shows: it arrives with the copy
+     rather than after a scroll. */
+  .delta-shot {
+    margin: 0;
+  }
+
+  .delta-shot__frame {
+    border-radius: 12px;
+    overflow: hidden;
+    animation: delta-shot-in 900ms var(--ease) 160ms both;
+  }
+
+  .delta-shot__frame img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @keyframes delta-backdrop-in {
+    from {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+    to {
+      opacity: 0.2;
+      transform: none;
+    }
+  }
+
+  @keyframes delta-shot-in {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.992);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

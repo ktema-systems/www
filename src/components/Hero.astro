@@ -1,22 +1,32 @@
 ---
 import HeroField from './HeroField.astro';
 
-// The hero is shared by the two pages: the field behind it, the copy, and a figure
-// the caller hands in. A page states its own line and its own title image, because
-// the company's hero and the engine's hero say different things over the same
-// ground.
+// The hero is shared by the pages: an optional backdrop, the field, the copy, and a
+// figure the caller hands in. A page states its own line and its own title image,
+// because the company's hero and the engine's hero say different things over the
+// same ground.
 interface Props {
   eyebrow?: string;
   title: string;
   lede: string;
   body?: string;
+  // A page that carries its own backdrop turns the field off, so the two do not
+  // draw over each other.
+  field?: boolean;
 }
 
-const { eyebrow, title, lede, body } = Astro.props;
+const { eyebrow, title, lede, body, field = true } = Astro.props;
 ---
 
 <section class="hero" id="top">
-  <HeroField />
+  {
+    Astro.slots.has('backdrop') && (
+      <div class="hero__backdrop">
+        <slot name="backdrop" />
+      </div>
+    )
+  }
+  {field && <HeroField />}
   <div class="wrap">
     <div class="hero__head">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
@@ -48,6 +58,13 @@ const { eyebrow, title, lede, body } = Astro.props;
   }
 
   /* The field is the only layer below; everything in a .wrap sits above it. */
+  .hero__backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
   .hero > .wrap {
     position: relative;
     z-index: 1;
