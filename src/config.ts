@@ -71,8 +71,8 @@ export const productMenu: readonly NavLink[] = [
 // that renders them. The strip is what the masthead scrolls sideways, and the call
 // to action beside it is the one link the page is trying to earn.
 export const companyNav: readonly NavItem[] = [
-  { label: 'Cases', href: '#cases' },
   { label: 'Products', href: '#products', items: productMenu },
+  { label: 'Cases', href: '#cases' },
   { label: 'Partners', href: '#partners' },
   { label: 'Contact', href: '#contact' },
 ];
