@@ -1,10 +1,11 @@
 ---
 /*
   The hero's coordinate field: the mark's own construction, the hexagon, the inner
-  diamond and the connector lines, repeated at three scales and traced in the accent.
-  It covers the top of the hero and sits slightly right of centre, so the mark reads
-  beside the copy rather than behind it. The opacity is kept low enough that body text
-  stays far above its contrast floor.
+  diamond and the connector lines, traced at two scales in the accent. The outer
+  hexagon encloses the construction, so the drawing ends on its own geometry and no
+  edge of the canvas or of the section cuts a stroke. It is aligned to the right of
+  the hero, so the mark reads beside the copy rather than behind it. The opacity is
+  kept low enough that body text stays far above its contrast floor.
 
   Pure SVG and CSS. No client JavaScript, and the global reduced-motion rule already
   collapses the rotation.
@@ -12,8 +13,12 @@
 ---
 
 <div class="field" aria-hidden="true">
-  <div class="field__fade">
-    <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
+  <svg
+    viewBox="0 0 760 760"
+    preserveAspectRatio="xMaxYMid meet"
+    stroke-width="1.2"
+    vector-effect="non-scaling-stroke"
+  >
     <defs>
       <g id="ktema-field">
         <polygon points="85,-147.22 170,0 85,147.22 -85,147.22 -170,0 -85,-147.22" />
@@ -35,48 +40,26 @@
       </g>
     </defs>
 
-      <g class="field__layer field__layer--frame">
-        <polygon points="885,-113.63 1170,380 885,873.63 315,873.63 30,380 315,-113.63" />
-      </g>
+    <g class="field__layer field__layer--frame">
+      <polygon points="460,40 754.4,210 754.4,550 460,720 165.6,550 165.6,210" />
+    </g>
 
-      <g class="field__layer field__layer--near">
-        <use href="#ktema-field" transform="translate(870 380) scale(1.3)" />
-      </g>
-
-    </svg>
-  </div>
+    <g class="field__layer field__layer--near">
+      <use href="#ktema-field" transform="translate(460 380) scale(1.5)" />
+    </g>
+  </svg>
 </div>
 
 <style>
-  /* The height stays under the hero's own height, so the mask finishes fading
-     before the hero's overflow clip can cut a stroke mid-air. On a short hero the
-     field takes the hero's height; on a tall one it stops at the viewport band. */
+  /* The field is drawn whole. It takes the hero's height where the hero is short
+     and a viewport band where the hero is tall, and the drawing is fitted inside
+     that box, so nothing is cut and no fade is needed. */
   .field {
     position: absolute;
     inset: 0 0 auto 0;
     height: min(100%, 84vh, 900px);
     z-index: 0;
     pointer-events: none;
-    overflow: hidden;
-  }
-
-  .field__fade {
-    width: 100%;
-    height: 100%;
-    transform: translateX(2%);
-    /* The field runs to the top and sides and melts into the page at the bottom. */
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      #000 0%,
-      #000 86%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to bottom,
-      #000 0%,
-      #000 86%,
-      transparent 100%
-    );
   }
 
   .field svg {
@@ -89,6 +72,12 @@
     stroke-linecap: round;
   }
 
+  /* The drawing is fitted to the box, so the strokes are held at one weight rather
+     than thinning with the fit. */
+  .field svg * {
+    vector-effect: non-scaling-stroke;
+  }
+
   .field__layer {
     transform-box: view-box;
   }
@@ -96,12 +85,12 @@
   /* Opacity is set by the copy's contrast floor: a hexagon vertex stacks three
      strokes, and this leaves body text near 4.6:1. */
   .field__layer--frame {
-    opacity: 0.08;
+    opacity: 0.09;
   }
 
   .field__layer--near {
-    transform-origin: 870px 380px;
-    opacity: 0.15;
+    transform-origin: 460px 380px;
+    opacity: 0.17;
     animation: field-spin 120s linear infinite;
   }
 
