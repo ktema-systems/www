@@ -5,27 +5,8 @@ import DeltaDeck from '../components/DeltaDeck.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: the platform, the run, and the campaigns. The hero carries the two
-// demo runs in turn, so the product is on screen from the first second and the
-// reading under it changes with the picture.
-const shots = [
-  {
-    src: '/delta_scr.png',
-    width: 1767,
-    height: 951,
-    alt: 'Delta in a manufacturing robot demo run: the cell shows a conveyor, servo drives, maintenance robots, and two live camera views, with the operator\'s intents and claims on the left.',
-    caption:
-      "The manufacturing robot demo run: a conveyor, servo drives, maintenance robots, and two live camera views, with the operator's intents and claims on the left.",
-  },
-  {
-    src: '/delta_scr.jpeg',
-    width: 3362,
-    height: 2158,
-    alt: 'Delta in a drone and aircraft rescue demo run: intents and claims on the left, the project space in the middle with a live map and two camera views, and the chain of fact, hint, intent, and claim along the bottom.',
-    caption:
-      "The drone and aircraft rescue run: the project's space in the middle with a live map and two camera views, and the chain of fact, hint, intent, and claim along the bottom.",
-  },
-];
+// Delta's page: the platform, the run, and the campaigns. The hero states the
+// platform, and the sections below explain the run in words.
 ---
 
 <Base
@@ -39,50 +20,7 @@ const shots = [
     title={delta.tagline}
     lede="Delta is the Single Space Agentic AI Operation Platform: a standalone mission control for robots, drones, codebases, agents, and the people who command them. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable, and the platform becomes the accountable mission control."
     body="What the machine does is the sum of the intents that enter the loop."
-  >
-    <figure slot="figure" class="delta-shot" data-shot-rotator>
-      <div class="delta-shot__head">
-        <div class="delta-shot__captions">
-          {
-            shots.map((shot, index) => (
-              <p
-                class:list={['delta-shot__caption', index === 0 && 'is-active']}
-                data-shot-caption
-              >
-                {shot.caption}
-              </p>
-            ))
-          }
-        </div>
-        <div class="delta-shot__meta">
-          <span class="delta-shot__count">
-            <span data-shot-now>01</span> / {String(shots.length).padStart(2, '0')}
-          </span>
-          <button class="delta-shot__pause" type="button" data-shot-toggle aria-pressed="false">
-            Pause
-          </button>
-        </div>
-      </div>
-
-      <div class="delta-shot__frame">
-        {
-          shots.map((shot, index) => (
-            <img
-              src={shot.src}
-              alt={shot.alt}
-              width={shot.width}
-              height={shot.height}
-              loading={index === 0 ? 'eager' : 'lazy'}
-              fetchpriority={index === 0 ? 'high' : undefined}
-              decoding="async"
-              class:list={[index === 0 && 'is-active']}
-              data-shot-img
-            />
-          ))
-        }
-      </div>
-    </figure>
-  </Hero>
+  />
 
   <DeltaDeck />
 
@@ -102,8 +40,8 @@ const shots = [
     </dl>
 
     <p class="note">
-      The first campaign is the villa evacuation, shown above: five objectives, one 75-second window,
-      and 1,164 records.
+      The first campaign is the villa evacuation, described above: five objectives, one 75-second
+      window, and 1,164 records.
     </p>
   </Section>
 
@@ -117,172 +55,3 @@ const shots = [
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
   </Section>
 </Base>
-
-<style>
-  /* One frame for both runs, so the copy under it never moves as the picture
-     changes. The image is contained rather than cropped: the two captures have
-     different shapes and both carry interface at their edges. */
-  .delta-shot {
-    margin: 0;
-  }
-
-  .delta-shot__frame {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1.7;
-    border-radius: 6px;
-    overflow: hidden;
-    background: var(--bg);
-    animation: delta-shot-in 900ms var(--ease) 160ms both;
-  }
-
-  .delta-shot__frame img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    opacity: 0;
-    transition: opacity 700ms var(--ease);
-  }
-
-  .delta-shot__frame img.is-active {
-    opacity: 1;
-  }
-
-  .delta-shot__head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 24px;
-    padding-bottom: 12px;
-  }
-
-  .delta-shot__captions {
-    display: grid;
-  }
-
-  .delta-shot__caption {
-    grid-area: 1 / 1;
-    margin: 0;
-    max-width: 46rem;
-    color: var(--fg-3);
-    font-size: 12.5px;
-    line-height: 1.6;
-    opacity: 0;
-    transition: opacity 500ms var(--ease);
-  }
-
-  .delta-shot__caption.is-active {
-    opacity: 1;
-  }
-
-  .delta-shot__meta {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 14px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
-    color: var(--fg-3);
-  }
-
-  .delta-shot__pause {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: var(--fg-3);
-    font: inherit;
-    letter-spacing: inherit;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .delta-shot__pause:hover,
-  .delta-shot__pause:focus-visible {
-    color: var(--fg);
-  }
-
-  @keyframes delta-shot-in {
-    from {
-      opacity: 0;
-      transform: translateY(28px) scale(0.992);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  @media (max-width: 720px) {
-    .delta-shot__head {
-      flex-direction: column;
-      gap: 8px;
-    }
-  }
-</style>
-
-<script>
-  // The two runs trade places every six seconds. Hover and the pause control hold
-  // the picture, and a reader who asked for reduced motion gets the first one only.
-  const rotator = document.querySelector<HTMLElement>('[data-shot-rotator]');
-
-  if (rotator) {
-    const images = Array.from(rotator.querySelectorAll<HTMLElement>('[data-shot-img]'));
-    const captions = Array.from(rotator.querySelectorAll<HTMLElement>('[data-shot-caption]'));
-    const now = rotator.querySelector<HTMLElement>('[data-shot-now]');
-    const toggle = rotator.querySelector<HTMLButtonElement>('[data-shot-toggle]');
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    let index = 0;
-    let timer: number | undefined;
-    let paused = false;
-    let hovering = false;
-
-    const show = (next: number) => {
-      index = next % images.length;
-      images.forEach((img, i) => img.classList.toggle('is-active', i === index));
-      captions.forEach((caption, i) => caption.classList.toggle('is-active', i === index));
-
-      if (now) {
-        now.textContent = String(index + 1).padStart(2, '0');
-      }
-    };
-
-    const start = () => {
-      window.clearInterval(timer);
-
-      if (reduce.matches) {
-        if (toggle) {
-          toggle.hidden = true;
-        }
-        return;
-      }
-
-      timer = window.setInterval(() => {
-        if (!paused && !hovering && !document.hidden) {
-          show(index + 1);
-        }
-      }, 6000);
-    };
-
-    toggle?.addEventListener('click', () => {
-      paused = !paused;
-      toggle.textContent = paused ? 'Play' : 'Pause';
-      toggle.setAttribute('aria-pressed', String(paused));
-    });
-
-    rotator.addEventListener('pointerenter', () => {
-      hovering = true;
-    });
-
-    rotator.addEventListener('pointerleave', () => {
-      hovering = false;
-    });
-
-    reduce.addEventListener('change', start);
-    start();
-  }
-</script>

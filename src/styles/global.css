@@ -552,7 +552,8 @@ svg {
 
 /* The mark turns with the panel: the hexagon steps once and takes the accent as
    the menu begins to unfold, so the two read as one gesture. */
-.masthead.is-open .brand__mark {
+.masthead.is-open .brand__mark,
+.masthead.is-menu .brand__mark {
   transform: rotate(30deg) scale(1.06);
   background-color: var(--accent);
 }
@@ -667,9 +668,13 @@ svg {
   position: relative;
   display: grid;
   grid-template-rows: 0fr;
-  background: color-mix(in srgb, var(--bg-2) 72%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  backdrop-filter: blur(22px) saturate(140%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-2) 88%, transparent),
+    color-mix(in srgb, var(--bg-2) 64%, transparent)
+  );
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
   border-bottom: 0 solid var(--line);
   visibility: hidden;
   transition:
@@ -685,24 +690,29 @@ svg {
   overflow: hidden;
 }
 
-/* A thin accent thread runs from the brand's edge across the panel as it opens,
-   then drifts along the rule while the panel stays open. */
-.product-menu::before {
+/* A band of light runs the full width of the rule and drifts along it, so the
+   panel reads as moving glass rather than a fixed sheet. The phone's sheet uses
+   the same line, because it is the same gesture at a narrower width. */
+.product-menu::before,
+.site-menu::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
   background: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--accent) 30%, transparent) 0%,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 22%, transparent) 24%,
     var(--accent) 50%,
-    color-mix(in srgb, var(--accent) 30%, transparent) 100%
+    color-mix(in srgb, var(--accent) 22%, transparent) 76%,
+    transparent 100%
   );
-  background-size: 200% 100%;
+  background-size: 240% 100%;
   background-position: 0% 0;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 28%, transparent);
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 220ms var(--ease);
+  transition: transform 260ms var(--ease);
 }
 
 .masthead.is-open .product-menu {
@@ -712,17 +722,18 @@ svg {
   transition-delay: 0s;
 }
 
-.masthead.is-open .product-menu::before {
+.masthead.is-open .product-menu::before,
+.masthead.is-menu .site-menu::before {
   transform: scaleX(1);
-  animation: product-thread 14s ease-in-out infinite alternate;
+  animation: product-thread 16s ease-in-out infinite alternate;
 }
 
 @keyframes product-thread {
   from {
-    background-position: 100% 0;
+    background-position: 0% 0;
   }
   to {
-    background-position: 0% 0;
+    background-position: 100% 0;
   }
 }
 
@@ -797,19 +808,29 @@ svg {
   .brand__mark,
   .product-menu,
   .product-menu a,
-  .product-menu::before {
+  .product-menu::before,
+  .site-menu,
+  .site-menu::before,
+  .site-menu__sub a {
     transition: none;
   }
 
-  .masthead.is-open .brand__mark {
+  .masthead.is-open .brand__mark,
+  .masthead.is-menu .brand__mark {
     transform: none;
   }
 
-  .masthead.is-open .product-menu::before {
+  .masthead.is-open .product-menu::before,
+  .masthead.is-menu .site-menu::before {
     animation: none;
   }
 
   .product-menu a {
+    opacity: 1;
+    transform: none;
+  }
+
+  .site-menu__sub a {
     opacity: 1;
     transform: none;
   }
@@ -1297,11 +1318,20 @@ svg {
     display: inline-flex;
   }
 
+  /* The sheet is the products panel at a narrower width, so it keeps the same
+     split, the same glass, and the same light line. */
   .site-menu {
+    position: relative;
     display: grid;
     grid-template-rows: 0fr;
     visibility: hidden;
-    background: var(--bg-2);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-2) 92%, transparent),
+      color-mix(in srgb, var(--bg-2) 70%, transparent)
+    );
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
     transition:
       grid-template-rows 420ms var(--ease),
       visibility 0s linear 420ms;
@@ -1354,6 +1384,36 @@ svg {
     color: var(--fg-2);
     font-size: 15.5px;
     text-decoration: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 240ms var(--ease),
+      transform 320ms var(--ease);
+  }
+
+  .masthead.is-menu .site-menu__sub a {
+    opacity: 1;
+    transform: none;
+  }
+
+  .masthead.is-menu .site-menu__sub li:nth-child(1) a {
+    transition-delay: 80ms;
+  }
+
+  .masthead.is-menu .site-menu__sub li:nth-child(2) a {
+    transition-delay: 120ms;
+  }
+
+  .masthead.is-menu .site-menu__sub li:nth-child(3) a {
+    transition-delay: 160ms;
+  }
+
+  .masthead.is-menu .site-menu__sub li:nth-child(4) a {
+    transition-delay: 200ms;
+  }
+
+  .masthead.is-menu .site-menu__sub li:nth-child(5) a {
+    transition-delay: 240ms;
   }
 
   .site-menu__sub a span:first-child {

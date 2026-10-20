@@ -208,8 +208,23 @@ const menu = items.find((item) => item.items)?.items;
       setSiteMenu(!masthead.classList.contains('is-menu'));
     });
 
-    siteMenu.addEventListener('click', (event) => {
+    // Any link in the bar closes the sheet, including the call to action, because
+    // a touch has no pointerleave to dismiss it after the page scrolls.
+    masthead.addEventListener('click', (event) => {
       if ((event.target as HTMLElement).closest('a')) {
+        setSiteMenu(false);
+      }
+    });
+
+    // A touch has no pointerleave, so the sheet closes on a press outside the
+    // masthead, which is the same "leave the whole area" rule the products panel
+    // follows with a pointer.
+    document.addEventListener('pointerdown', (event) => {
+      if (!masthead.classList.contains('is-menu')) {
+        return;
+      }
+
+      if (!masthead.contains(event.target as Node)) {
         setSiteMenu(false);
       }
     });
