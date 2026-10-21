@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds the infrastructure for accountable agentic computing: Ktema, the deterministic storage engine; Kletos, the execution layer; Krisis, the governance layer; and Delta, the Single Space Agentic AI Operation Platform.',
+    'Ktema Systems builds accountable, edge-native computing for autonomous entities: a deterministic record on the machine, an execution layer, a governance layer, a cockpit, a transport, and a cryptographic authorization engine.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -62,9 +62,10 @@ export type NavItem = { label: string; href: string; items?: readonly NavLink[] 
 export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'the black box', href: product.href },
   { label: 'Kletos', note: 'the autopilot', href: '/#product-kletos' },
-  { label: 'Krisis', note: 'the kill switch', href: '/#product-krisis' },
+  { label: 'Krisis', note: 'the authority', href: '/#product-krisis' },
   { label: 'Delta', note: 'the cockpit', href: delta.href },
   { label: 'Telos', note: 'the transport', href: '/#product-telos' },
+  { label: 'Kleis', note: 'the seal', href: '/#product-kleis' },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page

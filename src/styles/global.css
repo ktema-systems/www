@@ -668,11 +668,19 @@ svg {
   position: relative;
   display: grid;
   grid-template-rows: 0fr;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--bg-2) 88%, transparent),
-    color-mix(in srgb, var(--bg-2) 64%, transparent)
-  );
+  /* The panel is lit from the line above it: a soft accent bloom at the top edge
+     over the glass, so the sheet reads as one object with the light. */
+  background:
+    radial-gradient(
+      140% 130% at 50% -34%,
+      color-mix(in srgb, var(--accent) 13%, transparent),
+      transparent 62%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--bg-2) 92%, transparent),
+      color-mix(in srgb, var(--bg-2) 68%, transparent)
+    );
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   backdrop-filter: blur(24px) saturate(150%);
   border-bottom: 0 solid var(--line);
@@ -698,18 +706,22 @@ svg {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
-  height: 1px;
-  background: linear-gradient(
+  height: 2px;
+  /* A faint rail with a soft band travelling along it, so the panel reads as
+     moving glass rather than a fixed sheet. The phone's sheet uses the same line. */
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  background-image: linear-gradient(
     90deg,
     transparent 0%,
-    color-mix(in srgb, var(--accent) 22%, transparent) 24%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 36%,
     var(--accent) 50%,
-    color-mix(in srgb, var(--accent) 22%, transparent) 76%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 64%,
     transparent 100%
   );
-  background-size: 240% 100%;
-  background-position: 0% 0;
-  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 28%, transparent);
+  background-repeat: no-repeat;
+  background-size: 22% 100%;
+  background-position: -40% 0;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 26%, transparent);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 260ms var(--ease);
@@ -725,21 +737,21 @@ svg {
 .masthead.is-open .product-menu::before,
 .masthead.is-menu .site-menu::before {
   transform: scaleX(1);
-  animation: product-thread 16s ease-in-out infinite alternate;
+  animation: product-thread 11s linear infinite;
 }
 
 @keyframes product-thread {
   from {
-    background-position: 0% 0;
+    background-position: -40% 0;
   }
   to {
-    background-position: 100% 0;
+    background-position: 140% 0;
   }
 }
 
 .product-menu__inner {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
   padding-block: 18px 22px;
 }
@@ -779,6 +791,14 @@ svg {
 
 .masthead.is-open .product-menu a:nth-child(4) {
   transition-delay: 200ms;
+}
+
+.masthead.is-open .product-menu a:nth-child(5) {
+  transition-delay: 240ms;
+}
+
+.masthead.is-open .product-menu a:nth-child(6) {
+  transition-delay: 280ms;
 }
 
 .product-menu a:hover,
@@ -1325,11 +1345,17 @@ svg {
     display: grid;
     grid-template-rows: 0fr;
     visibility: hidden;
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--bg-2) 92%, transparent),
-      color-mix(in srgb, var(--bg-2) 70%, transparent)
-    );
+    background:
+      radial-gradient(
+        140% 90% at 50% -20%,
+        color-mix(in srgb, var(--accent) 13%, transparent),
+        transparent 62%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--bg-2) 92%, transparent),
+        color-mix(in srgb, var(--bg-2) 70%, transparent)
+      );
     -webkit-backdrop-filter: blur(24px) saturate(150%);
     backdrop-filter: blur(24px) saturate(150%);
     transition:
@@ -1414,6 +1440,10 @@ svg {
 
   .masthead.is-menu .site-menu__sub li:nth-child(5) a {
     transition-delay: 240ms;
+  }
+
+  .masthead.is-menu .site-menu__sub li:nth-child(6) a {
+    transition-delay: 280ms;
   }
 
   .site-menu__sub a span:first-child {

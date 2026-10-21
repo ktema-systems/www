@@ -24,7 +24,7 @@ const bars = [
   id="proof"
   label="Proof"
   title="Runs on a bare chip with no operating system"
-  lede="A build of about 121 KB starts on a bare RISC-V chip, writes a record, reads it back, and answers a question about its own past."
+  lede="A build of about 121 KB starts on a bare RISC-V chip, writes a record, reads it back, and answers a question about its own past. It runs on the part the product already carries, with no new hardware in the bill of materials."
 >
   <div class="bars">
     {
@@ -43,6 +43,10 @@ const bars = [
   <p class="note">
     The build holds about 32 KB of memory inside that budget, and the optional index answers the
     same question in about 26 microseconds. Every change is checked against both builds.
+  </p>
+
+  <p class="note">
+    The coordinate decoder is checked completely, over every valid input rather than a test set.
   </p>
 </Section>
 

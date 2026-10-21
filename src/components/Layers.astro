@@ -20,8 +20,8 @@ const pillars = [
   },
   {
     name: 'Krisis',
-    meta: 'the kill switch',
-    line: 'Sets authority and limits, decides which model answers and at what cost, and can stop the work.',
+    meta: 'the authority',
+    line: 'Sets what each action may do, chooses which model answers and at what cost, and keeps the work inside the rules a deployment declared. A machine can be given more autonomy when its authority is explicit.',
   },
 ];
 
@@ -29,14 +29,19 @@ const surface = [
   {
     name: 'Delta',
     meta: 'the cockpit',
-    line: 'The platform a person commands the stack from, for agents, signals, machines, people, and outside systems. On the Ktema stack, the cockpit reads the same record the machine wrote.',
+    line: 'The cockpit where operators see and command robots, drones, codebases, and the people who run them in one unified space. On the Ktema stack, it reads the same record the machine wrote.',
     href: delta.href,
     link: 'Delta',
   },
   {
     name: 'Telos',
     meta: 'the transport layer',
-    line: 'Moves work between agents, people, and spaces by coordinate, and carries the operator into the machine.',
+    line: 'Teleports live execution states between agents, people, and spaces, so an operator can stand inside a machine\'s spatiotemporal coordinate space and replay what it saw.',
+  },
+  {
+    name: 'Kleis',
+    meta: 'the seal',
+    line: 'The cryptographic authorization engine: the seal that makes a copy of the files worthless, and the proof that the holder was in control.',
   },
 ];
 ---
@@ -44,8 +49,8 @@ const surface = [
 <Section
   id="products"
   label="Products"
-  title="One accountable stack for autonomous machines"
-  lede="Five parts, one record. Ktema is the black box that keeps it. Kletos is the autopilot that acts on it. Krisis is the kill switch that bounds it. Delta is the cockpit where a person commands the whole stack. Telos is the transport layer that moves the work."
+  title="One accountable stack for autonomous entities"
+  lede="Six parts, one record. Three carry the machine: Ktema keeps the record, Kletos acts on it, and Krisis authorizes what it may do. Three are how a person reaches it: Delta is the cockpit, Telos is the transport, and Kleis is the seal that proves who was in control."
 >
   <p class="layers__claim">
     Storage keeps bytes. This record answers questions across time, source, and outcome, on the
@@ -91,18 +96,53 @@ const surface = [
 </Section>
 
 <style>
-  /* Six columns let the three pillars take two each and the two layers under them
-     take three each, so both rows span the full width without a stray cell. */
+  /* Six columns give three cards per row, so the three carriers and the three
+     surfaces each fill one row without a stray cell. */
   .cards--layers {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .cards--layers > .card {
+    position: relative;
     grid-column: span 2;
   }
 
-  .cards--layers > .card--surface {
-    grid-column: span 3;
+  /* The three carriers are the core, so they carry a faint accent wash and a
+     hairline at the top edge. The three surfaces stay neutral, and the grid
+     lines read as the only strong division between them. */
+  .cards--layers > .card:not(.card--surface) {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 17%, transparent),
+        color-mix(in srgb, var(--accent) 4%, transparent) 62%,
+        transparent
+      ),
+      var(--bg);
+  }
+
+  .cards--layers > .card:not(.card--surface):hover {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 22%, transparent),
+        color-mix(in srgb, var(--accent) 7%, transparent) 62%,
+        transparent
+      ),
+      var(--bg-2);
+  }
+
+  .cards--layers > .card:not(.card--surface)::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      var(--accent),
+      color-mix(in srgb, var(--accent) 35%, transparent) 55%,
+      transparent
+    );
   }
 
   .layers__claim {
@@ -132,8 +172,7 @@ const surface = [
       grid-template-columns: minmax(0, 1fr);
     }
 
-    .cards--layers > .card,
-    .cards--layers > .card--surface {
+    .cards--layers > .card {
       grid-column: auto;
     }
   }

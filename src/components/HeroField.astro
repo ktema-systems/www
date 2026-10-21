@@ -33,6 +33,20 @@
         <line x1="-85" y1="147.22" x2="-60.62" y2="-35" />
         <line x1="-85" y1="147.22" x2="60.62" y2="35" />
       </g>
+      <linearGradient
+        id="field-beam"
+        gradientUnits="userSpaceOnUse"
+        x1="-170"
+        y1="-150"
+        x2="170"
+        y2="150"
+      >
+        <stop class="field__beam-stop" offset="0" stop-opacity="0.08" />
+        <stop class="field__beam-stop" offset="0.25" stop-opacity="0.35" />
+        <stop class="field__beam-stop" offset="0.5" stop-opacity="0.95" />
+        <stop class="field__beam-stop" offset="0.75" stop-opacity="0.35" />
+        <stop class="field__beam-stop" offset="1" stop-opacity="0.08" />
+      </linearGradient>
     </defs>
 
     <g class="field__layer field__layer--frame">
@@ -40,7 +54,18 @@
     </g>
 
     <g class="field__layer field__layer--near">
-      <use href="#ktema-field" transform="translate(560 380) scale(1.5)" />
+      <use href="#ktema-field" transform="translate(560 380) scale(2.1)" />
+    </g>
+
+    <g class="field__layer field__layer--beams">
+      <g class="field__beams" transform="translate(560 380) scale(2.1)">
+        <path
+          class="field__beam field__beam--edge"
+          d="M85 -147.22 L170 0 L85 147.22 L-85 147.22 L-170 0 L-85 -147.22 Z"
+        />
+        <path class="field__beam field__beam--right" d="M85 -147.22 L35 -60.62 L60.62 35 L85 147.22" />
+        <path class="field__beam field__beam--left" d="M-85 147.22 L-35 60.62 L-60.62 -35 L-170 0" />
+      </g>
     </g>
   </svg>
 </div>
@@ -89,13 +114,67 @@
   /* Opacity is set by the copy's contrast floor: a hexagon vertex stacks three
      strokes, and this leaves body text near 4.6:1. */
   .field__layer--frame {
-    opacity: 0.08;
+    opacity: 0.06;
   }
 
   .field__layer--near {
     transform-origin: 560px 380px;
-    opacity: 0.12;
+    opacity: 0.07;
     animation: field-spin 120s linear infinite;
+  }
+
+  /* Signals run along the mark's boundary and its inner arms, so the field reads
+     as entities in conversation rather than a static drawing. The beams sit
+     outside the dimmed layers so their own opacity is the one that shows. */
+  .field__layer--beams {
+    transform-origin: 560px 380px;
+    opacity: 0.36;
+    animation: field-spin 120s linear infinite;
+  }
+
+  .field__beam-stop {
+    stop-color: var(--accent);
+  }
+
+  .field__beams {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .field__beam {
+    stroke: url(#field-beam);
+    stroke-width: 1.1;
+    filter: drop-shadow(0 0 2px color-mix(in srgb, var(--accent) 32%, transparent));
+  }
+
+  .field__beam--edge {
+    stroke-dasharray: 140 880;
+    animation: field-beam-edge 13s linear infinite;
+  }
+
+  .field__beam--right {
+    stroke-dasharray: 70 244;
+    animation: field-beam-arm 7s linear infinite;
+    animation-delay: -2s;
+  }
+
+  .field__beam--left {
+    stroke-dasharray: 70 244;
+    animation: field-beam-arm 8.5s linear infinite;
+    animation-delay: -5s;
+  }
+
+  @keyframes field-beam-edge {
+    to {
+      stroke-dashoffset: -1020;
+    }
+  }
+
+  @keyframes field-beam-arm {
+    to {
+      stroke-dashoffset: -314;
+    }
   }
 
   @keyframes field-spin {
@@ -104,10 +183,24 @@
     }
   }
 
+  @media (max-width: 720px) {
+    .field__beam {
+      filter: none;
+    }
+
+    .field__layer--beams {
+      opacity: 0.3;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .field {
       animation: none;
       opacity: 1;
+    }
+
+    .field__layer--beams {
+      display: none;
     }
   }
 </style>
