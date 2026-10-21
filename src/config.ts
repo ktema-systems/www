@@ -51,7 +51,7 @@ export const creed = [
 ] as const;
 
 // The three lines as one, for the masthead-height slot on the home page.
-export const creedLine = creed.map((entry) => entry.line).join(' ');
+export const creedLine = "Edge-Owned. Accountable. Plug-in-Control.";
 
 export type NavLink = { label: string; href: string; note?: string };
 
