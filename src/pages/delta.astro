@@ -2,7 +2,6 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
-import Handoff from '../components/Handoff.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
@@ -16,6 +15,8 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   description={delta.description}
   nav={deltaNav}
   cta={deltaCta}
+  current={delta.href}
+  openProducts
 >
   <Hero
     eyebrow="Delta"
@@ -34,22 +35,17 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     <div class="cards cards--3 seat">
       <div class="card">
         <span class="card__value">To the past</span>
-        <p>
-          The entity's point of view at the moment before an incident, replayed from the record
-          rather than reconstructed from a report.
-        </p>
+        <p>The entity's point of view at the moment before an incident, replayed from the record.</p>
       </div>
       <div class="card">
         <span class="card__value">To the edge</span>
-        <p>The entity's own space with the link down, commanded from where the work is.</p>
+        <p>The entity's own space with the link down.</p>
       </div>
       <div class="card">
         <span class="card__value">Across borders</span>
-        <p>The record a regulator asks for, produced from the machine that made it.</p>
+        <p>The record a regulator asks for, produced from the machine.</p>
       </div>
     </div>
-
-    <Handoff line="Ktema is the black box the machine keeps." href="/ktema" label="The engine" />
   </Section>
 
   <DeltaDeck />

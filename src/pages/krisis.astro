@@ -1,0 +1,46 @@
+---
+import ProductPage from '../layouts/ProductPage.astro';
+
+const blocks = [
+  {
+    id: 'decision',
+    label: 'The decision',
+    title: 'Which model answers, at what cost, on which terms',
+    rows: [
+      { k: 'The action', v: 'What each action may do, and what it may not.' },
+      { k: 'The model', v: 'Which model answers a request.' },
+      { k: 'The cost', v: 'What that answer costs.' },
+      { k: 'The terms', v: 'On what terms it is given.' },
+    ],
+  },
+  {
+    id: 'source',
+    label: 'Where the terms come from',
+    title: 'A rule written with the deployment',
+    prose: [
+      'Its structure comes from the smart contract and from governance systems. The terms of an answer are written with the deployment and checked against the record, so an audit reads a rule and a record.',
+    ],
+  },
+  {
+    id: 'artifact',
+    label: 'The first artifact',
+    title: 'One model, checked several ways',
+    prose: ['The first artifact is a single model, checked several ways against one reference.'],
+  },
+];
+---
+
+<ProductPage
+  name="Krisis"
+  href="/krisis"
+  title="Judgment governs."
+  description="Krisis is the governance layer: it sets what each action may do, and keeps the work inside the rules a deployment declared."
+  lede="The authority. It sets what each action may do, chooses which model answers and at what cost, and keeps the work inside the rules a deployment declared."
+  body="It governs storage and execution together."
+  blocks={blocks}
+  contact={{
+    title: 'Declare what the work may do',
+    lede: 'If a deployment has to bound what a model may do and answer for it later, we should talk. We are choosing the first design partners now.',
+    body: 'Bring the rules a deployment already declares, and we will show you where they meet the record.',
+  }}
+/>

@@ -1,0 +1,74 @@
+---
+import Base from './Base.astro';
+import Hero from '../components/Hero.astro';
+import Section from '../components/Section.astro';
+import Contact from '../components/Contact.astro';
+import { productCta, productPageNav } from '../config';
+
+// The shell every product page but Delta and Ktema uses: a hero, the blocks the
+// product states about itself, and one way in. The shell is shared so the six pages
+// cannot drift in type, spacing, or the shape of a block.
+interface Row {
+  k: string;
+  v: string;
+}
+
+interface Block {
+  id: string;
+  label: string;
+  title: string;
+  lede?: string;
+  rows?: Row[];
+  prose?: string[];
+  note?: string;
+}
+
+interface Props {
+  name: string;
+  href: string;
+  title: string;
+  body?: string;
+  description: string;
+  lede: string;
+  blocks: Block[];
+  contact: { title: string; lede: string; body: string };
+}
+
+const { name, href, title, body, description, lede, blocks, contact } = Astro.props;
+---
+
+<Base
+  title={`${name}: ${title}`}
+  description={description}
+  nav={productPageNav}
+  cta={productCta}
+  current={href}
+  openProducts
+>
+  <Hero eyebrow={name} title={title} lede={lede} body={body} />
+
+  {
+    blocks.map((block) => (
+      <Section id={block.id} label={block.label} title={block.title} lede={block.lede}>
+        {block.prose?.map((paragraph) => (
+          <div class="prose">
+            <p>{paragraph}</p>
+          </div>
+        ))}
+        {block.rows && (
+          <dl class="spec">
+            {block.rows.map((row) => (
+              <>
+                <dt>{row.k}</dt>
+                <dd>{row.v}</dd>
+              </>
+            ))}
+          </dl>
+        )}
+        {block.note && <p class="note">{block.note}</p>}
+      </Section>
+    ))
+  }
+
+  <Contact title={contact.title} lede={contact.lede} body={contact.body} />
+</Base>

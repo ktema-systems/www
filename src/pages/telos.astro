@@ -1,0 +1,38 @@
+---
+import ProductPage from '../layouts/ProductPage.astro';
+
+const blocks = [
+  {
+    id: 'address',
+    label: 'The address',
+    title: 'No tree to walk, no path to scan',
+    prose: [
+      'The coordinate is the address. A step between two work locations is a jump to the second address, with no index to consult and no path to scan.',
+    ],
+  },
+  {
+    id: 'carrier',
+    label: 'What it carries',
+    title: 'Live execution states',
+    prose: [
+      'Live execution states move between agents, people, and spaces, so an operator can stand inside a machine\'s own spatiotemporal coordinate space and replay what it saw.',
+    ],
+    note: 'Delta uses the same move to place an operator inside a run.',
+  },
+];
+---
+
+<ProductPage
+  name="Telos"
+  href="/telos"
+  title="Work moves by coordinate."
+  description="Telos is the transport layer: it moves work between agents, people, and spaces, and carries the operator into the machine."
+  lede="The transport layer. Work is addressed by coordinate and reached by teleport, so an agent moves between work locations without walking a tree or scanning a path."
+  body="It carries the operator's view to the machine, which is what makes the platform a position inside the system rather than a window onto it."
+  blocks={blocks}
+  contact={{
+    title: 'Move the operator, not the data',
+    lede: 'If an operator has to stand inside a run rather than watch it, we should talk. We are choosing the first design partners now.',
+    body: 'Tell us where the operator sits today, and we will show you the same position taken inside the machine.',
+  }}
+/>

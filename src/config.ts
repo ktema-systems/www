@@ -57,15 +57,15 @@ export type NavLink = { label: string; href: string; note?: string };
 
 export type NavItem = { label: string; href: string; items?: readonly NavLink[] };
 
-// The products the strip's Products item opens. Each link is an anchor on the
-// company page, so the menu is a shortcut to a section rather than a second page.
+// The products the strip's Products item opens. Every product has a page of its
+// own, so the menu is the way between them.
 export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'the black box', href: product.href },
-  { label: 'Kletos', note: 'the autopilot', href: '/#product-kletos' },
-  { label: 'Krisis', note: 'the authority', href: '/#product-krisis' },
+  { label: 'Kletos', note: 'the autopilot', href: '/kletos' },
+  { label: 'Krisis', note: 'the authority', href: '/krisis' },
   { label: 'Delta', note: 'the cockpit', href: delta.href },
-  { label: 'Telos', note: 'the transport', href: '/#product-telos' },
-  { label: 'Kleis', note: 'the seal', href: '/#product-kleis' },
+  { label: 'Telos', note: 'the transport', href: '/telos' },
+  { label: 'Kleis', note: 'the seal', href: '/kleis' },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
@@ -90,13 +90,21 @@ export const deltaNav: readonly NavItem[] = [
 export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const productNav: readonly NavItem[] = [
-  { label: 'Product', href: '#product' },
+  { label: 'Overview', href: '#product' },
   { label: 'Proof', href: '#proof' },
   { label: 'Products', href: '/#products', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
 
 export const productCta: NavItem = { label: 'Get in touch', href: '#contact' };
+
+// The strip a product page carries. It is one entry, so the page opens with the
+// products panel unfolded and the page's own product marked, which is what puts
+// the other five within a click of where a reader arrives.
+export const productPageNav: readonly NavItem[] = [
+  { label: 'Products', href: '/#products', items: productMenu },
+  { label: 'Contact', href: '#contact' },
+];
 
 export const papers = [
   {

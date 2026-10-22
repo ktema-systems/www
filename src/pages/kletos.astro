@@ -1,0 +1,58 @@
+---
+import ProductPage from '../layouts/ProductPage.astro';
+
+const blocks = [
+  {
+    id: 'unit',
+    label: 'The unit',
+    title: 'Stated, claimed, performed, deposited',
+    rows: [
+      { k: 'Stated', v: 'The work is stated, and the intent that proposes it is written with it.' },
+      { k: 'Claimed', v: 'An agent, a machine, or a person takes it, and the claim is written.' },
+      { k: 'Performed', v: 'The work is done where the machine that took it runs.' },
+      {
+        k: 'Deposited',
+        v: 'The result is written as a fact, with a derivation that ties it to the intent.',
+      },
+    ],
+    note: 'The derivation is what binds execution to intent: an action is read with the ask that produced it.',
+  },
+  {
+    id: 'reach',
+    label: 'The reach',
+    title: 'Five kinds of entity',
+    prose: [
+      'Agents, signals, machines, people, and outside systems. A phone states the work, a host performs it on the operator\'s own machine, and a desktop receives the result, with no remote desktop and no file transfer.',
+    ],
+  },
+  {
+    id: 'model',
+    label: 'The model',
+    title: 'A model proposes, and the run stays one chain',
+    prose: [
+      'A model proposes work. The request, the machine that took it, and the result stay one chain on the record.',
+    ],
+  },
+  {
+    id: 'in-use',
+    label: 'In use',
+    title: 'A fleet on one host',
+    prose: ['The Kletos fleet runs dozens of instances on one host.'],
+  },
+];
+---
+
+<ProductPage
+  name="Kletos"
+  href="/kletos"
+  title="Intent delivers."
+  description="Kletos is the execution layer: work is stated, claimed, performed, and deposited on the same record as the intent that proposed it."
+  lede="The autopilot. Work is stated, claimed, performed, and deposited on the same record, with a derivation that ties it to the intent that proposed it."
+  body="The project performs the work a team owed, and the team keeps the two ends."
+  blocks={blocks}
+  contact={{
+    title: 'Put a run through the layer',
+    lede: 'If work moves through agents, machines, and people at once, we should talk. We are choosing the first design partners now.',
+    body: 'Tell us how a task reaches the machine that performs it today, and we will show you the same task as one chain on the record.',
+  }}
+/>

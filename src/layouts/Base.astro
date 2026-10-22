@@ -11,12 +11,16 @@ interface Props {
   // company home's, which is what the header defaults to.
   nav?: readonly NavItem[];
   cta?: NavItem;
+  // Passed to the masthead: the product being read, and whether the products panel
+  // is unfolded on arrival.
+  current?: string;
+  openProducts?: boolean;
   // A page that is reachable by its url and listed nowhere: no navigation entry points at
   // it, and this keeps a crawler from adding one.
   noindex?: boolean;
 }
 
-const { title, description, nav, cta, noindex = false } = Astro.props;
+const { title, description, nav, cta, noindex = false, current, openProducts } = Astro.props;
 ---
 
 <!doctype html>
@@ -50,7 +54,7 @@ const { title, description, nav, cta, noindex = false } = Astro.props;
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Header items={nav} cta={cta} />
+    <Header items={nav} cta={cta} current={current} openProducts={openProducts} />
     <main id="main">
       <slot />
     </main>

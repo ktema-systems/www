@@ -1,26 +1,23 @@
 ---
 import Section from './Section.astro';
 import { site } from '../config';
+
+interface Props {
+  title: string;
+  lede: string;
+  body: string;
+}
+
+const { title, lede, body } = Astro.props;
 ---
 
-<Section
-  id="contact"
-  label="Contact"
-  title="Put the engine inside your product"
-  lede="If your device has to answer multi-dimensional questions on the spot, we should talk. We are choosing the first design partners now."
-  band
->
+<Section id="contact" label="Contact" title={title} lede={lede} band>
   <div class="prose">
-    <p>
-      Ktema runs inside the product you already ship. It needs no server, no network, and no
-      database, and it fits the memory a small device has. Tell us what your machine has to answer,
-      and we will show you what that query looks like on the device.
-    </p>
+    <p>{body}</p>
   </div>
 
   <div class="actions">
     <a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a>
-    <!--<a class="btn" href={site.docs}>Read the documentation</a>-->
   </div>
 </Section>
 

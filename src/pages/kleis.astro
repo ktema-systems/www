@@ -1,0 +1,45 @@
+---
+import ProductPage from '../layouts/ProductPage.astro';
+
+const blocks = [
+  {
+    id: 'gate',
+    label: 'The gate',
+    title: 'It decides who enters',
+    lede: 'Two different questions, and Kleis answers the first.',
+    rows: [
+      { k: 'Who enters', v: 'Kleis, from the key the holder presents.' },
+      { k: 'What may be done', v: 'Krisis, from the rules the deployment declared.' },
+    ],
+  },
+  {
+    id: 'line',
+    label: 'Licensing',
+    title: 'A separate product line',
+    prose: ['A deployment that does not carry Kleis stays on the free tier.'],
+  },
+  {
+    id: 'open',
+    label: 'Not settled',
+    title: 'The two-key mode',
+    prose: [
+      'A two-key mode for acts that cannot be undone is a candidate. Its specification is still open.',
+    ],
+  },
+];
+---
+
+<ProductPage
+  name="Kleis"
+  href="/kleis"
+  title="The seal on the record."
+  description="Kleis is the physical gate into the record: the key a holder presents, the seal that makes a copy worth nothing, and the proof that the holder was there."
+  lede="The key a holder presents, the seal that makes a copy of the files worth nothing, and the proof that the holder was there."
+  body="It decides who enters, not what the holder may do."
+  blocks={blocks}
+  contact={{
+    title: 'Decide who enters',
+    lede: 'If a copy of the files has to be worth nothing without the holder, we should talk. We are choosing the first design partners now.',
+    body: 'The specification is moving. Bring the acts that cannot be undone, and we will tell you what the seal has to prove.',
+  }}
+/>

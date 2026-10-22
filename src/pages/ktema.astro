@@ -4,7 +4,6 @@ import Hero from '../components/Hero.astro';
 import AddressFigure from '../components/AddressFigure.astro';
 import Product from '../components/Product.astro';
 import ProofDeck from '../components/ProofDeck.astro';
-import Handoff from '../components/Handoff.astro';
 import Contact from '../components/Contact.astro';
 import { product, productCta, productNav } from '../config';
 
@@ -17,6 +16,8 @@ import { product, productCta, productNav } from '../config';
   description={product.description}
   nav={productNav}
   cta={productCta}
+  current={product.href}
+  openProducts
 >
   <Hero
     eyebrow="Ktema"
@@ -28,14 +29,9 @@ import { product, productCta, productNav } from '../config';
   </Hero>
   <ProofDeck />
   <Product />
-  <div class="wrap handoff-band">
-    <Handoff line="Delta is the seat inside it." href="/delta" label="The platform" />
-  </div>
-  <Contact />
+  <Contact
+    title="Put the engine inside your product"
+    lede="If your device has to answer multi-dimensional questions on the spot, we should talk. We are choosing the first design partners now."
+    body="Ktema runs inside the product you already ship. It needs no server, no network, and no database, and it fits the memory a small device has. Tell us what your machine has to answer, and we will show you what that query looks like on the device."
+  />
 </Base>
-
-<style>
-  .handoff-band {
-    padding-bottom: clamp(40px, 6vh, 80px);
-  }
-</style>

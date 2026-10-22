@@ -7,13 +7,24 @@ import { companyCta, companyNav, site, type NavItem } from '../config';
 interface Props {
   items?: readonly NavItem[];
   cta?: NavItem;
+  // The product page being read. It marks that entry in the products panel and in
+  // the phone's sheet, so the panel says where the reader is.
+  current?: string;
+  // A product page opens with the panel unfolded, because the other products are
+  // what a reader arriving on one of them is most likely to want next.
+  openProducts?: boolean;
 }
 
-const { items = companyNav, cta = companyCta } = Astro.props;
+const {
+  items = companyNav,
+  cta = companyCta,
+  current,
+  openProducts = false,
+} = Astro.props;
 const menu = items.find((item) => item.items)?.items;
 ---
 
-<header class="masthead">
+<header class="masthead" data-open-products={openProducts ? 'true' : undefined}>
   <div class="wrap masthead__inner">
     <a class="brand" href="/">
       <span class="brand__mark" aria-hidden="true"></span>
@@ -61,7 +72,7 @@ const menu = items.find((item) => item.items)?.items;
         <div class="product-menu__fold">
           <div class="wrap product-menu__inner">
             {menu.map((entry) => (
-              <a href={entry.href}>
+              <a href={entry.href} aria-current={entry.href === current ? 'page' : undefined}>
                 <span class="product-menu__name">{entry.label}</span>
                 {entry.note && <span class="product-menu__note">{entry.note}</span>}
               </a>
@@ -83,7 +94,10 @@ const menu = items.find((item) => item.items)?.items;
                   <ul class="site-menu__sub">
                     {item.items.map((entry) => (
                       <li>
-                        <a href={entry.href}>
+                        <a
+                          href={entry.href}
+                          aria-current={entry.href === current ? 'page' : undefined}
+                        >
                           <span>{entry.label}</span>
                           {entry.note && <span class="site-menu__note">{entry.note}</span>}
                         </a>
@@ -168,6 +182,23 @@ const menu = items.find((item) => item.items)?.items;
       cancelClose();
       setOpen(false);
     };
+
+    // A product page arrives with the panel unfolded, and that is a greeting rather
+    // than a fixture: the first scroll retracts it, so the sheet never sits over the
+    // page a reader came to read. The strip is not drawn on a phone, so the greeting
+    // is only offered at the widths that show it.
+    if (masthead.dataset.openProducts === 'true' && window.innerWidth > 720) {
+      setOpen(true);
+
+      const closeOnScroll = () => {
+        if (window.scrollY > 24) {
+          closeNow();
+          window.removeEventListener('scroll', closeOnScroll);
+        }
+      };
+
+      window.addEventListener('scroll', closeOnScroll, { passive: true });
+    }
 
     trigger.addEventListener('pointerenter', open);
     trigger.addEventListener('focus', open);
