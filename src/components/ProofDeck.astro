@@ -1,0 +1,697 @@
+---
+// The engine's measurements, walked by the page's own scroll. One number at a time,
+// each with the figure that makes it land, so the section reads as a deck once the
+// script takes it and as four plain blocks without one.
+//
+// Every figure here is produced by this tree: `benches/run.sh` for the host, and
+// `verify/device/check.sh` for the part. A number a reader cannot trace to a run is
+// the failure this section exists to avoid.
+
+const steps = 4;
+const answers = Array.from({ length: 32 }, (_, index) => index);
+---
+
+<section class="deck" id="proof" data-deck style={`--steps: ${steps}`}>
+  <div class="deck__stage">
+    <div class="wrap deck__grid">
+      <header class="deck__head">
+        <p class="eyebrow">Proof</p>
+        <h2>What it costs to remember everything.</h2>
+        <p class="lede">
+          Microseconds on the host, bytes on the part. The volume grows and the record does not.
+        </p>
+      </header>
+
+      <ol class="deck__list">
+        <li class="step" data-step>
+          <div class="step__copy">
+            <p class="step__meta"><span>01</span><span>the record</span></p>
+            <p class="step__value">
+              <span data-count="482" data-decimals="0">482</span><span class="step__unit">B</span>
+            </p>
+            <p class="step__claim">
+              A record costs 482 bytes on the medium with a thousand in the volume, and 483 with ten
+              thousand.
+            </p>
+            <p class="step__note">Ten times the records, and one byte more per record.</p>
+          </div>
+          <div class="step__fig">
+            <div class="row">
+              <span class="row__k">cost per record, 1,000 in the volume</span>
+              <span class="row__v">482 B</span>
+              <span class="row__track"><span class="row__fill" style="--to: 0.941"></span></span>
+            </div>
+            <div class="row">
+              <span class="row__k">cost per record, 10,000 in the volume</span>
+              <span class="row__v">483 B</span>
+              <span class="row__track"><span class="row__fill" style="--to: 0.943"></span></span>
+            </div>
+            <div class="split" aria-hidden="true">
+              <span class="split__seg split__seg--key" style="--w: 46.5">key</span>
+              <span class="split__seg split__seg--frame" style="--w: 10">framing</span>
+              <span class="split__seg split__seg--value" style="--w: 43.5">value</span>
+            </div>
+            <p class="split__legend">
+              <span class="legend__item"><span class="dot dot--key"></span>coordinate key, 224 B</span>
+              <span class="legend__item"><span class="dot dot--frame"></span>entry framing, 48 B</span>
+              <span class="legend__item"><span class="dot dot--value"></span>value and index, 210 B</span>
+            </p>
+            <p class="split__legend">Bars scaled to 512 B.</p>
+          </div>
+        </li>
+
+        <li class="step" data-step>
+          <div class="step__copy">
+            <p class="step__meta"><span>02</span><span>the read</span></p>
+            <p class="step__value">
+              <span data-count="1.67" data-decimals="2">1.67</span><span class="step__unit">µs</span>
+            </p>
+            <p class="step__claim">
+              One record read back from the middle of ten thousand, over the host's own medium.
+            </p>
+            <p class="step__note">
+              The read starts at a segment boundary rather than at the start of the volume, so ten
+              times the records add two thirds of a microsecond.
+            </p>
+          </div>
+          <div class="step__fig">
+            <div class="row">
+              <span class="row__k">1,000 records</span>
+              <span class="row__v">1.04 µs</span>
+              <span class="row__track"><span class="row__fill" style="--to: 0.62"></span></span>
+            </div>
+            <div class="row">
+              <span class="row__k">10,000 records</span>
+              <span class="row__v">1.67 µs</span>
+              <span class="row__track"><span class="row__fill" style="--to: 1"></span></span>
+            </div>
+            <p class="delta">+0.63 µs, for ten times the records.</p>
+            <p class="split__legend">
+              Bars scaled to 1.67 µs. The two reads ask the medium for 5,799 and 16,537 bytes.
+            </p>
+          </div>
+        </li>
+
+        <li class="step" data-step>
+          <div class="step__copy">
+            <p class="step__meta"><span>03</span><span>the machine</span></p>
+            <p class="step__value">
+              <span data-count="5.3" data-decimals="1">5.3</span><span class="step__unit">%</span>
+            </p>
+            <p class="step__claim">
+              The whole run peaks at 3,504 bytes of a 65,536-byte budget, on a chip with no
+              operating system under it.
+            </p>
+            <p class="step__note">
+              The same scenario the host runs, on riscv32imac under QEMU, with the medium at a fixed
+              address.
+            </p>
+          </div>
+          <div class="step__fig">
+            <div class="budget">
+              <span class="budget__fill" style="--to: 0.0535"></span>
+              <span class="budget__edge" style="--to: 0.0535" aria-hidden="true"></span>
+            </div>
+            <p class="budget__legend">
+              <span>3,504 B at the peak</span>
+              <span>one twentieth of 65,536 B</span>
+            </p>
+            <p class="split__legend">
+              Live state between steps is 1,136 bytes. The run never holds more than 3,504.
+            </p>
+          </div>
+        </li>
+
+        <li class="step" data-step>
+          <div class="step__copy">
+            <p class="step__meta"><span>04</span><span>the question</span></p>
+            <p class="step__value">
+              <span data-count="0" data-decimals="0">0</span><span class="step__unit">B</span>
+            </p>
+            <p class="step__claim">
+              Answering a question costs the heap nothing at all. The peak before the query and the
+              peak after it are the same number.
+            </p>
+            <p class="step__note">Thirty-two matches over thirty-two records, read one at a time.</p>
+          </div>
+          <div class="step__fig">
+            <div class="answers" aria-hidden="true">
+              {
+                answers.map((index) => (
+                  <span class="answers__tick" style={`--i: ${index}`} />
+                ))
+              }
+            </div>
+            <p class="budget__legend">
+              <span>32 records matched</span>
+              <span>32 reads of 164 B</span>
+            </p>
+            <p class="split__legend">
+              A store that answered from a map would hold the answer. This one holds one record.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="deck__foot">
+        <p class="deck__count">
+          <span data-step-now>01</span>
+          <span class="deck__of">/ {String(steps).padStart(2, '0')}</span>
+        </p>
+        <div class="deck__rail"><span class="deck__bar" data-step-bar></span></div>
+        <p class="deck__cue">Scroll</p>
+      </div>
+
+      <p class="deck__source">
+        Host figures: release build, median of 51 samples. Part figures: the riscv32imac tier under
+        QEMU, 65,536-byte budget. Both are produced by this tree.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .deck {
+    position: relative;
+  }
+
+  .deck__stage {
+    display: grid;
+    align-items: center;
+    min-height: 100svh;
+    padding-block: calc(var(--masthead-h) + 32px) 48px;
+  }
+
+  .deck__grid {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto;
+    gap: clamp(24px, 4vh, 44px);
+    min-height: min(78svh, 780px);
+  }
+
+  .deck__head {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .deck__head h2 {
+    margin: 0;
+    font-size: clamp(1.7rem, 1.2rem + 2vw, 2.6rem);
+    font-stretch: 115%;
+    letter-spacing: -0.015em;
+    line-height: 1.08;
+  }
+
+  .deck__head .lede {
+    max-width: 44rem;
+  }
+
+  .deck__list {
+    display: grid;
+    align-content: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(28px, 5vw, 80px);
+    align-items: center;
+  }
+
+  .step + .step {
+    margin-top: 56px;
+  }
+
+  .step__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .step__meta {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .step__meta span + span {
+    color: var(--fg-3);
+  }
+
+  .step__value {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin: 0;
+    font-size: clamp(3.2rem, 1.8rem + 5vw, 6rem);
+    font-weight: 600;
+    font-stretch: 115%;
+    letter-spacing: -0.045em;
+    line-height: 0.92;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .step__unit {
+    font-family: var(--mono);
+    font-size: clamp(1rem, 0.8rem + 0.9vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--fg-3);
+  }
+
+  .step__claim {
+    margin: 0;
+    max-width: 32rem;
+    font-size: clamp(1rem, 0.95rem + 0.3vw, 1.2rem);
+    color: var(--fg-2);
+  }
+
+  .step__note {
+    margin: 0;
+    max-width: 32rem;
+    padding-left: 16px;
+    border-left: 2px solid var(--line-2);
+    font-size: 0.9rem;
+    color: var(--fg-3);
+  }
+
+  .step__fig {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 16px;
+    align-items: baseline;
+  }
+
+  .row__k {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .row__v {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--fg-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row__track {
+    position: relative;
+    grid-column: 1 / -1;
+    height: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+  }
+
+  .row__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--to, 1) * 100%);
+    background: var(--accent);
+    clip-path: inset(0 calc((1 - var(--p, 1)) * 100%) 0 0);
+  }
+
+  .delta {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .split {
+    display: flex;
+    height: 34px;
+    margin-top: 4px;
+    border: 1px solid var(--line);
+    clip-path: inset(0 calc((1 - var(--p, 1)) * 100%) 0 0);
+  }
+
+  .split__seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--w) * 1%);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--on-accent);
+  }
+
+  .split__seg--key {
+    background: var(--accent);
+  }
+
+  .split__seg--frame {
+    background: var(--accent-2);
+  }
+
+  .split__seg--value {
+    background: var(--panel);
+    color: var(--fg-3);
+  }
+
+  .split__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    align-items: center;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--fg-3);
+  }
+
+  .legend__item {
+    display: inline-flex;
+    gap: 7px;
+    align-items: center;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .dot--key {
+    background: var(--accent);
+  }
+
+  .dot--frame {
+    background: var(--accent-2);
+  }
+
+  .dot--value {
+    background: var(--panel);
+    border: 1px solid var(--line-2);
+  }
+
+  .budget {
+    position: relative;
+    height: clamp(72px, 10vh, 104px);
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0 calc(100% / 8 - 1px),
+        var(--line) calc(100% / 8 - 1px) calc(100% / 8)
+      ),
+      var(--bg-2);
+    border: 1px solid var(--line);
+  }
+
+  .budget__fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--to, 1) * 100%);
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    clip-path: inset(0 calc((1 - var(--p, 1)) * 100%) 0 0);
+  }
+
+  .budget__edge {
+    position: absolute;
+    inset: 0 auto 0 calc(var(--to, 1) * 100%);
+    width: 1px;
+    background: var(--fg);
+    box-shadow: 0 0 14px 2px var(--accent);
+    opacity: calc(var(--p, 1) * 0.9);
+  }
+
+  .budget__legend {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--fg-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .answers {
+    display: grid;
+    grid-template-columns: repeat(16, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  /* The same record glyph as step one, thirty-two times: the answer is records, not
+     a structure that holds them. */
+  .answers__tick {
+    height: 16px;
+    background: linear-gradient(
+      90deg,
+      var(--accent) 0 46.5%,
+      var(--accent-2) 46.5% 56.5%,
+      var(--line-2) 56.5% 100%
+    );
+    opacity: clamp(0, calc((var(--p, 1) - var(--i) * 0.028) * 10), 1);
+  }
+
+  .deck__foot {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--fg-3);
+  }
+
+  .deck:not(.is-live) .deck__foot {
+    display: none;
+  }
+
+  .deck__count {
+    margin: 0;
+    color: var(--fg);
+  }
+
+  .deck__of {
+    margin-left: 4px;
+    color: var(--fg-3);
+  }
+
+  .deck__rail {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+  }
+
+  .deck__bar {
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .deck__cue {
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .deck__source {
+    max-width: 62ch;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    line-height: 1.7;
+    color: var(--fg-3);
+  }
+
+  /* The deck. The section gains the walk's length only once the script has taken
+     it, so a reader without JavaScript keeps four plain blocks. */
+  .deck.is-live {
+    height: calc(100svh + var(--steps) * 70svh);
+  }
+
+  .deck.is-live .deck__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+  }
+
+  .deck.is-live .step + .step {
+    margin: 0;
+  }
+
+  .deck.is-live .step {
+    grid-area: 1 / 1;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms var(--ease);
+  }
+
+  .deck.is-live .step.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .deck.is-live .deck__list,
+  .deck.is-live .deck__foot {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+  }
+
+  .deck.is-live.is-revealed .deck__list,
+  .deck.is-live.is-revealed .deck__foot {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 860px) {
+    .step {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    .answers {
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+    }
+
+    /* The legend below carries the three parts; the segments are too narrow for a label. */
+    .split__seg {
+      font-size: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .deck.is-live {
+      height: auto;
+    }
+
+    .deck.is-live .deck__stage {
+      position: static;
+      height: auto;
+    }
+
+    .deck.is-live .step {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .deck__rail,
+    .deck__cue {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import ScrollTrigger from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const deck = document.querySelector<HTMLElement>('[data-deck]');
+  const panels = deck ? Array.from(deck.querySelectorAll<HTMLElement>('[data-step]')) : [];
+  const bar = deck?.querySelector<HTMLElement>('[data-step-bar]');
+  const now = deck?.querySelector<HTMLElement>('[data-step-now]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const narrow = window.matchMedia('(max-width: 860px)');
+
+  const format = (value: number, decimals: number) =>
+    value.toLocaleString('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+
+  // The counter and the bar are fed the same progress, so the number a reader watches
+  // and the shape beside it cannot disagree.
+  const paint = (panel: HTMLElement, progress: number) => {
+    panel.style.setProperty('--p', progress.toFixed(4));
+    panel.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+      const value = Number(el.dataset.count ?? 0);
+      const decimals = Number(el.dataset.decimals ?? 0);
+      el.textContent = format(value * progress, decimals);
+    });
+  };
+
+  const setActive = (index: number) => {
+    panels.forEach((panel, i) => {
+      panel.classList.toggle('is-active', i === index);
+      panel.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+    });
+
+    if (now) {
+      now.textContent = String(index + 1).padStart(2, '0');
+    }
+  };
+
+  if (deck && panels.length > 0) {
+    if (reduce.matches || narrow.matches) {
+      panels.forEach((panel) => {
+        panel.classList.add('is-active');
+        panel.setAttribute('aria-hidden', 'false');
+      });
+    } else {
+      deck.classList.add('is-live');
+      setActive(0);
+
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            deck.classList.add('is-revealed');
+            reveal.disconnect();
+          }
+        },
+        { rootMargin: '0px 0px -40% 0px' },
+      );
+      reveal.observe(deck);
+
+      let current = -1;
+
+      ScrollTrigger.create({
+        trigger: deck,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => {
+          if (bar) {
+            bar.style.transform = `scaleX(${self.progress})`;
+          }
+
+          const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
+          if (index !== current) {
+            if (current >= 0 && panels[current]) {
+              paint(panels[current], 1);
+            }
+            current = index;
+            setActive(index);
+          }
+
+          const panel = panels[index];
+          if (panel) {
+            const local = Math.min(1, Math.max(0, self.progress * panels.length - index));
+            paint(panel, local);
+          }
+        },
+      });
+    }
+  }
+</script>
