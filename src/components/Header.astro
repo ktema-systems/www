@@ -252,20 +252,18 @@ const sheetItems = items.filter((item) => !item.items);
     window.addEventListener('resize', settleThread);
 
     // A product page arrives with the panel unfolded, and that is a greeting rather
-    // than a fixture: the first scroll retracts it, so the sheet never sits over the
-    // page a reader came to read. The strip is not drawn on a phone, so the greeting
-    // is only offered at the widths that show it.
+    // than a fixture: the page's own top is the one place the panel belongs, so it
+    // retracts as the page moves and comes back when the reader returns to the top.
+    // The strip is not drawn on a phone, so the greeting is only offered at the
+    // widths that show it.
     if (masthead.dataset.openProducts === 'true' && window.innerWidth > 720) {
-      setOpen(true);
-
-      const closeOnScroll = () => {
-        if (window.scrollY > 24) {
-          closeNow();
-          window.removeEventListener('scroll', closeOnScroll);
-        }
+      const syncThread = () => {
+        const atTop = window.scrollY <= 24;
+        setOpen(atTop);
       };
 
-      window.addEventListener('scroll', closeOnScroll, { passive: true });
+      syncThread();
+      window.addEventListener('scroll', syncThread, { passive: true });
     }
   }
 
