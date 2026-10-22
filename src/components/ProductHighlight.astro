@@ -78,7 +78,9 @@ const { id, name, meta, title, lede, rows, points, href } = Astro.props;
   }
 
   .ph__points {
-    margin: 0;
+    /* The block spacing is the section's, not the list's: a reset here would erase
+       the gap the head keeps from the list. */
+    margin: 28px 0 0;
     padding: 0;
     list-style: none;
     border-top: 1px solid var(--line-2);

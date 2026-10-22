@@ -815,20 +815,11 @@ svg {
   background: var(--panel);
 }
 
-/* The product the reader is on. Marked in the panel and in the phone's sheet, so
-   arriving on a page and opening Products shows where the reader already is. */
-.product-menu a[aria-current="page"] {
-  background: var(--panel);
-  box-shadow: inset 2px 0 0 var(--accent);
-}
-
+/* The product the reader is on, marked by the label alone: the panel is a list of
+   places to go, and a selected row would read as a button. */
 .product-menu a[aria-current="page"] .product-menu__name,
 .site-menu__sub a[aria-current="page"] {
   color: var(--accent);
-}
-
-.site-menu__sub a[aria-current="page"] span:first-child {
-  font-weight: 600;
 }
 
 .product-menu__name {

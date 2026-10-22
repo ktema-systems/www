@@ -1,0 +1,64 @@
+---
+// The cockpit at work, kept small: it is a development build on demo material, so
+// the figure is evidence of the shape rather than a product shot.
+const shot = {
+  src: '/delta_devscr.jpg',
+  width: 1842,
+  height: 1047,
+  alt: 'The Delta cockpit during a demo campaign: intents and their claims on the left, the fleet and its live map in the middle, the projects and members on the right, and the record at the bottom.',
+};
+---
+
+<figure class="dshot">
+  <div class="dshot__frame">
+    <img
+      src={shot.src}
+      alt={shot.alt}
+      width={shot.width}
+      height={shot.height}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <figcaption>
+    A development build of Delta, running a demo campaign on a virtual scenario. The screen is the
+    operator's view: intents and their claims on the left, the fleet and its live map in the middle,
+    the record along the bottom. <span class="dshot__note">Delta is planned to be open source.</span>
+  </figcaption>
+</figure>
+
+<style>
+  .dshot {
+    max-width: 640px;
+    /* The gap above is the section's; a bottom margin here would double it before
+       the cards that follow. */
+    margin-bottom: 0;
+  }
+
+  .dshot__frame {
+    width: 100%;
+    aspect-ratio: 1842 / 1047;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+
+  .dshot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dshot figcaption {
+    padding-top: 12px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--fg-3);
+  }
+
+  .dshot__note {
+    color: var(--fg-2);
+  }
+</style>

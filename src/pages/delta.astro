@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
+import DeltaShot from '../components/DeltaShot.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
@@ -32,6 +33,8 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     lede="A dashboard reports from outside the machine or the agent. Delta is that entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside. The operator, the machine, and the auditor read one object."
     wide
   >
+    <DeltaShot />
+
     <div class="cards cards--3 seat">
       <div class="card">
         <span class="card__value">To the past</span>
