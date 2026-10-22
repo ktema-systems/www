@@ -1,0 +1,93 @@
+---
+// The turn from one product to the next. The two pages carry the pitch's own pair
+// of sentences, mirrored, so a reader who follows the link arrives at the half of
+// the claim the page they left did not make.
+interface Props {
+  kicker?: string;
+  line: string;
+  href: string;
+  label: string;
+}
+
+const { kicker = 'Next', line, href, label } = Astro.props;
+---
+
+<aside class="handoff">
+  <p class="handoff__k">{kicker}</p>
+  <p class="handoff__line">{line}</p>
+  <a class="handoff__go" href={href}>
+    <span>{label}</span>
+    <svg class="handoff__arrow" viewBox="0 0 24 12" aria-hidden="true">
+      <path d="M0 6h21M16 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.2"></path>
+    </svg>
+  </a>
+</aside>
+
+<style>
+  .handoff {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px clamp(24px, 4vw, 56px);
+    align-items: end;
+    margin-top: clamp(44px, 6vh, 76px);
+    padding-top: 26px;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .handoff__k {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .handoff__line {
+    max-width: 30rem;
+    margin: 0;
+    font-size: clamp(1.45rem, 1.05rem + 1.5vw, 2rem);
+    font-weight: 600;
+    font-stretch: 115%;
+    letter-spacing: -0.025em;
+    line-height: 1.06;
+    text-wrap: balance;
+  }
+
+  .handoff__go {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+    padding-bottom: 6px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .handoff__go:hover {
+    color: var(--accent-2);
+    border-bottom-color: var(--accent-2);
+  }
+
+  .handoff__arrow {
+    width: 24px;
+    height: 12px;
+    transition: translate var(--dur) var(--ease);
+  }
+
+  .handoff__go:hover .handoff__arrow {
+    translate: 5px 0;
+  }
+
+  @media (max-width: 720px) {
+    .handoff {
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+</style>

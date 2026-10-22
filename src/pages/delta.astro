@@ -3,11 +3,13 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
 import DeltaShot from '../components/DeltaShot.astro';
+import Handoff from '../components/Handoff.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
-// Delta's page: the platform, the run, and the campaigns. The hero states the
-// platform, and the sections below explain the run in words.
+// Delta's page: the platform, the seat it gives the operator, the run, and the
+// campaigns. The hero states the platform, the seat section is the highlight, and
+// the hand-off carries the reader to the engine the seat is built on.
 ---
 
 <Base
@@ -19,13 +21,41 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   <Hero
     eyebrow="Delta"
     title={delta.tagline}
-    lede="Delta is the Single Space Agentic AI Operation Platform: a cockpit where operators see and command robots, drones, codebases, agents, and the people who run them in one unified space. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable, and the cockpit becomes the accountable mission control."
+    lede="Delta is the Single Space Agentic AI Operation Platform: a cockpit where operators see and command robots, drones, codebases, agents, and the people who run them in one unified space. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable."
     body="What the machine does is the sum of the intents that enter the loop."
   />
 
-  <div class="wrap delta-shot">
-    <DeltaShot />
-  </div>
+  <Section
+    id="seat"
+    label="The seat inside it"
+    title="A dashboard looks at the machine. Delta puts you inside it."
+    lede="A dashboard reports from outside the machine or the agent. Delta is that entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside. The operator, the machine, and the auditor read one object."
+    wide
+  >
+    <DeltaShot
+      caption="A development build during the Rescue Wing island fire run. Fourteen intents and the claim behind each one on the left, the fleet and its live map in the middle, the projects and the members writing to them on the right. The timeline at the bottom reads the record one fact at a time."
+    />
+
+    <div class="cards cards--3 seat">
+      <div class="card">
+        <span class="card__value">To the past</span>
+        <p>
+          The entity's point of view at the moment before an incident, replayed from the record
+          rather than reconstructed from a report.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card__value">To the edge</span>
+        <p>The entity's own space with the link down, commanded from where the work is.</p>
+      </div>
+      <div class="card">
+        <span class="card__value">Across borders</span>
+        <p>The record a regulator asks for, produced from the machine that made it.</p>
+      </div>
+    </div>
+
+    <Handoff line="Ktema is the black box the machine keeps." href="/ktema" label="The engine" />
+  </Section>
 
   <DeltaDeck />
 
@@ -62,7 +92,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
 </Base>
 
 <style>
-  .delta-shot {
-    padding-block: 0 clamp(40px, 6vh, 72px);
+  .seat {
+    margin-top: clamp(28px, 4vh, 44px);
   }
 </style>

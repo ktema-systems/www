@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import AddressFigure from '../components/AddressFigure.astro';
 import Product from '../components/Product.astro';
 import ProofDeck from '../components/ProofDeck.astro';
+import Handoff from '../components/Handoff.astro';
 import Contact from '../components/Contact.astro';
 import { product, productCta, productNav } from '../config';
 
@@ -27,5 +28,14 @@ import { product, productCta, productNav } from '../config';
   </Hero>
   <Product />
   <ProofDeck />
+  <div class="wrap handoff-band">
+    <Handoff line="Delta is the seat inside it." href="/delta" label="The platform" />
+  </div>
   <Contact />
 </Base>
+
+<style>
+  .handoff-band {
+    padding-bottom: clamp(40px, 6vh, 80px);
+  }
+</style>
