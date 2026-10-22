@@ -4,7 +4,7 @@ import Hero from '../components/Hero.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
 import DeltaShot from '../components/DeltaShot.astro';
 import Section from '../components/Section.astro';
-import { delta, deltaCta, deltaNav, site } from '../config';
+import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
 
 // Delta's page: the platform, the seat it gives the operator, the run, and the
 // campaigns. The hero states the platform, the seat section is the highlight, and
@@ -16,6 +16,7 @@ import { delta, deltaCta, deltaNav, site } from '../config';
   description={delta.description}
   nav={deltaNav}
   cta={deltaCta}
+  products={productMenu}
   current={delta.href}
   openProducts
 >

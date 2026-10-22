@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { type NavItem } from '../config';
+import { type NavItem, type NavLink } from '../config';
 
 interface Props {
   title: string;
@@ -11,6 +11,9 @@ interface Props {
   // company home's, which is what the header defaults to.
   nav?: readonly NavItem[];
   cta?: NavItem;
+  // The products panel's entries. It is separate from the nav because a product
+  // page carries the panel without an entry that opens it.
+  products?: readonly NavLink[];
   // Passed to the masthead: the product being read, and whether the products panel
   // is unfolded on arrival.
   current?: string;
@@ -20,7 +23,16 @@ interface Props {
   noindex?: boolean;
 }
 
-const { title, description, nav, cta, noindex = false, current, openProducts } = Astro.props;
+const {
+  title,
+  description,
+  nav,
+  cta,
+  noindex = false,
+  products,
+  current,
+  openProducts,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -54,7 +66,13 @@ const { title, description, nav, cta, noindex = false, current, openProducts } =
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <Header items={nav} cta={cta} current={current} openProducts={openProducts} />
+    <Header
+      items={nav}
+      cta={cta}
+      products={products}
+      current={current}
+      openProducts={openProducts}
+    />
     <main id="main">
       <slot />
     </main>

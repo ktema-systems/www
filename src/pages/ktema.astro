@@ -5,7 +5,7 @@ import AddressFigure from '../components/AddressFigure.astro';
 import Product from '../components/Product.astro';
 import ProofDeck from '../components/ProofDeck.astro';
 import Contact from '../components/Contact.astro';
-import { product, productCta, productNav } from '../config';
+import { product, productCta, productMenu, productNav } from '../config';
 
 // The engine's page: what it is, what it measures, and how it ships. The market
 // case and the comparison against other stores stay in the pitch.
@@ -16,6 +16,7 @@ import { product, productCta, productNav } from '../config';
   description={product.description}
   nav={productNav}
   cta={productCta}
+  products={productMenu}
   current={product.href}
   openProducts
 >

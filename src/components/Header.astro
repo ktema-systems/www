@@ -1,5 +1,5 @@
 ---
-import { companyCta, companyNav, site, type NavItem } from '../config';
+import { companyCta, companyNav, site, type NavItem, type NavLink } from '../config';
 
 // Each page hands its own strip in, because an anchor points at a section the page
 // it sits on carries. The default is the company home's, so a page that passes
@@ -7,21 +7,28 @@ import { companyCta, companyNav, site, type NavItem } from '../config';
 interface Props {
   items?: readonly NavItem[];
   cta?: NavItem;
-  // The product page being read. It marks that entry in the products panel and in
-  // the phone's sheet, so the panel says where the reader is.
+  // The products panel's entries. A product page carries the panel without a bar
+  // entry that opens it: the page arrives with the panel already unfolded, so the
+  // panel is the menu and a second way to open it would say the same thing twice.
+  products?: readonly NavLink[];
+  // The product page being read, marked in the panel and in the phone's sheet.
   current?: string;
-  // A product page opens with the panel unfolded, because the other products are
-  // what a reader arriving on one of them is most likely to want next.
+  // A product page opens with the panel unfolded.
   openProducts?: boolean;
 }
 
 const {
   items = companyNav,
   cta = companyCta,
+  products,
   current,
   openProducts = false,
 } = Astro.props;
-const menu = items.find((item) => item.items)?.items;
+
+const productLinks = products ?? items.find((item) => item.items)?.items ?? [];
+// The sheet lists the products as its own group, so the bar's Products entry, which
+// exists only to open the panel, is not repeated there.
+const sheetItems = items.filter((item) => !item.items);
 ---
 
 <header class="masthead" data-open-products={openProducts ? 'true' : undefined}>
@@ -67,11 +74,11 @@ const menu = items.find((item) => item.items)?.items;
     </button>
   </div>
   {
-    menu && (
+    productLinks.length > 0 && (
       <div class="product-menu" id="products-menu" data-products-menu>
         <div class="product-menu__fold">
           <div class="wrap product-menu__inner">
-            {menu.map((entry) => (
+            {productLinks.map((entry) => (
               <a href={entry.href} aria-current={entry.href === current ? 'page' : undefined}>
                 <span class="product-menu__name">{entry.label}</span>
                 {entry.note && <span class="product-menu__note">{entry.note}</span>}
@@ -87,24 +94,29 @@ const menu = items.find((item) => item.items)?.items;
       <nav class="wrap site-menu__inner" aria-label="Sections">
         <ul class="site-menu__list">
           {
-            items.map((item) => (
+            productLinks.length > 0 && (
+              <li class="site-menu__item">
+                <a href="/#products">Products</a>
+                <ul class="site-menu__sub">
+                  {productLinks.map((entry) => (
+                    <li>
+                      <a
+                        href={entry.href}
+                        aria-current={entry.href === current ? 'page' : undefined}
+                      >
+                        <span>{entry.label}</span>
+                        {entry.note && <span class="site-menu__note">{entry.note}</span>}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            )
+          }
+          {
+            sheetItems.map((item) => (
               <li class="site-menu__item">
                 <a href={item.href}>{item.label}</a>
-                {item.items && (
-                  <ul class="site-menu__sub">
-                    {item.items.map((entry) => (
-                      <li>
-                        <a
-                          href={entry.href}
-                          aria-current={entry.href === current ? 'page' : undefined}
-                        >
-                          <span>{entry.label}</span>
-                          {entry.note && <span class="site-menu__note">{entry.note}</span>}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </li>
             ))
           }
@@ -143,12 +155,13 @@ const menu = items.find((item) => item.items)?.items;
   write();
 
   // The Products panel opens on contact and closes on a short delay, so the pointer
-  // can cross from the label to the panel without the panel closing under it.
+  // can cross from the label to the panel without the panel closing under it. A page
+  // that has no trigger still has the panel, because it arrives open.
   const masthead = document.querySelector<HTMLElement>('.masthead');
   const trigger = masthead?.querySelector<HTMLElement>('[data-products-trigger]');
   const menu = masthead?.querySelector<HTMLElement>('[data-products-menu]');
 
-  if (masthead && trigger && menu) {
+  if (masthead && menu) {
     let timer: number | undefined;
     let packTimer: number | undefined;
 
@@ -161,7 +174,7 @@ const menu = items.find((item) => item.items)?.items;
 
       masthead.classList.add('is-settling');
       masthead.classList.toggle('is-open', open);
-      trigger.setAttribute('aria-expanded', String(open));
+      trigger?.setAttribute('aria-expanded', String(open));
 
       window.clearTimeout(packTimer);
       packTimer = window.setTimeout(() => masthead.classList.remove('is-settling'), 480);
@@ -182,6 +195,30 @@ const menu = items.find((item) => item.items)?.items;
       cancelClose();
       setOpen(false);
     };
+
+    if (trigger) {
+      trigger.addEventListener('pointerenter', open);
+      trigger.addEventListener('focus', open);
+      menu.addEventListener('pointerenter', open);
+      menu.addEventListener('focusin', open);
+
+      // The panel belongs to the masthead, so it closes only when the pointer
+      // leaves the whole bar and panel, not when it crosses to an adjacent link.
+      masthead.addEventListener('pointerenter', cancelClose);
+      masthead.addEventListener('pointerleave', close);
+      masthead.addEventListener('focusout', (event) => {
+        if (!masthead.contains(event.relatedTarget as Node | null)) {
+          close();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeNow();
+          trigger.blur();
+        }
+      });
+    }
 
     // The rail's light comes to rest over the product being read, so the panel says
     // where the reader is instead of drifting past it. It centres on the name's text,
@@ -230,28 +267,6 @@ const menu = items.find((item) => item.items)?.items;
 
       window.addEventListener('scroll', closeOnScroll, { passive: true });
     }
-
-    trigger.addEventListener('pointerenter', open);
-    trigger.addEventListener('focus', open);
-    menu.addEventListener('pointerenter', open);
-    menu.addEventListener('focusin', open);
-
-    // The panel belongs to the masthead, so it closes only when the pointer
-    // leaves the whole bar and panel, not when it crosses to an adjacent link.
-    masthead.addEventListener('pointerenter', cancelClose);
-    masthead.addEventListener('pointerleave', close);
-    masthead.addEventListener('focusout', (event) => {
-      if (!masthead.contains(event.relatedTarget as Node | null)) {
-        close();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        closeNow();
-        trigger.blur();
-      }
-    });
   }
 
   // The strip is hidden below 900px, so the same links are offered in a sheet under

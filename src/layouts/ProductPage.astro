@@ -3,7 +3,7 @@ import Base from './Base.astro';
 import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
-import { productCta, productPageNav } from '../config';
+import { productCta, productMenu, productPageNav } from '../config';
 
 // The shell every product page but Delta and Ktema uses: a hero, the blocks the
 // product states about itself, and one way in. The shell is shared so the six pages
@@ -42,6 +42,7 @@ const { name, href, title, body, description, lede, blocks, contact } = Astro.pr
   description={description}
   nav={productPageNav}
   cta={productCta}
+  products={productMenu}
   current={href}
   openProducts
 >

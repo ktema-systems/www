@@ -83,7 +83,6 @@ export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const deltaNav: readonly NavItem[] = [
   { label: 'The loop', href: '#loop' },
   { label: 'Campaigns', href: '#campaigns' },
-  { label: 'Products', href: '/#products', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -92,19 +91,15 @@ export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const productNav: readonly NavItem[] = [
   { label: 'Overview', href: '#product' },
   { label: 'Proof', href: '#proof' },
-  { label: 'Products', href: '/#products', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
 
 export const productCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
-// The strip a product page carries. It is one entry, so the page opens with the
-// products panel unfolded and the page's own product marked, which is what puts
-// the other five within a click of where a reader arrives.
-export const productPageNav: readonly NavItem[] = [
-  { label: 'Products', href: '/#products', items: productMenu },
-  { label: 'Contact', href: '#contact' },
-];
+// The strip a product page carries. It holds no Products entry: the page arrives
+// with the panel unfolded, so the panel is the menu, and an entry that opens it
+// would be the second way to do what is already done.
+export const productPageNav: readonly NavItem[] = [{ label: 'Contact', href: '#contact' }];
 
 export const papers = [
   {

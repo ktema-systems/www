@@ -1252,12 +1252,33 @@ svg {
 
 .footer__inner {
   display: flex;
-  flex-wrap: wrap;
-  gap: 28px 40px;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 18px;
   font-size: 14px;
   color: var(--fg-3);
+}
+
+/* The products sit at the foot of every page: a product page carries no entry that
+   opens the products panel, so this row is where the other five are always one
+   click away. */
+.footer__products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.footer__base {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  align-items: baseline;
+  justify-content: space-between;
 }
 
 .footer__links {
