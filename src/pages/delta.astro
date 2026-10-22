@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
+import DeltaShot from '../components/DeltaShot.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, site } from '../config';
 
@@ -21,6 +22,10 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     lede="Delta is the Single Space Agentic AI Operation Platform: a cockpit where operators see and command robots, drones, codebases, agents, and the people who run them in one unified space. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable, and the cockpit becomes the accountable mission control."
     body="What the machine does is the sum of the intents that enter the loop."
   />
+
+  <div class="wrap delta-shot">
+    <DeltaShot />
+  </div>
 
   <DeltaDeck />
 
@@ -55,3 +60,9 @@ import { delta, deltaCta, deltaNav, site } from '../config';
     <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
   </Section>
 </Base>
+
+<style>
+  .delta-shot {
+    padding-block: 0 clamp(40px, 6vh, 72px);
+  }
+</style>

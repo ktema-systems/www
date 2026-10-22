@@ -83,7 +83,7 @@ export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const deltaNav: readonly NavItem[] = [
   { label: 'The loop', href: '#loop' },
   { label: 'Campaigns', href: '#campaigns' },
-  { label: 'Products', href: '#loop', items: productMenu },
+  { label: 'Products', href: '/#products', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -92,6 +92,7 @@ export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const productNav: readonly NavItem[] = [
   { label: 'Product', href: '#product' },
   { label: 'Proof', href: '#proof' },
+  { label: 'Products', href: '/#products', items: productMenu },
   { label: 'Contact', href: '#contact' },
 ];
 

@@ -1,0 +1,63 @@
+---
+// The rescue run, at a glance. One image and one caption, used where the platform is
+// introduced: the company page's platform section, and the top of Delta's own page.
+
+const shot = {
+  src: '/delta_devscr.jpg',
+  width: 1842,
+  height: 1047,
+  alt: 'The Delta cockpit during the Rescue Wing island fire run: the intents and their claims on the left, the fleet and its live map in the middle, and the project list with its members on the right.',
+};
+
+interface Props {
+  caption?: string;
+}
+
+const {
+  caption =
+    'Rescue Wing: Island Fire. Fourteen intents and the claim behind each one on the left, the fleet and its live map in the middle, the projects and the members writing to them on the right. The timeline at the bottom reads the record one fact at a time.',
+} = Astro.props;
+---
+
+<figure class="dshot">
+  <div class="dshot__frame">
+    <img
+      src={shot.src}
+      alt={shot.alt}
+      width={shot.width}
+      height={shot.height}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+  <figcaption>{caption}</figcaption>
+</figure>
+
+<style>
+  .dshot {
+    margin: 0;
+  }
+
+  .dshot__frame {
+    width: 100%;
+    aspect-ratio: 1842 / 1047;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+
+  .dshot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .dshot figcaption {
+    padding: 14px 2px 0;
+    color: var(--fg-3);
+    font-size: 12.5px;
+    line-height: 1.6;
+  }
+</style>
