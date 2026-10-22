@@ -1,0 +1,55 @@
+---
+// The one link a highlight ends on: the product it just described. It is a line,
+// not a sentence, so it names the page and asks nothing of the reader.
+interface Props {
+  href: string;
+  label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<p class="plink">
+  <a href={href}>
+    <span>{label}</span>
+    <svg class="plink__arrow" viewBox="0 0 24 12" aria-hidden="true">
+      <path d="M0 6h21M16 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.2"></path>
+    </svg>
+  </a>
+</p>
+
+<style>
+  .plink {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .plink a {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .plink a:hover {
+    color: var(--accent-2);
+  }
+
+  .plink__arrow {
+    width: 22px;
+    height: 11px;
+    transition: translate var(--dur) var(--ease);
+  }
+
+  .plink a:hover .plink__arrow {
+    translate: 5px 0;
+  }
+</style>

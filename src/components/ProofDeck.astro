@@ -9,18 +9,27 @@
 
 const steps = 4;
 const answers = Array.from({ length: 32 }, (_, index) => index);
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  lede?: string;
+}
+
+const {
+  eyebrow = 'Proof',
+  title = 'The black box the machine keeps.',
+  lede = 'What it costs to remember everything: microseconds on the host, bytes on the part. The volume grows and the record does not.',
+} = Astro.props;
 ---
 
 <section class="deck" id="proof" data-deck style={`--steps: ${steps}`}>
   <div class="deck__stage">
     <div class="wrap deck__grid">
       <header class="deck__head">
-        <p class="eyebrow">Proof</p>
-        <h2>The black box the machine keeps.</h2>
-        <p class="lede">
-          What it costs to remember everything: microseconds on the host, bytes on the part. The
-          volume grows and the record does not.
-        </p>
+        <p class="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p class="lede">{lede}</p>
       </header>
 
       <ol class="deck__list">

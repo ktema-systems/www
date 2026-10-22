@@ -183,6 +183,31 @@ const menu = items.find((item) => item.items)?.items;
       setOpen(false);
     };
 
+    // The rail's light comes to rest over the product being read, so the panel says
+    // where the reader is instead of drifting past it.
+    const currentEntry = menu.querySelector<HTMLElement>('a[aria-current="page"]');
+
+    const settleThread = () => {
+      if (!currentEntry) {
+        return;
+      }
+
+      const panelBox = menu.getBoundingClientRect();
+      const entryBox = currentEntry.getBoundingClientRect();
+      if (panelBox.width === 0) {
+        return;
+      }
+
+      const center = ((entryBox.left + entryBox.width / 2 - panelBox.left) / panelBox.width) * 100;
+      // The band is 22% of the rail, and background-position is a share of the space
+      // left beside it, so the offset that centres the band is (center - 11) / 0.78.
+      menu.style.setProperty('--focus', `${((center - 11) / 0.78).toFixed(2)}%`);
+      menu.classList.add('has-focus');
+    };
+
+    settleThread();
+    window.addEventListener('resize', settleThread);
+
     // A product page arrives with the panel unfolded, and that is a greeting rather
     // than a fixture: the first scroll retracts it, so the sheet never sits over the
     // page a reader came to read. The strip is not drawn on a phone, so the greeting

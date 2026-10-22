@@ -749,6 +749,15 @@ svg {
   }
 }
 
+/* The light comes to rest over the product the reader is on, so the rail says where
+   they are instead of drifting past it. The rest of the rail dims, which is what
+   makes the parked light read as a position rather than a pause. */
+.masthead.is-open .product-menu.has-focus::before {
+  animation: none;
+  background-color: color-mix(in srgb, var(--accent) 7%, transparent);
+  background-position: var(--focus, -40%) 0;
+}
+
 .product-menu__inner {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));

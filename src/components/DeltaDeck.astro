@@ -3,18 +3,26 @@ import LoopFigure from './LoopFigure.astro';
 import CampaignFigure from './CampaignFigure.astro';
 
 // The site's scroll-driven explanation deck: the loop first, then one run through it.
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  lede?: string;
+}
+
+const {
+  eyebrow = 'The run',
+  title = 'Intent enters a moving run',
+  lede = 'A run is not a command. The loop comes first, then one run where intent enters while the work is moving.',
+} = Astro.props;
 ---
 
 <section class="deck" id="loop" data-delta-deck style="--panels: 2">
   <div class="deck__stage" data-deck-stage>
     <div class="wrap deck__grid">
       <header class="deck__head">
-        <p class="eyebrow">The run</p>
-        <h2>Intent enters a moving run</h2>
-        <p class="lede">
-          A run is not a command. The loop comes first, then one run where intent enters while the
-          work is moving.
-        </p>
+        <p class="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p class="lede">{lede}</p>
       </header>
 
       <ol class="deck__list">

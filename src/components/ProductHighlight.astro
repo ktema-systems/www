@@ -1,0 +1,93 @@
+---
+import ProductLink from './ProductLink.astro';
+
+// One product's turn on the company page. The label column names the product and
+// the line it plays, so a reader never has to work out which part of the stack the
+// paragraph is about.
+interface Row {
+  k: string;
+  v: string;
+}
+
+interface Props {
+  id: string;
+  name: string;
+  meta: string;
+  title: string;
+  lede: string;
+  rows?: Row[];
+  points?: string[];
+  href: string;
+}
+
+const { id, name, meta, title, lede, rows, points, href } = Astro.props;
+---
+
+<section class="section" id={id}>
+  <div class="wrap section__grid">
+    <p class="section__label">
+      <span class="ph__name">{name}</span>
+      <span class="ph__meta">{meta}</span>
+    </p>
+
+    <div class="section__body">
+      <div class="section__head">
+        <h2>{title}</h2>
+        <p class="lede">{lede}</p>
+      </div>
+
+      {
+        rows && (
+          <dl class="spec">
+            {rows.map((row) => (
+              <>
+                <dt>{row.k}</dt>
+                <dd>{row.v}</dd>
+              </>
+            ))}
+          </dl>
+        )
+      }
+
+      {
+        points && (
+          <ul class="ph__points">
+            {points.map((point) => (
+              <li>{point}</li>
+            ))}
+          </ul>
+        )
+      }
+
+      <ProductLink href={href} label={name} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .ph__name {
+    display: block;
+    color: var(--accent);
+  }
+
+  .ph__meta {
+    display: block;
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+  }
+
+  .ph__points {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line-2);
+  }
+
+  .ph__points li {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+    color: var(--fg-2);
+  }
+</style>

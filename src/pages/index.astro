@@ -2,14 +2,18 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import CaseDeck from '../components/CaseDeck.astro';
+import ProofDeck from '../components/ProofDeck.astro';
+import DeltaDeck from '../components/DeltaDeck.astro';
+import ProductHighlight from '../components/ProductHighlight.astro';
+import ProductLink from '../components/ProductLink.astro';
 import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
 import { companyCta, companyNav, creedLine, site } from '../config';
 
 // The company's landing page: the promise, the situations the product is built for,
-// the products, the partners, the footprint, and one way in. The detail lives on the
-// engine's page and in the pitch.
+// one turn for each of the six products, and the stack they make together. The
+// detail lives on the product pages and in the pitch.
 ---
 
 <Base
@@ -33,16 +37,73 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 
   <CaseDeck />
 
-  <Layers />
+  <ProofDeck eyebrow="Ktema · the black box" title="What it costs to remember everything." />
+  <div class="wrap hl-close">
+    <ProductLink href="/ktema" label="Ktema" />
+  </div>
 
-  <Section
-    id="delta"
-    label="The platform"
-    title="The seat inside the machine"
-    lede="Delta is the Single Space Agentic AI Operation Platform: robots, drones, codebases, agents, and the people who run them, commanded in one space. The operator stands inside the run's own space and time, reading the same record the machine wrote."
-  >
-    <p><a class="btn" href="/delta">See Delta</a></p>
-  </Section>
+  <ProductHighlight
+    id="kletos"
+    name="Kletos"
+    meta="the autopilot"
+    title="One unit of work, four steps, one record"
+    lede="Work is stated, claimed, performed, and deposited as a fact, with a derivation that ties it to the intent that proposed it."
+    rows={[
+      { k: 'Stated', v: 'The work is stated with the intent that proposes it.' },
+      { k: 'Claimed', v: 'An agent, a machine, or a person takes it, and the claim is written.' },
+      { k: 'Performed', v: 'The work is done where the machine that took it runs.' },
+      { k: 'Deposited', v: 'The result is written as a fact, tied to the intent that proposed it.' },
+    ]}
+    href="/kletos"
+  />
+
+  <ProductHighlight
+    id="krisis"
+    name="Krisis"
+    meta="the authority"
+    title="The rules the work runs inside"
+    lede="It sets what each action may do, chooses which model answers and at what cost, and keeps the work inside the rules a deployment declared."
+    rows={[
+      { k: 'The action', v: 'What each action may do, and what it may not.' },
+      { k: 'The model', v: 'Which model answers a request.' },
+      { k: 'The cost', v: 'What that answer costs.' },
+      { k: 'The terms', v: 'On what terms it is given.' },
+    ]}
+    href="/krisis"
+  />
+
+  <DeltaDeck eyebrow="Delta · the cockpit" title="Intent enters a moving run" />
+  <div class="wrap hl-close">
+    <ProductLink href="/delta" label="Delta" />
+  </div>
+
+  <ProductHighlight
+    id="telos"
+    name="Telos"
+    meta="the transport"
+    title="A step to another place is an address"
+    lede="Work is addressed by coordinate and reached by teleport, so an agent moves between work locations without walking a tree or scanning a path."
+    points={[
+      'Live execution states move between agents, people, and spaces.',
+      "It carries the operator's view to the machine, so the platform is a position inside the system rather than a window onto it.",
+    ]}
+    href="/telos"
+  />
+
+  <ProductHighlight
+    id="kleis"
+    name="Kleis"
+    meta="the seal"
+    title="It decides who enters"
+    lede="The key a holder presents, the seal that makes a copy of the files worth nothing, and the proof that the holder was there."
+    rows={[
+      { k: 'Who enters', v: 'Kleis, from the key the holder presents.' },
+      { k: 'What may be done', v: 'Krisis, from the rules the deployment declared.' },
+    ]}
+    href="/kleis"
+  />
+
+  <Layers />
 
   <Section
     id="partners"
@@ -80,6 +141,11 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 <style>
   .reach-band {
     padding-block: 4px clamp(40px, 6vh, 80px);
+  }
+
+  /* The deck has no gap under it, and the link that closes the turn needs one. */
+  .hl-close {
+    padding-block: clamp(20px, 3vh, 32px) clamp(40px, 6vh, 80px);
   }
 
   .biz {
