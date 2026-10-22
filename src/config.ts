@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems builds accountable, edge-native computing for autonomous entities: a deterministic record on the machine, an execution layer, a governance layer, a cockpit, a transport, and a cryptographic authorization engine.',
+    'Ktema Systems makes autonomous machines answerable: a deterministic record on the device, a cockpit that replays any decision, and a key that proves who was in control.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
