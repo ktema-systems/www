@@ -50,8 +50,9 @@ export const creed = [
   { product: 'Krisis', line: 'Judgment governs.' },
 ] as const;
 
-// The three lines as one, for the masthead-height slot on the home page.
-export const creedLine = "Edge-Owned. Accountable. Plug-in-Control.";
+// The three lines as one, for the masthead-height slot on the home page. It is the
+// three products' own promises in one breath, which is what the page goes on to show.
+export const creedLine = creed.map((entry) => entry.line).join(' ');
 
 export type NavLink = { label: string; href: string; note?: string };
 
