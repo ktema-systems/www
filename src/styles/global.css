@@ -472,11 +472,32 @@ svg {
 /* The panel packs the bar to its settled size as it opens, so the mark steps down
    from page scale in the same motion that unfolds the sheet. The two derived values
    are restated here because they were computed on the root, where the progress did
-   not change. */
-.masthead.is-open {
-  --masthead-progress: 1;
-  --brand-size: var(--brand-settled);
-  --brand-lift: 0px;
+   not change. The panel is a desktop strip, so this is a desktop rule: a phone does
+   not draw the panel, and a product page's mark sits at page scale there.
+
+   A product page arrives with is-open already on the element, so the first paint is
+   the open state and nothing unfolds over the page. */
+@media (min-width: 721px) {
+  .masthead.is-open {
+    --masthead-progress: 1;
+    --brand-size: var(--brand-settled);
+    --brand-lift: 0px;
+  }
+
+  .masthead.is-open .brand__mark {
+    transform: rotate(30deg) scale(1.06);
+    background-color: var(--accent);
+  }
+}
+
+/* On a phone the open state is carried for a panel that is not drawn, so the bar
+   stays as it is at the top of any other page. */
+@media (max-width: 720px) {
+  :root.is-at-top .masthead.is-open:not(.is-menu) {
+    background: none;
+    backdrop-filter: none;
+    border-bottom-color: transparent;
+  }
 }
 
 /* The mobile sheet gives the bar the same surface a panel asks for, without
@@ -551,8 +572,8 @@ svg {
 }
 
 /* The mark turns with the panel: the hexagon steps once and takes the accent as
-   the menu begins to unfold, so the two read as one gesture. */
-.masthead.is-open .brand__mark,
+   the menu begins to unfold, so the two read as one gesture. The phone's sheet
+   makes the same gesture. */
 .masthead.is-menu .brand__mark {
   transform: rotate(30deg) scale(1.06);
   background-color: var(--accent);

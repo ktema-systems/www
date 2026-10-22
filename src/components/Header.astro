@@ -31,7 +31,10 @@ const productLinks = products ?? items.find((item) => item.items)?.items ?? [];
 const sheetItems = items.filter((item) => !item.items);
 ---
 
-<header class="masthead" data-open-products={openProducts ? 'true' : undefined}>
+<header
+  class:list={['masthead', openProducts && 'is-open']}
+  data-open-products={openProducts ? 'true' : undefined}
+>
   <div class="wrap masthead__inner">
     <a class="brand" href="/">
       <span class="brand__mark" aria-hidden="true"></span>
