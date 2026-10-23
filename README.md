@@ -27,7 +27,7 @@ npm run preview  # serve the built output
 | `src/components/CaseDeck.astro` | the home's scroll-driven cases |
 | `src/components/DeltaDeck.astro` | Delta's scroll-driven loop and example |
 | `src/components/CockpitDeck.astro` | Delta's scroll-driven cockpit screenshots |
-| `src/components/Reach.astro` | the engine's reach, drawn as a ring of hexagons |
+| `src/components/Reach.astro` | the engine's reach: one sphere of coordinates and the hosts on it |
 | `src/components/AddressFigure.astro` | the lookup against the computed address, drawn as SVG |
 | `src/components/Section.astro` | the shared section frame: a sticky label and a body |
 | `src/layouts/Base.astro` | the document shell and the metadata |
@@ -73,8 +73,9 @@ the use of funds, is left off the public pages.
 
 Three figures are computed at build time rather than transcribed:
 
-- `Reach.astro` lays its ring out flat and projects it, so the six hosts sit on one
-  ellipse and the joins stop at the two tile outlines at any size.
+- `Reach.astro` keeps one sphere and its hosts in three dimensions and projects them
+  per frame, so the turn is a rotation of the space, two hosts are joined where their
+  reads meet, and the closed instant forks into three states at any size.
 - `AddressFigure.astro` projects its points from the `(time, event, origin)`
   space with the same orthographic view the pitch figure uses, so the scatter
   stays clear of the query window and the labels at any rendered size.

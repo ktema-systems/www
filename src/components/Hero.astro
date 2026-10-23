@@ -14,7 +14,7 @@ interface Props {
   // draw over each other.
   field?: boolean;
   // When the field arrives: from the first paint, or once the hero has been scrolled
-  // past. The company's page carries the scan right under the first screen, so its
+  // past. The company's page carries the figure right under the first screen, so its
   // backdrop comes in after the promise rather than behind it.
   fieldReveal?: 'now' | 'scroll';
   // A page that composes the copy against a scene sets the body back in depth.
@@ -42,16 +42,17 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = f
     </div>
   </div>
   {
-    // Astro.slots.has('figure') && (
-    //   <div class="wrap hero__figure">
-    //     <slot name="figure" />
-    //   </div>
-    // )
+    Astro.slots.has('figure') && (
+      <div class="wrap hero__figure">
+        <slot name="figure" />
+      </div>
+    )
   }
 </section>
 
 <style>
   .hero {
+    /* The copy is a layer above the scene the next band draws behind it. */
     position: relative;
     z-index: 2;
     overflow: visible;
@@ -100,31 +101,6 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = f
     max-width: 40rem;
   }
 
-  /* The copy sits on a plane set back from the reader, so the scene behind it has
-     depth rather than sitting on the same sheet. */
-  .hero__body--deep {
-    position: relative;
-    transform: perspective(1100px) rotateX(2.4deg) translateZ(-24px);
-    transform-origin: 50% 100%;
-    opacity: 0.94;
-  }
-
-  /* A veil in the page colour, so the scene reads behind the copy without drawing
-     through it. The gradient keeps the depth: the globe still shows at the edges. */
-  .hero__body--deep::before {
-    content: '';
-    position: absolute;
-    inset: -20px -36px;
-    z-index: -1;
-    pointer-events: none;
-    background: radial-gradient(
-      120% 130% at 35% 50%,
-      color-mix(in srgb, var(--bg) 86%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 55%, transparent) 55%,
-      transparent 82%
-    );
-  }
-
   .hero h1 {
     font-size: var(--headline-size);
     letter-spacing: -0.022em;
@@ -148,6 +124,19 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = f
   .hero__body {
     color: var(--fg-2);
     margin: 0;
+  }
+
+  /* The copy sits on a plane set back from the reader, so the scene behind it has
+     depth rather than sitting on the same sheet. The shadow is the only thing between
+     the text and the scene: a panel would flatten the depth it is there to make. */
+  .hero__body--deep {
+    position: relative;
+    transform: perspective(900px) rotateX(4deg) translateZ(-44px);
+    transform-origin: 40% 100%;
+    opacity: 1;
+    text-shadow:
+      0 1px 18px color-mix(in srgb, var(--bg) 88%, transparent),
+      0 0 42px color-mix(in srgb, var(--bg) 70%, transparent);
   }
 
   .hero__actions {

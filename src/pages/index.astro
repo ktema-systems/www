@@ -160,14 +160,14 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     padding-block: 4px clamp(40px, 6vh, 80px);
   }
 
-  /* The sphere is the scene, so it may use the window rather than the reading column. */
+  /* The sphere is the scene, so it may use the window rather than the reading column,
+     and it holds the right edge while the copy holds the left. */
   .reach-band .wrap {
     max-width: none;
-    padding-inline: clamp(16px, 2.4vw, 48px);
+    padding-inline: 0;
   }
 
-  /* On a phone the copy fills the width, so the globe starts under it rather than
-     behind it. */
+  /* A phone has no column to give the globe, so the figure sits below the promise. */
   @media (max-width: 720px) {
     .reach-band {
       margin-top: -40px;

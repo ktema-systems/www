@@ -25,15 +25,19 @@ const DIST = 2600;
 
 // The frame is cut to the drawing: the sphere, its names, and the three states that
 // stand outside it. A wider box only adds margin, and margin is space the figure does
-// not use.
+// not use. The sphere is set to the right edge, so the states and the copy take the
+// left of the frame.
+const RADIUS = 270;
 const VIEW_X = 38;
 const VIEW_Y = 40;
-const VIEW_W = 676;
+const VIEW_W = 700;
 const VIEW_H = 460;
-const OX = 390;
-const OY = 270;
+// A sphere projects to a circle slightly larger than its radius times the depth
+// scale: the silhouette is the tangent, not the centre plane.
+const SILHOUETTE = (RADIUS * FOCAL) / Math.sqrt(DIST * DIST - RADIUS * RADIUS);
+const OX = VIEW_X + VIEW_W - 6 - SILHOUETTE;
+const OY = 250; // Low enough that the top hosts clear the masthead.
 
-const RADIUS = 228;
 const LIFT = 21;
 
 const SIN_T = Math.sin(TILT);
@@ -53,9 +57,6 @@ const project = (x: number, y: number, z: number) => {
 };
 
 const ORIGIN = project(0, 0, 0);
-// A sphere projects to a circle slightly larger than its radius times the depth
-// scale: the silhouette is the tangent, not the centre plane.
-const SILHOUETTE = (RADIUS * FOCAL) / Math.sqrt(DIST * DIST - RADIUS * RADIUS);
 
 const asPoints = (corners: number[][]) =>
   corners.map(([u, h]) => `${round(u)},${round(h)}`).join(' ');
@@ -128,17 +129,17 @@ interface Seed {
 // Twelve hosts on the surface carry the examples. The peers below carry none,
 // because they stand for every other field the same space can hold.
 const seeds: Seed[] = [
-  { id: 'space', lon: 8, lat: 30, icon: 'space', size: 0.5, label: 'Space system', side: 'right' },
+  { id: 'space', lon: 8, lat: 0, icon: 'space', size: 0.5, label: 'Space system', side: 'right' },
   { id: 'meter', lon: 38, lat: -30, icon: 'meter', size: 0.5, label: 'Smart meter', side: 'below' },
-  { id: 'camera', lon: 68, lat: 30, icon: 'camera', size: 0.5, label: 'Vision camera', side: 'right' },
+  { id: 'camera', lon: 68, lat: 0, icon: 'camera', size: 0.5, label: 'Vision camera', side: 'right' },
   { id: 'plc', lon: 98, lat: -30, icon: 'plc', size: 0.5, label: 'Factory PLC', side: 'right' },
-  { id: 'laptop', lon: 128, lat: 30, icon: 'laptop', size: 0.5, label: 'Laptop and mobile', side: 'left' },
+  { id: 'laptop', lon: 128, lat: 0, icon: 'laptop', size: 0.5, label: 'Laptop and mobile', side: 'left' },
   { id: 'drone', lon: 158, lat: -30, icon: 'drone', size: 0.5, label: 'MCU drone', side: 'left' },
-  { id: 'robot', lon: 188, lat: 30, icon: 'robot', size: 0.5, label: 'ROS robot', side: 'left' },
+  { id: 'robot', lon: 188, lat: 0, icon: 'robot', size: 0.5, label: 'ROS robot', side: 'left' },
   { id: 'medical', lon: 218, lat: -30, icon: 'monitor', size: 0.5, label: 'Medical device', side: 'left' },
-  { id: 'wearable', lon: 248, lat: 30, icon: 'wearable', size: 0.5, label: 'Wearable', side: 'below' },
+  { id: 'wearable', lon: 248, lat: 0, icon: 'wearable', size: 0.5, label: 'Wearable', side: 'below' },
   { id: 'vehicle', lon: 278, lat: -30, icon: 'vehicle', size: 0.5, label: 'Vehicle ECU', side: 'right' },
-  { id: 'rack', lon: 308, lat: 30, icon: 'rack', size: 0.5, label: 'Data center', side: 'right' },
+  { id: 'rack', lon: 308, lat: 0, icon: 'rack', size: 0.5, label: 'Data center', side: 'right' },
   { id: 'gateway', lon: 338, lat: -30, icon: 'gateway', size: 0.5, label: 'Edge gateway', side: 'right' },
 
   // A mesh of near peers and a group read through one of its members: the same
@@ -163,7 +164,15 @@ const nodes = seeds.map((seed) => {
   const outY = at.y - ORIGIN.y;
   const outLength = Math.hypot(outX, outY) || 1;
   const lift = seed.glyph ? 0 : LIFT;
-  const glyphAt = { x: at.x + (outX / outLength) * lift, y: at.y + (outY / outLength) * lift };
+  // A glyph on the right edge is held inside the frame, so the sphere can meet the
+  // page edge without cutting the host that sits on it. A peer stays on its coordinate.
+  const liftedX = at.x + (outX / outLength) * lift;
+  const glyphAt = {
+    x: seed.icon
+      ? Math.min(VIEW_X + VIEW_W - 26, Math.max(VIEW_X + 26, liftedX))
+      : liftedX,
+    y: at.y + (outY / outLength) * lift,
+  };
   const far = at.depth > DIST;
   return {
     ...seed,
@@ -369,12 +378,13 @@ const pathOf = (ring: Ring) => {
 // of the same lattice, each displaced along a direction of its own.
 const BRANCH_RADIUS = RADIUS * 0.25;
 const BRANCH_SPREAD = RADIUS * 1.6;
+// The states stand to the left, where a sphere this large leaves the frame open. The
+// directions carry a depth component because a flat leftward offset would bunch them
+// on the same screen height.
 const BRANCH_DIRS: Vec3[] = [
-  [-0.94, 0.34, 0],
-  [0.94, 0.34, 0],
-  // Down and to the side: straight down projects too close to the centre to clear the
-  // parent, and the third state has to stand outside it like the other two.
-  [0.5, -0.866, 0],
+  [-0.405, -0.105, 0.909],
+  [-0.909, -0.105, 0.405],
+  [-0.698, -0.669, 0.254],
 ];
 // The last state is left open: the instant after the read has not been classified yet, so
 // the space carries more futures than it draws.
@@ -387,7 +397,12 @@ const branches = BRANCH_DIRS.map((dir, index) => {
     dir[2] * BRANCH_SPREAD,
   ];
   const centre = project(...offset);
-  const rim = project(dir[0] * RADIUS, dir[1] * RADIUS, dir[2] * RADIUS);
+  // The fork starts where the state left the sphere, on the silhouette in the state's
+  // screen direction. A three-dimensional rim point would draw the line across the
+  // sphere for a direction that points toward the reader.
+  const outX = centre.x - ORIGIN.x;
+  const outY = centre.y - ORIGIN.y;
+  const outLength = Math.hypot(outX, outY) || 1;
   return {
     name: BRANCH_NAMES[index] as string,
     dir,
@@ -396,8 +411,8 @@ const branches = BRANCH_DIRS.map((dir, index) => {
     y: round(centre.y),
     labelTop: round(centre.y - 1),
     labelLetter: round(centre.y + 11),
-    rimX: round(rim.x),
-    rimY: round(rim.y),
+    rimX: round(ORIGIN.x + (outX / outLength) * SILHOUETTE),
+    rimY: round(ORIGIN.y + (outY / outLength) * SILHOUETTE),
     radius: round(BRANCH_RADIUS),
     rings: latticeRings(BRANCH_RADIUS, 0, offset, [0, 60, 120], [-30, 0, 30]),
   };
@@ -451,7 +466,12 @@ const payload = {
 ---
 
 <figure class="reach" data-reach>
-  <svg viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`} role="img" aria-labelledby="reach-title">
+  <svg
+    viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`}
+    role="img"
+    aria-labelledby="reach-title"
+    style="--reach-scale: 1.4"
+  >
     <title id="reach-title"
       >Hosts attached to one sphere of coordinates: each host carries the engine at its
       own coordinate, two hosts are joined where their reads reach the same point, and
@@ -569,26 +589,27 @@ const payload = {
       {links.map((link) => <line class="reach__link" x1={link.x1} y1={link.y1} x2={link.x2} y2={link.y2} />)}
     </g>
 
-    {
-      nodes.map((node) =>
-        node.icon ? (
-          <g
-            class="reach__mark"
+    <g class="reach__hosts">
+      {
+        nodes.map((node) =>
+          node.icon ? (
+            <g
+              class="reach__mark"
             data-mark={node.id}
             data-read={joinThreshold.get(node.id) ?? 1}
             transform={node.markTransform}
             style={`--fade: ${node.fade}`}
           >
-            <polygon class="reach__mark-outline" points={MARK_SHAPE.outline} />
-            <polygon class="reach__mark-inner" points={MARK_SHAPE.inner} />
-          </g>
-        ) : null,
-      )
-    }
+              <polygon class="reach__mark-outline" points={MARK_SHAPE.outline} />
+              <polygon class="reach__mark-inner" points={MARK_SHAPE.inner} />
+            </g>
+          ) : null,
+        )
+      }
 
-    {
-      nodes.map((node) => (
-        <g class="reach__node" transform={node.transform} style={`opacity: ${node.fade}`}>
+      {
+        nodes.map((node) => (
+          <g class="reach__node" transform={node.transform} style={`opacity: ${node.fade}`}>
           <g class="reach__glyph">
             {node.icon === 'robot' && (
               <>
@@ -721,9 +742,10 @@ const payload = {
           >
             {node.label}
           </text>
-        ) : null,
-      )
-    }
+          ) : null,
+        )
+      }
+    </g>
   </svg>
 
   <script type="application/json" id="reach-space" set:html={JSON.stringify(payload)} />
@@ -741,10 +763,12 @@ const payload = {
 
 <style>
   .reach {
-    /* As wide as the viewport allows: the drawing keeps 676 by 460, so this leaves
-       room for the pin offset and the caption under it. */
-    max-width: min(1160px, calc((100svh - 110px) * 1.47));
-    margin: 0 auto;
+    /* As wide as the viewport allows: the drawing keeps 700 by 460, so this leaves
+       room for the pin offset and the caption under it. The globe holds the right
+       edge of the page, so the copy has the left. */
+    max-width: min(1400px, calc((100svh - 116px) * 1.522));
+    margin-left: auto;
+    margin-right: 0;
   }
 
   .reach svg {
@@ -758,6 +782,17 @@ const payload = {
     touch-action: pan-y;
     user-select: none;
     -webkit-user-select: none;
+    /* The scene begins larger than the figure and settles as the pin arrives, so the
+       top of the sphere stands behind the promise before the section begins. */
+    transform: scale(var(--reach-scale, 1));
+    transform-origin: 100% 50%;
+  }
+
+  @media (max-width: 1100px) {
+    /* Without the column to spare, the scene is centred rather than held right. */
+    .reach svg {
+      transform: translateX(-8%) scale(var(--reach-scale, 1));
+    }
   }
 
   .reach svg.is-grabbing {
@@ -769,6 +804,11 @@ const payload = {
     stroke: var(--fg);
     stroke-width: 0.9;
     opacity: 0.15;
+  }
+
+  /* The hosts belong to the figure, not to its backdrop: they arrive with the pin. */
+  .reach__hosts {
+    opacity: var(--reach-hosts, 1);
   }
 
   .reach__shell path {
@@ -930,6 +970,7 @@ const payload = {
   .reach__caption {
     max-width: 56rem;
     margin: 20px auto 0;
+    padding-inline: clamp(16px, 4vw, 40px);
     font-size: 12.5px;
     line-height: 1.6;
     color: var(--fg-3);
@@ -937,6 +978,10 @@ const payload = {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .reach svg {
+      transform: none;
+    }
+
     .reach__particle,
     .reach__join,
     .reach__mark,
@@ -1115,6 +1160,7 @@ const payload = {
     const nodeEls = Array.from(svg.querySelectorAll<SVGGElement>('.reach__node'));
     // The fork groups are layered against this circle, so the near state covers the far one.
     const sphereEl = svg.querySelector<SVGCircleElement>('.reach__sphere');
+    const silhouette = sphereEl?.r.baseVal.value ?? 0;
     const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
     const extentEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-extent]'));
     const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
@@ -1156,6 +1202,8 @@ const payload = {
     };
 
     const render = () => {
+      const frame = svg.viewBox.baseVal;
+
       for (const group of groupEls) {
         group.paths.forEach((path, index) => {
           const points = group.rings[index];
@@ -1189,7 +1237,10 @@ const payload = {
         const outY = at.y - space.oy;
         const outLength = Math.hypot(outX, outY) || 1;
         const lift = node.icon ? space.lift : 0;
-        const glyphX = at.x + (outX / outLength) * lift;
+        const liftedX = at.x + (outX / outLength) * lift;
+        const glyphX = node.icon
+          ? Math.min(frame.x + frame.width - 26, Math.max(frame.x + 26, liftedX))
+          : liftedX;
         const glyphY = at.y + (outY / outLength) * lift;
         const scale = at.p * node.size;
 
@@ -1269,7 +1320,6 @@ const payload = {
             x = glyphX;
             y = glyphY + 38;
           }
-          const frame = svg.viewBox.baseVal;
           y = Math.min(frame.y + frame.height - 6, Math.max(frame.y + 16, y));
           const box = labelBox(x, y, anchor, width);
           // A name that would leave the frame is carried back inside it, so a turn
@@ -1318,13 +1368,11 @@ const payload = {
         branch.circle?.setAttribute('r', (branch.radius * centre.p * 1.04).toFixed(1));
 
         if (branch.line) {
-          const rim = projectFork(
-            branch.dir[0] * space.radius,
-            branch.dir[1] * space.radius,
-            branch.dir[2] * space.radius,
-          );
-          branch.line.setAttribute('x1', rim.x.toFixed(1));
-          branch.line.setAttribute('y1', rim.y.toFixed(1));
+          const outwardX = centre.x - space.ox;
+          const outwardY = centre.y - space.oy;
+          const outward = Math.hypot(outwardX, outwardY) || 1;
+          branch.line.setAttribute('x1', (space.ox + (outwardX / outward) * silhouette).toFixed(1));
+          branch.line.setAttribute('y1', (space.oy + (outwardY / outward) * silhouette).toFixed(1));
           branch.line.setAttribute('x2', centre.x.toFixed(1));
           branch.line.setAttribute('y2', centre.y.toFixed(1));
         }
@@ -1440,10 +1488,35 @@ const payload = {
       render();
     };
 
+    // The figure starts larger than its pinned size and settles as the pin arrives, so
+    // the top of the sphere stands behind the promise before the section begins.
+    const documentTop = (element: HTMLElement) => {
+      let top = 0;
+      let current: HTMLElement | null = element;
+      while (current) {
+        top += current.offsetTop;
+        current = current.offsetParent as HTMLElement | null;
+      }
+      return top;
+    };
+    let approachEnd = Math.max(1, documentTop(figure) - 8);
+    let lastScale = 0;
+    const measureApproach = () => {
+      approachEnd = Math.max(1, documentTop(figure) - 8);
+    };
+    addEventListener('resize', measureApproach, { passive: true });
+
     // The turn runs while the figure is on screen, and rests while a reader holds it.
     const step = (now: number) => {
       const delta = Math.min(0.05, (now - lastFrame) / 1000);
       lastFrame = now;
+      const approach = Math.min(1, Math.max(0, window.scrollY / approachEnd));
+      const scale = 1.4 - 0.4 * approach;
+      if (Math.abs(scale - lastScale) > 0.001) {
+        lastScale = scale;
+        svg.style.setProperty('--reach-scale', scale.toFixed(3));
+        svg.style.setProperty('--reach-hosts', approach.toFixed(3));
+      }
       if (visible && !dragging && !reduce.matches && now > resumeAt) {
         yaw += delta * 0.11;
         render();
@@ -1488,25 +1561,22 @@ const payload = {
       { rootMargin: '120px' },
     ).observe(figure);
 
+    // The page backdrop waits until the figure has left the viewport. The hero sits
+    // above the figure, and its field is fixed, so an earlier arrival would draw the
+    // hexagon over the globe while the figure is still leaving.
+    const settle = (done: boolean) => {
+      if (done) document.documentElement.dataset.reachDone = 'true';
+      else delete document.documentElement.dataset.reachDone;
+    };
+    new IntersectionObserver(([entry]) => {
+      settle(entry.boundingClientRect.bottom <= 0);
+    }).observe(figure);
+
     if (reduce.matches) {
       // The whole story: the read closed and the space divided.
       paint(1);
-      // No pin here, so the figure leaving the viewport is the end of the sequence.
-      new IntersectionObserver(([entry], observer) => {
-        if (entry.isIntersecting) return;
-        document.documentElement.dataset.reachDone = 'true';
-        observer.disconnect();
-      }).observe(figure);
     } else {
       // Pinned for both acts: the read closes, then the space divides.
-      // The backdrop behind the rest of the page waits for the read to finish: the
-      // figure owns the scroll until the pin lets go, so the field may not arrive
-      // while it is still dividing.
-      const settle = (done: boolean) => {
-        if (done) document.documentElement.dataset.reachDone = 'true';
-        else delete document.documentElement.dataset.reachDone;
-      };
-
       ScrollTrigger.create({
         trigger: figure,
         start: 'top 8px',
@@ -1514,12 +1584,7 @@ const payload = {
         end: '+=1500',
         pin: true,
         onUpdate: (self) => paint(self.progress),
-        onRefresh: (self) => {
-          paint(self.progress);
-          settle(self.progress >= 1);
-        },
-        onLeave: () => settle(true),
-        onEnterBack: () => settle(false),
+        onRefresh: (self) => paint(self.progress),
       });
       requestAnimationFrame(step);
     }
