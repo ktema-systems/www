@@ -129,18 +129,18 @@ interface Seed {
 // Twelve hosts on the surface carry the examples. The peers below carry none,
 // because they stand for every other field the same space can hold.
 const seeds: Seed[] = [
-  { id: 'space', lon: 8, lat: 0, icon: 'space', size: 0.25, label: 'Space system', side: 'right' },
-  { id: 'meter', lon: 38, lat: -30, icon: 'meter', size: 0.25, label: 'Smart meter', side: 'below' },
-  { id: 'camera', lon: 68, lat: 0, icon: 'camera', size: 0.25, label: 'Vision camera', side: 'right' },
-  { id: 'plc', lon: 98, lat: -30, icon: 'plc', size: 0.25, label: 'Factory PLC', side: 'right' },
-  { id: 'laptop', lon: 128, lat: 0, icon: 'laptop', size: 0.25, label: 'Laptop and mobile', side: 'left' },
-  { id: 'drone', lon: 158, lat: -30, icon: 'drone', size: 0.25, label: 'MCU drone', side: 'left' },
-  { id: 'robot', lon: 188, lat: 0, icon: 'robot', size: 0.25, label: 'ROS robot', side: 'left' },
-  { id: 'medical', lon: 218, lat: -30, icon: 'monitor', size: 0.25, label: 'Medical device', side: 'left' },
-  { id: 'wearable', lon: 248, lat: 0, icon: 'wearable', size: 0.25, label: 'Wearable', side: 'below' },
-  { id: 'vehicle', lon: 278, lat: -30, icon: 'vehicle', size: 0.25, label: 'Vehicle ECU', side: 'right' },
-  { id: 'rack', lon: 308, lat: 0, icon: 'rack', size: 0.25, label: 'Data center', side: 'right' },
-  { id: 'gateway', lon: 338, lat: -30, icon: 'gateway', size: 0.25, label: 'Edge gateway', side: 'right' },
+  { id: 'space', lon: 8, lat: 0, icon: 'space', size: 0.3, label: 'Space system', side: 'right' },
+  { id: 'meter', lon: 38, lat: -30, icon: 'meter', size: 0.3, label: 'Smart meter', side: 'below' },
+  { id: 'camera', lon: 68, lat: 0, icon: 'camera', size: 0.3, label: 'Vision camera', side: 'right' },
+  { id: 'plc', lon: 98, lat: -30, icon: 'plc', size: 0.3, label: 'Factory PLC', side: 'right' },
+  { id: 'laptop', lon: 128, lat: 0, icon: 'laptop', size: 0.3, label: 'Laptop and mobile', side: 'left' },
+  { id: 'drone', lon: 158, lat: -30, icon: 'drone', size: 0.3, label: 'MCU drone', side: 'left' },
+  { id: 'robot', lon: 188, lat: 0, icon: 'robot', size: 0.3, label: 'ROS robot', side: 'left' },
+  { id: 'medical', lon: 218, lat: -30, icon: 'monitor', size: 0.3, label: 'Medical device', side: 'left' },
+  { id: 'wearable', lon: 248, lat: 0, icon: 'wearable', size: 0.3, label: 'Wearable', side: 'below' },
+  { id: 'vehicle', lon: 278, lat: -30, icon: 'vehicle', size: 0.3, label: 'Vehicle ECU', side: 'right' },
+  { id: 'rack', lon: 308, lat: 0, icon: 'rack', size: 0.3, label: 'Data center', side: 'right' },
+  { id: 'gateway', lon: 338, lat: -30, icon: 'gateway', size: 0.3, label: 'Edge gateway', side: 'right' },
 
   // A mesh of near peers and a group read through one of its members: the same
   // space sustains both topologies at once.
@@ -153,7 +153,7 @@ const seeds: Seed[] = [
   { id: 'p7', lon: 320, lat: 10, glyph: 'dot', size: 1.3 },
 ];
 
-const labelOffset = 17;
+const labelOffset = 20;
 
 const nodes = seeds.map((seed) => {
   const position = onSphere(seed.lon, seed.lat);
@@ -187,9 +187,9 @@ const nodes = seeds.map((seed) => {
       ? seed.side === 'left'
         ? { x: glyphAt.x - labelOffset, y: glyphAt.y + 2, anchor: 'end' }
         : seed.side === 'above'
-          ? { x: glyphAt.x, y: glyphAt.y - 13, anchor: 'middle' }
+          ? { x: glyphAt.x, y: glyphAt.y - 15, anchor: 'middle' }
           : seed.side === 'below'
-            ? { x: glyphAt.x, y: glyphAt.y + 19, anchor: 'middle' }
+            ? { x: glyphAt.x, y: glyphAt.y + 22, anchor: 'middle' }
             : { x: glyphAt.x + labelOffset, y: glyphAt.y + 2, anchor: 'start' }
       : null,
   };
@@ -376,15 +376,15 @@ const pathOf = (ring: Ring) => {
 // deterministic record does not commit to one future, so the fabric carries the
 // branches that follow the instant it read, and the figure draws them as three copies
 // of the same lattice, each displaced along a direction of its own.
-const BRANCH_RADIUS = RADIUS * 0.25;
-const BRANCH_SPREAD = RADIUS * 1.6;
-// The states stand to the left, where a sphere this large leaves the frame open. The
-// directions carry a depth component because a flat leftward offset would bunch them
-// on the same screen height.
+const BRANCH_RADIUS = RADIUS * 0.17;
+const BRANCH_SPREAD = RADIUS * 1.15;
+// The states are satellites on an equatorial orbit, three longitudes apart, so they
+// circle the sphere as it turns and stay inside the band between the masthead and the
+// explanation instead of crossing either of them.
 const BRANCH_DIRS: Vec3[] = [
-  [-0.405, -0.105, 0.909],
-  [-0.909, -0.105, 0.405],
-  [-0.698, -0.669, 0.254],
+  [0.5, 0, 0.866],
+  [-0.866, 0, -0.5],
+  [0.5, 0, -0.866],
 ];
 // The last state is left open: the instant after the read has not been classified yet, so
 // the space carries more futures than it draws.
@@ -469,15 +469,9 @@ const payload = {
   <svg
     viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`}
     role="img"
-    aria-labelledby="reach-title"
+    aria-label="Hosts attached to one sphere of coordinates: each host carries the engine at its own coordinate, two hosts are joined where their reads reach the same point, and when an instant closes it forks into the composite states a, b, and c, the last of them still open"
     style="--reach-scale: 1.4"
   >
-    <title id="reach-title"
-      >Hosts attached to one sphere of coordinates: each host carries the engine at its
-      own coordinate, two hosts are joined where their reads reach the same point, and
-      when an instant closes it forks into the composite states a, b, and c, the last of
-      them still open</title
-    >
 
     <defs>
       <clipPath id="reach-sphere">
@@ -595,11 +589,9 @@ const payload = {
           node.icon ? (
             <g
               class="reach__mark"
-            data-mark={node.id}
-            data-read={joinThreshold.get(node.id) ?? 1}
-            transform={node.markTransform}
-            style={`--fade: ${node.fade}`}
-          >
+              data-mark={node.id}
+              transform={node.markTransform}
+            >
               <polygon class="reach__mark-outline" points={MARK_SHAPE.outline} />
               <polygon class="reach__mark-inner" points={MARK_SHAPE.inner} />
             </g>
@@ -771,9 +763,9 @@ const payload = {
 
   .reach svg {
     display: block;
-    /* As wide as the viewport allows: the drawing keeps 700 by 460, so this leaves
-       room for the pin offset and the caption under it. */
-    width: min(1400px, calc((100svh - 116px) * 1.522));
+    /* As wide as the viewport allows: the drawing keeps 700 by 460, so the height
+       minus 200px is room for the pin top, the caption and the air under it. */
+    width: min(1800px, calc((100svh - 200px) * 1.522));
     max-width: 100%;
     height: auto;
     margin-left: auto;
@@ -912,33 +904,10 @@ const payload = {
     opacity: 0.28;
   }
 
-  /* The marks arrive with the figure and breathe from nothing, so a host is never
-     stamped on at full strength. */
+  /* The marks are the host's identity, not a signal: once the host arrives they
+     stay at full strength. */
   .reach__mark {
-    --mark-peak: calc(0.3 * var(--fade, 1));
-    opacity: 0;
-  }
-
-  .reach.is-ready .reach__mark {
-    animation: mark-breathe 14s ease-in-out infinite;
-  }
-
-  .reach__mark.is-read {
-    --mark-peak: calc(0.68 * var(--fade, 1));
-  }
-
-  .reach__mark.is-active {
-    --mark-peak: var(--fade, 1);
-  }
-
-  @keyframes mark-breathe {
-    0%,
-    100% {
-      opacity: 0;
-    }
-    50% {
-      opacity: var(--mark-peak);
-    }
+    opacity: 1;
   }
 
   .reach__mark-outline {
@@ -974,7 +943,7 @@ const payload = {
 
   .reach__label {
     font-family: var(--text);
-    font-size: 5.75px;
+    font-size: 7px;
     fill: var(--fg);
     opacity: calc(0.36 * var(--fade, 1) * var(--shown, 1));
     transition: opacity 300ms var(--ease);
@@ -989,20 +958,39 @@ const payload = {
   }
 
   @media (max-width: 720px) {
-    /* At phone scale the halved names are specks; the icons and the caption carry it. */
+    /* At phone scale the small names are specks; the icons and the caption carry it. */
     .reach__label {
       display: none;
     }
   }
 
+  /* The explanation is a paragraph, and it arrives after the fork has been read. */
   .reach__caption {
     max-width: 56rem;
-    margin: 20px auto 0;
+    margin: 28px auto 0;
     padding-inline: clamp(16px, 4vw, 40px);
-    font-size: 12.5px;
-    line-height: 1.6;
-    color: var(--fg-3);
-    text-align: center;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--fg-2);
+    text-align: left;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+  }
+
+  .reach.is-explained .reach__caption {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* The wide pin drops the sphere and the paragraph together, keeping the gap between
+     them while the sphere gains room above. */
+  @media (min-width: 1260px) {
+    .reach__caption {
+      margin-top: 58px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1010,15 +998,10 @@ const payload = {
       transform: none;
     }
 
-    .reach__mark {
-      animation: none;
-      opacity: var(--mark-peak);
-    }
-
     .reach__particle,
     .reach__join,
-    .reach__mark,
-    .reach__label {
+    .reach__label,
+    .reach__caption {
       transition: none;
     }
   }
@@ -1119,10 +1102,7 @@ const payload = {
     // One projection for the whole space. A composite state is carried by the same
     // lattice the sphere is, so it turns with the sphere instead of holding its frame.
     const project = (x: number, y: number, z: number) => projectAt(x, y, z, yaw);
-    // The fork keeps the frame it was drawn in while the sphere turns. Its anchor is a
-    // silhouette point, and a silhouette does not move under a turn, so the states stay
-    // where the record left them instead of swinging out of the frame.
-    const projectFork = (x: number, y: number, z: number) => projectAt(x, y, z, space.yaw);
+
 
     // Depth as a light level: the far side of the sphere is behind the field.
     const fadeOf = (p: number) => Math.min(1, Math.max(0.45, 0.45 + (p - 0.778) * 3.69));
@@ -1236,7 +1216,7 @@ const payload = {
       width: number,
     ) => {
       const x1 = anchor === 'start' ? x : anchor === 'end' ? x - width : x - width / 2;
-      return { x1, x2: x1 + width, y1: y - 5.5, y2: y + 1.5 };
+      return { x1, x2: x1 + width, y1: y - 6.5, y2: y + 2 };
     };
 
     const render = () => {
@@ -1291,7 +1271,6 @@ const payload = {
         if (fades.get(node.id) !== fade) {
           fades.set(node.id, fade);
           if (element) element.style.opacity = String(fade);
-          markById.get(node.id)?.style.setProperty('--fade', String(fade));
           labelById.get(node.id)?.style.setProperty('--fade', String(fade));
         }
 
@@ -1327,7 +1306,7 @@ const payload = {
       // A forked state is an obstacle too, once it has separated from the sphere.
       space.branches.forEach((branch) => {
         const [ox, oy, oz] = branch.offset;
-        const centre = projectFork(ox * fork, oy * fork, oz * fork);
+        const centre = project(ox * fork, oy * fork, oz * fork);
         // Before the states separate they sit at the centre, so only the part that has
         // moved out is an obstacle.
         const radius = branch.radius * centre.p * 1.04 * fork;
@@ -1346,17 +1325,17 @@ const payload = {
           if (!label) return;
           const anchor = label.getAttribute('text-anchor');
           const width = widths.get(node.id) ?? 60;
-          const offset = 17;
+          const offset = 20;
           let x = glyphX + offset;
           let y = glyphY + 2;
           if (node.side === 'left') x = glyphX - offset;
           if (node.side === 'above') {
             x = glyphX;
-            y = glyphY - 13;
+            y = glyphY - 15;
           }
           if (node.side === 'below') {
             x = glyphX;
-            y = glyphY + 19;
+            y = glyphY + 22;
           }
           y = Math.min(frame.y + frame.height - 6, Math.max(frame.y + 16, y));
           const box = labelBox(x, y, anchor, width);
@@ -1384,7 +1363,7 @@ const payload = {
       branchEls.forEach((branch) => {
         const [ox, oy, oz] = branch.offset;
         const spread = fork;
-        const centre = projectFork(ox * spread, oy * spread, oz * spread);
+        const centre = project(ox * spread, oy * spread, oz * spread);
         layered.push({ element: branch.element, depth: centre.p });
 
         branch.paths.forEach((path, index) => {
@@ -1396,7 +1375,7 @@ const payload = {
               points.map(
                 ([x, y, z]) => [x + ox * spread, y + oy * spread, z + oz * spread] as Vec3,
               ),
-              projectFork,
+              project,
             ),
           );
         });
@@ -1467,14 +1446,17 @@ const payload = {
 
     // The read is the first share of the scroll and the fork the rest of it, so the
     // reader sees the joins close before the space divides.
-    const READ_SHARE = 0.52;
-    // The split is complete before the pin lets go, so the reader can look at the three
-    // executions rather than reaching them as the figure leaves.
-    const FORK_SHARE = 0.36;
+    const READ_SHARE = 0.48;
+    // The split completes with time to spare, so the reader can look at the three
+    // executions and then read the paragraph rather than reaching them as the figure
+    // leaves.
+    const FORK_SHARE = 0.34;
     // At rest the sphere is a little smaller than its dome and sits below the masthead,
-    // so the whole sphere is visible above the caption.
+    // so the whole sphere is visible with air above it and the paragraph below.
     const PIN_SCALE = 0.92;
-    const PIN_RISE = 52;
+    const PIN_RISE = 102;
+    // The opening dome is offset right, but only by this much on a very wide screen.
+    const INITIAL_OFFSET = 180;
 
     const paint = (value: number) => {
       const whole = Math.min(1, Math.max(0, value));
@@ -1508,11 +1490,6 @@ const payload = {
         label.classList.toggle('is-read', passed);
         label.classList.toggle('is-active', justNow);
       });
-      marks.forEach((mark) => {
-        const { passed, justNow } = state(mark);
-        mark.classList.toggle('is-read', passed);
-        mark.classList.toggle('is-active', justNow);
-      });
 
       // The copies arrive with the split and the parent steps behind them.
       branchEls.forEach((branch) => {
@@ -1526,6 +1503,7 @@ const payload = {
         );
       });
       figure.classList.toggle('is-forked', fork > 0.02);
+      figure.classList.toggle('is-explained', whole >= 0.84);
 
       render();
     };
@@ -1566,8 +1544,11 @@ const payload = {
       // shrinks, and settles below the masthead so the whole sphere is visible.
       // Below that width the CSS centres the whole scene, states included.
       const viewport = document.documentElement.clientWidth;
-      const centerShift = -viewport / 2 + (1 - sphereFraction) * svg.clientWidth * scale;
-      const shift = wideQuery.matches ? centerShift * approach : 0;
+      const baseCenter = viewport - (1 - sphereFraction) * svg.clientWidth * scale;
+      const firstBase = viewport - (1 - sphereFraction) * svg.clientWidth * 1.4;
+      const firstTarget = Math.min(firstBase, viewport / 2 + INITIAL_OFFSET);
+      const target = firstTarget + (viewport / 2 - firstTarget) * approach;
+      const shift = wideQuery.matches ? target - baseCenter : 0;
       if (Math.abs(shift - lastShift) > 0.5) {
         lastShift = shift;
         svg.style.setProperty('--reach-shift', `${shift.toFixed(1)}px`);
@@ -1577,7 +1558,7 @@ const payload = {
         lastRise = rise;
         svg.style.setProperty('--reach-rise', `${rise.toFixed(1)}px`);
       }
-      figure.classList.toggle('is-ready', approach >= 0.999);
+
       if (visible && !dragging && !reduce.matches && now > resumeAt) {
         yaw += delta * 0.11;
         render();
@@ -1641,8 +1622,8 @@ const payload = {
       ScrollTrigger.create({
         trigger: figure,
         start: 'top 8px',
-        // Long enough for both acts: the read closing, and the space then dividing.
-        end: '+=1500',
+        // Long enough for both acts and for the paragraph that follows them.
+        end: '+=2000',
         pin: true,
         onUpdate: (self) => paint(self.progress),
         onRefresh: (self) => paint(self.progress),

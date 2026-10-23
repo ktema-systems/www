@@ -468,6 +468,31 @@ svg {
   border-bottom-color: transparent;
 }
 
+/* On the company page the first figure owns the scroll. The lockup stays open and the
+   bar stays clear until the page backdrop arrives, then the two settle together. */
+:root[data-has-reach] .masthead:not(.is-settling) {
+  transition:
+    padding-top 700ms var(--ease),
+    margin-bottom 700ms var(--ease),
+    background-color 700ms var(--ease),
+    border-bottom-color 700ms var(--ease),
+    backdrop-filter 700ms var(--ease);
+}
+
+:root[data-has-reach] .brand {
+  transition:
+    font-size 700ms var(--ease),
+    gap 700ms var(--ease);
+}
+
+:root[data-has-reach] .brand__mark {
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 420ms var(--ease),
+    width 700ms var(--ease),
+    height 700ms var(--ease);
+}
+
 /* The panel packs the bar to its settled size as it opens, so the mark steps down
    from page scale in the same motion that unfolds the sheet. The two derived values
    are restated here because they were computed on the root, where the progress did
