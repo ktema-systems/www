@@ -23,11 +23,14 @@ const YAW = 24 * DEG;
 const FOCAL = 2200;
 const DIST = 2600;
 
-const VIEW_W = 780;
-// Taller than the sphere needs, because the fork at the end of the scan has to sit
-// outside it: three states cannot live inside one silhouette.
-const VIEW_H = 560;
-const OX = VIEW_W / 2;
+// The frame is cut to the drawing: the sphere, its names, and the three states that
+// stand outside it. A wider box only adds margin, and margin is space the figure does
+// not use.
+const VIEW_X = 38;
+const VIEW_Y = 40;
+const VIEW_W = 676;
+const VIEW_H = 460;
+const OX = 390;
 const OY = 270;
 
 const RADIUS = 228;
@@ -448,7 +451,7 @@ const payload = {
 ---
 
 <figure class="reach" data-reach>
-  <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} role="img" aria-labelledby="reach-title">
+  <svg viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`} role="img" aria-labelledby="reach-title">
     <title id="reach-title"
       >Hosts attached to one sphere of records: every host reads the sphere from its
       own coordinate, two hosts are joined where their scans meet, and when the scan
@@ -738,7 +741,9 @@ const payload = {
 
 <style>
   .reach {
-    max-width: 1000px;
+    /* As wide as the viewport allows: the drawing keeps 676 by 460, so this leaves
+       room for the pin offset and the caption under it. */
+    max-width: min(1060px, calc((100svh - 190px) * 1.47));
     margin: 0 auto;
   }
 
@@ -1234,7 +1239,9 @@ const payload = {
       space.branches.forEach((branch) => {
         const [ox, oy, oz] = branch.offset;
         const centre = projectFork(ox * fork, oy * fork, oz * fork);
-        const radius = branch.radius * centre.p * 1.04;
+        // Before the states separate they sit at the centre, so only the part that has
+        // moved out is an obstacle.
+        const radius = branch.radius * centre.p * 1.04 * fork;
         taken.push({
           x1: centre.x - radius,
           x2: centre.x + radius,
@@ -1263,13 +1270,15 @@ const payload = {
             y = glyphY + 38;
           }
           const frame = svg.viewBox.baseVal;
-          y = Math.min(frame.height - 6, Math.max(16, y));
+          y = Math.min(frame.y + frame.height - 6, Math.max(frame.y + 16, y));
           const box = labelBox(x, y, anchor, width);
           // A name that would leave the frame is carried back inside it, so a turn
           // never cuts one off.
           let shift = 0;
-          if (box.x1 < 6) shift = 6 - box.x1;
-          if (box.x2 + shift > frame.width - 6) shift = frame.width - 6 - box.x2;
+          if (box.x1 < frame.x + 6) shift = frame.x + 6 - box.x1;
+          if (box.x2 + shift > frame.x + frame.width - 6) {
+            shift = frame.x + frame.width - 6 - box.x2;
+          }
           x += shift;
           box.x1 += shift;
           box.x2 += shift;
