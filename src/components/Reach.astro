@@ -764,8 +764,8 @@ const payload = {
   .reach svg {
     display: block;
     /* As wide as the viewport allows: the drawing keeps 700 by 460, so the height
-       minus 200px is room for the pin top, the caption and the air under it. */
-    width: min(1800px, calc((100svh - 200px) * 1.522));
+       minus 216px is room for the pin top, the caption and the air under it. */
+    width: min(1800px, calc((100svh - 216px) * 1.522));
     max-width: 100%;
     height: auto;
     margin-left: auto;
@@ -985,11 +985,11 @@ const payload = {
     transform: none;
   }
 
-  /* The wide pin drops the sphere and the paragraph together, keeping the gap between
-     them while the sphere gains room above. */
+  /* The wide pin drops the sphere and the paragraph together. The gap clears the host
+     glyphs that hang past the sphere's foot, since the rise carries the drawing down. */
   @media (min-width: 1260px) {
     .reach__caption {
-      margin-top: 58px;
+      margin-top: 92px;
     }
   }
 
