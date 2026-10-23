@@ -1,177 +1,423 @@
 ---
 /*
-  The engine's reach: one hexagon per kind of host, the same engine on every one,
-  and the hosts joined to one another. Each tile carries the icon of the host it
-  stands for, and the hexagon around it is the Ktema mark drawn at the size of a
-  host, so the mark itself is what says the engine is there.
+  The engine's reach: hosts at the edge of one sphere of records.
 
-  The ring is laid back on a plane and viewed from above at an angle, so the
-  arrangement reads as three dimensions and the figure is wider than it is tall.
-  Everything is computed in the flat layout first and then projected: a point's
-  depth is its flat height times sin(tilt), and the projection divides by the depth
-  to the camera, so a host at the back is a little smaller. Labels are placed by the
-  projection and drawn at their own size, so no glyph is squashed.
+  There is no centre to the deployment, no box, and no single sweep. The record is a
+  sphere of points in three dimensions. Every host carries a scanner of its own,
+  opening from its own coordinate, so the field is read from as many places as it
+  has entities. Where two scans meet, the two hosts are joined at that coordinate,
+  and the joins are what the figure draws: no bus, no hub, only coordinates that
+  coincide.
 
-  Pure SVG, no client JavaScript, and no mechanism: no coordinate, no index, no
-  record layout.
+  Everything is computed in three dimensions and projected once, so the sphere
+  reads as a space rather than as a drawing of one.
 */
 
 const DEG = Math.PI / 180;
 const round = (value: number) => Math.round(value * 10) / 10;
 
-const TILT = 45 * DEG;
+const TILT = 42 * DEG;
 const SIN_T = Math.sin(TILT);
 const COS_T = Math.cos(TILT);
-const FOCAL = 2000;
-// The host icons are drawn in a space of their own, a little under eighty units
-// across, and this is what sizes one to its tile: at this value the largest of them
-// reaches about forty per cent of the way out from the tile's centre, so the hexagon
-// stays the shape a reader sees first and the glyph reads as what is inside it.
-const ICON_SCALE = 0.52;
+const YAW = 24 * DEG;
+const SIN_Y = Math.sin(YAW);
+const COS_Y = Math.cos(YAW);
+const FOCAL = 2200;
+const DIST = 2600;
 
-const OX = 430;
-const OY = 179;
+const OX = 460;
+const OY = 192;
 
-// A point of the flat layout, at (u) right and (h) up from the ring's centre, and
-// its projection. (p) is the depth scale the point is drawn at.
-const project = (u: number, h: number) => {
-  const p = FOCAL / (FOCAL + h * SIN_T);
-  return { x: OX + u * p, y: OY - h * COS_T * p, p };
+// x runs right, y up, z toward the reader. The camera yaws around y and then looks
+// down by the tilt, so the sphere has depth on both sides of every axis.
+const project = (x: number, y: number, z: number) => {
+  const across = x * COS_Y - z * SIN_Y;
+  const depthAxis = x * SIN_Y + z * COS_Y;
+  const up = y * COS_T + depthAxis * SIN_T;
+  const depth = DIST + depthAxis * COS_T - y * SIN_T;
+  const p = FOCAL / depth;
+  return { x: OX + across * p, y: OY - up * p, p };
 };
 
-// The six corners of a pointy-top hexagon in the flat layout.
-const flatHex = (cu: number, ch: number, radius: number) => {
-  const shoulder = radius * Math.sqrt(3) / 2;
-  return [
-    [cu, ch + radius],
-    [cu + shoulder, ch + radius / 2],
-    [cu + shoulder, ch - radius / 2],
-    [cu, ch - radius],
-    [cu - shoulder, ch - radius / 2],
-    [cu - shoulder, ch + radius / 2],
-  ];
-};
+const RADIUS = 150;
+
+const ORIGIN = project(0, 0, 0);
+// A sphere projects to a circle slightly larger than its radius times the depth
+// scale: the silhouette is the tangent, not the centre plane.
+const SILHOUETTE = (RADIUS * FOCAL) / Math.sqrt(DIST * DIST - RADIUS * RADIUS);
 
 const asPoints = (corners: number[][]) =>
   corners.map(([u, h]) => `${round(u)},${round(h)}`).join(' ');
 
-const projectedHex = (cu: number, ch: number, radius: number) =>
-  asPoints(flatHex(cu, ch, radius).map(([u, h]) => {
-    const point = project(u, h);
-    return [point.x, point.y];
-  }));
-
-// Distance from the centre of a flat pointy-top hexagon to its own edge along a
-// ray at this angle. Used to stop the joins at the two outlines.
-const edgeAt = (angleDeg: number, radius: number) => {
-  const delta = ((((angleDeg + 30) % 60) + 60) % 60) - 30;
-  return (radius * Math.cos(30 * DEG)) / Math.cos(delta * DEG);
+const flatHex = (radius: number) => {
+  const shoulder = (radius * Math.sqrt(3)) / 2;
+  return [
+    [0, radius],
+    [shoulder, radius / 2],
+    [shoulder, -radius / 2],
+    [0, -radius],
+    [-shoulder, -radius / 2],
+    [-shoulder, radius / 2],
+  ];
 };
 
-const RING_X = 310;
-const RING_Y = 165;
-const HOST_R = 58;
-const CORE_R = 74;
+const length3 = (v: [number, number, number]) => Math.hypot(v[0], v[1], v[2]) || 1;
 
-const hosts = [
-  { kind: 'robot', label: 'ROS robot', angle: 90, place: 'above' },
-  { kind: 'drone', label: 'MCU drone', angle: 30, place: 'right' },
-  { kind: 'laptop', label: 'Laptop and mobile', angle: -30, place: 'right' },
-  { kind: 'monitor', label: 'Medical device', angle: -90, place: 'below' },
-  { kind: 'rack', label: 'Data center', angle: -150, place: 'left' },
-  { kind: 'space', label: 'Space system', angle: 150, place: 'left' },
-].map((host) => {
-  const u = RING_X * Math.cos(host.angle * DEG);
-  const h = RING_Y * Math.sin(host.angle * DEG);
-  const direction = (Math.atan2(h, u) * 180) / Math.PI;
-  const outward = { u: Math.cos(direction * DEG), h: Math.sin(direction * DEG) };
-  const coreEdge = edgeAt(direction, CORE_R);
-  const hostEdge = edgeAt(direction, HOST_R);
-  const from = project(coreEdge * outward.u, coreEdge * outward.h);
-  const to = project(u - hostEdge * outward.u, h - hostEdge * outward.h);
-  // The tile holds nothing but this, so the icon sits at its centre.
-  const icon = project(u, h);
+// A point on the sphere along a ray from its centre.
+const surfaceOf = (point: [number, number, number]): [number, number, number] => {
+  const l = length3(point);
+  return [(point[0] / l) * RADIUS, (point[1] / l) * RADIUS, (point[2] / l) * RADIUS];
+};
 
+// The mark is the favicon stamped on the coordinate the host reads. It faces the
+// reader, because a hexagon in the port's tangent plane collapses to a sliver
+// wherever the port sits on the limb of the sphere.
+const markAt = (point: [number, number, number]) => {
+  const at = project(...point);
+  const radius = 9 * at.p * 1.15;
+  return {
+    x: round(at.x),
+    y: round(at.y),
+    outline: asPoints(flatHex(radius)),
+    inner: asPoints(
+      [0, 90, 180, 270].map((step) => {
+        const angle = step * DEG;
+        return [radius * 0.41 * Math.cos(angle), radius * 0.41 * Math.sin(angle)];
+      }),
+    ),
+  };
+};
+
+type Icon = 'robot' | 'drone' | 'laptop' | 'monitor' | 'rack' | 'space';
+
+interface Host {
+  id: string;
+  at: [number, number, number];
+  icon?: Icon;
+  glyph?: 'dot';
+  halo: number;
+  size: number;
+  opacity?: number;
+  label?: string;
+  place?: 'above' | 'right' | 'below' | 'left';
+  direct?: boolean;
+}
+
+// The examples carry names; the sphere carries none, because it stands for more
+// than the six a figure can name.
+const hosts: Host[] = [
+  { id: 'n1', at: [0, 215, -60], icon: 'robot', halo: 40, size: 0.62, label: 'ROS robot', place: 'above', direct: true },
+  { id: 'n2', at: [380, 0, 120], icon: 'drone', halo: 34, size: 0.62, label: 'MCU drone', place: 'right', direct: true },
+  { id: 'n3', at: [380, 60, -140], icon: 'laptop', halo: 36, size: 0.62, label: 'Laptop and mobile', place: 'right', direct: true },
+  { id: 'n4', at: [0, -215, 60], icon: 'monitor', halo: 28, size: 0.62, label: 'Medical device', place: 'below', direct: true },
+  { id: 'n5', at: [-380, -40, 130], icon: 'space', halo: 34, size: 0.62, label: 'Space system', place: 'left', direct: true },
+  { id: 'n6', at: [-360, 80, -130], icon: 'rack', halo: 32, size: 0.62, label: 'Data center', place: 'left', direct: true },
+
+  // The left group reads peer to peer.
+  { id: 'mp1', at: [-330, 40, 160], glyph: 'dot', halo: 4, size: 2.2, opacity: 0.85 },
+  { id: 'mp2', at: [-300, -10, 70], glyph: 'dot', halo: 4, size: 1.8, opacity: 0.7 },
+  { id: 'mp3', at: [-280, 20, 130], glyph: 'dot', halo: 4, size: 2, opacity: 0.8 },
+  { id: 'mp4', at: [-310, -20, 20], glyph: 'dot', halo: 4, size: 1.8, opacity: 0.7 },
+
+  // The right group reads through its centre.
+  { id: 'sp1', at: [-320, 50, -160], glyph: 'dot', halo: 4, size: 2, opacity: 0.8 },
+  { id: 'sp2', at: [-280, -10, -70], glyph: 'dot', halo: 4, size: 1.8, opacity: 0.7 },
+  { id: 'sp3', at: [-340, 60, -120], glyph: 'dot', halo: 4, size: 1.6, opacity: 0.6 },
+];
+
+const labelOffset = 28;
+
+const nodes = hosts.map((host) => {
+  const at = project(...host.at);
+  const port = host.direct ? surfaceOf(host.at) : null;
+  const portAt = port ? project(...port) : null;
   const labelPos = (() => {
-    if (host.place === 'above') {
-      const at = project(u, h + HOST_R + 12);
-      return { x: at.x, y: at.y, anchor: 'middle' };
-    }
-    if (host.place === 'below') {
-      const at = project(u, h - HOST_R - 20);
-      return { x: at.x, y: at.y, anchor: 'middle' };
-    }
-    if (host.place === 'right') {
-      const at = project(u + HOST_R * 0.866 + 14, h);
-      return { x: at.x, y: at.y + 4, anchor: 'start' };
-    }
-    const at = project(u - HOST_R * 0.866 - 14, h);
-    return { x: at.x, y: at.y + 4, anchor: 'end' };
+    if (!host.place) return null;
+    if (host.place === 'above') return { x: at.x, y: at.y - labelOffset, anchor: 'middle' };
+    if (host.place === 'below') return { x: at.x, y: at.y + labelOffset + 6, anchor: 'middle' };
+    if (host.place === 'right') return { x: at.x + labelOffset, y: at.y + 4, anchor: 'start' };
+    return { x: at.x - labelOffset, y: at.y + 4, anchor: 'end' };
   })();
-
   return {
     ...host,
-    u,
-    h,
-    tile: projectedHex(u, h, HOST_R),
-    iconAt: `translate(${round(icon.x)} ${round(icon.y)}) scale(${round(icon.p * ICON_SCALE * 1000) / 1000})`,
-    spoke: { x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) },
+    screen: at,
+    port,
+    portAt,
+    mark: port ? markAt(port) : null,
     labelPos,
+    transform: `translate(${round(at.x)} ${round(at.y)}) scale(${round(at.p * host.size * 1000) / 1000})`,
   };
 });
 
-// The hosts are joined to one another around the ring, each pair running between
-// the two tile outlines.
-const joins = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [4, 5],
-  [5, 0],
-].map(([a, b]) => {
-  const A = hosts[a];
-  const B = hosts[b];
-  const direction = (Math.atan2(B.h - A.h, B.u - A.u) * 180) / Math.PI;
-  const ux = Math.cos(direction * DEG);
-  const uy = Math.sin(direction * DEG);
-  const reach = edgeAt(direction, HOST_R);
-  const from = project(A.u + reach * ux, A.h + reach * uy);
-  const to = project(B.u - reach * ux, B.h - reach * uy);
-  return { x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) };
+const direct = nodes.filter((node) => node.port);
+const ports = direct.map((node) => node.port as [number, number, number]);
+const screenOf = (id: string) => nodes.find((node) => node.id === id)?.screen ?? null;
+const hub = nodes.find((node) => node.id === 'n6')?.portAt ?? null;
+
+// A host sits outside the sphere and reads it at its own port, so the trace is the
+// coordinate that host owns.
+const traces = direct.map((node) => ({
+  x1: round(node.screen.x),
+  y1: round(node.screen.y),
+  x2: round(node.portAt?.x ?? 0),
+  y2: round(node.portAt?.y ?? 0),
+}));
+
+// The near peers read each other directly and the far peers read through one host:
+// the same record space carries a mesh and a centre at once.
+const links: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+const link = (
+  from: { x: number; y: number } | null,
+  to: { x: number; y: number } | null,
+) => {
+  if (!from || !to) return;
+  links.push({ x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) });
+};
+
+const mesh = ['mp1', 'mp2', 'mp3', 'mp4'];
+mesh.forEach((from, index) => {
+  for (const to of mesh.slice(index + 1)) link(screenOf(from), screenOf(to));
+});
+for (const id of ['sp1', 'sp2', 'sp3']) link(screenOf(id), hub);
+
+// Every pair of ports meets when the two scans have grown to half their distance
+// apart. The join is drawn at the midpoint of that coordinate pair.
+const pairs: Array<[number, number]> = [];
+for (let a = 0; a < direct.length; a += 1) {
+  for (let b = a + 1; b < direct.length; b += 1) pairs.push([a, b]);
+}
+
+const segments = pairs.map(([a, b]) => {
+  const from = direct[a].port as [number, number, number];
+  const to = direct[b].port as [number, number, number];
+  return {
+    from,
+    to,
+    a: direct[a].id,
+    b: direct[b].id,
+    distance: length3([to[0] - from[0], to[1] - from[1], to[2] - from[2]]),
+  };
 });
 
-const core = project(0, 0);
+// The sphere itself: points at coordinates, denser toward the middle, each with the
+// depth it sits at. The seed is fixed, so the field is the same on every build.
+const seeded = (seed: number) => {
+  let state = seed;
+  return () => {
+    state = (state * 1664525 + 1013904223) % 4294967296;
+    return state / 4294967296;
+  };
+};
+
+const random = seeded(31);
+
+const field = Array.from({ length: 104 }, () => {
+  const theta = random() * Math.PI * 2;
+  const phi = Math.acos(2 * random() - 1);
+  const radius = Math.pow(random(), 0.62) * RADIUS;
+  const point: [number, number, number] = [
+    radius * Math.sin(phi) * Math.cos(theta),
+    radius * Math.cos(phi),
+    radius * Math.sin(phi) * Math.sin(theta),
+  ];
+  const at = project(...point);
+  // A point belongs to the scan that reaches it first.
+  const nearest = Math.min(
+    ...ports.map((port) =>
+      Math.hypot(point[0] - port[0], point[1] - port[1], point[2] - port[2]),
+    ),
+  );
+  return {
+    at,
+    nearest,
+    r: round(0.55 + Math.pow(random(), 2.2) * 2.3),
+    depth: round(0.2 + at.p * 0.42),
+  };
+}).sort((a, b) => a.nearest - b.nearest);
+
+// The scan has to reach the farthest coordinate any host reads, or the field would
+// stay dark where no ring ever arrives.
+const reachLimit =
+  Math.max(
+    ...segments.map((segment) => segment.distance / 2),
+    ...field.map((point) => point.nearest),
+  ) * 1.02;
+
+const joins = segments.map(({ from, to, a, b, distance }) => {
+  const start = project(...from);
+  const end = project(...to);
+  const mid = project((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, (from[2] + to[2]) / 2);
+  return {
+    a,
+    b,
+    x1: round(start.x),
+    y1: round(start.y),
+    x2: round(end.x),
+    y2: round(end.y),
+    midX: round(mid.x),
+    midY: round(mid.y),
+    threshold: round((distance / 2 / reachLimit) * 1000) / 1000,
+  };
+});
+
+const particles = field.map((particle) => ({
+  cx: round(particle.at.x),
+  cy: round(particle.at.y),
+  r: particle.r,
+  depth: particle.depth,
+  threshold: round(Math.min(1, particle.nearest / reachLimit) * 1000) / 1000,
+}));
+
+// The first join a host takes part in is the moment its own coordinate becomes a
+// shared one, so that is when its name is read.
+const joinThreshold = new Map<string, number>();
+for (const join of joins) {
+  for (const id of [join.a, join.b]) {
+    const current = joinThreshold.get(id);
+    if (current === undefined || join.threshold < current) {
+      joinThreshold.set(id, join.threshold);
+    }
+  }
+}
+
+const space = {
+  focal: FOCAL,
+  sin: SIN_T,
+  cos: COS_T,
+  sinY: SIN_Y,
+  cosY: COS_Y,
+  dist: DIST,
+  ox: OX,
+  oy: OY,
+  limit: round(reachLimit),
+  ports,
+};
+
+const sphere = ORIGIN;
+const silhouette = round(SILHOUETTE);
+
+// A lattice rather than a box: meridians and parallels of the same sphere, so the
+// space reads as a volume of coordinates and not as a solid.
+const ring = (count: number, at: (angle: number) => [number, number, number]) =>
+  Array.from({ length: count + 1 }, (_, index) => project(...at((index / count) * Math.PI * 2)));
+
+const pathOf = (points: Array<{ x: number; y: number }>) =>
+  `${points.map((point, index) => `${index === 0 ? 'M' : 'L'}${round(point.x)} ${round(point.y)}`).join(' ')} Z`;
+
+const meridians = [0, 60, 120].map((degrees) => {
+  const lon = degrees * DEG;
+  return pathOf(
+    ring(64, (angle) => [
+      RADIUS * Math.sin(angle) * Math.cos(lon),
+      RADIUS * Math.cos(angle),
+      RADIUS * Math.sin(angle) * Math.sin(lon),
+    ]),
+  );
+});
+
+const parallels = [-60, -30, 0, 30, 60].map((degrees) => {
+  const lat = degrees * DEG;
+  const r = RADIUS * Math.cos(lat);
+  const h = RADIUS * Math.sin(lat);
+  return pathOf(ring(64, (angle) => [r * Math.cos(angle), h, r * Math.sin(angle)]));
+});
+
+const lattice = [...meridians, ...parallels];
 ---
 
-<figure class="reach">
-  <svg viewBox="0 0 900 384" role="img" aria-labelledby="reach-title">
+<figure class="reach" data-reach data-space={JSON.stringify(space)}>
+  <svg viewBox="0 0 960 396" role="img" aria-labelledby="reach-title">
     <title id="reach-title"
-      >Six kinds of host, each running the same Ktema engine: a robot, a
-      microcontroller drone, a laptop, a medical device, a data center, and a space
-      system, joined to one another</title
+      >Hosts around one sphere of records: every host scans the sphere from its own
+      coordinate, two hosts are joined where their scans meet, and no host sits at a
+      centre</title
     >
 
+    <defs>
+      <clipPath id="reach-sphere">
+        <circle cx={round(sphere.x)} cy={round(sphere.y)} r={silhouette} />
+      </clipPath>
+    </defs>
+
+    <circle
+      class="reach__sphere"
+      cx={round(sphere.x)}
+      cy={round(sphere.y)}
+      r={silhouette}
+    />
+
+    <g class="reach__shape">
+      {lattice.map((path) => <path d={path} />)}
+    </g>
+
+    <g clip-path="url(#reach-sphere)">
+      <g class="reach__scanners">
+        {
+          direct.map((node) => (
+            <circle
+              class="reach__scanner"
+              data-scanner
+              data-at={node.port?.join(',')}
+              cx={round(node.portAt?.x ?? 0)}
+              cy={round(node.portAt?.y ?? 0)}
+              r="0"
+            />
+          ))
+        }
+      </g>
+
+      <g class="reach__field">
+        {
+          particles.map((particle) => (
+            <circle
+              class="reach__particle"
+              data-particle
+              data-threshold={particle.threshold}
+              cx={particle.cx}
+              cy={particle.cy}
+              r={particle.r}
+              fill-opacity={particle.depth}
+            />
+          ))
+        }
+      </g>
+
+      {
+        joins.map((join) => (
+          <g class="reach__join" data-join data-read={join.threshold}>
+            <line x1={join.x1} y1={join.y1} x2={join.x2} y2={join.y2} />
+            <circle cx={join.midX} cy={join.midY} r="1.8" />
+          </g>
+        ))
+      }
+    </g>
+
+    {links.map((link) => <line class="reach__link" x1={link.x1} y1={link.y1} x2={link.x2} y2={link.y2} />)}
+
+    {traces.map((trace) => <line class="reach__trace" x1={trace.x1} y1={trace.y1} x2={trace.x2} y2={trace.y2} />)}
+
     {
-      hosts.map((host) => (
-        <line
-          class="reach__spoke"
-          x1={host.spoke.x1}
-          y1={host.spoke.y1}
-          x2={host.spoke.x2}
-          y2={host.spoke.y2}
-        />
-      ))
+      nodes.map((node) =>
+        node.mark && node.port ? (
+          <g
+            class="reach__mark"
+            data-mark={node.id}
+            data-read={joinThreshold.get(node.id) ?? 1}
+            transform={`translate(${node.mark.x} ${node.mark.y})`}
+          >
+            <polygon class="reach__mark-outline" points={node.mark.outline} />
+            <polygon class="reach__mark-inner" points={node.mark.inner} />
+          </g>
+        ) : null,
+      )
     }
 
-    {joins.map((join) => <line class="reach__join" x1={join.x1} y1={join.y1} x2={join.x2} y2={join.y2} />)}
-
     {
-      hosts.map((host) => (
-        <>
-          <polygon class="reach__tile" points={host.tile} />
-          <g class="reach__icon" transform={host.iconAt}>
-            {host.kind === 'robot' && (
+      nodes.map((node) => (
+        <g class="reach__node" transform={node.transform} style={`opacity: ${node.opacity ?? 1}`}>
+          <circle class="reach__halo" r={node.halo} />
+          <g class="reach__glyph">
+            {node.icon === 'robot' && (
               <>
                 <line x1="0" y1="-38" x2="0" y2="-30" />
                 <rect x="-13" y="-30" width="26" height="15" rx="3" />
@@ -183,7 +429,7 @@ const core = project(0, 0);
                 <circle cx="13" cy="19" r="5" />
               </>
             )}
-            {host.kind === 'drone' && (
+            {node.icon === 'drone' && (
               <>
                 <rect x="-7" y="-5" width="14" height="10" rx="2" />
                 <line x1="-7" y1="0" x2="-25" y2="-14" />
@@ -194,14 +440,14 @@ const core = project(0, 0);
                 <line x1="5" y1="5" x2="11" y2="18" />
               </>
             )}
-            {host.kind === 'laptop' && (
+            {node.icon === 'laptop' && (
               <>
                 <rect x="-22" y="-24" width="44" height="28" rx="2" />
                 <line x1="-14" y1="-16" x2="14" y2="-16" />
                 <path d="M-28 4 H28 L34 14 H-34 Z" />
               </>
             )}
-            {host.kind === 'monitor' && (
+            {node.icon === 'monitor' && (
               <>
                 <rect x="-24" y="-20" width="48" height="34" rx="3" />
                 <path d="M-18 0 H-9 L-4 -9 L3 9 L8 -3 H18" />
@@ -209,7 +455,7 @@ const core = project(0, 0);
                 <line x1="-9" y1="22" x2="9" y2="22" />
               </>
             )}
-            {host.kind === 'rack' && (
+            {node.icon === 'rack' && (
               <>
                 <rect x="-17" y="-28" width="34" height="56" rx="2" />
                 <line x1="-17" y1="-14" x2="17" y2="-14" />
@@ -220,7 +466,7 @@ const core = project(0, 0);
                 <circle cx="-11" cy="7" r="1.5" />
               </>
             )}
-            {host.kind === 'space' && (
+            {node.icon === 'space' && (
               <>
                 <rect x="-8" y="-6" width="16" height="20" rx="2" />
                 <rect x="-30" y="-2" width="18" height="12" />
@@ -231,29 +477,35 @@ const core = project(0, 0);
                 <circle cx="0" cy="-21" r="2.4" />
               </>
             )}
+            {node.glyph === 'dot' && <circle class="reach__dot" r="2.4" />}
           </g>
-          <text
-            class="reach__label"
-            x={round(host.labelPos.x)}
-            y={round(host.labelPos.y)}
-            text-anchor={host.labelPos.anchor}
-          >
-            {host.label}
-          </text>
-        </>
+        </g>
       ))
     }
 
-    <polygon class="reach__core" points={projectedHex(0, 0, CORE_R)} />
-    <text class="reach__core-name" x={round(core.x)} y={round(core.y + 6)} text-anchor="middle"
-      >Ktema</text
-    >
+    {
+      nodes.map((node) =>
+        node.label && node.labelPos && node.port ? (
+          <text
+            class="reach__label"
+            data-label={node.id}
+            data-read={joinThreshold.get(node.id) ?? 1}
+            x={round(node.labelPos.x)}
+            y={round(node.labelPos.y)}
+            text-anchor={node.labelPos.anchor}
+          >
+            {node.label}
+          </text>
+        ) : null,
+      )
+    }
   </svg>
 
   <figcaption class="reach__caption">
-    One engine and one record format, built for hosts from a drone with no operating system to a
-    data center and a space system. The smallest host is the hard case. A record written on one
-    host is read on another.
+    One engine and one record format, on hosts from a drone with no operating system to a data
+    center and a space system. A record is a point in a spacetime of coordinates, not a row in a
+    centre: every host scans from its own coordinate, and two hosts are joined where their scans
+    meet.
   </figcaption>
 </figure>
 
@@ -269,54 +521,132 @@ const core = project(0, 0);
     height: auto;
   }
 
-  /* The hexagons carry the accent, so the shape a reader sees first is also the mark.
-     Everything else is white, and rank among those lines is carried by weight alone:
-     the glyphs inside the tiles sit a step under them, and the ring's own edges are
-     the lightest and step back from the hosts they join. */
-  .reach__spoke {
-    stroke: var(--fg);
-    stroke-width: 1.35;
-  }
-
-  .reach__icon {
+  .reach__sphere {
     fill: none;
     stroke: var(--fg);
-    stroke-width: 1.6;
-    /* The glyphs are drawn at their own scale, so the stroke is held at the width the
-       tile outlines are drawn at rather than carried down with the transform. */
-    vector-effect: non-scaling-stroke;
-    stroke-linejoin: round;
-    stroke-linecap: round;
+    stroke-width: 0.9;
+    opacity: 0.16;
+  }
+
+  .reach__shape path {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 0.7;
+    opacity: 0.07;
+  }
+
+  /* One ring per host: the scan is as many scanners as there are entities. */
+  .reach__scanner {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 0.9;
+    opacity: 0.24;
+  }
+
+  .reach__particle {
+    fill: var(--fg);
+    opacity: 0.28;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .reach__particle.is-read {
+    opacity: 0.95;
   }
 
   .reach__join {
+    opacity: 0;
+    transition: opacity 420ms var(--ease);
+  }
+
+  .reach__join line {
     stroke: var(--fg);
-    stroke-width: 1.05;
-    opacity: 0.62;
+    stroke-width: 0.7;
+    opacity: 0.3;
   }
 
-  .reach__tile {
-    fill: none;
-    stroke: var(--accent);
-    stroke-width: 2;
+  .reach__join circle {
+    fill: var(--fg);
   }
 
-  .reach__core {
+  .reach__join.is-joined {
+    opacity: 1;
+  }
+
+  .reach__link {
+    stroke: var(--fg);
+    stroke-width: 0.8;
+    stroke-dasharray: 3 4;
+    opacity: 0.34;
+  }
+
+  .reach__trace {
+    stroke: var(--fg);
+    stroke-width: 0.9;
+    opacity: 0.32;
+  }
+
+  .reach__mark {
+    opacity: 0.32;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .reach__mark.is-read {
+    opacity: 0.7;
+  }
+
+  .reach__mark.is-active {
+    opacity: 1;
+  }
+
+  .reach__mark-outline {
     fill: var(--bg);
     stroke: var(--accent);
-    stroke-width: 1.8;
+    stroke-width: 1.4;
+    stroke-linejoin: round;
   }
 
-  .reach__core-name {
-    font-family: var(--text);
-    font-weight: 600;
+  .reach__mark-inner {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  .reach__halo {
+    fill: var(--bg);
+  }
+
+  .reach__glyph,
+  .reach__glyph * {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    /* The glyphs are drawn at their own depth scale, so the stroke is held at the
+       weight the sphere is drawn at. */
+    vector-effect: non-scaling-stroke;
+  }
+
+  .reach__dot {
     fill: var(--fg);
+    stroke: none;
   }
 
   .reach__label {
     font-family: var(--text);
     font-size: 11.5px;
     fill: var(--fg);
+    opacity: 0.36;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .reach__label.is-read {
+    opacity: 0.72;
+  }
+
+  .reach__label.is-active {
+    opacity: 1;
   }
 
   .reach__caption {
@@ -328,9 +658,122 @@ const core = project(0, 0);
     text-align: center;
   }
 
-  @media (max-width: 720px) {
+  @media (prefers-reduced-motion: reduce) {
+    .reach__particle,
+    .reach__join,
+    .reach__mark,
     .reach__label {
-      display: none;
+      transition: none;
     }
   }
 </style>
+
+<script>
+  import gsap from 'gsap';
+  import ScrollTrigger from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const figure = document.querySelector<HTMLElement>('[data-reach]');
+  const scanners = figure
+    ? Array.from(figure.querySelectorAll<SVGCircleElement>('[data-scanner]'))
+    : [];
+  const particles = figure
+    ? Array.from(figure.querySelectorAll<SVGCircleElement>('[data-particle]'))
+    : [];
+  const joins = figure ? Array.from(figure.querySelectorAll<SVGGElement>('[data-join]')) : [];
+  const labels = figure ? Array.from(figure.querySelectorAll<SVGTextElement>('[data-label]')) : [];
+  const marks = figure ? Array.from(figure.querySelectorAll<SVGGElement>('[data-mark]')) : [];
+  const space = JSON.parse(figure?.dataset.space ?? '{}') as {
+    focal: number;
+    sin: number;
+    cos: number;
+    sinY: number;
+    cosY: number;
+    dist: number;
+    ox: number;
+    oy: number;
+    limit: number;
+    ports: Array<[number, number, number]>;
+  };
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const thresholds = particles.map((particle) => Number(particle.dataset.threshold ?? 0));
+  const scannerAt = scanners.map((scanner) =>
+    (scanner.dataset.at ?? '0,0,0').split(',').map(Number),
+  );
+  let lit = 0;
+
+  const project = (x: number, y: number, z: number) => {
+    const across = x * space.cosY - z * space.sinY;
+    const depthAxis = x * space.sinY + z * space.cosY;
+    const up = y * space.cos + depthAxis * space.sin;
+    const depth = space.dist + depthAxis * space.cos - y * space.sin;
+    const p = space.focal / depth;
+    return { x: space.ox + across * p, y: space.oy - up * p, p };
+  };
+
+  const paint = (progress: number) => {
+    if (!figure) return;
+
+    const at = Math.min(1, Math.max(0, progress));
+    const radius = at * space.limit;
+
+    // Every host scans from its own coordinate, so every host carries a ring.
+    scanners.forEach((scanner, index) => {
+      const [x, y, z] = scannerAt[index];
+      const centre = project(x, y, z);
+      scanner.setAttribute('cx', centre.x.toFixed(1));
+      scanner.setAttribute('cy', centre.y.toFixed(1));
+      scanner.setAttribute('r', (radius * centre.p).toFixed(1));
+    });
+
+    // The particles are sorted by the progress at which a scan reaches them, so
+    // only the ones that just crossed are touched.
+    let cut = 0;
+    while (cut < thresholds.length && thresholds[cut] <= at) cut += 1;
+    if (cut !== lit) {
+      const from = Math.min(lit, cut);
+      const to = Math.max(lit, cut);
+      for (let index = from; index < to; index += 1) {
+        particles[index]?.classList.toggle('is-read', index < cut);
+      }
+      lit = cut;
+    }
+
+    joins.forEach((join) => {
+      join.classList.toggle('is-joined', at >= Number(join.dataset.read ?? 1));
+    });
+
+    const state = (element: SVGElement) => {
+      const read = Number(element.dataset.read ?? 1);
+      return { passed: at >= read, justNow: Math.abs(at - read) < 0.04 };
+    };
+    labels.forEach((label) => {
+      const { passed, justNow } = state(label);
+      label.classList.toggle('is-read', passed);
+      label.classList.toggle('is-active', justNow);
+    });
+    marks.forEach((mark) => {
+      const { passed, justNow } = state(mark);
+      mark.classList.toggle('is-read', passed);
+      mark.classList.toggle('is-active', justNow);
+    });
+  };
+
+  if (figure) {
+    if (reduce.matches) {
+      paint(0.72);
+    } else {
+      // Pinned for the scan, so the joins finish before the section leaves.
+      ScrollTrigger.create({
+        trigger: figure,
+        start: 'top 25%',
+        end: '+=760',
+        pin: true,
+        onUpdate: (self) => paint(self.progress),
+        onRefresh: (self) => paint(self.progress),
+      });
+    }
+  }
+</script>
