@@ -458,8 +458,8 @@ svg {
 }
 
 /* The top band carries a soft lift in the page colour, so the lockup and the menu read
-   over whatever the field draws behind them. It is full width, and it fades out over
-   about a bar and a half at desktop scale and proportionally less on a phone. */
+   over whatever the field draws behind them. It belongs to the page at its top: once the
+   bar draws its own glass, or a panel opens over it, the lift is gone. */
 .masthead::before {
   content: "";
   position: absolute;
@@ -467,6 +467,8 @@ svg {
   height: clamp(84px, 8.35vw, 120px);
   pointer-events: none;
   z-index: -1;
+  opacity: calc(1 - var(--masthead-progress));
+  transition: opacity 260ms var(--ease);
   background: linear-gradient(
     to bottom,
     var(--bg) 0%,
