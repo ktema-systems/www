@@ -369,8 +369,9 @@ const BRANCH_SPREAD = RADIUS * 1.6;
 const BRANCH_DIRS: Vec3[] = [
   [-0.94, 0.34, 0],
   [0.94, 0.34, 0],
-  // Off the pole, so the third state orbits with the others instead of sitting still.
-  [0, -0.94, 0.34],
+  // Down and to the side: straight down projects too close to the centre to clear the
+  // parent, and the third state has to stand outside it like the other two.
+  [0.5, -0.866, 0],
 ];
 // The last state is left open: the instant after the read has not been classified yet, so
 // the space carries more futures than it draws.
@@ -793,7 +794,7 @@ const payload = {
 
   .reach__branch-name {
     font-family: var(--text);
-    font-size: 8px;
+    font-size: 8.5px;
     letter-spacing: 0.06em;
     text-anchor: middle;
     fill: var(--accent);
@@ -805,7 +806,7 @@ const payload = {
   }
 
   .reach__branch-letter {
-    font-size: 11px;
+    font-size: 12px;
     letter-spacing: 0.12em;
   }
 
