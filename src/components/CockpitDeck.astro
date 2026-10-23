@@ -262,7 +262,9 @@ const shots = [
   const bar = region?.querySelector<HTMLElement>('[data-shots-bar]');
   const now = region?.querySelector<HTMLElement>('[data-shots-now]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const narrow = window.matchMedia('(max-width: 720px)');
+  // A viewport this short cannot hold the sticky stage, so the deck stays a list
+  // there: a phone in landscape, or a window dragged to a sliver.
+  const tooShort = window.matchMedia('(max-height: 559px)');
 
   const setActive = (index: number) => {
     panels.forEach((panel, i) => {
@@ -276,31 +278,50 @@ const shots = [
     }
   };
 
-  if (region && panels.length > 0) {
-    if (reduce.matches || narrow.matches) {
-      panels.forEach((panel) => {
-        panel.classList.add('is-active');
-        panel.setAttribute('aria-hidden', 'false');
-      });
-    } else {
-      region.classList.add('is-live');
-      setActive(0);
+  let trigger: ScrollTrigger | null = null;
 
-      ScrollTrigger.create({
-        trigger: region,
-        start: 'top top',
-        end: 'bottom bottom',
-        onUpdate: (self) => {
-          if (bar) {
-            bar.style.transform = `scaleX(${self.progress})`;
-          }
+  const stack = () => {
+    trigger?.kill();
+    trigger = null;
+    region?.classList.remove('is-live');
 
-          const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
-          if (!panels[index]?.classList.contains('is-active')) {
-            setActive(index);
-          }
-        },
-      });
-    }
-  }
+    panels.forEach((panel) => {
+      panel.classList.add('is-active');
+      panel.classList.remove('is-past');
+      panel.setAttribute('aria-hidden', 'false');
+    });
+  };
+
+  const start = () => {
+    if (!region) return;
+    stack();
+    region.classList.add('is-live');
+    setActive(0);
+
+    trigger = ScrollTrigger.create({
+      trigger: region,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        if (bar) {
+          bar.style.transform = `scaleX(${self.progress})`;
+        }
+
+        const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
+        if (!panels[index]?.classList.contains('is-active')) {
+          setActive(index);
+        }
+      },
+    });
+  };
+
+  const apply = () => {
+    if (!region || panels.length === 0) return;
+    if (reduce.matches || tooShort.matches) stack();
+    else start();
+  };
+
+  apply();
+  reduce.addEventListener('change', apply);
+  tooShort.addEventListener('change', apply);
 </script>

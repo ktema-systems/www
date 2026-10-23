@@ -235,7 +235,6 @@ body {
   background: var(--bg);
   color: var(--fg);
   font-family: var(--text);
-  font-size: 17px;
   line-height: 1.62;
   -webkit-font-smoothing: antialiased;
 }
@@ -782,8 +781,8 @@ svg {
 .product-menu__inner {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 12px;
-  padding-block: 18px 22px;
+  gap: 6px;
+  padding-block: 8px;
 }
 
 .product-menu a {
@@ -844,7 +843,6 @@ svg {
 }
 
 .product-menu__name {
-  font-size: 17px;
   font-weight: 600;
   font-stretch: 115%;
   letter-spacing: -0.006em;
@@ -1447,7 +1445,6 @@ svg {
     align-items: center;
     min-height: 46px;
     color: var(--fg);
-    font-size: 17px;
     text-decoration: none;
     border-bottom: 1px solid var(--line);
   }

@@ -591,6 +591,32 @@ const {
     }
   }
 
+  /* A small phone has no room for the section's summary line above the deck; the
+     steps state the same thing. */
+  @media (max-width: 860px) and (max-height: 760px) {
+    .deck__head .lede {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .deck__head h2 {
+      font-size: 1.3rem;
+    }
+
+    .step__value {
+      font-size: 2.6rem;
+    }
+
+    .step__claim {
+      font-size: 0.95rem;
+    }
+
+    .step__note {
+      font-size: 0.82rem;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .deck.is-live {
       height: auto;
@@ -624,7 +650,9 @@ const {
   const bar = deck?.querySelector<HTMLElement>('[data-step-bar]');
   const now = deck?.querySelector<HTMLElement>('[data-step-now]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const narrow = window.matchMedia('(max-width: 860px)');
+  // A viewport this short cannot hold the sticky stage, so the deck stays a list
+  // there: a phone in landscape, or a window dragged to a sliver.
+  const tooShort = window.matchMedia('(max-height: 559px)');
 
   const format = (value: number, decimals: number) =>
     value.toLocaleString('en-US', {
@@ -654,54 +682,75 @@ const {
     }
   };
 
-  if (deck && panels.length > 0) {
-    if (reduce.matches || narrow.matches) {
-      panels.forEach((panel) => {
-        panel.classList.add('is-active');
-        panel.setAttribute('aria-hidden', 'false');
-      });
-    } else {
-      deck.classList.add('is-live');
-      setActive(0);
+  let trigger: ScrollTrigger | null = null;
+  let reveal: IntersectionObserver | null = null;
 
-      const reveal = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) {
-            deck.classList.add('is-revealed');
-            reveal.disconnect();
+  const stack = () => {
+    trigger?.kill();
+    trigger = null;
+    reveal?.disconnect();
+    reveal = null;
+    deck?.classList.remove('is-live', 'is-revealed');
+
+    panels.forEach((panel) => {
+      panel.classList.add('is-active');
+      panel.setAttribute('aria-hidden', 'false');
+    });
+  };
+
+  const start = () => {
+    if (!deck) return;
+    stack();
+    deck.classList.add('is-live');
+    setActive(0);
+
+    reveal = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          deck.classList.add('is-revealed');
+          reveal?.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -40% 0px' },
+    );
+    reveal.observe(deck);
+
+    let current = -1;
+
+    trigger = ScrollTrigger.create({
+      trigger: deck,
+      start: 'top top',
+      end: 'bottom bottom',
+      onUpdate: (self) => {
+        if (bar) {
+          bar.style.transform = `scaleX(${self.progress})`;
+        }
+
+        const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
+        if (index !== current) {
+          if (current >= 0 && panels[current]) {
+            paint(panels[current], 1);
           }
-        },
-        { rootMargin: '0px 0px -40% 0px' },
-      );
-      reveal.observe(deck);
+          current = index;
+          setActive(index);
+        }
 
-      let current = -1;
+        const panel = panels[index];
+        if (panel) {
+          const local = Math.min(1, Math.max(0, self.progress * panels.length - index));
+          paint(panel, local);
+        }
+      },
+    });
+  };
 
-      ScrollTrigger.create({
-        trigger: deck,
-        start: 'top top',
-        end: 'bottom bottom',
-        onUpdate: (self) => {
-          if (bar) {
-            bar.style.transform = `scaleX(${self.progress})`;
-          }
+  const apply = () => {
+    if (!deck || panels.length === 0) return;
+    if (reduce.matches || tooShort.matches) stack();
+    else start();
+  };
 
-          const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
-          if (index !== current) {
-            if (current >= 0 && panels[current]) {
-              paint(panels[current], 1);
-            }
-            current = index;
-            setActive(index);
-          }
-
-          const panel = panels[index];
-          if (panel) {
-            const local = Math.min(1, Math.max(0, self.progress * panels.length - index));
-            paint(panel, local);
-          }
-        },
-      });
-    }
-  }
+  apply();
+  reduce.addEventListener('change', apply);
+  tooShort.addEventListener('change', apply);
 </script>
