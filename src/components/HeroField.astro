@@ -7,12 +7,22 @@
   screen. The opacity is kept low enough that body text stays far above its contrast
   floor.
 
-  Pure SVG and CSS. No client JavaScript, and the global reduced-motion rule already
-  collapses the rotation.
+  Pure SVG and CSS, and one script for the entrance a caller defers: a field that waits
+  for the first scroll cannot say that in a stylesheet. The global reduced-motion rule
+  already collapses the rotation.
 */
+
+// The entrance is the caller's: a page whose first screen is the promise shows the
+// backdrop only once the reader has left it, and every other page keeps it from the
+// first paint.
+interface Props {
+  reveal?: 'now' | 'scroll';
+}
+
+const { reveal = 'now' } = Astro.props;
 ---
 
-<div class="field" aria-hidden="true">
+<div class="field" data-field={reveal === 'scroll' ? 'deferred' : undefined} aria-hidden="true">
   <svg viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" stroke-width="1.2">
     <defs>
       <g id="ktema-field">
@@ -95,6 +105,17 @@
     to {
       opacity: 1;
     }
+  }
+
+  .field[data-field='deferred'] {
+    /* The first screen is the copy alone; the field arrives once it has been left. */
+    animation: none;
+    opacity: 0;
+    transition: opacity 1200ms var(--ease);
+  }
+
+  .field[data-field='deferred'].is-shown {
+    opacity: 1;
   }
 
   .field svg {
@@ -200,8 +221,35 @@
       opacity: 1;
     }
 
+    .field[data-field='deferred'] {
+      transition: none;
+    }
+
     .field__layer--beams {
       display: none;
     }
   }
 </style>
+
+<script>
+  // The reader's first scroll is the one that leaves the hero. When it has, the field
+  // fades in behind the rest of the page; a page restored already scrolled is past it.
+  const field = document.querySelector<HTMLElement>('.field[data-field="deferred"]');
+  const hero = document.querySelector<HTMLElement>('.hero');
+
+  if (field && hero) {
+    const show = () => {
+      field.classList.add('is-shown');
+    };
+    if (hero.getBoundingClientRect().bottom <= 0) {
+      show();
+    } else {
+      const watch = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) return;
+        show();
+        watch.disconnect();
+      });
+      watch.observe(hero);
+    }
+  }
+</script>

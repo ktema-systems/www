@@ -13,9 +13,13 @@ interface Props {
   // A page that carries its own backdrop turns the field off, so the two do not
   // draw over each other.
   field?: boolean;
+  // When the field arrives: from the first paint, or once the hero has been scrolled
+  // past. The company's page carries the scan right under the first screen, so its
+  // backdrop comes in after the promise rather than behind it.
+  fieldReveal?: 'now' | 'scroll';
 }
 
-const { eyebrow, title, lede, body, field = true } = Astro.props;
+const { eyebrow, title, lede, body, field = true, fieldReveal = 'now' } = Astro.props;
 ---
 
 <section class="hero" id="top">
@@ -26,7 +30,7 @@ const { eyebrow, title, lede, body, field = true } = Astro.props;
       </div>
     )
   }
-  {field && <HeroField />}
+  {field && <HeroField reveal={fieldReveal} />}
   <div class="wrap">
     <div class="hero__head">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
