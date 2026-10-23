@@ -377,7 +377,7 @@ const BRANCH_RADIUS = RADIUS * 0.12;
 // The states stand on a shallow arc around the sphere: it takes the width the paragraph
 // leaves, level with the sphere, so none of them drops into the text below.
 const BRANCH_ARC_X = RADIUS * 2;
-const BRANCH_ARC_Y = RADIUS * 0.4;
+const BRANCH_ARC_Y = RADIUS * 0.9;
 const BRANCH_ANGLES = [40, 220, 320].map((degrees) => degrees * DEG);
 // The last state is left open: the instant after the read has not been classified yet, so
 // the space carries more futures than it draws.
@@ -500,29 +500,6 @@ const payload = {
       ))
     }
 
-    <g class="reach__threads">
-      {stateThreads.map(({ state, joinIndex }) => (
-        <line
-          class="reach__thread"
-          data-state={state}
-          data-point={joinIndex}
-          opacity="0"
-        />
-      ))}
-    </g>
-
-    <g class="reach__state-points">
-      {stateThreads.map(({ state, joinIndex }) => (
-        <circle
-          class="reach__state-point"
-          data-state={state}
-          data-point={joinIndex}
-          r="2.6"
-          opacity="0"
-        />
-      ))}
-    </g>
-
     <circle
       class="reach__sphere"
       cx={round(sphere.x)}
@@ -592,6 +569,29 @@ const payload = {
           </g>
         ))
       }
+    </g>
+
+    <g class="reach__threads">
+      {stateThreads.map(({ state, joinIndex }) => (
+        <line
+          class="reach__thread"
+          data-state={state}
+          data-point={joinIndex}
+          opacity="0"
+        />
+      ))}
+    </g>
+
+    <g class="reach__state-points">
+      {stateThreads.map(({ state, joinIndex }) => (
+        <circle
+          class="reach__state-point"
+          data-state={state}
+          data-point={joinIndex}
+          r="2.6"
+          opacity="0"
+        />
+      ))}
     </g>
 
     <g class="reach__hosts">
@@ -840,14 +840,12 @@ const payload = {
      inside it. The threads mark the correspondence and the dots mark the copies. */
   .reach__thread {
     stroke: var(--accent);
-    stroke-width: 0.45;
-    stroke-dasharray: 2 3.5;
-    opacity: 0;
+    stroke-width: 0.9;
+    stroke-dasharray: 3 4;
   }
 
   .reach__state-point {
     fill: var(--accent);
-    opacity: 0;
   }
 
   .reach__branch-name {
@@ -1255,6 +1253,9 @@ const payload = {
         (document.documentElement.clientWidth / 2 - 16) / pxPerUnit -
         (space.branches[0]?.radius ?? 0);
       const arcX = Math.min(space.arcX, room);
+      // The states ride the turn: their arc is behind the sphere by the same angle the
+      // sphere has turned, so they come round it like satellites.
+      const drift = (yaw - space.yaw) * 0.55;
 
       for (const group of groupEls) {
         group.paths.forEach((path, index) => {
@@ -1339,7 +1340,7 @@ const payload = {
 
       // A forked state is an obstacle too, once it has separated from the sphere.
       space.branches.forEach((branch) => {
-        const [ox, oy, oz] = orbitOffset(branch.angle, yaw, arcX);
+        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw, arcX);
         const centre = project(ox * fork, oy * fork, oz * fork);
         // Before the states separate they sit at the centre, so only the part that has
         // moved out is an obstacle.
@@ -1395,7 +1396,7 @@ const payload = {
       // crossing reads as depth and not as two lattices fused into one.
       const layered: Array<{ element: SVGGElement; depth: number }> = [];
       branchEls.forEach((branch) => {
-        const [ox, oy, oz] = orbitOffset(branch.angle, yaw, arcX);
+        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw, arcX);
         const spread = fork;
         const centre = project(ox * spread, oy * spread, oz * spread);
         layered.push({ element: branch.element, depth: centre.p });
@@ -1432,7 +1433,7 @@ const payload = {
         if (!branch) return;
         const point = joinPoints[Number(thread.dataset.point ?? 0)];
         if (!point) return;
-        const [ox, oy, oz] = orbitOffset(branch.angle, yaw, arcX);
+        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw, arcX);
         const k = branch.radius / space.radius;
         const start = project(point[0], point[1], point[2]);
         const at = project(
@@ -1444,7 +1445,7 @@ const payload = {
         thread.setAttribute('y1', start.y.toFixed(1));
         thread.setAttribute('x2', at.x.toFixed(1));
         thread.setAttribute('y2', at.y.toFixed(1));
-        thread.setAttribute('opacity', (fork * 0.55).toFixed(3));
+        thread.setAttribute('opacity', (fork * 0.8).toFixed(3));
         const dot = statePointEls[index];
         if (dot) {
           dot.setAttribute('cx', at.x.toFixed(1));
