@@ -23,15 +23,16 @@ const YAW = 24 * DEG;
 const FOCAL = 2200;
 const DIST = 2600;
 
-// The frame is cut to the drawing: the sphere, its names, and the three states that
-// stand outside it. A wider box only adds margin, and margin is space the figure does
-// not use. The sphere is set to the right edge, so the states and the copy take the
-// left of the frame.
+// The frame is cut to the drawing's height: the sphere, and the host glyphs that hang
+// past its foot. A taller box only adds margin the figure does not use. The sphere is
+// set to the right edge of the width, so the states take the left.
 const RADIUS = 270;
 const VIEW_X = 38;
-const VIEW_Y = 40;
+// The silhouette spans 20.3 to 479.7 and the lowest glyph reaches about 500, so the
+// frame holds the drawing instead of letting the marks spill into the paragraph.
+const VIEW_Y = 20;
 const VIEW_W = 700;
-const VIEW_H = 460;
+const VIEW_H = 485;
 // A sphere projects to a circle slightly larger than its radius times the depth
 // scale: the silhouette is the tangent, not the centre plane.
 const SILHOUETTE = (RADIUS * FOCAL) / Math.sqrt(DIST * DIST - RADIUS * RADIUS);
@@ -310,22 +311,6 @@ for (const join of joins) {
   }
 }
 
-const screenOf = (id: string) =>
-  nodes.find((node) => node.id === id)?.at ?? { x: 0, y: 0 };
-const links: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
-const link = (
-  from: { x: number; y: number } | null,
-  to: { x: number; y: number } | null,
-) => {
-  if (!from || !to) return;
-  links.push({ x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) });
-};
-link(screenOf('p1'), screenOf('p2'));
-link(screenOf('p2'), screenOf('p3'));
-link(screenOf('p3'), screenOf('p1'));
-link(screenOf('p4'), screenOf('p5'));
-link(screenOf('p4'), screenOf('p6'));
-
 const sphere = ORIGIN;
 const silhouette = round(SILHOUETTE);
 
@@ -376,43 +361,42 @@ const pathOf = (ring: Ring) => {
 // deterministic record does not commit to one future, so the fabric carries the
 // branches that follow the instant it read, and the figure draws them as three copies
 // of the same lattice, each displaced along a direction of its own.
-const BRANCH_RADIUS = RADIUS * 0.17;
-const BRANCH_SPREAD = RADIUS * 1.15;
-// The states are satellites on an equatorial orbit, three longitudes apart, so they
-// circle the sphere as it turns and stay inside the band between the masthead and the
-// explanation instead of crossing either of them.
-const BRANCH_DIRS: Vec3[] = [
-  [0.5, 0, 0.866],
-  [-0.866, 0, -0.5],
-  [0.5, 0, -0.866],
-];
+const BRANCH_RADIUS = RADIUS * 0.12;
+// The states stand on a shallow arc around the sphere: it takes the width the paragraph
+// leaves, level with the sphere, so none of them drops into the text below.
+const BRANCH_ARC_X = RADIUS * 2;
+const BRANCH_ARC_Y = RADIUS * 0.4;
+const BRANCH_ANGLES = [40, 220, 320].map((degrees) => degrees * DEG);
 // The last state is left open: the instant after the read has not been classified yet, so
 // the space carries more futures than it draws.
 const BRANCH_NAMES = ['a', 'b', 'c...'];
 
-const branches = BRANCH_DIRS.map((dir, index) => {
-  const offset: Vec3 = [
-    dir[0] * BRANCH_SPREAD,
-    dir[1] * BRANCH_SPREAD,
-    dir[2] * BRANCH_SPREAD,
+// The arc is solved in the camera frame at the sphere's depth, so a state keeps its place
+// in the composition while the sphere turns underneath it.
+const orbitOffset = (angle: number, yaw: number, tilt: number): Vec3 => {
+  const p = FOCAL / DIST;
+  const across = (BRANCH_ARC_X * Math.cos(angle)) / p;
+  const up = (BRANCH_ARC_Y * Math.sin(angle)) / p;
+  const depthAxis = up * Math.sin(tilt);
+  const y = up * Math.cos(tilt);
+  return [
+    across * Math.cos(yaw) + depthAxis * Math.sin(yaw),
+    y,
+    -across * Math.sin(yaw) + depthAxis * Math.cos(yaw),
   ];
+};
+
+const branches = BRANCH_ANGLES.map((angle, index) => {
+  const offset = orbitOffset(angle, YAW, TILT);
   const centre = project(...offset);
-  // The fork starts where the state left the sphere, on the silhouette in the state's
-  // screen direction. A three-dimensional rim point would draw the line across the
-  // sphere for a direction that points toward the reader.
-  const outX = centre.x - ORIGIN.x;
-  const outY = centre.y - ORIGIN.y;
-  const outLength = Math.hypot(outX, outY) || 1;
   return {
     name: BRANCH_NAMES[index] as string,
-    dir,
+    angle,
     offset,
     x: round(centre.x),
     y: round(centre.y),
     labelTop: round(centre.y - 1),
     labelLetter: round(centre.y + 11),
-    rimX: round(ORIGIN.x + (outX / outLength) * SILHOUETTE),
-    rimY: round(ORIGIN.y + (outY / outLength) * SILHOUETTE),
     radius: round(BRANCH_RADIUS),
     rings: latticeRings(BRANCH_RADIUS, 0, offset, [0, 60, 120], [-30, 0, 30]),
   };
@@ -436,11 +420,13 @@ const payload = {
   lift: LIFT,
   branches: branches.map((branch) => ({
     name: branch.name,
-    dir: branch.dir,
+    angle: branch.angle,
     offset: branch.offset,
     radius: branch.radius,
     rings: branch.rings,
   })),
+  arcX: round(BRANCH_ARC_X),
+  arcY: round(BRANCH_ARC_Y),
   shells: shells.map((shell) => ({ opacity: shell.opacity, rings: shell.rings })),
   particles: field.map((particle, index) => [
     round(particle.point[0]),
@@ -488,14 +474,6 @@ const payload = {
     {
       branches.map((branch, index) => (
         <g class="reach__branch" data-branch={index} style="opacity: 0">
-          <line
-            class="reach__fork"
-            data-fork={index}
-            x1={branch.rimX}
-            y1={branch.rimY}
-            x2={branch.x}
-            y2={branch.y}
-          />
           <circle cx={branch.x} cy={branch.y} r={branch.radius} />
           {branch.rings.map((ring) => (
             <path d={pathOf(ring)} />
@@ -579,8 +557,6 @@ const payload = {
           </g>
         ))
       }
-
-      {links.map((link) => <line class="reach__link" x1={link.x1} y1={link.y1} x2={link.x2} y2={link.y2} />)}
     </g>
 
     <g class="reach__hosts">
@@ -743,12 +719,9 @@ const payload = {
   <script type="application/json" id="reach-space" set:html={JSON.stringify(payload)} />
 
   <figcaption class="reach__caption">
-    One storage engine at every edge, from a microcontroller with no operating system to a full
-    data center. Each host holds its own coordinate and exchanges the same record format, so two
-    hosts connect where their reads meet, with no central database, no middle layer, and no index.
-    A record is a point found by address, not a row in a table. The twelve hosts are examples; the
-    space holds every other kind of machine. A closed instant carries the states a, b, c at once,
-    and c stays open until the next instant is classified.
+    Each machine keeps its own record at its own coordinate. Two records meet where they
+    reach the same point, and one instant can hold the futures that follow it. No cloud,
+    no database, no index.
   </figcaption>
 </figure>
 
@@ -761,11 +734,11 @@ const payload = {
     margin: 0;
   }
 
+  /* The frame is as tall as the drawing, so the paragraph sits under it with an
+     ordinary gap and the whole block can be centred in the window. */
   .reach svg {
     display: block;
-    /* As wide as the viewport allows: the drawing keeps 700 by 460, so the height
-       minus 216px is room for the pin top, the caption and the air under it. */
-    width: min(1800px, calc((100svh - 216px) * 1.522));
+    width: min(1900px, calc((100svh - 300px) * 1.4433));
     max-width: 100%;
     height: auto;
     margin-left: auto;
@@ -788,7 +761,7 @@ const payload = {
     /* Without half a window to spare, the scene is centred as a whole rather than
        cutting the states off the left edge. */
     .reach svg {
-      transform: translateX(-4%) scale(var(--reach-scale, 1));
+      transform: translateX(var(--reach-shift, 0px)) scale(var(--reach-scale, 1));
     }
   }
 
@@ -826,12 +799,6 @@ const payload = {
 
   .reach__branch circle {
     stroke-width: 0.8;
-  }
-
-  .reach__fork {
-    stroke: var(--accent);
-    stroke-width: 0.55;
-    stroke-dasharray: 2 4;
   }
 
   .reach__branch-name {
@@ -897,13 +864,6 @@ const payload = {
     opacity: 1;
   }
 
-  .reach__link {
-    stroke: var(--fg);
-    stroke-width: 0.7;
-    stroke-dasharray: 2.4 3.4;
-    opacity: 0.28;
-  }
-
   /* The marks are the host's identity, not a signal: once the host arrives they
      stay at full strength. */
   .reach__mark {
@@ -964,33 +924,26 @@ const payload = {
     }
   }
 
-  /* The explanation is a paragraph, and it arrives after the fork has been read. */
+  /* The explanation is the paragraph the figure was drawn for: it arrives as soon as
+     the hosts do, and the reader has it while the read and the fork play out. */
   .reach__caption {
-    max-width: 56rem;
-    margin: 28px auto 0;
+    max-width: 52rem;
+    margin: 40px auto 0;
     padding-inline: clamp(16px, 4vw, 40px);
-    font-size: 14px;
-    line-height: 1.65;
+    font-size: clamp(15px, 0.5vw + 0.85rem, 18px);
+    line-height: 1.6;
     color: var(--fg-2);
     text-align: left;
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(18px);
     transition:
-      opacity 700ms var(--ease),
-      transform 700ms var(--ease);
+      opacity 900ms var(--ease),
+      transform 900ms var(--ease);
   }
 
   .reach.is-explained .reach__caption {
     opacity: 1;
     transform: none;
-  }
-
-  /* The wide pin drops the sphere and the paragraph together. The gap clears the host
-     glyphs that hang past the sphere's foot, since the rise carries the drawing down. */
-  @media (min-width: 1260px) {
-    .reach__caption {
-      margin-top: 92px;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1017,6 +970,7 @@ const payload = {
 
   const figure = document.querySelector<HTMLElement>('[data-reach]');
   const svg = figure?.querySelector<SVGSVGElement>('svg');
+  const caption = figure?.querySelector<HTMLElement>('.reach__caption');
   const payloadEl = document.getElementById('reach-space');
 
   interface Vec3 extends Array<number> {
@@ -1051,11 +1005,13 @@ const payload = {
     shells: Group[];
     branches: Array<{
       name: string;
-      dir: Vec3;
+      angle: number;
       offset: Vec3;
       radius: number;
       rings: Ring[];
     }>;
+    arcX: number;
+    arcY: number;
     particles: Array<[number, number, number, number]>;
     nodes: Array<{
       id: string;
@@ -1077,7 +1033,6 @@ const payload = {
     // promise has gone, so the whole sphere is visible at rest.
     const viewBox = svg.viewBox.baseVal;
     const sphereFraction = (space.ox - viewBox.x) / viewBox.width;
-    const wideQuery = window.matchMedia('(min-width: 1260px)');
 
     // The sphere turns about its own axis, and a drag turns it faster.
     let yaw = space.yaw;
@@ -1089,6 +1044,9 @@ const payload = {
     let resumeAt = 0;
     let visible = true;
     let lastFrame = performance.now();
+    // The scale the CSS transform currently applies, so the arc can be kept inside the
+    // window without reading layout every frame.
+    let visualScale = 1;
 
     const projectAt = (x: number, y: number, z: number, angle: number) => {
       const across = x * Math.cos(angle) - z * Math.sin(angle);
@@ -1103,6 +1061,21 @@ const payload = {
     // lattice the sphere is, so it turns with the sphere instead of holding its frame.
     const project = (x: number, y: number, z: number) => projectAt(x, y, z, yaw);
 
+    // A state stands on a shallow arc around the sphere, level with it: the offset is
+    // solved in the camera frame so the three of them use the width and none of them
+    // drops into the paragraph below.
+    const orbitOffset = (angle: number, at: number, arcX: number): Vec3 => {
+      const p = space.focal / space.dist;
+      const across = (arcX * Math.cos(angle)) / p;
+      const up = (space.arcY * Math.sin(angle)) / p;
+      const depthAxis = up * Math.sin(tilt);
+      const y = up * Math.cos(tilt);
+      return [
+        across * Math.cos(at) + depthAxis * Math.sin(at),
+        y,
+        -across * Math.sin(at) + depthAxis * Math.cos(at),
+      ];
+    };
 
     // Depth as a light level: the far side of the sphere is behind the field.
     const fadeOf = (p: number) => Math.min(1, Math.max(0.45, 0.45 + (p - 0.778) * 3.69));
@@ -1154,12 +1127,10 @@ const payload = {
       (element) => {
         const branch = space.branches[Number(element.dataset.branch ?? 0)];
         const [ox, oy, oz] = branch.offset;
-        const length = Math.hypot(ox, oy, oz) || 1;
         return {
           element,
-          offset: branch.offset,
+          angle: branch.angle,
           radius: branch.radius,
-          dir: [ox / length, oy / length, oz / length] as Vec3,
           rings: branch.rings.map((ring) =>
             Array.from({ length: 49 }, (_, step) => {
               const point = ringPoint(ring, (step / 48) * Math.PI * 2);
@@ -1168,7 +1139,6 @@ const payload = {
           ),
           paths: Array.from(element.querySelectorAll<SVGPathElement>('path')),
           circle: element.querySelector<SVGCircleElement>('circle'),
-          line: element.querySelector<SVGLineElement>('line'),
           label: element.querySelector<SVGTextElement>('text'),
           letter: element.querySelector<SVGTextElement>('.reach__branch-letter'),
         };
@@ -1178,7 +1148,6 @@ const payload = {
     const nodeEls = Array.from(svg.querySelectorAll<SVGGElement>('.reach__node'));
     // The fork groups are layered against this circle, so the near state covers the far one.
     const sphereEl = svg.querySelector<SVGCircleElement>('.reach__sphere');
-    const silhouette = sphereEl?.r.baseVal.value ?? 0;
     const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
     const extentEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-extent]'));
     const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
@@ -1221,6 +1190,12 @@ const payload = {
 
     const render = () => {
       const frame = svg.viewBox.baseVal;
+      // The arc shrinks on a narrow window, so all three states stay in view.
+      const pxPerUnit = (svg.clientWidth / viewBox.width) * visualScale;
+      const room =
+        (document.documentElement.clientWidth / 2 - 16) / pxPerUnit -
+        (space.branches[0]?.radius ?? 0);
+      const arcX = Math.min(space.arcX, room);
 
       for (const group of groupEls) {
         group.paths.forEach((path, index) => {
@@ -1305,7 +1280,7 @@ const payload = {
 
       // A forked state is an obstacle too, once it has separated from the sphere.
       space.branches.forEach((branch) => {
-        const [ox, oy, oz] = branch.offset;
+        const [ox, oy, oz] = orbitOffset(branch.angle, yaw, arcX);
         const centre = project(ox * fork, oy * fork, oz * fork);
         // Before the states separate they sit at the centre, so only the part that has
         // moved out is an obstacle.
@@ -1361,7 +1336,7 @@ const payload = {
       // crossing reads as depth and not as two lattices fused into one.
       const layered: Array<{ element: SVGGElement; depth: number }> = [];
       branchEls.forEach((branch) => {
-        const [ox, oy, oz] = branch.offset;
+        const [ox, oy, oz] = orbitOffset(branch.angle, yaw, arcX);
         const spread = fork;
         const centre = project(ox * spread, oy * spread, oz * spread);
         layered.push({ element: branch.element, depth: centre.p });
@@ -1383,16 +1358,6 @@ const payload = {
         branch.circle?.setAttribute('cx', centre.x.toFixed(1));
         branch.circle?.setAttribute('cy', centre.y.toFixed(1));
         branch.circle?.setAttribute('r', (branch.radius * centre.p * 1.04).toFixed(1));
-
-        if (branch.line) {
-          const outwardX = centre.x - space.ox;
-          const outwardY = centre.y - space.oy;
-          const outward = Math.hypot(outwardX, outwardY) || 1;
-          branch.line.setAttribute('x1', (space.ox + (outwardX / outward) * silhouette).toFixed(1));
-          branch.line.setAttribute('y1', (space.oy + (outwardY / outward) * silhouette).toFixed(1));
-          branch.line.setAttribute('x2', centre.x.toFixed(1));
-          branch.line.setAttribute('y2', centre.y.toFixed(1));
-        }
 
         branch.label?.setAttribute('x', centre.x.toFixed(1));
         branch.label?.setAttribute('y', (centre.y - 1).toFixed(1));
@@ -1454,7 +1419,9 @@ const payload = {
     // At rest the sphere is a little smaller than its dome and sits below the masthead,
     // so the whole sphere is visible with air above it and the paragraph below.
     const PIN_SCALE = 0.92;
-    const PIN_RISE = 102;
+    // The pinned block is nudged down from the exact centre, so the air above the sphere
+    // is a little greater than the air under the paragraph.
+    const BLOCK_BIAS = 36;
     // The opening dome is offset right, but only by this much on a very wide screen.
     const INITIAL_OFFSET = 180;
 
@@ -1494,7 +1461,6 @@ const payload = {
       // The copies arrive with the split and the parent steps behind them.
       branchEls.forEach((branch) => {
         branch.element.setAttribute('style', `opacity: ${(fork * 0.68).toFixed(3)}`);
-        branch.line?.setAttribute('opacity', (fork * 0.6).toFixed(3));
         // The name arrives once the state has separated, so it never reads over the
         // sphere it just left.
         branch.label?.setAttribute(
@@ -1503,7 +1469,9 @@ const payload = {
         );
       });
       figure.classList.toggle('is-forked', fork > 0.02);
-      figure.classList.toggle('is-explained', whole >= 0.84);
+      // The paragraph arrives with the hosts, so it explains the space while the read
+      // and the fork play out rather than after them.
+      figure.classList.toggle('is-explained', whole >= 0.12);
 
       render();
     };
@@ -1522,7 +1490,6 @@ const payload = {
     let approachEnd = Math.max(1, documentTop(figure) - 8);
     let lastScale = 0;
     let lastShift = 0;
-    let lastRise = 0;
     const measureApproach = () => {
       approachEnd = Math.max(1, documentTop(figure) - 8);
     };
@@ -1533,30 +1500,24 @@ const payload = {
       const delta = Math.min(0.05, (now - lastFrame) / 1000);
       lastFrame = now;
       const approach = Math.min(1, Math.max(0, window.scrollY / approachEnd));
-      const pinScale = wideQuery.matches ? PIN_SCALE : 1;
-      const scale = 1.4 - (1.4 - pinScale) * approach;
+      const scale = 1.4 - (1.4 - PIN_SCALE) * approach;
+      visualScale = scale;
       if (Math.abs(scale - lastScale) > 0.001) {
         lastScale = scale;
         svg.style.setProperty('--reach-scale', scale.toFixed(3));
         svg.style.setProperty('--reach-hosts', approach.toFixed(3));
       }
-      // On a wide page the sphere moves from the right edge to the centre as it
-      // shrinks, and settles below the masthead so the whole sphere is visible.
-      // Below that width the CSS centres the whole scene, states included.
+      // The sphere moves from the right edge to the centre as it shrinks, so the frame
+      // lands centred whichever width the window has.
       const viewport = document.documentElement.clientWidth;
       const baseCenter = viewport - (1 - sphereFraction) * svg.clientWidth * scale;
       const firstBase = viewport - (1 - sphereFraction) * svg.clientWidth * 1.4;
       const firstTarget = Math.min(firstBase, viewport / 2 + INITIAL_OFFSET);
       const target = firstTarget + (viewport / 2 - firstTarget) * approach;
-      const shift = wideQuery.matches ? target - baseCenter : 0;
+      const shift = target - baseCenter;
       if (Math.abs(shift - lastShift) > 0.5) {
         lastShift = shift;
         svg.style.setProperty('--reach-shift', `${shift.toFixed(1)}px`);
-      }
-      const rise = wideQuery.matches ? PIN_RISE * approach : 0;
-      if (Math.abs(rise - lastRise) > 0.5) {
-        lastRise = rise;
-        svg.style.setProperty('--reach-rise', `${rise.toFixed(1)}px`);
       }
 
       if (visible && !dragging && !reduce.matches && now > resumeAt) {
@@ -1614,6 +1575,19 @@ const payload = {
       settle(entry.boundingClientRect.bottom <= 0);
     }).observe(figure);
 
+    // The pinned block is the drawing and its paragraph, and its top is set so the two
+    // sit centred in the window with the bias above, at every size.
+    const pinStart = () => {
+      const height = svg.clientHeight;
+      const paragraph = caption?.offsetHeight ?? 0;
+      const gap = caption
+        ? Number.parseFloat(getComputedStyle(caption).marginTop) || 0
+        : 0;
+      const inset = ((1 - PIN_SCALE) * height) / 2;
+      const margin = (document.documentElement.clientHeight - (height + gap + paragraph - inset)) / 2;
+      return `top ${Math.max(8, Math.round(margin - inset + BLOCK_BIAS))}px`;
+    };
+
     if (reduce.matches) {
       // The whole story: the read closed and the space divided.
       paint(1);
@@ -1621,7 +1595,7 @@ const payload = {
       // Pinned for both acts: the read closes, then the space divides.
       ScrollTrigger.create({
         trigger: figure,
-        start: 'top 8px',
+        start: pinStart,
         // Long enough for both acts and for the paragraph that follows them.
         end: '+=2000',
         pin: true,
