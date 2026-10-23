@@ -381,7 +381,7 @@ const BRANCH_ARC_Y = RADIUS * 0.9;
 const BRANCH_ANGLES = [40, 220, 320].map((degrees) => degrees * DEG);
 // The last state is left open: the instant after the read has not been classified yet, so
 // the space carries more futures than it draws.
-const BRANCH_NAMES = ['a', 'b', 'c...'];
+const BRANCH_NAMES = ['a', 'b', 'c'];
 
 // The arc is solved in the camera frame at the sphere's depth, so a state keeps its place
 // in the composition while the sphere turns underneath it.
@@ -468,7 +468,6 @@ const payload = {
     viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`}
     role="img"
     aria-label="Hosts attached to one sphere of coordinates: each host carries the engine at its own coordinate, two hosts are joined where their reads reach the same point, and when an instant closes it forks into the composite states a, b, and c, the last of them still open"
-    style="--reach-scale: 1.4"
   >
 
     <defs>
@@ -773,6 +772,8 @@ const payload = {
      ordinary gap and the whole block can be centred in the window. */
   .reach svg {
     display: block;
+    /* The opening scale, restated in CSS so the first paint matches the first frame. */
+    --reach-scale: 1.4;
     width: min(1900px, calc((100svh - 300px) * 1.4433));
     max-width: 100%;
     height: auto;
@@ -969,6 +970,11 @@ const payload = {
     .reach__label {
       display: none;
     }
+
+    /* The opening globe runs past the column on a phone, so it fills the frame. */
+    .reach svg {
+      --reach-scale: 2.2;
+    }
   }
 
   /* The explanation is the paragraph the figure was drawn for: it arrives as soon as
@@ -1080,6 +1086,9 @@ const payload = {
     // promise has gone, so the whole sphere is visible at rest.
     const viewBox = svg.viewBox.baseVal;
     const sphereFraction = (space.ox - viewBox.x) / viewBox.width;
+    // A phone opens with the globe larger than its column, so it fills the frame and is
+    // cropped rather than sitting small under the copy.
+    const phone = window.matchMedia('(max-width: 720px)');
 
     // The sphere turns about its own axis, and a drag turns it faster.
     let yaw = space.yaw;
@@ -1589,7 +1598,8 @@ const payload = {
       const delta = Math.min(0.05, (now - lastFrame) / 1000);
       lastFrame = now;
       const approach = Math.min(1, Math.max(0, window.scrollY / approachEnd));
-      const scale = 1.4 - (1.4 - PIN_SCALE) * approach;
+      const startScale = phone.matches ? 2.2 : 1.4;
+      const scale = startScale - (startScale - PIN_SCALE) * approach;
       visualScale = scale;
       if (Math.abs(scale - lastScale) > 0.001) {
         lastScale = scale;
@@ -1600,8 +1610,10 @@ const payload = {
       // lands centred whichever width the window has.
       const viewport = document.documentElement.clientWidth;
       const baseCenter = viewport - (1 - sphereFraction) * svg.clientWidth * scale;
-      const firstBase = viewport - (1 - sphereFraction) * svg.clientWidth * 1.4;
-      const firstTarget = Math.min(firstBase, viewport / 2 + INITIAL_OFFSET);
+      const firstBase = viewport - (1 - sphereFraction) * svg.clientWidth * startScale;
+      const firstTarget = phone.matches
+        ? viewport / 2
+        : Math.min(firstBase, viewport / 2 + INITIAL_OFFSET);
       const target = firstTarget + (viewport / 2 - firstTarget) * approach;
       const shift = target - baseCenter;
       if (Math.abs(shift - lastShift) > 0.5) {
@@ -1617,10 +1629,12 @@ const payload = {
     };
 
     let dragX = 0;
+    let dragY = 0;
     svg.addEventListener('pointerdown', (event) => {
       if (event.button !== 0) return;
       dragging = true;
       dragX = event.clientX;
+      dragY = event.clientY;
       resumeAt = Number.POSITIVE_INFINITY;
       svg.setPointerCapture(event.pointerId);
       svg.classList.add('is-grabbing');
@@ -1628,9 +1642,14 @@ const payload = {
 
     svg.addEventListener('pointermove', (event) => {
       if (!dragging) return;
-      const delta = event.clientX - dragX;
+      const movedX = event.clientX - dragX;
+      const movedY = event.clientY - dragY;
       dragX = event.clientX;
-      yaw += delta * 0.008;
+      dragY = event.clientY;
+      yaw += movedX * 0.008;
+      // The horizontal drag turns the sphere; the vertical one tips it, so the whole
+      // surface can be rolled into view rather than only its belt.
+      tilt = Math.max(-1.1, Math.min(1.35, tilt + movedY * 0.006));
       render();
     });
 
