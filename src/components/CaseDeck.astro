@@ -360,9 +360,11 @@ const cases = [
   const bar = region?.querySelector<HTMLElement>('[data-case-bar]');
   const now = region?.querySelector<HTMLElement>('[data-case-now]');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  // A viewport this short cannot hold the sticky stage, so the deck stays a list
-  // there: a phone in landscape, or a window dragged to a sliver.
-  const tooShort = window.matchMedia('(max-height: 559px)');
+  // A stage this small cannot hold the deck, so it stays a list there: a phone in
+  // landscape, a window dragged to a sliver, or the smallest phones.
+  const tooSmall = window.matchMedia(
+    '(max-height: 559px), (max-width: 359px) and (max-height: 620px)',
+  );
 
   const setActive = (index: number) => {
     panels.forEach((panel, i) => {
@@ -432,11 +434,11 @@ const cases = [
 
   const apply = () => {
     if (!region || panels.length === 0) return;
-    if (reduce.matches || tooShort.matches) stack();
+    if (reduce.matches || tooSmall.matches) stack();
     else start();
   };
 
   apply();
   reduce.addEventListener('change', apply);
-  tooShort.addEventListener('change', apply);
+  tooSmall.addEventListener('change', apply);
 </script>

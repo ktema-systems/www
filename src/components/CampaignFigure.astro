@@ -263,11 +263,11 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
     }
 
     .campaign__track {
-      margin: 6px 0 10px;
+      margin: 4px 0 8px;
     }
 
     .campaign__rows {
-      gap: 4px;
+      gap: 2px;
     }
 
     .campaign__row {
@@ -298,6 +298,20 @@ const pct = (value: number) => `${(value / LAST) * 100}%`;
 
     .campaign__time {
       grid-column: 2;
+    }
+  }
+
+  @media (min-width: 721px) and (max-height: 820px) {
+    .campaign__rows {
+      gap: 4px;
+    }
+
+    .campaign__track {
+      margin: 4px 0 10px;
+    }
+
+    .campaign figcaption {
+      margin-top: 8px;
     }
   }
 

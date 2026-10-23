@@ -129,4 +129,11 @@ const { eyebrow, title, lede, body, field = true } = Astro.props;
     padding-top: clamp(40px, 6vh, 72px);
     padding-bottom: clamp(24px, 4vh, 56px);
   }
+
+  /* A phone has no room for the air the desktop hero keeps under the lockup. */
+  @media (max-width: 720px) {
+    .hero {
+      padding-top: calc(var(--masthead-h) + var(--brand-lift-top) + 16px);
+    }
+  }
 </style>

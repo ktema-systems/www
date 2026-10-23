@@ -45,9 +45,9 @@ export const delta = {
 // The three lines that state the three layers. The first two are the wings as they
 // are already published; the third completes them for the governance layer.
 export const creed = [
-  { product: 'Ktema', line: 'Machine answers.' },
-  { product: 'Kletos', line: 'Intent delivers.' },
-  { product: 'Krisis', line: 'Judgment governs.' },
+  { product: 'Ktema', line: 'Deterministic Record.' },
+  { product: 'Kletos', line: 'Accountable Execution.' },
+  { product: 'Krisis', line: 'Portable Control.' },
 ] as const;
 
 // The three lines as one, for the masthead-height slot on the home page. It is the

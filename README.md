@@ -95,11 +95,12 @@ on every push to `main`. It needs two repository secrets on
 | `CF_PAGES_DEPLOY` | a Cloudflare API token with the Account / Cloudflare Pages / Edit permission |
 | `CF_ACCOUNT_ID` | the Cloudflare account ID |
 
-For a local deploy, log Wrangler in and push the built output:
+For a local deploy, log Wrangler in once and run the script, which builds the
+site and uploads the output:
 
 ```
-npm run build
-npx wrangler@4 pages deploy dist --project-name=ktema-www
+npx wrangler@4 login
+./deploy.sh
 ```
 
 ## Not yet set
