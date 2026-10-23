@@ -362,13 +362,13 @@ const pathOf = (ring: Ring) => {
 // Two shells of the same lattice for the volume, and three copies of the sphere
 // displaced along a time axis: the record is replayable, so one instant is held in
 // several time dimensions at once and the copies trail behind it.
-const TIME_STEP: Vec3 = [22, -22, 0];
+const TIME_STEP: Vec3 = [26, -26, 0];
 
 const echoes = [1, 2, 3].map((step) => {
   const offset: Vec3 = [TIME_STEP[0] * step, TIME_STEP[1] * step, TIME_STEP[2] * step];
   const centre = project(...offset);
   return {
-    opacity: round((0.055 - step * 0.013) * 1000) / 1000,
+    opacity: round((0.075 - step * 0.017) * 1000) / 1000,
     offset,
     x: round(centre.x),
     y: round(centre.y),
