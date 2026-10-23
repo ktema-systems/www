@@ -118,8 +118,9 @@ type Icon =
 
 interface Seed {
   id: string;
-  lon: number;
-  lat: number;
+  lon?: number;
+  lat?: number;
+  point?: Vec3;
   icon?: Icon;
   glyph?: 'dot';
   size: number;
@@ -127,21 +128,45 @@ interface Seed {
   side?: 'left' | 'right' | 'above' | 'below';
 }
 
+// The twelve hosts sit on the vertices of an icosahedron: the even arrangement of twelve
+// points on a sphere, so every part of the surface carries examples and none of them
+// bunches on one belt.
+const PHI = (1 + Math.sqrt(5)) / 2;
+const ICOSA: Vec3[] = (
+  [
+    [0, 1, PHI],
+    [0, 1, -PHI],
+    [0, -1, PHI],
+    [0, -1, -PHI],
+    [1, PHI, 0],
+    [1, -PHI, 0],
+    [-1, PHI, 0],
+    [-1, -PHI, 0],
+    [PHI, 0, 1],
+    [PHI, 0, -1],
+    [-PHI, 0, 1],
+    [-PHI, 0, -1],
+  ] as Vec3[]
+).map(([x, y, z]) => {
+  const k = RADIUS / Math.hypot(x, y, z);
+  return [x * k, y * k, z * k] as Vec3;
+});
+
 // Twelve hosts on the surface carry the examples. The peers below carry none,
 // because they stand for every other field the same space can hold.
 const seeds: Seed[] = [
-  { id: 'space', lon: 8, lat: 0, icon: 'space', size: 0.3, label: 'Space system', side: 'right' },
-  { id: 'meter', lon: 38, lat: -30, icon: 'meter', size: 0.3, label: 'Smart meter', side: 'below' },
-  { id: 'camera', lon: 68, lat: 0, icon: 'camera', size: 0.3, label: 'Vision camera', side: 'right' },
-  { id: 'plc', lon: 98, lat: -30, icon: 'plc', size: 0.3, label: 'Factory PLC', side: 'right' },
-  { id: 'laptop', lon: 128, lat: 0, icon: 'laptop', size: 0.3, label: 'Laptop and mobile', side: 'left' },
-  { id: 'drone', lon: 158, lat: -30, icon: 'drone', size: 0.3, label: 'MCU drone', side: 'left' },
-  { id: 'robot', lon: 188, lat: 0, icon: 'robot', size: 0.3, label: 'ROS robot', side: 'left' },
-  { id: 'medical', lon: 218, lat: -30, icon: 'monitor', size: 0.3, label: 'Medical device', side: 'left' },
-  { id: 'wearable', lon: 248, lat: 0, icon: 'wearable', size: 0.3, label: 'Wearable', side: 'below' },
-  { id: 'vehicle', lon: 278, lat: -30, icon: 'vehicle', size: 0.3, label: 'Vehicle ECU', side: 'right' },
-  { id: 'rack', lon: 308, lat: 0, icon: 'rack', size: 0.3, label: 'Data center', side: 'right' },
-  { id: 'gateway', lon: 338, lat: -30, icon: 'gateway', size: 0.3, label: 'Edge gateway', side: 'right' },
+  { id: 'space', point: ICOSA[0], icon: 'space', size: 0.3, label: 'Space system' },
+  { id: 'meter', point: ICOSA[1], icon: 'meter', size: 0.3, label: 'Smart meter' },
+  { id: 'camera', point: ICOSA[2], icon: 'camera', size: 0.3, label: 'Vision camera' },
+  { id: 'plc', point: ICOSA[3], icon: 'plc', size: 0.3, label: 'Factory PLC' },
+  { id: 'laptop', point: ICOSA[4], icon: 'laptop', size: 0.3, label: 'Laptop and mobile' },
+  { id: 'drone', point: ICOSA[5], icon: 'drone', size: 0.3, label: 'MCU drone' },
+  { id: 'robot', point: ICOSA[6], icon: 'robot', size: 0.3, label: 'ROS robot' },
+  { id: 'medical', point: ICOSA[7], icon: 'monitor', size: 0.3, label: 'Medical device' },
+  { id: 'wearable', point: ICOSA[8], icon: 'wearable', size: 0.3, label: 'Wearable' },
+  { id: 'vehicle', point: ICOSA[9], icon: 'vehicle', size: 0.3, label: 'Vehicle ECU' },
+  { id: 'rack', point: ICOSA[10], icon: 'rack', size: 0.3, label: 'Data center' },
+  { id: 'gateway', point: ICOSA[11], icon: 'gateway', size: 0.3, label: 'Edge gateway' },
 
   // A mesh of near peers and a group read through one of its members: the same
   // space sustains both topologies at once.
@@ -157,8 +182,11 @@ const seeds: Seed[] = [
 const labelOffset = 20;
 
 const nodes = seeds.map((seed) => {
-  const position = onSphere(seed.lon, seed.lat);
+  const position = seed.point ?? onSphere(seed.lon ?? 0, seed.lat ?? 0);
   const at = project(...position);
+  // The label points away from the sphere on whichever side the host sits, so it never
+  // reads back across the lattice it belongs to.
+  const side = seed.side ?? (at.x < ORIGIN.x ? 'left' : 'right');
   // The glyph is pushed off the surface along the silhouette, so the host sits on
   // its coordinate instead of covering it.
   const outX = at.x - ORIGIN.x;
@@ -177,6 +205,7 @@ const nodes = seeds.map((seed) => {
   const far = at.depth > DIST;
   return {
     ...seed,
+    side,
     position,
     at,
     glyphAt,
@@ -185,11 +214,11 @@ const nodes = seeds.map((seed) => {
     transform: `translate(${round(glyphAt.x)} ${round(glyphAt.y)}) scale(${round(at.p * seed.size * 1000) / 1000})`,
     markTransform: `translate(${round(at.x)} ${round(at.y)}) scale(${tidy(at.p * 1.2)})`,
     labelPos: seed.label
-      ? seed.side === 'left'
+      ? side === 'left'
         ? { x: glyphAt.x - labelOffset, y: glyphAt.y + 2, anchor: 'end' }
-        : seed.side === 'above'
+        : side === 'above'
           ? { x: glyphAt.x, y: glyphAt.y - 15, anchor: 'middle' }
-          : seed.side === 'below'
+          : side === 'below'
             ? { x: glyphAt.x, y: glyphAt.y + 22, anchor: 'middle' }
             : { x: glyphAt.x + labelOffset, y: glyphAt.y + 2, anchor: 'start' }
       : null,
