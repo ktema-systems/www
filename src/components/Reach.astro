@@ -26,9 +26,9 @@ const DIST = 2600;
 const VIEW_W = 780;
 // Taller than the sphere needs, because the fork at the end of the scan has to sit
 // outside it: three states cannot live inside one silhouette.
-const VIEW_H = 540;
+const VIEW_H = 560;
 const OX = VIEW_W / 2;
-const OY = 260;
+const OY = 270;
 
 const RADIUS = 228;
 const LIFT = 21;
@@ -364,8 +364,8 @@ const pathOf = (ring: Ring) => {
 // deterministic record does not commit to one future, so the fabric carries the
 // branches that follow the instant it read, and the figure draws them as three copies
 // of the same lattice, each displaced along a direction of its own.
-const BRANCH_RADIUS = RADIUS * 0.31;
-const BRANCH_SPREAD = RADIUS * 1.45;
+const BRANCH_RADIUS = RADIUS * 0.25;
+const BRANCH_SPREAD = RADIUS * 1.6;
 const BRANCH_DIRS: Vec3[] = [
   [-0.94, 0.34, 0],
   [0.94, 0.34, 0],
@@ -381,12 +381,14 @@ const branches = BRANCH_DIRS.map((dir, index) => {
   ];
   const centre = project(...offset);
   const rim = project(dir[0] * RADIUS, dir[1] * RADIUS, dir[2] * RADIUS);
+  const screenRadius = BRANCH_RADIUS * centre.p * 1.04;
   return {
     name: BRANCH_NAMES[index] as string,
     dir,
     offset,
     x: round(centre.x),
     y: round(centre.y),
+    labelY: round(centre.y + screenRadius + 13),
     rimX: round(rim.x),
     rimY: round(rim.y),
     radius: round(BRANCH_RADIUS),
@@ -476,11 +478,8 @@ const payload = {
           {branch.rings.map((ring) => (
             <path d={pathOf(ring)} />
           ))}
-          <text class="reach__branch-name" x={branch.x} y={branch.y - 2}>
-            <tspan class="reach__branch-word" x={branch.x}>COMPOSITE STATE</tspan>
-            <tspan class="reach__branch-letter" x={branch.x} y={branch.y + 13}>
-              {branch.name}
-            </tspan>
+          <text class="reach__branch-name" x={branch.x} y={branch.labelY} opacity="0">
+            COMPOSITE STATE {branch.name}
           </text>
         </g>
       ))
@@ -784,20 +783,15 @@ const payload = {
 
   .reach__branch-name {
     font-family: var(--text);
+    font-size: 8.5px;
+    letter-spacing: 0.14em;
     text-anchor: middle;
     fill: var(--accent);
-  }
-
-  .reach__branch-word {
-    font-size: 7.5px;
-    letter-spacing: 0.18em;
-    opacity: 0.72;
-  }
-
-  .reach__branch-letter {
-    font-size: 13px;
-    letter-spacing: 0.1em;
-    opacity: 0.95;
+    /* A halo in the page colour keeps the label legible over its own wires. */
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 3.2px;
+    stroke-linejoin: round;
   }
 
   .reach.is-forked .reach__sphere {
@@ -1009,14 +1003,19 @@ const payload = {
     let visible = true;
     let lastFrame = performance.now();
 
-    const project = (x: number, y: number, z: number) => {
-      const across = x * Math.cos(yaw) - z * Math.sin(yaw);
-      const depthAxis = x * Math.sin(yaw) + z * Math.cos(yaw);
+    const projectAt = (x: number, y: number, z: number, angle: number) => {
+      const across = x * Math.cos(angle) - z * Math.sin(angle);
+      const depthAxis = x * Math.sin(angle) + z * Math.cos(angle);
       const up = y * Math.cos(tilt) + depthAxis * Math.sin(tilt);
       const depth = space.dist + depthAxis * Math.cos(tilt) - y * Math.sin(tilt);
       const p = space.focal / depth;
       return { x: space.ox + across * p, y: space.oy - up * p, p, depth };
     };
+
+    const project = (x: number, y: number, z: number) => projectAt(x, y, z, yaw);
+    // The fork keeps the frame it was drawn in while the sphere turns. Its anchor is a
+    // silhouette point, and a silhouette does not move under a turn.
+    const projectFork = (x: number, y: number, z: number) => projectAt(x, y, z, space.yaw);
 
     // Depth as a light level: the far side of the sphere is behind the field.
     const fadeOf = (p: number) => Math.min(1, Math.max(0.45, 0.45 + (p - 0.778) * 3.69));
@@ -1037,10 +1036,10 @@ const payload = {
       return [ox + r * Math.cos(angle), oy + h, oz + r * Math.sin(angle)];
     };
 
-    const pathOf = (points: Vec3[]) => {
+    const pathOf = (points: Vec3[], projection = project) => {
       let d = '';
       for (let index = 0; index < points.length; index += 1) {
-        const at = project(points[index][0], points[index][1], points[index][2]);
+        const at = projection(points[index][0], points[index][1], points[index][2]);
         d += `${index === 0 ? 'M' : 'L'}${at.x.toFixed(1)} ${at.y.toFixed(1)}`;
       }
       return `${d}Z`;
@@ -1083,8 +1082,7 @@ const payload = {
           paths: Array.from(element.querySelectorAll<SVGPathElement>('path')),
           circle: element.querySelector<SVGCircleElement>('circle'),
           line: element.querySelector<SVGLineElement>('line'),
-          word: element.querySelector<SVGTextElement>('.reach__branch-word'),
-          letter: element.querySelector<SVGTextElement>('.reach__branch-letter'),
+          label: element.querySelector<SVGTextElement>('text'),
         };
       },
     );
@@ -1213,7 +1211,7 @@ const payload = {
       // A forked state is an obstacle too, once it has separated from the sphere.
       space.branches.forEach((branch) => {
         const [ox, oy, oz] = branch.offset;
-        const centre = project(ox * fork, oy * fork, oz * fork);
+        const centre = projectFork(ox * fork, oy * fork, oz * fork);
         const radius = branch.radius * centre.p * 1.04;
         taken.push({
           x1: centre.x - radius,
@@ -1254,7 +1252,7 @@ const payload = {
       branchEls.forEach((branch) => {
         const [ox, oy, oz] = branch.offset;
         const spread = fork;
-        const centre = project(ox * spread, oy * spread, oz * spread);
+        const centre = projectFork(ox * spread, oy * spread, oz * spread);
 
         branch.paths.forEach((path, index) => {
           const points = branch.rings[index];
@@ -1265,6 +1263,7 @@ const payload = {
               points.map(
                 ([x, y, z]) => [x + ox * spread, y + oy * spread, z + oz * spread] as Vec3,
               ),
+              projectFork,
             ),
           );
         });
@@ -1274,7 +1273,7 @@ const payload = {
         branch.circle?.setAttribute('r', (branch.radius * centre.p * 1.04).toFixed(1));
 
         if (branch.line) {
-          const rim = project(
+          const rim = projectFork(
             branch.dir[0] * space.radius,
             branch.dir[1] * space.radius,
             branch.dir[2] * space.radius,
@@ -1285,10 +1284,11 @@ const payload = {
           branch.line.setAttribute('y2', centre.y.toFixed(1));
         }
 
-        branch.word?.setAttribute('x', centre.x.toFixed(1));
-        branch.word?.setAttribute('y', (centre.y - 2).toFixed(1));
-        branch.letter?.setAttribute('x', centre.x.toFixed(1));
-        branch.letter?.setAttribute('y', (centre.y + 13).toFixed(1));
+        branch.label?.setAttribute('x', centre.x.toFixed(1));
+        branch.label?.setAttribute(
+          'y',
+          (centre.y + branch.radius * centre.p * 1.04 + 13).toFixed(1),
+        );
       });
 
       space.scanners.forEach((port, index) => {
@@ -1371,8 +1371,14 @@ const payload = {
 
       // The copies arrive with the split and the parent steps behind them.
       branchEls.forEach((branch) => {
-        branch.element.setAttribute('style', `opacity: ${(fork * 0.5).toFixed(3)}`);
-        branch.line?.setAttribute('opacity', (fork * 0.55).toFixed(3));
+        branch.element.setAttribute('style', `opacity: ${(fork * 0.68).toFixed(3)}`);
+        branch.line?.setAttribute('opacity', (fork * 0.6).toFixed(3));
+        // The name arrives once the state has separated, so it never reads over the
+        // sphere it just left.
+        branch.label?.setAttribute(
+          'opacity',
+          (Math.max(0, Math.min(1, (fork - 0.55) / 0.35)) * 0.95).toFixed(2),
+        );
       });
       figure.classList.toggle('is-forked', fork > 0.02);
 
