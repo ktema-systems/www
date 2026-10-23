@@ -1,13 +1,13 @@
 ---
 /*
-  The engine's reach: one sphere of records and the hosts that sit on it.
+  The engine's reach: one sphere of coordinates and the hosts that sit on it.
 
   There is no centre to the deployment. An entity carries the engine and reads the
-  sphere from the coordinate it is attached to, so every host is drawn on the
-  surface, not orbiting it. The interior is the space of coordinates that could
-  exist, and the lattice is repeated as parallel shells because the same space holds
-  every instance at once. Each host opens a scanner from its own port, and two hosts
-  are joined where their scans meet.
+  space from the coordinate it is attached to, so every host is drawn on the
+  surface, not orbiting it. The interior is the coordinates that could exist, and the
+  lattice is repeated as parallel shells because the same space holds every instance
+  at once. Each host opens its read from its own coordinate, and two hosts are joined
+  where their reads reach the same point.
 
   The sphere turns, and the reader can turn it. Every position is kept in three
   dimensions and projected per frame, so the turn is a rotation of the space and not
@@ -189,7 +189,7 @@ const nodes = seeds.map((seed) => {
 const direct = nodes.filter((node) => node.icon);
 const ports = direct.map((node) => node.position);
 
-// Every pair of ports within a coincidence radius meets when the two scans have
+// Every pair of ports within a coincidence radius meets when the two reads have
 // grown to half their distance apart. The join is drawn at that coordinate pair.
 const COINCIDENCE = RADIUS * 1.2;
 const pairs: Array<[number, number]> = [];
@@ -244,7 +244,7 @@ const field = Array.from({ length: 320 }, () => {
     radius * Math.sin(phi) * Math.sin(theta),
   ];
   const at = project(...point);
-  // A point belongs to the scan that reaches it first.
+  // A point belongs to the read that reaches it first.
   const nearest = Math.min(
     ...ports.map((port) =>
       Math.hypot(point[0] - port[0], point[1] - port[1], point[2] - port[2]),
@@ -258,7 +258,7 @@ const field = Array.from({ length: 320 }, () => {
   };
 }).sort((a, b) => a.nearest - b.nearest);
 
-// The scan has to reach the farthest coordinate any host reads, or the field would
+// The read has to reach the farthest coordinate any host holds, or the field would
 // stay dark where no ring ever arrives.
 const reachLimit =
   Math.max(
@@ -363,7 +363,7 @@ const pathOf = (ring: Ring) => {
   return `${parts.join(' ')} Z`;
 };
 
-// Two shells of the same lattice for the volume. The space forks after the scan: a
+// Two shells of the same lattice for the volume. The space forks after the read: a
 // deterministic record does not commit to one future, so the fabric carries the
 // branches that follow the instant it read, and the figure draws them as three copies
 // of the same lattice, each displaced along a direction of its own.
@@ -442,7 +442,7 @@ const payload = {
     side: node.side ?? null,
   })),
   joins: joins.map((join) => ({ a: join.a, b: join.b })),
-  scanners: direct.map((node) => [
+  extents: direct.map((node) => [
     round(node.position[0]),
     round(node.position[1]),
     round(node.position[2]),
@@ -453,9 +453,9 @@ const payload = {
 <figure class="reach" data-reach>
   <svg viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`} role="img" aria-labelledby="reach-title">
     <title id="reach-title"
-      >Hosts attached to one sphere of records: every host reads the sphere from its
-      own coordinate, two hosts are joined where their scans meet, and when the scan
-      closes the same instant forks into the composite states a, b, and c, the last of
+      >Hosts attached to one sphere of coordinates: each host carries the engine at its
+      own coordinate, two hosts are joined where their reads reach the same point, and
+      when an instant closes it forks into the composite states a, b, and c, the last of
       them still open</title
     >
 
@@ -522,12 +522,12 @@ const payload = {
     />
 
     <g clip-path="url(#reach-sphere)">
-      <g class="reach__scanners">
+      <g class="reach__extents">
         {
           direct.map((node) => (
             <circle
-              class="reach__scanner"
-              data-scanner
+              class="reach__extent"
+              data-extent
               cx={round(node.at.x)}
               cy={round(node.at.y)}
               r="0"
@@ -729,13 +729,13 @@ const payload = {
   <script type="application/json" id="reach-space" set:html={JSON.stringify(payload)} />
 
   <figcaption class="reach__caption">
-    One engine and one record format, on twelve hosts attached to the same space: a drone
-    with no operating system, a medical device, a data center, a space system. A record is a
-    coordinate in that space, not a row in a centre. Every host scans from the coordinate it
-    holds, and two hosts are joined where their scans meet. When the scan closes, that one
-    instant forks: because the execution is deterministic, the fabric carries the
-    composite states a, b, c that can follow it at once, side by side, and c stays open
-    because the instant after the read has not been classified yet.
+    One engine and one record format, carried by every host at its own coordinate: no host at
+    the centre, no database behind it. The sphere is the coordinate space, and a record is a
+    point found by address, not a row found by index. A host reads the space from the
+    coordinate it holds, and two hosts are joined where their reads reach the same point. The
+    twelve hosts are examples, one per kind of machine, and the space holds every other. When
+    an instant closes, the deterministic record carries the composite states a, b, c at
+    once; c stays open until the instant after the read is classified.
   </figcaption>
 </figure>
 
@@ -778,7 +778,7 @@ const payload = {
   }
 
   /* The fork: three states of the same lattice, each the execution that follows the
-     instant the scan read. They carry the accent because they are what the record
+     instant the read. They carry the accent because they are what the record
      becomes, and the parent's outline steps back so they are the figure. */
   .reach__branch circle,
   .reach__branch path {
@@ -823,8 +823,8 @@ const payload = {
     stroke: none;
   }
 
-  /* One ring per host: the scan is as many scanners as there are entities. */
-  .reach__scanner {
+  /* One ring per host: the read is as many extents as there are entities. */
+  .reach__extent {
     fill: none;
     stroke: var(--fg);
     stroke-width: 0.8;
@@ -1005,7 +1005,7 @@ const payload = {
       side: string | null;
     }>;
     joins: Array<{ a: number; b: number }>;
-    scanners: Vec3[];
+    extents: Vec3[];
   }
 
   const space: Space = JSON.parse(payloadEl?.textContent ?? '{}');
@@ -1116,7 +1116,7 @@ const payload = {
     // The fork groups are layered against this circle, so the near state covers the far one.
     const sphereEl = svg.querySelector<SVGCircleElement>('.reach__sphere');
     const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
-    const scannerEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-scanner]'));
+    const extentEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-extent]'));
     const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
       element,
       line: element.querySelector('line') as SVGLineElement,
@@ -1345,8 +1345,8 @@ const payload = {
         }
       }
 
-      space.scanners.forEach((port, index) => {
-        const element = scannerEls[index];
+      space.extents.forEach((port, index) => {
+        const element = extentEls[index];
         if (!element) return;
         const at = project(port[0], port[1], port[2]);
         element.setAttribute('cx', at.x.toFixed(1));
@@ -1379,20 +1379,20 @@ const payload = {
     let branchOrder = '';
     const thresholds = particleEls.map((particle) => Number(particle.dataset.threshold ?? 0));
 
-    // The scan is the first share of the scroll and the fork the rest of it, so the
+    // The read is the first share of the scroll and the fork the rest of it, so the
     // reader sees the joins close before the space divides.
-    const SCAN_SHARE = 0.52;
+    const READ_SHARE = 0.52;
     // The split is complete before the pin lets go, so the reader can look at the three
     // executions rather than reaching them as the figure leaves.
     const FORK_SHARE = 0.36;
 
     const paint = (value: number) => {
       const whole = Math.min(1, Math.max(0, value));
-      progress = Math.min(1, whole / SCAN_SHARE);
-      const split = Math.min(1, Math.max(0, (whole - SCAN_SHARE) / FORK_SHARE));
+      progress = Math.min(1, whole / READ_SHARE);
+      const split = Math.min(1, Math.max(0, (whole - READ_SHARE) / FORK_SHARE));
       fork = split * split * (3 - 2 * split);
 
-      // The particles are sorted by the progress at which a scan reaches them, so
+      // The particles are sorted by the progress at which a read reaches them, so
       // only the ones that just crossed are touched.
       let cut = 0;
       while (cut < thresholds.length && thresholds[cut] <= progress) cut += 1;
@@ -1489,7 +1489,7 @@ const payload = {
     ).observe(figure);
 
     if (reduce.matches) {
-      // The whole story: the scan closed and the space divided.
+      // The whole story: the read closed and the space divided.
       paint(1);
       // No pin here, so the figure leaving the viewport is the end of the sequence.
       new IntersectionObserver(([entry], observer) => {
@@ -1498,8 +1498,8 @@ const payload = {
         observer.disconnect();
       }).observe(figure);
     } else {
-      // Pinned for both acts: the scan closes, then the space divides.
-      // The backdrop behind the rest of the page waits for the scan to finish: the
+      // Pinned for both acts: the read closes, then the space divides.
+      // The backdrop behind the rest of the page waits for the read to finish: the
       // figure owns the scroll until the pin lets go, so the field may not arrive
       // while it is still dividing.
       const settle = (done: boolean) => {
@@ -1510,7 +1510,7 @@ const payload = {
       ScrollTrigger.create({
         trigger: figure,
         start: 'top 8%',
-        // Long enough for both acts: the scan closing, and the space then dividing.
+        // Long enough for both acts: the read closing, and the space then dividing.
         end: '+=1500',
         pin: true,
         onUpdate: (self) => paint(self.progress),
