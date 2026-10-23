@@ -195,7 +195,7 @@
      below 1000px that the strip and the call to action still share the row. */
   --masthead-progress: clamp(0, calc(var(--masthead-scroll) / var(--masthead-ramp)), 1);
   --brand-settled: 22px;
-  --brand-top: clamp(26px, 4vw - 12px, 44px);
+  --brand-top: clamp(26px, 4vw - 12px, 28px);
   --brand-size: calc(
     var(--brand-settled) + (var(--brand-top) - var(--brand-settled)) * (1 - var(--masthead-progress))
   );
