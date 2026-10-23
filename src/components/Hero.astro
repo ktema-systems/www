@@ -8,6 +8,8 @@ import HeroField from './HeroField.astro';
 interface Props {
   eyebrow?: string;
   title: string;
+  // A short line under the display line. The company's page carries its scope here.
+  subline?: string;
   lede: string;
   body?: string;
   // A page that carries its own backdrop turns the field off, so the two do not
@@ -21,7 +23,16 @@ interface Props {
   depth?: boolean;
 }
 
-const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = false } = Astro.props;
+const {
+  eyebrow,
+  title,
+  subline,
+  lede,
+  body,
+  field = true,
+  fieldReveal = 'now',
+  depth = false,
+} = Astro.props;
 ---
 
 <section class="hero" id="top">
@@ -37,6 +48,7 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = f
     <div class="hero__head">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>
+      {subline && <p class="hero__subline">{subline}</p>}
       <p class="hero__lede">{lede}</p>
       {body && <p class:list={['hero__body', depth && 'hero__body--deep']}>{body}</p>}
     </div>
@@ -111,6 +123,15 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = f
        measure the copy under it is held to. It stays on one line while the page can
        carry it, and wraps to balanced lines when the page is narrower. */
     text-wrap: balance;
+  }
+
+  .hero__subline {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    color: var(--accent);
   }
 
   .hero__lede {
