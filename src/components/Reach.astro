@@ -277,19 +277,28 @@ const reachLimit =
   ) * 1.02;
 
 const joins = segments.map(({ from, to, a, b, distance }) => {
-  const mid = project(
+  const point: Vec3 = [
     (from.position[0] + to.position[0]) / 2,
     (from.position[1] + to.position[1]) / 2,
     (from.position[2] + to.position[2]) / 2,
-  );
+  ];
+  const mid = project(...point);
   return {
     a,
     b,
+    point,
     midX: round(mid.x),
     midY: round(mid.y),
     threshold: round((distance / 2 / reachLimit) * 1000) / 1000,
   };
 });
+
+// The first point where two reads meet is the one the states are copies of, so the
+// threads start there.
+const seed = joins.reduce(
+  (best, join) => (join.threshold < best.threshold ? join : best),
+  joins[0],
+);
 
 const particles = field.map((particle) => ({
   cx: round(particle.at.x),
@@ -443,6 +452,7 @@ const payload = {
     side: node.side ?? null,
   })),
   joins: joins.map((join) => ({ a: join.a, b: join.b })),
+  seed: seed.point.map((value) => round(value)),
   extents: direct.map((node) => [
     round(node.position[0]),
     round(node.position[1]),
@@ -487,6 +497,20 @@ const payload = {
         </g>
       ))
     }
+
+    <g class="reach__threads">
+      {branches.map((branch, index) => (
+        <line
+          class="reach__thread"
+          data-thread={index}
+          x1={seed.midX}
+          y1={seed.midY}
+          x2={seed.midX}
+          y2={seed.midY}
+          opacity="0"
+        />
+      ))}
+    </g>
 
     <circle
       class="reach__sphere"
@@ -801,6 +825,15 @@ const payload = {
     stroke-width: 0.8;
   }
 
+  /* Each state is a copy of the space, so the point where two reads meet has a copy
+     inside each of them. The threads mark the correspondence. */
+  .reach__thread {
+    stroke: var(--accent);
+    stroke-width: 0.5;
+    stroke-dasharray: 2 4;
+    opacity: 0;
+  }
+
   .reach__branch-name {
     font-family: var(--text);
     font-size: 8.5px;
@@ -1022,6 +1055,7 @@ const payload = {
       side: string | null;
     }>;
     joins: Array<{ a: number; b: number }>;
+    seed: Vec3;
     extents: Vec3[];
   }
 
@@ -1150,6 +1184,7 @@ const payload = {
     const sphereEl = svg.querySelector<SVGCircleElement>('.reach__sphere');
     const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
     const extentEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-extent]'));
+    const threadEls = Array.from(svg.querySelectorAll<SVGLineElement>('[data-thread]'));
     const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
       element,
       line: element.querySelector('line') as SVGLineElement,
@@ -1363,6 +1398,27 @@ const payload = {
         branch.label?.setAttribute('y', (centre.y - 1).toFixed(1));
         branch.letter?.setAttribute('x', centre.x.toFixed(1));
         branch.letter?.setAttribute('y', (centre.y + 11).toFixed(1));
+      });
+
+      // A state is a copy of the space at its own scale, so the seed point's counterpart
+      // sits at the same share of the state's radius from its centre.
+      const seedPoint = space.seed;
+      const origin = project(seedPoint[0], seedPoint[1], seedPoint[2]);
+      threadEls.forEach((thread, index) => {
+        const branch = branchEls[index];
+        if (!branch) return;
+        const [ox, oy, oz] = orbitOffset(branch.angle, yaw, arcX);
+        const k = branch.radius / space.radius;
+        const at = project(
+          ox * fork + seedPoint[0] * k,
+          oy * fork + seedPoint[1] * k,
+          oz * fork + seedPoint[2] * k,
+        );
+        thread.setAttribute('x1', origin.x.toFixed(1));
+        thread.setAttribute('y1', origin.y.toFixed(1));
+        thread.setAttribute('x2', at.x.toFixed(1));
+        thread.setAttribute('y2', at.y.toFixed(1));
+        thread.setAttribute('opacity', (fork * 0.7).toFixed(3));
       });
 
       if (sphereEl) {
