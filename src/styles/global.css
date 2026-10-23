@@ -457,6 +457,25 @@ svg {
     color-mix(in srgb, var(--line) calc(var(--masthead-progress) * 100%), transparent);
 }
 
+/* The top band carries a soft lift in the page colour, so the lockup and the menu read
+   over whatever the field draws behind them. It is full width, and it fades out over
+   about a bar and a half at desktop scale and proportionally less on a phone. */
+.masthead::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: clamp(84px, 8.35vw, 120px);
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    var(--bg) 0%,
+    var(--bg) 40%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 72%,
+    transparent 100%
+  );
+}
+
 /* At the very top the bar is given nothing at all: no surface, no rule, and no
    filter. An identity filter is not the same as no filter, because a bar carrying
    one is still composited against a backdrop, and the hero's field is directly
