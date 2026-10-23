@@ -1,16 +1,13 @@
 ---
 /*
-  The engine's reach: hosts at the edge of one sphere of records.
+  The engine's reach: one sphere of records and the hosts that sit on it.
 
-  There is no centre to the deployment, no box, and no single sweep. The record is a
-  sphere of points in three dimensions. Every host carries a scanner of its own,
-  opening from its own coordinate, so the field is read from as many places as it
-  has entities. Where two scans meet, the two hosts are joined at that coordinate,
-  and the joins are what the figure draws: no bus, no hub, only coordinates that
-  coincide.
-
-  Everything is computed in three dimensions and projected once, so the sphere
-  reads as a space rather than as a drawing of one.
+  There is no centre to the deployment. An entity carries the engine and reads the
+  sphere from the coordinate it is attached to, so every host is drawn on the
+  surface, not orbiting it. The interior is the space of coordinates that could
+  exist, and the lattice is repeated as parallel shells because the same space holds
+  every instance at once. Each host opens a scanner from its own port, and two hosts
+  are joined where their scans meet.
 */
 
 const DEG = Math.PI / 180;
@@ -25,8 +22,10 @@ const COS_Y = Math.cos(YAW);
 const FOCAL = 2200;
 const DIST = 2600;
 
-const OX = 460;
-const OY = 192;
+const VIEW_W = 720;
+const VIEW_H = 456;
+const OX = VIEW_W / 2;
+const OY = 224;
 
 // x runs right, y up, z toward the reader. The camera yaws around y and then looks
 // down by the tilt, so the sphere has depth on both sides of every axis.
@@ -36,10 +35,10 @@ const project = (x: number, y: number, z: number) => {
   const up = y * COS_T + depthAxis * SIN_T;
   const depth = DIST + depthAxis * COS_T - y * SIN_T;
   const p = FOCAL / depth;
-  return { x: OX + across * p, y: OY - up * p, p };
+  return { x: OX + across * p, y: OY - up * p, p, depth };
 };
 
-const RADIUS = 150;
+const RADIUS = 228;
 
 const ORIGIN = project(0, 0, 0);
 // A sphere projects to a circle slightly larger than its radius times the depth
@@ -63,18 +62,22 @@ const flatHex = (radius: number) => {
 
 const length3 = (v: [number, number, number]) => Math.hypot(v[0], v[1], v[2]) || 1;
 
-// A point on the sphere along a ray from its centre.
-const surfaceOf = (point: [number, number, number]): [number, number, number] => {
-  const l = length3(point);
-  return [(point[0] / l) * RADIUS, (point[1] / l) * RADIUS, (point[2] / l) * RADIUS];
+// A coordinate on the surface, given as longitude and latitude.
+const onSphere = (lonDeg: number, latDeg: number): [number, number, number] => {
+  const lon = lonDeg * DEG;
+  const lat = latDeg * DEG;
+  return [
+    RADIUS * Math.cos(lat) * Math.cos(lon),
+    RADIUS * Math.sin(lat),
+    RADIUS * Math.cos(lat) * Math.sin(lon),
+  ];
 };
 
 // The mark is the favicon stamped on the coordinate the host reads. It faces the
 // reader, because a hexagon in the port's tangent plane collapses to a sliver
 // wherever the port sits on the limb of the sphere.
-const markAt = (point: [number, number, number]) => {
-  const at = project(...point);
-  const radius = 9 * at.p * 1.15;
+const markAt = (at: { x: number; y: number; p: number }) => {
+  const radius = 6 * at.p * 1.2;
   return {
     x: round(at.x),
     y: round(at.y),
@@ -88,108 +91,113 @@ const markAt = (point: [number, number, number]) => {
   };
 };
 
-type Icon = 'robot' | 'drone' | 'laptop' | 'monitor' | 'rack' | 'space';
+type Icon =
+  | 'robot'
+  | 'drone'
+  | 'laptop'
+  | 'monitor'
+  | 'rack'
+  | 'space'
+  | 'vehicle'
+  | 'meter'
+  | 'camera'
+  | 'gateway'
+  | 'wearable'
+  | 'plc';
 
-interface Host {
+interface Seed {
   id: string;
-  at: [number, number, number];
+  lon: number;
+  lat: number;
   icon?: Icon;
   glyph?: 'dot';
   halo: number;
   size: number;
-  opacity?: number;
   label?: string;
-  place?: 'above' | 'right' | 'below' | 'left';
-  direct?: boolean;
+  side?: 'left' | 'right' | 'above' | 'below';
 }
 
-// The examples carry names; the sphere carries none, because it stands for more
-// than the six a figure can name.
-const hosts: Host[] = [
-  { id: 'n1', at: [0, 215, -60], icon: 'robot', halo: 40, size: 0.62, label: 'ROS robot', place: 'above', direct: true },
-  { id: 'n2', at: [380, 0, 120], icon: 'drone', halo: 34, size: 0.62, label: 'MCU drone', place: 'right', direct: true },
-  { id: 'n3', at: [380, 60, -140], icon: 'laptop', halo: 36, size: 0.62, label: 'Laptop and mobile', place: 'right', direct: true },
-  { id: 'n4', at: [0, -215, 60], icon: 'monitor', halo: 28, size: 0.62, label: 'Medical device', place: 'below', direct: true },
-  { id: 'n5', at: [-380, -40, 130], icon: 'space', halo: 34, size: 0.62, label: 'Space system', place: 'left', direct: true },
-  { id: 'n6', at: [-360, 80, -130], icon: 'rack', halo: 32, size: 0.62, label: 'Data center', place: 'left', direct: true },
+// Twelve hosts on the surface carry the examples. The peers below carry none,
+// because they stand for every other field the same space can hold.
+const seeds: Seed[] = [
+  { id: 'space', lon: 8, lat: 30, icon: 'space', halo: 30, size: 0.5, label: 'Space system', side: 'right' },
+  { id: 'meter', lon: 38, lat: -30, icon: 'meter', halo: 30, size: 0.5, label: 'Smart meter', side: 'below' },
+  { id: 'camera', lon: 68, lat: 30, icon: 'camera', halo: 30, size: 0.5, label: 'Vision camera', side: 'right' },
+  { id: 'plc', lon: 98, lat: -30, icon: 'plc', halo: 30, size: 0.5, label: 'Factory PLC', side: 'right' },
+  { id: 'laptop', lon: 128, lat: 30, icon: 'laptop', halo: 30, size: 0.5, label: 'Laptop and mobile', side: 'left' },
+  { id: 'drone', lon: 158, lat: -30, icon: 'drone', halo: 30, size: 0.5, label: 'MCU drone', side: 'left' },
+  { id: 'robot', lon: 188, lat: 30, icon: 'robot', halo: 30, size: 0.5, label: 'ROS robot', side: 'left' },
+  { id: 'medical', lon: 218, lat: -30, icon: 'monitor', halo: 30, size: 0.5, label: 'Medical device', side: 'left' },
+  { id: 'wearable', lon: 248, lat: 30, icon: 'wearable', halo: 30, size: 0.5, label: 'Wearable', side: 'right' },
+  { id: 'vehicle', lon: 278, lat: -30, icon: 'vehicle', halo: 30, size: 0.5, label: 'Vehicle ECU', side: 'right' },
+  { id: 'rack', lon: 308, lat: 30, icon: 'rack', halo: 30, size: 0.5, label: 'Data center', side: 'right' },
+  { id: 'gateway', lon: 338, lat: -30, icon: 'gateway', halo: 30, size: 0.5, label: 'Edge gateway', side: 'right' },
 
-  // The left group reads peer to peer.
-  { id: 'mp1', at: [-330, 40, 160], glyph: 'dot', halo: 4, size: 2.2, opacity: 0.85 },
-  { id: 'mp2', at: [-300, -10, 70], glyph: 'dot', halo: 4, size: 1.8, opacity: 0.7 },
-  { id: 'mp3', at: [-280, 20, 130], glyph: 'dot', halo: 4, size: 2, opacity: 0.8 },
-  { id: 'mp4', at: [-310, -20, 20], glyph: 'dot', halo: 4, size: 1.8, opacity: 0.7 },
-
-  // The right group reads through its centre.
-  { id: 'sp1', at: [-320, 50, -160], glyph: 'dot', halo: 4, size: 2, opacity: 0.8 },
-  { id: 'sp2', at: [-280, -10, -70], glyph: 'dot', halo: 4, size: 1.8, opacity: 0.7 },
-  { id: 'sp3', at: [-340, 60, -120], glyph: 'dot', halo: 4, size: 1.6, opacity: 0.6 },
+  // A mesh of near peers and a group read through one of its members: the same
+  // space sustains both topologies at once.
+  { id: 'p1', lon: 20, lat: -6, glyph: 'dot', halo: 3, size: 1.6 },
+  { id: 'p2', lon: 44, lat: 8, glyph: 'dot', halo: 3, size: 1.4 },
+  { id: 'p3', lon: 60, lat: -14, glyph: 'dot', halo: 3, size: 1.5 },
+  { id: 'p4', lon: 200, lat: -8, glyph: 'dot', halo: 3, size: 1.6 },
+  { id: 'p5', lon: 224, lat: 6, glyph: 'dot', halo: 3, size: 1.4 },
+  { id: 'p6', lon: 236, lat: -16, glyph: 'dot', halo: 3, size: 1.4 },
+  { id: 'p7', lon: 320, lat: 10, glyph: 'dot', halo: 3, size: 1.3 },
 ];
 
-const labelOffset = 28;
+const labelOffset = 34;
 
-const nodes = hosts.map((host) => {
-  const at = project(...host.at);
-  const port = host.direct ? surfaceOf(host.at) : null;
-  const portAt = port ? project(...port) : null;
-  const labelPos = (() => {
-    if (!host.place) return null;
-    if (host.place === 'above') return { x: at.x, y: at.y - labelOffset, anchor: 'middle' };
-    if (host.place === 'below') return { x: at.x, y: at.y + labelOffset + 6, anchor: 'middle' };
-    if (host.place === 'right') return { x: at.x + labelOffset, y: at.y + 4, anchor: 'start' };
-    return { x: at.x - labelOffset, y: at.y + 4, anchor: 'end' };
-  })();
+const nodes = seeds.map((seed) => {
+  const position = onSphere(seed.lon, seed.lat);
+  const at = project(...position);
+  // The glyph is pushed off the surface along the silhouette, so the host sits on
+  // its coordinate instead of covering it.
+  const outX = at.x - ORIGIN.x;
+  const outY = at.y - ORIGIN.y;
+  const outLength = Math.hypot(outX, outY) || 1;
+  const lift = seed.glyph ? 0 : 21;
+  const glyphAt = { x: at.x + (outX / outLength) * lift, y: at.y + (outY / outLength) * lift };
+  const far = at.depth > DIST;
   return {
-    ...host,
-    screen: at,
-    port,
-    portAt,
-    mark: port ? markAt(port) : null,
-    labelPos,
-    transform: `translate(${round(at.x)} ${round(at.y)}) scale(${round(at.p * host.size * 1000) / 1000})`,
+    ...seed,
+    position,
+    at,
+    far,
+    fade: far ? 0.62 : 1,
+    mark: markAt(at),
+    labelPos: seed.label
+      ? seed.side === 'left'
+        ? { x: glyphAt.x - labelOffset, y: glyphAt.y + 4, anchor: 'end' }
+        : seed.side === 'above'
+          ? { x: glyphAt.x, y: glyphAt.y - 26, anchor: 'middle' }
+          : seed.side === 'below'
+            ? { x: glyphAt.x, y: glyphAt.y + 38, anchor: 'middle' }
+            : { x: glyphAt.x + labelOffset, y: glyphAt.y + 4, anchor: 'start' }
+      : null,
+    transform: `translate(${round(glyphAt.x)} ${round(glyphAt.y)}) scale(${round(at.p * seed.size * 1000) / 1000})`,
   };
 });
 
-const direct = nodes.filter((node) => node.port);
-const ports = direct.map((node) => node.port as [number, number, number]);
-const screenOf = (id: string) => nodes.find((node) => node.id === id)?.screen ?? null;
-const hub = nodes.find((node) => node.id === 'n6')?.portAt ?? null;
+const direct = nodes.filter((node) => node.icon);
+const peers = nodes.filter((node) => node.glyph === 'dot');
+const ports = direct.map((node) => node.position);
 
-// A host sits outside the sphere and reads it at its own port, so the trace is the
-// coordinate that host owns.
-const traces = direct.map((node) => ({
-  x1: round(node.screen.x),
-  y1: round(node.screen.y),
-  x2: round(node.portAt?.x ?? 0),
-  y2: round(node.portAt?.y ?? 0),
-}));
-
-// The near peers read each other directly and the far peers read through one host:
-// the same record space carries a mesh and a centre at once.
-const links: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
-const link = (
-  from: { x: number; y: number } | null,
-  to: { x: number; y: number } | null,
-) => {
-  if (!from || !to) return;
-  links.push({ x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) });
-};
-
-const mesh = ['mp1', 'mp2', 'mp3', 'mp4'];
-mesh.forEach((from, index) => {
-  for (const to of mesh.slice(index + 1)) link(screenOf(from), screenOf(to));
-});
-for (const id of ['sp1', 'sp2', 'sp3']) link(screenOf(id), hub);
-
-// Every pair of ports meets when the two scans have grown to half their distance
-// apart. The join is drawn at the midpoint of that coordinate pair.
+// Every pair of ports within a coincidence radius meets when the two scans have
+// grown to half their distance apart. The join is drawn at that coordinate pair.
+const COINCIDENCE = RADIUS * 1.2;
 const pairs: Array<[number, number]> = [];
 for (let a = 0; a < direct.length; a += 1) {
-  for (let b = a + 1; b < direct.length; b += 1) pairs.push([a, b]);
+  for (let b = a + 1; b < direct.length; b += 1) {
+    const from = direct[a].position;
+    const to = direct[b].position;
+    if (length3([to[0] - from[0], to[1] - from[1], to[2] - from[2]]) <= COINCIDENCE) {
+      pairs.push([a, b]);
+    }
+  }
 }
 
 const segments = pairs.map(([a, b]) => {
-  const from = direct[a].port as [number, number, number];
-  const to = direct[b].port as [number, number, number];
+  const from = direct[a].position;
+  const to = direct[b].position;
   return {
     from,
     to,
@@ -199,8 +207,9 @@ const segments = pairs.map(([a, b]) => {
   };
 });
 
-// The sphere itself: points at coordinates, denser toward the middle, each with the
-// depth it sits at. The seed is fixed, so the field is the same on every build.
+// The interior: coordinates that could exist, denser toward the surface and each
+// with the depth it sits at. The seed is fixed, so the field is the same on every
+// build.
 const seeded = (seed: number) => {
   let state = seed;
   return () => {
@@ -211,10 +220,10 @@ const seeded = (seed: number) => {
 
 const random = seeded(31);
 
-const field = Array.from({ length: 104 }, () => {
+const field = Array.from({ length: 320 }, () => {
   const theta = random() * Math.PI * 2;
   const phi = Math.acos(2 * random() - 1);
-  const radius = Math.pow(random(), 0.62) * RADIUS;
+  const radius = Math.pow(random(), 0.5) * RADIUS;
   const point: [number, number, number] = [
     radius * Math.sin(phi) * Math.cos(theta),
     radius * Math.cos(phi),
@@ -230,8 +239,8 @@ const field = Array.from({ length: 104 }, () => {
   return {
     at,
     nearest,
-    r: round(0.55 + Math.pow(random(), 2.2) * 2.3),
-    depth: round(0.2 + at.p * 0.42),
+    r: round(0.4 + Math.pow(random(), 2.2) * 2),
+    depth: round(Math.min(0.58, Math.max(0.14, 0.16 + (at.p - 0.76) * 2.1))),
   };
 }).sort((a, b) => a.nearest - b.nearest);
 
@@ -280,6 +289,21 @@ for (const join of joins) {
   }
 }
 
+const screenOf = (id: string) => nodes.find((node) => node.id === id)?.at ?? null;
+const links: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+const link = (
+  from: { x: number; y: number } | null,
+  to: { x: number; y: number } | null,
+) => {
+  if (!from || !to) return;
+  links.push({ x1: round(from.x), y1: round(from.y), x2: round(to.x), y2: round(to.y) });
+};
+link(screenOf('p1'), screenOf('p2'));
+link(screenOf('p2'), screenOf('p3'));
+link(screenOf('p3'), screenOf('p1'));
+link(screenOf('p4'), screenOf('p5'));
+link(screenOf('p4'), screenOf('p6'));
+
 const space = {
   focal: FOCAL,
   sin: SIN_T,
@@ -290,53 +314,108 @@ const space = {
   ox: OX,
   oy: OY,
   limit: round(reachLimit),
-  ports,
 };
 
 const sphere = ORIGIN;
 const silhouette = round(SILHOUETTE);
 
-// A lattice rather than a box: meridians and parallels of the same sphere, so the
-// space reads as a volume of coordinates and not as a solid.
-const ring = (count: number, at: (angle: number) => [number, number, number]) =>
-  Array.from({ length: count + 1 }, (_, index) => project(...at((index / count) * Math.PI * 2)));
+// The lattice is repeated at three radii: the same space held in parallel, so the
+// sphere reads as a volume rather than a shell.
+const ring = (
+  count: number,
+  offset: [number, number, number],
+  at: (angle: number) => [number, number, number],
+) =>
+  Array.from({ length: count + 1 }, (_, index) => {
+    const point = at((index / count) * Math.PI * 2);
+    return project(point[0] + offset[0], point[1] + offset[1], point[2] + offset[2]);
+  });
 
 const pathOf = (points: Array<{ x: number; y: number }>) =>
   `${points.map((point, index) => `${index === 0 ? 'M' : 'L'}${round(point.x)} ${round(point.y)}`).join(' ')} Z`;
 
-const meridians = [0, 60, 120].map((degrees) => {
-  const lon = degrees * DEG;
-  return pathOf(
-    ring(64, (angle) => [
-      RADIUS * Math.sin(angle) * Math.cos(lon),
-      RADIUS * Math.cos(angle),
-      RADIUS * Math.sin(angle) * Math.sin(lon),
-    ]),
+const latticeAt = (radius: number, phase: number, offset: [number, number, number] = [0, 0, 0]) => {
+  const meridians = [0, 60, 120].map((degrees) => {
+    const lon = (degrees + phase) * DEG;
+    return pathOf(
+      ring(64, offset, (angle) => [
+        radius * Math.sin(angle) * Math.cos(lon),
+        radius * Math.cos(angle),
+        radius * Math.sin(angle) * Math.sin(lon),
+      ]),
+    );
+  });
+  const parallels = [-60, -30, 0, 30, 60].map((degrees) => {
+    const lat = degrees * DEG;
+    const r = radius * Math.cos(lat);
+    const h = radius * Math.sin(lat);
+    return pathOf(ring(64, offset, (angle) => [r * Math.cos(angle), h, r * Math.sin(angle)]));
+  });
+  return [...meridians, ...parallels];
+};
+
+// Two shells of the same lattice for the volume, and three copies of the sphere
+// displaced along a time axis: the record is replayable, so one instant is held in
+// several time dimensions at once and the copies trail behind it.
+const shells = [
+  { opacity: 0.085, paths: latticeAt(RADIUS, 0) },
+  { opacity: 0.05, paths: latticeAt(RADIUS * 0.88, 22) },
+];
+
+// A copy carries the outline and three rings, enough to read as the same sphere
+// without doubling the weight of the lattice.
+const echoOf = (offset: [number, number, number]) => {
+  const equator = pathOf(
+    ring(64, offset, (angle) => [RADIUS * Math.cos(angle), 0, RADIUS * Math.sin(angle)]),
   );
-});
+  const meridians = [0, 90].map((degrees) => {
+    const lon = degrees * DEG;
+    return pathOf(
+      ring(64, offset, (angle) => [
+        RADIUS * Math.sin(angle) * Math.cos(lon),
+        RADIUS * Math.cos(angle),
+        RADIUS * Math.sin(angle) * Math.sin(lon),
+      ]),
+    );
+  });
+  return [equator, ...meridians];
+};
 
-const parallels = [-60, -30, 0, 30, 60].map((degrees) => {
-  const lat = degrees * DEG;
-  const r = RADIUS * Math.cos(lat);
-  const h = RADIUS * Math.sin(lat);
-  return pathOf(ring(64, (angle) => [r * Math.cos(angle), h, r * Math.sin(angle)]));
+const TIME_STEP: [number, number, number] = [22, -22, 0];
+const echoes = [1, 2, 3].map((step) => {
+  const offset: [number, number, number] = [
+    TIME_STEP[0] * step,
+    TIME_STEP[1] * step,
+    TIME_STEP[2] * step,
+  ];
+  const centre = project(offset[0], offset[1], offset[2]);
+  return {
+    opacity: 0.055 - step * 0.013,
+    x: round(centre.x),
+    y: round(centre.y),
+    paths: echoOf(offset),
+  };
 });
-
-const lattice = [...meridians, ...parallels];
 ---
 
 <figure class="reach" data-reach data-space={JSON.stringify(space)}>
-  <svg viewBox="0 0 960 396" role="img" aria-labelledby="reach-title">
+  <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} role="img" aria-labelledby="reach-title">
     <title id="reach-title"
-      >Hosts around one sphere of records: every host scans the sphere from its own
-      coordinate, two hosts are joined where their scans meet, and no host sits at a
-      centre</title
+      >Hosts attached to one sphere of records: the copies behind the sphere are the
+      same instant held in parallel, every host reads the sphere from its own
+      coordinate, and two hosts are joined where their scans meet</title
     >
 
     <defs>
       <clipPath id="reach-sphere">
         <circle cx={round(sphere.x)} cy={round(sphere.y)} r={silhouette} />
       </clipPath>
+      <!-- A light held above the sphere, so the interior reads as a volume. -->
+      <radialGradient id="reach-light" cx="38%" cy="28%" r="76%">
+        <stop offset="0%" stop-color="var(--fg)" stop-opacity="0.06" />
+        <stop offset="55%" stop-color="var(--fg)" stop-opacity="0.02" />
+        <stop offset="100%" stop-color="var(--fg)" stop-opacity="0" />
+      </radialGradient>
     </defs>
 
     <circle
@@ -346,9 +425,34 @@ const lattice = [...meridians, ...parallels];
       r={silhouette}
     />
 
-    <g class="reach__shape">
-      {lattice.map((path) => <path d={path} />)}
-    </g>
+    {
+      echoes.map((echo) => (
+        <g class="reach__echo" style={`opacity: ${echo.opacity}`}>
+          <circle cx={echo.x} cy={echo.y} r={silhouette} />
+          {echo.paths.map((path) => (
+            <path d={path} />
+          ))}
+        </g>
+      ))
+    }
+
+    {
+      shells.map((shell) => (
+        <g class="reach__shell" style={`opacity: ${shell.opacity}`}>
+          {shell.paths.map((path) => (
+            <path d={path} />
+          ))}
+        </g>
+      ))
+    }
+
+    <circle
+      class="reach__volume"
+      cx={round(sphere.x)}
+      cy={round(sphere.y)}
+      r={silhouette}
+      fill="url(#reach-light)"
+    />
 
     <g clip-path="url(#reach-sphere)">
       <g class="reach__scanners">
@@ -357,9 +461,9 @@ const lattice = [...meridians, ...parallels];
             <circle
               class="reach__scanner"
               data-scanner
-              data-at={node.port?.join(',')}
-              cx={round(node.portAt?.x ?? 0)}
-              cy={round(node.portAt?.y ?? 0)}
+              data-at={node.position.join(',')}
+              cx={round(node.at.x)}
+              cy={round(node.at.y)}
               r="0"
             />
           ))
@@ -386,24 +490,23 @@ const lattice = [...meridians, ...parallels];
         joins.map((join) => (
           <g class="reach__join" data-join data-read={join.threshold}>
             <line x1={join.x1} y1={join.y1} x2={join.x2} y2={join.y2} />
-            <circle cx={join.midX} cy={join.midY} r="1.8" />
+            <circle cx={join.midX} cy={join.midY} r="1.7" />
           </g>
         ))
       }
+
+      {links.map((link) => <line class="reach__link" x1={link.x1} y1={link.y1} x2={link.x2} y2={link.y2} />)}
     </g>
-
-    {links.map((link) => <line class="reach__link" x1={link.x1} y1={link.y1} x2={link.x2} y2={link.y2} />)}
-
-    {traces.map((trace) => <line class="reach__trace" x1={trace.x1} y1={trace.y1} x2={trace.x2} y2={trace.y2} />)}
 
     {
       nodes.map((node) =>
-        node.mark && node.port ? (
+        node.mark ? (
           <g
             class="reach__mark"
             data-mark={node.id}
             data-read={joinThreshold.get(node.id) ?? 1}
             transform={`translate(${node.mark.x} ${node.mark.y})`}
+            style={`--fade: ${node.fade}`}
           >
             <polygon class="reach__mark-outline" points={node.mark.outline} />
             <polygon class="reach__mark-inner" points={node.mark.inner} />
@@ -414,7 +517,7 @@ const lattice = [...meridians, ...parallels];
 
     {
       nodes.map((node) => (
-        <g class="reach__node" transform={node.transform} style={`opacity: ${node.opacity ?? 1}`}>
+        <g class="reach__node" transform={node.transform} style={`opacity: ${node.fade}`}>
           <circle class="reach__halo" r={node.halo} />
           <g class="reach__glyph">
             {node.icon === 'robot' && (
@@ -477,7 +580,58 @@ const lattice = [...meridians, ...parallels];
                 <circle cx="0" cy="-21" r="2.4" />
               </>
             )}
-            {node.glyph === 'dot' && <circle class="reach__dot" r="2.4" />}
+            {node.icon === 'vehicle' && (
+              <>
+                <path d="M-28 8 H-20 L-14 -9 H14 L20 8 H28" />
+                <line x1="-28" y1="8" x2="28" y2="8" />
+                <circle cx="-15" cy="11" r="5" />
+                <circle cx="15" cy="11" r="5" />
+              </>
+            )}
+            {node.icon === 'meter' && (
+              <>
+                <rect x="-18" y="-22" width="36" height="44" rx="4" />
+                <line x1="-11" y1="-13" x2="11" y2="-13" />
+                <path d="M-10 8 A 10 10 0 0 1 10 8" />
+                <line x1="0" y1="8" x2="7" y2="-2" />
+              </>
+            )}
+            {node.icon === 'camera' && (
+              <>
+                <rect x="-26" y="-12" width="34" height="24" rx="3" />
+                <path d="M8 -5 L24 -12 V12 L8 5 Z" />
+                <circle cx="-9" cy="0" r="7" />
+              </>
+            )}
+            {node.icon === 'gateway' && (
+              <>
+                <rect x="-24" y="2" width="48" height="14" rx="3" />
+                <line x1="-14" y1="2" x2="-19" y2="-16" />
+                <line x1="14" y1="2" x2="19" y2="-16" />
+                <circle cx="-19" cy="-19" r="2" />
+                <circle cx="19" cy="-19" r="2" />
+              </>
+            )}
+            {node.icon === 'wearable' && (
+              <>
+                <rect x="-10" y="-13" width="20" height="26" rx="6" />
+                <path d="M-7 -13 V-22 H7 V-13" />
+                <path d="M-7 13 V22 H7 V13" />
+                <line x1="10" y1="-6" x2="14" y2="-6" />
+              </>
+            )}
+            {node.icon === 'plc' && (
+              <>
+                <rect x="-20" y="-16" width="40" height="32" rx="2" />
+                <line x1="-20" y1="-5" x2="20" y2="-5" />
+                <line x1="-20" y1="7" x2="20" y2="7" />
+                <line x1="-13" y1="-16" x2="-13" y2="-10" />
+                <line x1="13" y1="-16" x2="13" y2="-10" />
+                <circle cx="-12" cy="1" r="1.8" />
+                <circle cx="0" cy="1" r="1.8" />
+              </>
+            )}
+            {node.glyph === 'dot' && <circle class="reach__dot" r="2" />}
           </g>
         </g>
       ))
@@ -485,7 +639,7 @@ const lattice = [...meridians, ...parallels];
 
     {
       nodes.map((node) =>
-        node.label && node.labelPos && node.port ? (
+        node.label && node.labelPos ? (
           <text
             class="reach__label"
             data-label={node.id}
@@ -493,6 +647,7 @@ const lattice = [...meridians, ...parallels];
             x={round(node.labelPos.x)}
             y={round(node.labelPos.y)}
             text-anchor={node.labelPos.anchor}
+            style={`--fade: ${node.fade}`}
           >
             {node.label}
           </text>
@@ -502,10 +657,11 @@ const lattice = [...meridians, ...parallels];
   </svg>
 
   <figcaption class="reach__caption">
-    One engine and one record format, on hosts from a drone with no operating system to a data
-    center and a space system. A record is a point in a spacetime of coordinates, not a row in a
-    centre: every host scans from its own coordinate, and two hosts are joined where their scans
-    meet.
+    One engine and one record format, on twelve hosts attached to the same space: a drone
+    with no operating system, a medical device, a data center, a space system. A record is a
+    coordinate in that space, not a row in a centre. The copies behind the sphere are one
+    instant held in parallel, because the record replays. Every host scans from the coordinate
+    it holds, and two hosts are joined where their scans meet.
   </figcaption>
 </figure>
 
@@ -525,32 +681,47 @@ const lattice = [...meridians, ...parallels];
     fill: none;
     stroke: var(--fg);
     stroke-width: 0.9;
-    opacity: 0.16;
+    opacity: 0.15;
   }
 
-  .reach__shape path {
+  .reach__shell path {
     fill: none;
     stroke: var(--fg);
-    stroke-width: 0.7;
-    opacity: 0.07;
+    stroke-width: 0.6;
+  }
+
+  /* The copies of one instant, held behind it. */
+  .reach__echo circle,
+  .reach__echo path {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 0.6;
+  }
+
+  .reach__echo circle {
+    stroke-width: 0.9;
+  }
+
+  .reach__volume {
+    stroke: none;
   }
 
   /* One ring per host: the scan is as many scanners as there are entities. */
   .reach__scanner {
     fill: none;
     stroke: var(--fg);
-    stroke-width: 0.9;
-    opacity: 0.24;
+    stroke-width: 0.8;
+    opacity: 0.14;
   }
 
   .reach__particle {
     fill: var(--fg);
-    opacity: 0.28;
+    opacity: 0.42;
     transition: opacity 300ms var(--ease);
   }
 
   .reach__particle.is-read {
-    opacity: 0.95;
+    opacity: 1;
   }
 
   .reach__join {
@@ -560,8 +731,8 @@ const lattice = [...meridians, ...parallels];
 
   .reach__join line {
     stroke: var(--fg);
-    stroke-width: 0.7;
-    opacity: 0.3;
+    stroke-width: 0.55;
+    opacity: 0.17;
   }
 
   .reach__join circle {
@@ -574,41 +745,35 @@ const lattice = [...meridians, ...parallels];
 
   .reach__link {
     stroke: var(--fg);
-    stroke-width: 0.8;
-    stroke-dasharray: 3 4;
-    opacity: 0.34;
-  }
-
-  .reach__trace {
-    stroke: var(--fg);
-    stroke-width: 0.9;
-    opacity: 0.32;
+    stroke-width: 0.7;
+    stroke-dasharray: 2.4 3.4;
+    opacity: 0.28;
   }
 
   .reach__mark {
-    opacity: 0.32;
+    opacity: calc(0.3 * var(--fade, 1));
     transition: opacity 300ms var(--ease);
   }
 
   .reach__mark.is-read {
-    opacity: 0.7;
+    opacity: calc(0.68 * var(--fade, 1));
   }
 
   .reach__mark.is-active {
-    opacity: 1;
+    opacity: var(--fade, 1);
   }
 
   .reach__mark-outline {
     fill: var(--bg);
     stroke: var(--accent);
-    stroke-width: 1.4;
+    stroke-width: 1.2;
     stroke-linejoin: round;
   }
 
   .reach__mark-inner {
     fill: none;
     stroke: var(--accent);
-    stroke-width: 1;
+    stroke-width: 0.9;
     stroke-linejoin: round;
   }
 
@@ -637,16 +802,16 @@ const lattice = [...meridians, ...parallels];
     font-family: var(--text);
     font-size: 11.5px;
     fill: var(--fg);
-    opacity: 0.36;
+    opacity: calc(0.36 * var(--fade, 1));
     transition: opacity 300ms var(--ease);
   }
 
   .reach__label.is-read {
-    opacity: 0.72;
+    opacity: calc(0.72 * var(--fade, 1));
   }
 
   .reach__label.is-active {
-    opacity: 1;
+    opacity: var(--fade, 1);
   }
 
   .reach__caption {
@@ -694,7 +859,6 @@ const lattice = [...meridians, ...parallels];
     ox: number;
     oy: number;
     limit: number;
-    ports: Array<[number, number, number]>;
   };
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -768,7 +932,7 @@ const lattice = [...meridians, ...parallels];
       // Pinned for the scan, so the joins finish before the section leaves.
       ScrollTrigger.create({
         trigger: figure,
-        start: 'top 25%',
+        start: 'top 12%',
         end: '+=760',
         pin: true,
         onUpdate: (self) => paint(self.progress),
