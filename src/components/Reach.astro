@@ -369,9 +369,12 @@ const BRANCH_SPREAD = RADIUS * 1.6;
 const BRANCH_DIRS: Vec3[] = [
   [-0.94, 0.34, 0],
   [0.94, 0.34, 0],
-  [0, -1, 0],
+  // Off the pole, so the third state orbits with the others instead of sitting still.
+  [0, -0.94, 0.34],
 ];
-const BRANCH_NAMES = ['a', 'b', 'c'];
+// The last state is left open: the instant after the read has not been classified yet, so
+// the space carries more futures than it draws.
+const BRANCH_NAMES = ['a', 'b', 'c...'];
 
 const branches = BRANCH_DIRS.map((dir, index) => {
   const offset: Vec3 = [
@@ -381,14 +384,14 @@ const branches = BRANCH_DIRS.map((dir, index) => {
   ];
   const centre = project(...offset);
   const rim = project(dir[0] * RADIUS, dir[1] * RADIUS, dir[2] * RADIUS);
-  const screenRadius = BRANCH_RADIUS * centre.p * 1.04;
   return {
     name: BRANCH_NAMES[index] as string,
     dir,
     offset,
     x: round(centre.x),
     y: round(centre.y),
-    labelY: round(centre.y + screenRadius + 13),
+    labelTop: round(centre.y - 1),
+    labelLetter: round(centre.y + 11),
     rimX: round(rim.x),
     rimY: round(rim.y),
     radius: round(BRANCH_RADIUS),
@@ -448,7 +451,8 @@ const payload = {
     <title id="reach-title"
       >Hosts attached to one sphere of records: every host reads the sphere from its
       own coordinate, two hosts are joined where their scans meet, and when the scan
-      closes the same instant forks into the composite states a, b, and c</title
+      closes the same instant forks into the composite states a, b, and c, the last of
+      them still open</title
     >
 
     <defs>
@@ -478,8 +482,11 @@ const payload = {
           {branch.rings.map((ring) => (
             <path d={pathOf(ring)} />
           ))}
-          <text class="reach__branch-name" x={branch.x} y={branch.labelY} opacity="0">
-            COMPOSITE STATE {branch.name}
+          <text class="reach__branch-name" x={branch.x} y={branch.labelTop} opacity="0">
+            <tspan>Branched State</tspan>
+            <tspan class="reach__branch-letter" x={branch.x} y={branch.labelLetter}>
+              {branch.name.toUpperCase()}
+            </tspan>
           </text>
         </g>
       ))
@@ -722,8 +729,9 @@ const payload = {
     with no operating system, a medical device, a data center, a space system. A record is a
     coordinate in that space, not a row in a centre. Every host scans from the coordinate it
     holds, and two hosts are joined where their scans meet. When the scan closes, that one
-    instant forks: because the execution is deterministic, the fabric carries the three
-    composite states a, b, c that can follow it at once, side by side.
+    instant forks: because the execution is deterministic, the fabric carries the
+    composite states a, b, c that can follow it at once, side by side, and c stays open
+    because the instant after the read has not been classified yet.
   </figcaption>
 </figure>
 
@@ -737,6 +745,8 @@ const payload = {
     display: block;
     width: 100%;
     height: auto;
+    /* The frame is open: a label or a state that reaches the edge is not cut off. */
+    overflow: visible;
     cursor: grab;
     /* A sideways drag turns the sphere; the page keeps the vertical scroll. */
     touch-action: pan-y;
@@ -783,15 +793,20 @@ const payload = {
 
   .reach__branch-name {
     font-family: var(--text);
-    font-size: 8.5px;
-    letter-spacing: 0.14em;
+    font-size: 8px;
+    letter-spacing: 0.06em;
     text-anchor: middle;
     fill: var(--accent);
     /* A halo in the page colour keeps the label legible over its own wires. */
     paint-order: stroke;
     stroke: var(--bg);
-    stroke-width: 3.2px;
+    stroke-width: 3px;
     stroke-linejoin: round;
+  }
+
+  .reach__branch-letter {
+    font-size: 11px;
+    letter-spacing: 0.12em;
   }
 
   .reach.is-forked .reach__sphere {
@@ -1012,9 +1027,12 @@ const payload = {
       return { x: space.ox + across * p, y: space.oy - up * p, p, depth };
     };
 
+    // One projection for the whole space. A composite state is carried by the same
+    // lattice the sphere is, so it turns with the sphere instead of holding its frame.
     const project = (x: number, y: number, z: number) => projectAt(x, y, z, yaw);
     // The fork keeps the frame it was drawn in while the sphere turns. Its anchor is a
-    // silhouette point, and a silhouette does not move under a turn.
+    // silhouette point, and a silhouette does not move under a turn, so the states stay
+    // where the record left them instead of swinging out of the frame.
     const projectFork = (x: number, y: number, z: number) => projectAt(x, y, z, space.yaw);
 
     // Depth as a light level: the far side of the sphere is behind the field.
@@ -1083,11 +1101,14 @@ const payload = {
           circle: element.querySelector<SVGCircleElement>('circle'),
           line: element.querySelector<SVGLineElement>('line'),
           label: element.querySelector<SVGTextElement>('text'),
+          letter: element.querySelector<SVGTextElement>('.reach__branch-letter'),
         };
       },
     );
 
     const nodeEls = Array.from(svg.querySelectorAll<SVGGElement>('.reach__node'));
+    // The fork groups are layered against this circle, so the near state covers the far one.
+    const sphereEl = svg.querySelector<SVGCircleElement>('.reach__sphere');
     const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
     const scannerEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-scanner]'));
     const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
@@ -1240,19 +1261,33 @@ const payload = {
             x = glyphX;
             y = glyphY + 38;
           }
+          const frame = svg.viewBox.baseVal;
+          y = Math.min(frame.height - 6, Math.max(16, y));
+          const box = labelBox(x, y, anchor, width);
+          // A name that would leave the frame is carried back inside it, so a turn
+          // never cuts one off.
+          let shift = 0;
+          if (box.x1 < 6) shift = 6 - box.x1;
+          if (box.x2 + shift > frame.width - 6) shift = frame.width - 6 - box.x2;
+          x += shift;
+          box.x1 += shift;
+          box.x2 += shift;
           label.setAttribute('x', x.toFixed(1));
           label.setAttribute('y', y.toFixed(1));
 
-          const box = labelBox(x, y, anchor, width);
           const blocked = taken.some((other) => overlaps(box, other));
           label.style.setProperty('--shown', blocked ? '0' : '1');
           if (!blocked) taken.push(box);
         });
 
+      // A state that comes round the near side is painted over the one behind it, so a
+      // crossing reads as depth and not as two lattices fused into one.
+      const layered: Array<{ element: SVGGElement; depth: number }> = [];
       branchEls.forEach((branch) => {
         const [ox, oy, oz] = branch.offset;
         const spread = fork;
         const centre = projectFork(ox * spread, oy * spread, oz * spread);
+        layered.push({ element: branch.element, depth: centre.p });
 
         branch.paths.forEach((path, index) => {
           const points = branch.rings[index];
@@ -1285,11 +1320,20 @@ const payload = {
         }
 
         branch.label?.setAttribute('x', centre.x.toFixed(1));
-        branch.label?.setAttribute(
-          'y',
-          (centre.y + branch.radius * centre.p * 1.04 + 13).toFixed(1),
-        );
+        branch.label?.setAttribute('y', (centre.y - 1).toFixed(1));
+        branch.letter?.setAttribute('x', centre.x.toFixed(1));
+        branch.letter?.setAttribute('y', (centre.y + 11).toFixed(1));
       });
+
+      if (sphereEl) {
+        layered.sort((a, b) => a.depth - b.depth);
+        const order = layered.map(({ element }) => element.dataset.branch).join(',');
+        // Only touch the tree when the order actually changes, so the turn stays cheap.
+        if (order !== branchOrder) {
+          branchOrder = order;
+          layered.forEach(({ element }) => svg.insertBefore(element, sphereEl));
+        }
+      }
 
       space.scanners.forEach((port, index) => {
         const element = scannerEls[index];
@@ -1322,6 +1366,7 @@ const payload = {
     };
 
     let lit = 0;
+    let branchOrder = '';
     const thresholds = particleEls.map((particle) => Number(particle.dataset.threshold ?? 0));
 
     // The scan is the first share of the scroll and the fork the rest of it, so the
@@ -1436,8 +1481,22 @@ const payload = {
     if (reduce.matches) {
       // The whole story: the scan closed and the space divided.
       paint(1);
+      // No pin here, so the figure leaving the viewport is the end of the sequence.
+      new IntersectionObserver(([entry], observer) => {
+        if (entry.isIntersecting) return;
+        document.documentElement.dataset.reachDone = 'true';
+        observer.disconnect();
+      }).observe(figure);
     } else {
       // Pinned for both acts: the scan closes, then the space divides.
+      // The backdrop behind the rest of the page waits for the scan to finish: the
+      // figure owns the scroll until the pin lets go, so the field may not arrive
+      // while it is still dividing.
+      const settle = (done: boolean) => {
+        if (done) document.documentElement.dataset.reachDone = 'true';
+        else delete document.documentElement.dataset.reachDone;
+      };
+
       ScrollTrigger.create({
         trigger: figure,
         start: 'top 8%',
@@ -1445,7 +1504,12 @@ const payload = {
         end: '+=1500',
         pin: true,
         onUpdate: (self) => paint(self.progress),
-        onRefresh: (self) => paint(self.progress),
+        onRefresh: (self) => {
+          paint(self.progress);
+          settle(self.progress >= 1);
+        },
+        onLeave: () => settle(true),
+        onEnterBack: () => settle(false),
       });
       requestAnimationFrame(step);
     }

@@ -114,7 +114,8 @@ const { reveal = 'now' } = Astro.props;
     transition: opacity 1200ms var(--ease);
   }
 
-  .field[data-field='deferred'].is-shown {
+  .field[data-field='deferred'].is-shown,
+  :root[data-reach-done='true'] .field[data-field='deferred'] {
     opacity: 1;
   }
 
@@ -236,8 +237,11 @@ const { reveal = 'now' } = Astro.props;
   // fades in behind the rest of the page; a page restored already scrolled is past it.
   const field = document.querySelector<HTMLElement>('.field[data-field="deferred"]');
   const hero = document.querySelector<HTMLElement>('.hero');
+  // When the page's first figure owns the scroll, it says when the backdrop may
+  // arrive: leaving the hero is too early, because the figure is still dividing.
+  const reach = document.querySelector('[data-reach]');
 
-  if (field && hero) {
+  if (field && hero && !reach) {
     const show = () => {
       field.classList.add('is-shown');
     };
