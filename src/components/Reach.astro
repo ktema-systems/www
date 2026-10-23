@@ -487,7 +487,7 @@ const payload = {
             <path d={pathOf(ring)} />
           ))}
           <text class="reach__branch-name" x={branch.x} y={branch.labelTop} opacity="0">
-            <tspan>Branched State</tspan>
+            <tspan>State Fabric</tspan>
             <tspan class="reach__branch-letter" x={branch.x} y={branch.labelLetter}>
               {branch.name.toUpperCase()}
             </tspan>
@@ -743,7 +743,7 @@ const payload = {
   .reach {
     /* As wide as the viewport allows: the drawing keeps 676 by 460, so this leaves
        room for the pin offset and the caption under it. */
-    max-width: min(1060px, calc((100svh - 190px) * 1.47));
+    max-width: min(1160px, calc((100svh - 110px) * 1.47));
     margin: 0 auto;
   }
 
@@ -1509,7 +1509,7 @@ const payload = {
 
       ScrollTrigger.create({
         trigger: figure,
-        start: 'top 8%',
+        start: 'top 8px',
         // Long enough for both acts: the read closing, and the space then dividing.
         end: '+=1500',
         pin: true,

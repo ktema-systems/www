@@ -17,9 +17,11 @@ interface Props {
   // past. The company's page carries the scan right under the first screen, so its
   // backdrop comes in after the promise rather than behind it.
   fieldReveal?: 'now' | 'scroll';
+  // A page that composes the copy against a scene sets the body back in depth.
+  depth?: boolean;
 }
 
-const { eyebrow, title, lede, body, field = true, fieldReveal = 'now' } = Astro.props;
+const { eyebrow, title, lede, body, field = true, fieldReveal = 'now', depth = false } = Astro.props;
 ---
 
 <section class="hero" id="top">
@@ -36,21 +38,22 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now' } = Astro.
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>
       <p class="hero__lede">{lede}</p>
-      {body && <p class="hero__body">{body}</p>}
+      {body && <p class:list={['hero__body', depth && 'hero__body--deep']}>{body}</p>}
     </div>
   </div>
   {
-    Astro.slots.has('figure') && (
-      <div class="wrap hero__figure">
-        <slot name="figure" />
-      </div>
-    )
+    // Astro.slots.has('figure') && (
+    //   <div class="wrap hero__figure">
+    //     <slot name="figure" />
+    //   </div>
+    // )
   }
 </section>
 
 <style>
   .hero {
     position: relative;
+    z-index: 2;
     overflow: visible;
     isolation: isolate;
     /* The bar floats over the page, so the field starts at the top of the window
@@ -59,7 +62,7 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now' } = Astro.
        drifts away from the top of the screen. It is measured to sit just under the
        large mark at the top, so the mark, not an empty band, holds that space. */
     padding-top: calc(var(--masthead-h) + var(--brand-lift-top) + clamp(110px, 4.4vh, 56px));
-    padding-bottom: clamp(36px, 5vh, 64px);
+    padding-bottom: clamp(36px, 5vh, 36px);
   }
 
   /* The field is the only layer below; everything in a .wrap sits above it. */
@@ -95,6 +98,31 @@ const { eyebrow, title, lede, body, field = true, fieldReveal = 'now' } = Astro.
   .hero__body,
   .hero__actions {
     max-width: 40rem;
+  }
+
+  /* The copy sits on a plane set back from the reader, so the scene behind it has
+     depth rather than sitting on the same sheet. */
+  .hero__body--deep {
+    position: relative;
+    transform: perspective(1100px) rotateX(2.4deg) translateZ(-24px);
+    transform-origin: 50% 100%;
+    opacity: 0.94;
+  }
+
+  /* A veil in the page colour, so the scene reads behind the copy without drawing
+     through it. The gradient keeps the depth: the globe still shows at the edges. */
+  .hero__body--deep::before {
+    content: '';
+    position: absolute;
+    inset: -20px -36px;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      120% 130% at 35% 50%,
+      color-mix(in srgb, var(--bg) 86%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 55%, transparent) 55%,
+      transparent 82%
+    );
   }
 
   .hero h1 {
