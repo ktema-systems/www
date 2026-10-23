@@ -8,17 +8,18 @@
   exist, and the lattice is repeated as parallel shells because the same space holds
   every instance at once. Each host opens a scanner from its own port, and two hosts
   are joined where their scans meet.
+
+  The sphere turns, and the reader can turn it. Every position is kept in three
+  dimensions and projected per frame, so the turn is a rotation of the space and not
+  a spin of a drawing.
 */
 
 const DEG = Math.PI / 180;
 const round = (value: number) => Math.round(value * 10) / 10;
+const tidy = (value: number) => Math.round(value * 100) / 100;
 
 const TILT = 42 * DEG;
-const SIN_T = Math.sin(TILT);
-const COS_T = Math.cos(TILT);
 const YAW = 24 * DEG;
-const SIN_Y = Math.sin(YAW);
-const COS_Y = Math.cos(YAW);
 const FOCAL = 2200;
 const DIST = 2600;
 
@@ -26,6 +27,14 @@ const VIEW_W = 720;
 const VIEW_H = 456;
 const OX = VIEW_W / 2;
 const OY = 224;
+
+const RADIUS = 228;
+const LIFT = 21;
+
+const SIN_T = Math.sin(TILT);
+const COS_T = Math.cos(TILT);
+const SIN_Y = Math.sin(YAW);
+const COS_Y = Math.cos(YAW);
 
 // x runs right, y up, z toward the reader. The camera yaws around y and then looks
 // down by the tilt, so the sphere has depth on both sides of every axis.
@@ -37,8 +46,6 @@ const project = (x: number, y: number, z: number) => {
   const p = FOCAL / depth;
   return { x: OX + across * p, y: OY - up * p, p, depth };
 };
-
-const RADIUS = 228;
 
 const ORIGIN = project(0, 0, 0);
 // A sphere projects to a circle slightly larger than its radius times the depth
@@ -62,8 +69,10 @@ const flatHex = (radius: number) => {
 
 const length3 = (v: [number, number, number]) => Math.hypot(v[0], v[1], v[2]) || 1;
 
+type Vec3 = [number, number, number];
+
 // A coordinate on the surface, given as longitude and latitude.
-const onSphere = (lonDeg: number, latDeg: number): [number, number, number] => {
+const onSphere = (lonDeg: number, latDeg: number): Vec3 => {
   const lon = lonDeg * DEG;
   const lat = latDeg * DEG;
   return [
@@ -73,22 +82,17 @@ const onSphere = (lonDeg: number, latDeg: number): [number, number, number] => {
   ];
 };
 
-// The mark is the favicon stamped on the coordinate the host reads. It faces the
-// reader, because a hexagon in the port's tangent plane collapses to a sliver
-// wherever the port sits on the limb of the sphere.
-const markAt = (at: { x: number; y: number; p: number }) => {
-  const radius = 6 * at.p * 1.2;
-  return {
-    x: round(at.x),
-    y: round(at.y),
-    outline: asPoints(flatHex(radius)),
-    inner: asPoints(
-      [0, 90, 180, 270].map((step) => {
-        const angle = step * DEG;
-        return [radius * 0.41 * Math.cos(angle), radius * 0.41 * Math.sin(angle)];
-      }),
-    ),
-  };
+// The mark is the favicon stamped on the coordinate the host reads. It is drawn at
+// the pen width of the rest of the figure, so it is scaled by the same depth.
+const MARK_RADIUS = 6;
+const MARK_SHAPE = {
+  outline: asPoints(flatHex(MARK_RADIUS)),
+  inner: asPoints(
+    [0, 90, 180, 270].map((step) => {
+      const angle = step * DEG;
+      return [MARK_RADIUS * 0.41 * Math.cos(angle), MARK_RADIUS * 0.41 * Math.sin(angle)];
+    }),
+  ),
 };
 
 type Icon =
@@ -128,7 +132,7 @@ const seeds: Seed[] = [
   { id: 'drone', lon: 158, lat: -30, icon: 'drone', halo: 30, size: 0.5, label: 'MCU drone', side: 'left' },
   { id: 'robot', lon: 188, lat: 30, icon: 'robot', halo: 30, size: 0.5, label: 'ROS robot', side: 'left' },
   { id: 'medical', lon: 218, lat: -30, icon: 'monitor', halo: 30, size: 0.5, label: 'Medical device', side: 'left' },
-  { id: 'wearable', lon: 248, lat: 30, icon: 'wearable', halo: 30, size: 0.5, label: 'Wearable', side: 'right' },
+  { id: 'wearable', lon: 248, lat: 30, icon: 'wearable', halo: 30, size: 0.5, label: 'Wearable', side: 'below' },
   { id: 'vehicle', lon: 278, lat: -30, icon: 'vehicle', halo: 30, size: 0.5, label: 'Vehicle ECU', side: 'right' },
   { id: 'rack', lon: 308, lat: 30, icon: 'rack', halo: 30, size: 0.5, label: 'Data center', side: 'right' },
   { id: 'gateway', lon: 338, lat: -30, icon: 'gateway', halo: 30, size: 0.5, label: 'Edge gateway', side: 'right' },
@@ -154,16 +158,18 @@ const nodes = seeds.map((seed) => {
   const outX = at.x - ORIGIN.x;
   const outY = at.y - ORIGIN.y;
   const outLength = Math.hypot(outX, outY) || 1;
-  const lift = seed.glyph ? 0 : 21;
+  const lift = seed.glyph ? 0 : LIFT;
   const glyphAt = { x: at.x + (outX / outLength) * lift, y: at.y + (outY / outLength) * lift };
   const far = at.depth > DIST;
   return {
     ...seed,
     position,
     at,
+    glyphAt,
     far,
     fade: far ? 0.62 : 1,
-    mark: markAt(at),
+    transform: `translate(${round(glyphAt.x)} ${round(glyphAt.y)}) scale(${round(at.p * seed.size * 1000) / 1000})`,
+    markTransform: `translate(${round(at.x)} ${round(at.y)}) scale(${tidy(at.p * 1.2)})`,
     labelPos: seed.label
       ? seed.side === 'left'
         ? { x: glyphAt.x - labelOffset, y: glyphAt.y + 4, anchor: 'end' }
@@ -173,12 +179,10 @@ const nodes = seeds.map((seed) => {
             ? { x: glyphAt.x, y: glyphAt.y + 38, anchor: 'middle' }
             : { x: glyphAt.x + labelOffset, y: glyphAt.y + 4, anchor: 'start' }
       : null,
-    transform: `translate(${round(glyphAt.x)} ${round(glyphAt.y)}) scale(${round(at.p * seed.size * 1000) / 1000})`,
   };
 });
 
 const direct = nodes.filter((node) => node.icon);
-const peers = nodes.filter((node) => node.glyph === 'dot');
 const ports = direct.map((node) => node.position);
 
 // Every pair of ports within a coincidence radius meets when the two scans have
@@ -195,15 +199,21 @@ for (let a = 0; a < direct.length; a += 1) {
   }
 }
 
+const indexOf = (id: string) => nodes.findIndex((node) => node.id === id);
+
 const segments = pairs.map(([a, b]) => {
-  const from = direct[a].position;
-  const to = direct[b].position;
+  const from = direct[a];
+  const to = direct[b];
   return {
     from,
     to,
-    a: direct[a].id,
-    b: direct[b].id,
-    distance: length3([to[0] - from[0], to[1] - from[1], to[2] - from[2]]),
+    a: indexOf(from.id),
+    b: indexOf(to.id),
+    distance: length3([
+      to.position[0] - from.position[0],
+      to.position[1] - from.position[1],
+      to.position[2] - from.position[2],
+    ]),
   };
 });
 
@@ -224,7 +234,7 @@ const field = Array.from({ length: 320 }, () => {
   const theta = random() * Math.PI * 2;
   const phi = Math.acos(2 * random() - 1);
   const radius = Math.pow(random(), 0.5) * RADIUS;
-  const point: [number, number, number] = [
+  const point: Vec3 = [
     radius * Math.sin(phi) * Math.cos(theta),
     radius * Math.cos(phi),
     radius * Math.sin(phi) * Math.sin(theta),
@@ -237,10 +247,10 @@ const field = Array.from({ length: 320 }, () => {
     ),
   );
   return {
+    point,
     at,
     nearest,
     r: round(0.4 + Math.pow(random(), 2.2) * 2),
-    depth: round(Math.min(0.58, Math.max(0.14, 0.16 + (at.p - 0.76) * 2.1))),
   };
 }).sort((a, b) => a.nearest - b.nearest);
 
@@ -253,16 +263,14 @@ const reachLimit =
   ) * 1.02;
 
 const joins = segments.map(({ from, to, a, b, distance }) => {
-  const start = project(...from);
-  const end = project(...to);
-  const mid = project((from[0] + to[0]) / 2, (from[1] + to[1]) / 2, (from[2] + to[2]) / 2);
+  const mid = project(
+    (from.position[0] + to.position[0]) / 2,
+    (from.position[1] + to.position[1]) / 2,
+    (from.position[2] + to.position[2]) / 2,
+  );
   return {
     a,
     b,
-    x1: round(start.x),
-    y1: round(start.y),
-    x2: round(end.x),
-    y2: round(end.y),
     midX: round(mid.x),
     midY: round(mid.y),
     threshold: round((distance / 2 / reachLimit) * 1000) / 1000,
@@ -273,7 +281,7 @@ const particles = field.map((particle) => ({
   cx: round(particle.at.x),
   cy: round(particle.at.y),
   r: particle.r,
-  depth: particle.depth,
+  depth: round(Math.min(0.58, Math.max(0.14, 0.16 + (particle.at.p - 0.76) * 2.1))),
   threshold: round(Math.min(1, particle.nearest / reachLimit) * 1000) / 1000,
 }));
 
@@ -281,7 +289,7 @@ const particles = field.map((particle) => ({
 // shared one, so that is when its name is read.
 const joinThreshold = new Map<string, number>();
 for (const join of joins) {
-  for (const id of [join.a, join.b]) {
+  for (const id of [nodes[join.a].id, nodes[join.b].id]) {
     const current = joinThreshold.get(id);
     if (current === undefined || join.threshold < current) {
       joinThreshold.set(id, join.threshold);
@@ -289,7 +297,8 @@ for (const join of joins) {
   }
 }
 
-const screenOf = (id: string) => nodes.find((node) => node.id === id)?.at ?? null;
+const screenOf = (id: string) =>
+  nodes.find((node) => node.id === id)?.at ?? { x: 0, y: 0 };
 const links: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
 const link = (
   from: { x: number; y: number } | null,
@@ -304,101 +313,110 @@ link(screenOf('p3'), screenOf('p1'));
 link(screenOf('p4'), screenOf('p5'));
 link(screenOf('p4'), screenOf('p6'));
 
-const space = {
-  focal: FOCAL,
-  sin: SIN_T,
-  cos: COS_T,
-  sinY: SIN_Y,
-  cosY: COS_Y,
-  dist: DIST,
-  ox: OX,
-  oy: OY,
-  limit: round(reachLimit),
-};
-
 const sphere = ORIGIN;
 const silhouette = round(SILHOUETTE);
 
-// The lattice is repeated at three radii: the same space held in parallel, so the
-// sphere reads as a volume rather than a shell.
-const ring = (
-  count: number,
-  offset: [number, number, number],
-  at: (angle: number) => [number, number, number],
-) =>
-  Array.from({ length: count + 1 }, (_, index) => {
-    const point = at((index / count) * Math.PI * 2);
-    return project(point[0] + offset[0], point[1] + offset[1], point[2] + offset[2]);
-  });
+// The lattice is described by its rings, so the page and the client derive the same
+// curves from the same numbers.
+type Ring = { radius: number; kind: 'lon' | 'lat'; value: number; offset: Vec3 };
 
-const pathOf = (points: Array<{ x: number; y: number }>) =>
-  `${points.map((point, index) => `${index === 0 ? 'M' : 'L'}${round(point.x)} ${round(point.y)}`).join(' ')} Z`;
+const MERIDIANS = [0, 60, 120];
+const PARALLELS = [-60, -30, 0, 30, 60];
 
-const latticeAt = (radius: number, phase: number, offset: [number, number, number] = [0, 0, 0]) => {
-  const meridians = [0, 60, 120].map((degrees) => {
-    const lon = (degrees + phase) * DEG;
-    return pathOf(
-      ring(64, offset, (angle) => [
-        radius * Math.sin(angle) * Math.cos(lon),
-        radius * Math.cos(angle),
-        radius * Math.sin(angle) * Math.sin(lon),
-      ]),
-    );
-  });
-  const parallels = [-60, -30, 0, 30, 60].map((degrees) => {
-    const lat = degrees * DEG;
-    const r = radius * Math.cos(lat);
-    const h = radius * Math.sin(lat);
-    return pathOf(ring(64, offset, (angle) => [r * Math.cos(angle), h, r * Math.sin(angle)]));
-  });
-  return [...meridians, ...parallels];
+const latticeRings = (
+  radius: number,
+  phase: number,
+  offset: Vec3,
+  meridians: number[],
+  parallels: number[],
+): Ring[] => [
+  ...meridians.map((degrees) => ({ radius, kind: 'lon' as const, value: degrees + phase, offset })),
+  ...parallels.map((degrees) => ({ radius, kind: 'lat' as const, value: degrees, offset })),
+];
+
+const ringPoint = (ring: Ring, angle: number): Vec3 => {
+  const [ox, oy, oz] = ring.offset;
+  if (ring.kind === 'lon') {
+    const lon = ring.value * DEG;
+    return [
+      ox + ring.radius * Math.sin(angle) * Math.cos(lon),
+      oy + ring.radius * Math.cos(angle),
+      oz + ring.radius * Math.sin(angle) * Math.sin(lon),
+    ];
+  }
+  const lat = ring.value * DEG;
+  const r = ring.radius * Math.cos(lat);
+  const h = ring.radius * Math.sin(lat);
+  return [ox + r * Math.cos(angle), oy + h, oz + r * Math.sin(angle)];
+};
+
+const pathOf = (ring: Ring) => {
+  const parts: string[] = [];
+  for (let index = 0; index <= 48; index += 1) {
+    const at = project(...ringPoint(ring, (index / 48) * Math.PI * 2));
+    parts.push(`${index === 0 ? 'M' : 'L'}${round(at.x)} ${round(at.y)}`);
+  }
+  return `${parts.join(' ')} Z`;
 };
 
 // Two shells of the same lattice for the volume, and three copies of the sphere
 // displaced along a time axis: the record is replayable, so one instant is held in
 // several time dimensions at once and the copies trail behind it.
-const shells = [
-  { opacity: 0.085, paths: latticeAt(RADIUS, 0) },
-  { opacity: 0.05, paths: latticeAt(RADIUS * 0.88, 22) },
-];
+const TIME_STEP: Vec3 = [22, -22, 0];
 
-// A copy carries the outline and three rings, enough to read as the same sphere
-// without doubling the weight of the lattice.
-const echoOf = (offset: [number, number, number]) => {
-  const equator = pathOf(
-    ring(64, offset, (angle) => [RADIUS * Math.cos(angle), 0, RADIUS * Math.sin(angle)]),
-  );
-  const meridians = [0, 90].map((degrees) => {
-    const lon = degrees * DEG;
-    return pathOf(
-      ring(64, offset, (angle) => [
-        RADIUS * Math.sin(angle) * Math.cos(lon),
-        RADIUS * Math.cos(angle),
-        RADIUS * Math.sin(angle) * Math.sin(lon),
-      ]),
-    );
-  });
-  return [equator, ...meridians];
-};
-
-const TIME_STEP: [number, number, number] = [22, -22, 0];
 const echoes = [1, 2, 3].map((step) => {
-  const offset: [number, number, number] = [
-    TIME_STEP[0] * step,
-    TIME_STEP[1] * step,
-    TIME_STEP[2] * step,
-  ];
-  const centre = project(offset[0], offset[1], offset[2]);
+  const offset: Vec3 = [TIME_STEP[0] * step, TIME_STEP[1] * step, TIME_STEP[2] * step];
+  const centre = project(...offset);
   return {
-    opacity: 0.055 - step * 0.013,
+    opacity: round((0.055 - step * 0.013) * 1000) / 1000,
+    offset,
     x: round(centre.x),
     y: round(centre.y),
-    paths: echoOf(offset),
+    rings: latticeRings(RADIUS, 0, offset, [0, 90], [0]),
   };
 });
+
+const shells = [
+  { opacity: 0.085, rings: latticeRings(RADIUS, 0, [0, 0, 0], MERIDIANS, PARALLELS) },
+  { opacity: 0.05, rings: latticeRings(RADIUS * 0.88, 22, [0, 0, 0], MERIDIANS, PARALLELS) },
+];
+
+// Everything the client needs to keep the space in three dimensions.
+const payload = {
+  focal: FOCAL,
+  dist: DIST,
+  ox: OX,
+  oy: OY,
+  tilt: round(TILT * 1000) / 1000,
+  yaw: round(YAW * 1000) / 1000,
+  limit: round(reachLimit),
+  lift: LIFT,
+  echoes: echoes.map((echo) => ({ opacity: echo.opacity, offset: echo.offset, rings: echo.rings })),
+  shells: shells.map((shell) => ({ opacity: shell.opacity, rings: shell.rings })),
+  particles: field.map((particle, index) => [
+    round(particle.point[0]),
+    round(particle.point[1]),
+    round(particle.point[2]),
+    particles[index].r,
+  ]),
+  nodes: nodes.map((node) => ({
+    id: node.id,
+    p: [round(node.position[0]), round(node.position[1]), round(node.position[2])],
+    size: node.size,
+    icon: Boolean(node.icon),
+    label: node.label ?? null,
+    side: node.side ?? null,
+  })),
+  joins: joins.map((join) => ({ a: join.a, b: join.b })),
+  scanners: direct.map((node) => [
+    round(node.position[0]),
+    round(node.position[1]),
+    round(node.position[2]),
+  ]),
+};
 ---
 
-<figure class="reach" data-reach data-space={JSON.stringify(space)}>
+<figure class="reach" data-reach>
   <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} role="img" aria-labelledby="reach-title">
     <title id="reach-title"
       >Hosts attached to one sphere of records: the copies behind the sphere are the
@@ -418,6 +436,17 @@ const echoes = [1, 2, 3].map((step) => {
       </radialGradient>
     </defs>
 
+    {
+      echoes.map((echo, index) => (
+        <g class="reach__echo" data-group={index} style={`opacity: ${echo.opacity}`}>
+          <circle cx={echo.x} cy={echo.y} r={silhouette} />
+          {echo.rings.map((ring) => (
+            <path d={pathOf(ring)} />
+          ))}
+        </g>
+      ))
+    }
+
     <circle
       class="reach__sphere"
       cx={round(sphere.x)}
@@ -426,21 +455,10 @@ const echoes = [1, 2, 3].map((step) => {
     />
 
     {
-      echoes.map((echo) => (
-        <g class="reach__echo" style={`opacity: ${echo.opacity}`}>
-          <circle cx={echo.x} cy={echo.y} r={silhouette} />
-          {echo.paths.map((path) => (
-            <path d={path} />
-          ))}
-        </g>
-      ))
-    }
-
-    {
-      shells.map((shell) => (
-        <g class="reach__shell" style={`opacity: ${shell.opacity}`}>
-          {shell.paths.map((path) => (
-            <path d={path} />
+      shells.map((shell, index) => (
+        <g class="reach__shell" data-group={echoes.length + index} style={`opacity: ${shell.opacity}`}>
+          {shell.rings.map((ring) => (
+            <path d={pathOf(ring)} />
           ))}
         </g>
       ))
@@ -461,7 +479,6 @@ const echoes = [1, 2, 3].map((step) => {
             <circle
               class="reach__scanner"
               data-scanner
-              data-at={node.position.join(',')}
               cx={round(node.at.x)}
               cy={round(node.at.y)}
               r="0"
@@ -489,7 +506,12 @@ const echoes = [1, 2, 3].map((step) => {
       {
         joins.map((join) => (
           <g class="reach__join" data-join data-read={join.threshold}>
-            <line x1={join.x1} y1={join.y1} x2={join.x2} y2={join.y2} />
+            <line
+              x1={round(nodes[join.a].at.x)}
+              y1={round(nodes[join.a].at.y)}
+              x2={round(nodes[join.b].at.x)}
+              y2={round(nodes[join.b].at.y)}
+            />
             <circle cx={join.midX} cy={join.midY} r="1.7" />
           </g>
         ))
@@ -500,16 +522,16 @@ const echoes = [1, 2, 3].map((step) => {
 
     {
       nodes.map((node) =>
-        node.mark ? (
+        node.icon ? (
           <g
             class="reach__mark"
             data-mark={node.id}
             data-read={joinThreshold.get(node.id) ?? 1}
-            transform={`translate(${node.mark.x} ${node.mark.y})`}
+            transform={node.markTransform}
             style={`--fade: ${node.fade}`}
           >
-            <polygon class="reach__mark-outline" points={node.mark.outline} />
-            <polygon class="reach__mark-inner" points={node.mark.inner} />
+            <polygon class="reach__mark-outline" points={MARK_SHAPE.outline} />
+            <polygon class="reach__mark-inner" points={MARK_SHAPE.inner} />
           </g>
         ) : null,
       )
@@ -656,6 +678,8 @@ const echoes = [1, 2, 3].map((step) => {
     }
   </svg>
 
+  <script type="application/json" id="reach-space" set:html={JSON.stringify(payload)} />
+
   <figcaption class="reach__caption">
     One engine and one record format, on twelve hosts attached to the same space: a drone
     with no operating system, a medical device, a data center, a space system. A record is a
@@ -675,6 +699,15 @@ const echoes = [1, 2, 3].map((step) => {
     display: block;
     width: 100%;
     height: auto;
+    cursor: grab;
+    /* A sideways drag turns the sphere; the page keeps the vertical scroll. */
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .reach svg.is-grabbing {
+    cursor: grabbing;
   }
 
   .reach__sphere {
@@ -802,16 +835,16 @@ const echoes = [1, 2, 3].map((step) => {
     font-family: var(--text);
     font-size: 11.5px;
     fill: var(--fg);
-    opacity: calc(0.36 * var(--fade, 1));
+    opacity: calc(0.36 * var(--fade, 1) * var(--shown, 1));
     transition: opacity 300ms var(--ease);
   }
 
   .reach__label.is-read {
-    opacity: calc(0.72 * var(--fade, 1));
+    opacity: calc(0.72 * var(--fade, 1) * var(--shown, 1));
   }
 
   .reach__label.is-active {
-    opacity: var(--fade, 1);
+    opacity: calc(var(--fade, 1) * var(--shown, 1));
   }
 
   .reach__caption {
@@ -839,93 +872,390 @@ const echoes = [1, 2, 3].map((step) => {
 
   gsap.registerPlugin(ScrollTrigger);
 
+  const DEG = Math.PI / 180;
+
   const figure = document.querySelector<HTMLElement>('[data-reach]');
-  const scanners = figure
-    ? Array.from(figure.querySelectorAll<SVGCircleElement>('[data-scanner]'))
-    : [];
-  const particles = figure
-    ? Array.from(figure.querySelectorAll<SVGCircleElement>('[data-particle]'))
-    : [];
-  const joins = figure ? Array.from(figure.querySelectorAll<SVGGElement>('[data-join]')) : [];
-  const labels = figure ? Array.from(figure.querySelectorAll<SVGTextElement>('[data-label]')) : [];
-  const marks = figure ? Array.from(figure.querySelectorAll<SVGGElement>('[data-mark]')) : [];
-  const space = JSON.parse(figure?.dataset.space ?? '{}') as {
+  const svg = figure?.querySelector<SVGSVGElement>('svg');
+  const payloadEl = document.getElementById('reach-space');
+
+  interface Vec3 extends Array<number> {
+    0: number;
+    1: number;
+    2: number;
+  }
+
+  interface Ring {
+    radius: number;
+    kind: 'lon' | 'lat';
+    value: number;
+    offset: Vec3;
+  }
+
+  interface Group {
+    opacity: number;
+    rings: Ring[];
+    offset?: Vec3;
+  }
+
+  interface Space {
     focal: number;
-    sin: number;
-    cos: number;
-    sinY: number;
-    cosY: number;
     dist: number;
     ox: number;
     oy: number;
+    tilt: number;
+    yaw: number;
     limit: number;
-  };
+    lift: number;
+    echoes: Group[];
+    shells: Group[];
+    particles: Array<[number, number, number, number]>;
+    nodes: Array<{
+      id: string;
+      p: Vec3;
+      size: number;
+      icon: boolean;
+      label: string | null;
+      side: string | null;
+    }>;
+    joins: Array<{ a: number; b: number }>;
+    scanners: Vec3[];
+  }
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const thresholds = particles.map((particle) => Number(particle.dataset.threshold ?? 0));
-  const scannerAt = scanners.map((scanner) =>
-    (scanner.dataset.at ?? '0,0,0').split(',').map(Number),
-  );
-  let lit = 0;
+  const space: Space = JSON.parse(payloadEl?.textContent ?? '{}');
 
-  const project = (x: number, y: number, z: number) => {
-    const across = x * space.cosY - z * space.sinY;
-    const depthAxis = x * space.sinY + z * space.cosY;
-    const up = y * space.cos + depthAxis * space.sin;
-    const depth = space.dist + depthAxis * space.cos - y * space.sin;
-    const p = space.focal / depth;
-    return { x: space.ox + across * p, y: space.oy - up * p, p };
-  };
+  if (figure && svg && space.nodes) {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  const paint = (progress: number) => {
-    if (!figure) return;
+    // The sphere turns about its own axis, and a drag turns it faster.
+    let yaw = space.yaw;
+    let tilt = space.tilt;
+    let progress = 0;
+    let dragging = false;
+    let resumeAt = 0;
+    let visible = true;
+    let lastFrame = performance.now();
 
-    const at = Math.min(1, Math.max(0, progress));
-    const radius = at * space.limit;
-
-    // Every host scans from its own coordinate, so every host carries a ring.
-    scanners.forEach((scanner, index) => {
-      const [x, y, z] = scannerAt[index];
-      const centre = project(x, y, z);
-      scanner.setAttribute('cx', centre.x.toFixed(1));
-      scanner.setAttribute('cy', centre.y.toFixed(1));
-      scanner.setAttribute('r', (radius * centre.p).toFixed(1));
-    });
-
-    // The particles are sorted by the progress at which a scan reaches them, so
-    // only the ones that just crossed are touched.
-    let cut = 0;
-    while (cut < thresholds.length && thresholds[cut] <= at) cut += 1;
-    if (cut !== lit) {
-      const from = Math.min(lit, cut);
-      const to = Math.max(lit, cut);
-      for (let index = from; index < to; index += 1) {
-        particles[index]?.classList.toggle('is-read', index < cut);
-      }
-      lit = cut;
-    }
-
-    joins.forEach((join) => {
-      join.classList.toggle('is-joined', at >= Number(join.dataset.read ?? 1));
-    });
-
-    const state = (element: SVGElement) => {
-      const read = Number(element.dataset.read ?? 1);
-      return { passed: at >= read, justNow: Math.abs(at - read) < 0.04 };
+    const project = (x: number, y: number, z: number) => {
+      const across = x * Math.cos(yaw) - z * Math.sin(yaw);
+      const depthAxis = x * Math.sin(yaw) + z * Math.cos(yaw);
+      const up = y * Math.cos(tilt) + depthAxis * Math.sin(tilt);
+      const depth = space.dist + depthAxis * Math.cos(tilt) - y * Math.sin(tilt);
+      const p = space.focal / depth;
+      return { x: space.ox + across * p, y: space.oy - up * p, p, depth };
     };
-    labels.forEach((label) => {
-      const { passed, justNow } = state(label);
-      label.classList.toggle('is-read', passed);
-      label.classList.toggle('is-active', justNow);
-    });
-    marks.forEach((mark) => {
-      const { passed, justNow } = state(mark);
-      mark.classList.toggle('is-read', passed);
-      mark.classList.toggle('is-active', justNow);
-    });
-  };
 
-  if (figure) {
+    // Depth as a light level: the far side of the sphere is behind the field.
+    const fadeOf = (p: number) => Math.min(1, Math.max(0.45, 0.45 + (p - 0.778) * 3.69));
+
+    const ringPoint = (ring: Ring, angle: number): Vec3 => {
+      const [ox, oy, oz] = ring.offset;
+      if (ring.kind === 'lon') {
+        const lon = ring.value * DEG;
+        return [
+          ox + ring.radius * Math.sin(angle) * Math.cos(lon),
+          oy + ring.radius * Math.cos(angle),
+          oz + ring.radius * Math.sin(angle) * Math.sin(lon),
+        ];
+      }
+      const lat = ring.value * DEG;
+      const r = ring.radius * Math.cos(lat);
+      const h = ring.radius * Math.sin(lat);
+      return [ox + r * Math.cos(angle), oy + h, oz + r * Math.sin(angle)];
+    };
+
+    const pathOf = (points: Vec3[]) => {
+      let d = '';
+      for (let index = 0; index < points.length; index += 1) {
+        const at = project(points[index][0], points[index][1], points[index][2]);
+        d += `${index === 0 ? 'M' : 'L'}${at.x.toFixed(1)} ${at.y.toFixed(1)}`;
+      }
+      return `${d}Z`;
+    };
+
+    const groupEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-group]')).map(
+      (element, index) => {
+        const group = [...space.echoes, ...space.shells][index] as Group | undefined;
+        const rings = (group?.rings ?? []).map((ring) =>
+          Array.from({ length: 49 }, (_, step) => ringPoint(ring, (step / 48) * Math.PI * 2)),
+        );
+        return {
+          element,
+          rings,
+          paths: Array.from(element.querySelectorAll<SVGPathElement>('path')),
+          circle: element.querySelector<SVGCircleElement>('circle'),
+          offset: group?.offset ?? null,
+        };
+      },
+    );
+
+    const nodeEls = Array.from(svg.querySelectorAll<SVGGElement>('.reach__node'));
+    const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
+    const scannerEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-scanner]'));
+    const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
+      element,
+      line: element.querySelector('line') as SVGLineElement,
+      dot: element.querySelector('circle') as SVGCircleElement,
+      read: Number(element.dataset.read ?? 1),
+    }));
+    const labels = Array.from(svg.querySelectorAll<SVGTextElement>('[data-label]'));
+    const marks = Array.from(svg.querySelectorAll<SVGGElement>('[data-mark]'));
+
+    const markById = new Map(marks.map((mark) => [mark.dataset.mark ?? '', mark]));
+    const labelById = new Map(labels.map((label) => [label.dataset.label ?? '', label]));
+    const fades = new Map<string, number>();
+
+    // Label widths do not change with the turn, so they are measured once.
+    const widths = new Map<string, number>();
+    const measure = () => {
+      labels.forEach((label) => {
+        widths.set(label.dataset.label ?? '', label.getComputedTextLength());
+      });
+    };
+    measure();
+    document.fonts?.ready.then(measure).catch(() => {});
+
+    const overlaps = (
+      a: { x1: number; x2: number; y1: number; y2: number },
+      b: { x1: number; x2: number; y1: number; y2: number },
+    ) => a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2;
+
+    const labelBox = (
+      x: number,
+      y: number,
+      anchor: string | null,
+      width: number,
+    ) => {
+      const x1 = anchor === 'start' ? x : anchor === 'end' ? x - width : x - width / 2;
+      return { x1, x2: x1 + width, y1: y - 11, y2: y + 3 };
+    };
+
+    const render = () => {
+      for (const group of groupEls) {
+        group.paths.forEach((path, index) => {
+          const points = group.rings[index];
+          if (points) path.setAttribute('d', pathOf(points));
+        });
+        if (group.circle && group.offset) {
+          const centre = project(group.offset[0], group.offset[1], group.offset[2]);
+          group.circle.setAttribute('cx', centre.x.toFixed(1));
+          group.circle.setAttribute('cy', centre.y.toFixed(1));
+        }
+      }
+
+      space.particles.forEach((point, index) => {
+        const element = particleEls[index];
+        if (!element) return;
+        const at = project(point[0], point[1], point[2]);
+        element.setAttribute('cx', at.x.toFixed(1));
+        element.setAttribute('cy', at.y.toFixed(1));
+        element.setAttribute(
+          'fill-opacity',
+          Math.min(0.58, Math.max(0.14, 0.16 + (at.p - 0.76) * 2.1)).toFixed(2),
+        );
+      });
+
+      // The glyphs first, so the labels know what they have to clear.
+      const placed = space.nodes.map((node, index) => {
+        const element = nodeEls[index];
+        const [x, y, z] = node.p;
+        const at = project(x, y, z);
+        const outX = at.x - space.ox;
+        const outY = at.y - space.oy;
+        const outLength = Math.hypot(outX, outY) || 1;
+        const lift = node.icon ? space.lift : 0;
+        const glyphX = at.x + (outX / outLength) * lift;
+        const glyphY = at.y + (outY / outLength) * lift;
+        const scale = at.p * node.size;
+
+        element?.setAttribute(
+          'transform',
+          `translate(${glyphX.toFixed(1)} ${glyphY.toFixed(1)}) scale(${scale.toFixed(3)})`,
+        );
+
+        const fade = Math.round(fadeOf(at.p) * 20) / 20;
+        if (fades.get(node.id) !== fade) {
+          fades.set(node.id, fade);
+          if (element) element.style.opacity = String(fade);
+          markById.get(node.id)?.style.setProperty('--fade', String(fade));
+          labelById.get(node.id)?.style.setProperty('--fade', String(fade));
+        }
+
+        markById
+          .get(node.id)
+          ?.setAttribute(
+            'transform',
+            `translate(${at.x.toFixed(1)} ${at.y.toFixed(1)}) scale(${(at.p * 1.2).toFixed(2)})`,
+          );
+
+        return {
+          node,
+          depth: at.p,
+          glyphX,
+          glyphY,
+          glyphBox: node.icon
+            ? {
+                x1: glyphX - 30 * Math.abs(scale),
+                x2: glyphX + 30 * Math.abs(scale),
+                y1: glyphY - 38 * Math.abs(scale),
+                y2: glyphY + 24 * Math.abs(scale),
+              }
+            : null,
+        };
+      });
+
+      // Labels take the space they fit into, nearest first, and step aside when the
+      // turn brings them onto another host or another name.
+      const taken: Array<{ x1: number; x2: number; y1: number; y2: number }> = placed
+        .map((entry) => entry.glyphBox)
+        .filter((box): box is NonNullable<typeof box> => box !== null);
+
+      [...placed]
+        .sort((a, b) => b.depth - a.depth)
+        .forEach(({ node, glyphX, glyphY }) => {
+          const label = labelById.get(node.id);
+          if (!label) return;
+          const anchor = label.getAttribute('text-anchor');
+          const width = widths.get(node.id) ?? 60;
+          const offset = 34;
+          let x = glyphX + offset;
+          let y = glyphY + 4;
+          if (node.side === 'left') x = glyphX - offset;
+          if (node.side === 'above') {
+            x = glyphX;
+            y = glyphY - 26;
+          }
+          if (node.side === 'below') {
+            x = glyphX;
+            y = glyphY + 38;
+          }
+          label.setAttribute('x', x.toFixed(1));
+          label.setAttribute('y', y.toFixed(1));
+
+          const box = labelBox(x, y, anchor, width);
+          const blocked = taken.some((other) => overlaps(box, other));
+          label.style.setProperty('--shown', blocked ? '0' : '1');
+          if (!blocked) taken.push(box);
+        });
+
+      space.scanners.forEach((port, index) => {
+        const element = scannerEls[index];
+        if (!element) return;
+        const at = project(port[0], port[1], port[2]);
+        element.setAttribute('cx', at.x.toFixed(1));
+        element.setAttribute('cy', at.y.toFixed(1));
+        element.setAttribute('r', (progress * space.limit * at.p).toFixed(1));
+      });
+
+      space.joins.forEach((join, index) => {
+        const element = joinEls[index];
+        if (!element) return;
+        const from = space.nodes[join.a].p;
+        const to = space.nodes[join.b].p;
+        const start = project(from[0], from[1], from[2]);
+        const end = project(to[0], to[1], to[2]);
+        element.line.setAttribute('x1', start.x.toFixed(1));
+        element.line.setAttribute('y1', start.y.toFixed(1));
+        element.line.setAttribute('x2', end.x.toFixed(1));
+        element.line.setAttribute('y2', end.y.toFixed(1));
+        const mid = project(
+          (from[0] + to[0]) / 2,
+          (from[1] + to[1]) / 2,
+          (from[2] + to[2]) / 2,
+        );
+        element.dot.setAttribute('cx', mid.x.toFixed(1));
+        element.dot.setAttribute('cy', mid.y.toFixed(1));
+      });
+    };
+
+    let lit = 0;
+    const thresholds = particleEls.map((particle) => Number(particle.dataset.threshold ?? 0));
+
+    const paint = (value: number) => {
+      progress = Math.min(1, Math.max(0, value));
+
+      // The particles are sorted by the progress at which a scan reaches them, so
+      // only the ones that just crossed are touched.
+      let cut = 0;
+      while (cut < thresholds.length && thresholds[cut] <= progress) cut += 1;
+      if (cut !== lit) {
+        const from = Math.min(lit, cut);
+        const to = Math.max(lit, cut);
+        for (let index = from; index < to; index += 1) {
+          particleEls[index]?.classList.toggle('is-read', index < cut);
+        }
+        lit = cut;
+      }
+
+      joinEls.forEach((join) => {
+        join.element.classList.toggle('is-joined', progress >= join.read);
+      });
+
+      const state = (element: SVGElement) => {
+        const read = Number(element.dataset.read ?? 1);
+        return { passed: progress >= read, justNow: Math.abs(progress - read) < 0.04 };
+      };
+      labels.forEach((label) => {
+        const { passed, justNow } = state(label);
+        label.classList.toggle('is-read', passed);
+        label.classList.toggle('is-active', justNow);
+      });
+      marks.forEach((mark) => {
+        const { passed, justNow } = state(mark);
+        mark.classList.toggle('is-read', passed);
+        mark.classList.toggle('is-active', justNow);
+      });
+
+      render();
+    };
+
+    // The turn runs while the figure is on screen, and rests while a reader holds it.
+    const step = (now: number) => {
+      const delta = Math.min(0.05, (now - lastFrame) / 1000);
+      lastFrame = now;
+      if (visible && !dragging && !reduce.matches && now > resumeAt) {
+        yaw += delta * 0.11;
+        render();
+      }
+      requestAnimationFrame(step);
+    };
+
+    let dragX = 0;
+    svg.addEventListener('pointerdown', (event) => {
+      if (event.button !== 0) return;
+      dragging = true;
+      dragX = event.clientX;
+      resumeAt = Number.POSITIVE_INFINITY;
+      svg.setPointerCapture(event.pointerId);
+      svg.classList.add('is-grabbing');
+    });
+
+    svg.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      const delta = event.clientX - dragX;
+      dragX = event.clientX;
+      yaw += delta * 0.008;
+      render();
+    });
+
+    const release = (event: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      resumeAt = performance.now() + 1800;
+      svg.classList.remove('is-grabbing');
+      if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+    };
+
+    svg.addEventListener('pointerup', release);
+    svg.addEventListener('pointercancel', release);
+
+    new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        lastFrame = performance.now();
+      },
+      { rootMargin: '120px' },
+    ).observe(figure);
+
     if (reduce.matches) {
       paint(0.72);
     } else {
@@ -938,6 +1268,7 @@ const echoes = [1, 2, 3].map((step) => {
         onUpdate: (self) => paint(self.progress),
         onRefresh: (self) => paint(self.progress),
       });
+      requestAnimationFrame(step);
     }
   }
 </script>
