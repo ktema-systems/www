@@ -429,6 +429,17 @@ svg {
   color: var(--on-accent);
 }
 
+/* A control the page is not offering yet keeps its shape and loses its lift. */
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  border-color: var(--line-2);
+  transform: none;
+}
+
 /* Masthead */
 
 .masthead {

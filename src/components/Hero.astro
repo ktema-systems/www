@@ -51,6 +51,13 @@ const {
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <p class="hero__lede">{lede}</p>
       {body && <p class:list={['hero__body', depth && 'hero__body--deep']}>{body}</p>}
+      {
+        Astro.slots.has('actions') && (
+          <div class="hero__actions">
+            <slot name="actions" />
+          </div>
+        )
+      }
     </div>
   </div>
   {
