@@ -61,7 +61,7 @@ export type NavItem = { label: string; href: string; items?: readonly NavLink[] 
 // The products the strip's Products item opens. Every product has a page of its
 // own, so the menu is the way between them.
 export const productMenu: readonly NavLink[] = [
-  { label: 'Ktema', note: 'the black box', href: product.href },
+  { label: 'Ktema', note: 'the time-machine data vault', href: product.href },
   { label: 'Kletos', note: 'the autopilot', href: '/kletos' },
   { label: 'Krisis', note: 'the authority', href: '/krisis' },
   { label: 'Delta', note: 'the cockpit', href: delta.href },
