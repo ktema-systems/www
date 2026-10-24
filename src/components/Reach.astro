@@ -1639,11 +1639,14 @@ const payload = {
     // the copy above it: a line added to the hero leaves the globe where it stands.
     // The layout viewport is the height, which holds still while the browser's own bar
     // collapses on scroll; a width change is the layout change that is followed.
-    const OPEN_SHARE_PHONE = 0.61;
-    const OPEN_SHARE_WIDE = 0.52;
+    const OPEN_SHARE_PHONE = 0.45;
+    const OPEN_SHARE_WIDE = 0.4;
     let openingHeight = document.documentElement.clientHeight;
     let openingWidth = document.documentElement.clientWidth;
     let openingMargin = 0;
+    // The offset sits on the frame's parent, not on the frame: the pin spacer copies the
+    // frame's own margin, and the two would collapse instead of adding up.
+    const holder = figure.parentElement ?? figure;
     const syncOpening = () => {
       const scale = openScale();
       // The sphere starts at the top of the frame, so the frame's visual top is its top.
@@ -1651,7 +1654,7 @@ const payload = {
       const natural = documentTop(figure) - openingMargin;
       const share = phone.matches ? OPEN_SHARE_PHONE : OPEN_SHARE_WIDE;
       openingMargin = Math.round(openingHeight * share - inset - natural);
-      figure.style.marginTop = `${openingMargin}px`;
+      holder.style.marginTop = `${openingMargin}px`;
       measureApproach();
     };
     syncOpening();
