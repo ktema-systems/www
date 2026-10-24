@@ -63,7 +63,7 @@ const sheetItems = items.filter((item) => !item.items);
         )
       }
     </nav>
-    <a class="btn btn--accent" href={cta.href}>{cta.label}</a>
+    <a class="btn btn--accent masthead__cta" href={cta.href}>{cta.label}</a>
     <button
       class="masthead__toggle"
       type="button"
@@ -328,5 +328,17 @@ const sheetItems = items.filter((item) => !item.items);
         setSiteMenu(false);
       }
     });
+  }
+
+  // The page's first call to action sits in the hero, so the bar's copy waits until
+  // the hero's has passed under the bar rather than offering the same button twice.
+  const heroCta = document.querySelector<HTMLElement>('[data-hero-cta]');
+
+  if (masthead && heroCta) {
+    const barHeight = Math.ceil(masthead.getBoundingClientRect().height);
+    new IntersectionObserver(
+      ([entry]) => masthead.classList.toggle('is-cta-past', !entry.isIntersecting),
+      { rootMargin: `-${barHeight}px 0px 0px 0px` },
+    ).observe(heroCta);
   }
 </script>

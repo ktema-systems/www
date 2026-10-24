@@ -30,9 +30,12 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     fieldReveal="scroll"
     depth
   >
-    <button class="btn" type="button" slot="actions" disabled>
-      Closed beta demo, in preparation
-    </button>
+    <a class="btn btn--accent" href={companyCta.href} slot="actions" data-hero-cta>
+      {companyCta.label}
+    </a>
+    <p class="hero-cta-note" slot="actions">
+      Closed beta, private demos on request. Public access opens soon.
+    </p>
   </Hero>
 
   <section class="reach-band" aria-label="Where the engine runs">
@@ -155,6 +158,19 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 </Base>
 
 <style>
+  /* The note is a footnote to the call: who can ask for a demo now, and when the
+     rest can. */
+  .hero-cta-note {
+    flex-basis: 100%;
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    color: var(--fg-3);
+    text-wrap: pretty;
+  }
+
   .reach-band {
     /* The globe starts behind the end of the promise: the copy is read against it,
        and the two are one scene rather than two stacked blocks. */

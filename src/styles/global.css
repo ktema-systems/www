@@ -429,17 +429,6 @@ svg {
   color: var(--on-accent);
 }
 
-/* A control the page is not offering yet keeps its shape and loses its lift. */
-.btn:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.btn:disabled:hover {
-  border-color: var(--line-2);
-  transform: none;
-}
-
 /* Masthead */
 
 .masthead {
@@ -712,6 +701,31 @@ svg {
 .masthead .btn {
   flex: 0 0 auto;
   font-size: 15.5px;
+}
+
+/* A page whose hero carries the call to action draws one button at a time: the bar's
+   copy holds back until the hero's has passed under the bar. Visibility, rather than
+   display, keeps the row from moving when the two swap. */
+.masthead__cta {
+  transition:
+    opacity 240ms var(--ease),
+    visibility 240ms,
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+body:has([data-hero-cta]) .masthead__cta {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body:has([data-hero-cta]) .masthead.is-cta-past .masthead__cta {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* The strip's Products item stretches to the bar's height, so the pointer can
