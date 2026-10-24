@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems makes autonomous machines answerable: a deterministic record on the device, a cockpit that replays any decision, and a key that proves who was in control.',
+    'Ktema Systems makes autonomous machines answerable: a deterministic record on the device that explains any decision and computes the next state, a cockpit that replays the run, and a key that proves who was in control.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
