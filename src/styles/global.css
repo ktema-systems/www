@@ -703,29 +703,38 @@ svg {
   font-size: 15.5px;
 }
 
-/* A page whose hero carries the call to action draws one button at a time: the bar's
-   copy holds back until the hero's has passed under the bar. Visibility, rather than
-   display, keeps the row from moving when the two swap. */
+/* The bar's call to action is a box the row can close. On a page whose hero carries
+   the same call, this one takes no width until the hero's has passed under the bar;
+   the button inside keeps its own shape, so only the box moves. */
 .masthead__cta {
+  display: flex;
+  flex: 0 0 auto;
+  max-width: var(--cta-w, 16rem);
+  overflow: hidden;
   transition:
+    max-width 240ms var(--ease),
+    margin-left 240ms var(--ease),
     opacity 240ms var(--ease),
-    visibility 240ms,
-    background-color var(--dur) var(--ease),
-    border-color var(--dur) var(--ease),
-    color var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
+    visibility 240ms;
 }
 
-body:has([data-hero-cta]) .masthead__cta {
+body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
+  max-width: 0;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
 }
 
-body:has([data-hero-cta]) .masthead.is-cta-past .masthead__cta {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
+/* The box clips the button, so the focus ring is drawn inside it. */
+.masthead__cta .btn:focus-visible {
+  outline-offset: -2px;
+}
+
+/* The row gap belongs to the call, so closing the box leaves the nav at the end. */
+@media (min-width: 901px) {
+  body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
+    margin-left: -32px;
+  }
 }
 
 /* The strip's Products item stretches to the bar's height, so the pointer can
@@ -1457,7 +1466,7 @@ body:has([data-hero-cta]) .masthead.is-cta-past .masthead__cta {
 
   /* With the strip gone the call to action is the only thing after the brand, and
      it belongs at the far edge of the row rather than beside the name. */
-  .masthead .btn {
+  .masthead__cta {
     margin-left: auto;
   }
 
@@ -1602,7 +1611,7 @@ body:has([data-hero-cta]) .masthead.is-cta-past .masthead__cta {
 /* The narrowest rows cannot hold the brand, the call to action and the toggle at
    once. The contact section is in the sheet, so the button steps out first. */
 @media (max-width: 380px) {
-  .masthead .btn {
+  .masthead__cta {
     display: none;
   }
 }

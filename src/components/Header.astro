@@ -63,7 +63,9 @@ const sheetItems = items.filter((item) => !item.items);
         )
       }
     </nav>
-    <a class="btn btn--accent masthead__cta" href={cta.href}>{cta.label}</a>
+    <span class="masthead__cta">
+      <a class="btn btn--accent" href={cta.href}>{cta.label}</a>
+    </span>
     <button
       class="masthead__toggle"
       type="button"
@@ -330,11 +332,20 @@ const sheetItems = items.filter((item) => !item.items);
     });
   }
 
-  // The page's first call to action sits in the hero, so the bar's copy waits until
-  // the hero's has passed under the bar rather than offering the same button twice.
+  // The page's first call to action sits in the hero, so the bar's copy closes to
+  // nothing until the hero's has passed under the bar rather than offering the same
+  // button twice. The button is never squeezed by the closing box, so its width is
+  // the length the row closes; reading it costs one layout before the first paint.
   const heroCta = document.querySelector<HTMLElement>('[data-hero-cta]');
+  const barCta = masthead?.querySelector<HTMLElement>('.masthead__cta');
+  const barCtaButton = barCta?.querySelector<HTMLElement>('.btn');
 
-  if (masthead && heroCta) {
+  if (masthead && heroCta && barCta && barCtaButton) {
+    const width = Math.ceil(barCtaButton.getBoundingClientRect().width);
+    if (width > 0) {
+      masthead.style.setProperty('--cta-w', `${width + 8}px`);
+    }
+
     const barHeight = Math.ceil(masthead.getBoundingClientRect().height);
     new IntersectionObserver(
       ([entry]) => masthead.classList.toggle('is-cta-past', !entry.isIntersecting),
