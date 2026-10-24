@@ -61,12 +61,12 @@ export type NavItem = { label: string; href: string; items?: readonly NavLink[] 
 // The products the strip's Products item opens. Every product has a page of its
 // own, so the menu is the way between them.
 export const productMenu: readonly NavLink[] = [
-  { label: 'Ktema', note: 'Time-machine Vault', href: product.href },
-  { label: 'Kletos', note: 'Autopilot', href: '/kletos' },
-  { label: 'Krisis', note: 'Authority', href: '/krisis' },
-  { label: 'Delta', note: 'Cockpit', href: delta.href },
+  { label: 'Ktema', note: 'Storage', href: product.href },
+  { label: 'Kletos', note: 'Execution', href: '/kletos' },
+  { label: 'Krisis', note: 'Governance', href: '/krisis' },
+  { label: 'Delta', note: 'Platform', href: delta.href },
   { label: 'Telos', note: 'Transport', href: '/telos' },
-  { label: 'Kleis', note: 'Seal', href: '/kleis' },
+  { label: 'Kleis', note: 'Authorization', href: '/kleis' },
 ];
 
 // Each page carries its own strip, and the anchor hrefs are relative to the page
