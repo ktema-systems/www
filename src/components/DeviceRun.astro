@@ -9,7 +9,7 @@ import Section from './Section.astro';
   id="device-run"
   label="Device"
   title={"Two megabytes of flash history, 1,648 bytes of working memory."}
-  lede="Ktema kept its records across four restarts on an ESP32-S3, a chip with 8 MB of flash. The index lives in the flash, not in memory, and records are read where they lie, so the memory it needs does not grow with the history."
+  lede="On an ESP32-S3, a chip with 8 MB of flash, a run wrote a record and read it back after four restarts. A boot does no storage work to find it: the address is computed from the fields, so there is no index to rebuild, and the memory it needs does not grow with the history."
 >
   <figure class="device">
     <div class="device__frame">

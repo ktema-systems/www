@@ -1,14 +1,14 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import PanelDeck from '../components/PanelDeck.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
-import DeltaShot from '../components/DeltaShot.astro';
 import Section from '../components/Section.astro';
 import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
 
-// Delta's page: the platform, the seat it gives the operator, the run, and the
-// campaigns. The hero states the platform, the seat section is the highlight, and
-// the hand-off carries the reader to the engine the seat is built on.
+// Delta's page: the platform, the cases it runs, the seat it gives the operator,
+// and the loop. The island run comes first because it shows the whole platform at
+// once, and the hand-off carries the reader to the loop underneath.
 ---
 
 <Base
@@ -27,11 +27,57 @@ import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
     body="What the machine does is the sum of the intents that enter the loop."
   />
 
+  <PanelDeck
+    id="operations"
+    eyebrow="Operations"
+    title="Three runs, one space."
+    lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. Each case is read from the seat inside the run."
+    panels={[
+      {
+        kicker: 'The run',
+        title: 'A fire on an island, answered by the fleet already there',
+        body: 'Delta puts every machine, person, and record of the run in one space. Survey and thermal drones map the perimeter, a relay holds the link over the strait, and crawlers and boats take the shore, each intent claimed by a different machine under the same wind and keep-out bounds. The operator reads the same record and changes the intent while the run is moving.',
+        note: 'The reference campaign: one situation, one record, and a fleet that answers together.',
+        image: {
+          src: '/delta_devscr.jpg',
+          alt: 'Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers, boats and rovers in the middle, the island and its shoreline on the right, and the timeline below.',
+          width: 1842,
+          height: 1047,
+        },
+      },
+      {
+        kicker: 'The cell',
+        title: 'A factory cell runs on one intent',
+        body: 'Servos, conveyors, cameras, maintenance robots, and the people who run them, read in one cell. An intent is written once, and every agent under the cell answers from it. The operator sees the whole cell and the record of each agent in the same view.',
+        image: {
+          src: '/delta_scr_factory.jpeg',
+          alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
+          width: 1766,
+          height: 920,
+        },
+      },
+      {
+        kicker: 'The span',
+        metrics: [{ value: '35,786', unit: 'km' }],
+        title: 'Land, air, and orbit in one view',
+        body: 'A rescue run reaches from a geostationary satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map. Each element is read where it is, and the run keeps one record across all of them.',
+        image: {
+          src: '/delta_scr_satelite.jpeg',
+          alt: 'A rescue campaign on the map and in the cell view: satellites at 550, 1,200 and 35,786 km, rescue and medevac aircraft, escorts, the hospital, and the operators on one space.',
+          width: 1265,
+          height: 686,
+        },
+      },
+    ]}
+    labels={['Run', 'Cell', 'Span']}
+    footnote="Pre-release development builds on simulated demo data. Delta is planned to be open source."
+  />
+
   <Section
     id="seat"
     label="The seat inside it"
     title="A dashboard looks at the machine. Delta puts you inside it."
-    lede="A dashboard reports from outside the machine or the agent. Delta is that entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside. The operator, the machine, and the auditor read one object."
+    lede="A dashboard reports from outside the machine or the agent. Delta is that entity's own coordinate space: its record and the constraints that bound it, read and acted on from the inside, with the intent changed from the same place. The operator, the machine, and the auditor read one object."
     wide
   >
     <div class="cards cards--3 seat">
@@ -56,7 +102,7 @@ import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
     id="campaigns"
     label="Campaigns"
     title="A run becomes a campaign"
-    lede="A campaign is one run inside a project: a situation, a briefing, the objectives, the constraints, and the record of what happened. The reference run is a fire on an island, where survey and thermal drones map the perimeter, a relay holds the link, and each intent is claimed by a different machine."
+    lede="A campaign is one run inside a project: a situation, a briefing, the objectives, the constraints, and the record of what happened. The island run above is the reference campaign."
   >
     <dl class="spec">
       <dt>What a campaign holds</dt>
@@ -66,8 +112,6 @@ import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
       <dt>What a finished run becomes</dt>
       <dd>A package that can be replayed and handed to another team.</dd>
     </dl>
-
-    <DeltaShot />
   </Section>
 
   <Section

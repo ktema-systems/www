@@ -57,7 +57,10 @@ const splitMetric = (value: string) => {
       <ol class="pdeck__list">
         {
           panels.map((panel, index) => (
-            <li class:list={['panel', index === 0 && 'is-active', panel.image && 'panel--figure']} data-panel>
+            <li
+              class:list={['panel', index === 0 && 'is-active', panel.image ? 'panel--figure' : 'panel--text']}
+              data-panel
+            >
               <div class="panel__copy">
                 <p class="panel__kicker">{panel.kicker}</p>
                 {panel.metrics && (
@@ -183,6 +186,15 @@ const splitMetric = (value: string) => {
   /* A screenshot carries the panel, so it takes the wider column. */
   .panel--figure {
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  /* A panel without a figure takes the whole width instead of leaving an empty column. */
+  .panel--text {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel--text .panel__copy {
+    max-width: 46rem;
   }
 
   .panel__copy {

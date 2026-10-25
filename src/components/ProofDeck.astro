@@ -18,7 +18,7 @@ interface Props {
 const {
   eyebrow = 'Proof',
   title = 'What the engine costs, on the machine and over the log.',
-  lede = 'Four numbers: what it takes to fit, what it costs to grow, what a question returns, and what the hardware has to provide.',
+  lede = 'Four numbers: what it takes to fit, what it costs to grow, what a question returns, and what a database needs for the same question.',
 } = Astro.props;
 ---
 
@@ -124,26 +124,33 @@ const {
 
         <li class="step" data-step>
           <div class="step__copy">
-            <p class="step__meta"><span>04</span><span>the integration</span></p>
+            <p class="step__meta"><span>04</span><span>the alternative</span></p>
             <p class="step__value">
-              <span data-count="3" data-decimals="0">3</span><span class="step__unit">calls</span>
+              <span data-count="100" data-decimals="0">100</span><span class="step__unit">KB</span>
             </p>
             <p class="step__claim">
-              The engine asks the hardware for three things: a region of flash, a write, and an
-              erase.
+              A minimum SQLite build needs an operating system and about 100 KB of heap for its
+              B-tree.
             </p>
             <p class="step__note">
-              The log, the index on the flash, and the recovery above those three are the engine's.
+              It also rebuilds on boot: it replays its write-ahead log, while LittleFS walks its
+              directory and NVS reads its page index into RAM.
             </p>
           </div>
           <div class="step__fig">
+            <div class="row">
+              <span class="row__k">Ktema · 1,648 B</span>
+              <span class="row__v">1,648 B</span>
+              <span class="row__track"><span class="row__fill" style="--to: 0.016"></span></span>
+            </div>
+            <div class="row">
+              <span class="row__k">SQLite · 100 KB</span>
+              <span class="row__v">100 KB</span>
+              <span class="row__track"><span class="row__fill" style="--to: 1"></span></span>
+            </div>
             <p class="split__legend">
-              <span class="legend__item"><span class="dot dot--key"></span>a region of flash</span>
-              <span class="legend__item"><span class="dot dot--frame"></span>a write</span>
-              <span class="legend__item"><span class="dot dot--value"></span>an erase</span>
-            </p>
-            <p class="split__legend">
-              No operating system, no file system, and no database under it.
+              Bars scaled to 100 KB. The engine figure is measured on the board; the database
+              figure is its published minimum.
             </p>
           </div>
         </li>
@@ -160,7 +167,7 @@ const {
 
       <p class="deck__source">
         The footprint is the ESP32-S3 run on the board. The read and the question are host figures:
-        release build, median of 51 samples. The three calls are the surface a firmware implements.
+        release build, median of 51 samples. The database figure is its published minimum.
       </p>
     </div>
   </div>

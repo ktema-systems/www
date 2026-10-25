@@ -2,10 +2,6 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import CaseDeck from '../components/CaseDeck.astro';
-import ProofDeck from '../components/ProofDeck.astro';
-import DeltaDeck from '../components/DeltaDeck.astro';
-import ProductHighlight from '../components/ProductHighlight.astro';
-import ProductLink from '../components/ProductLink.astro';
 import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
@@ -61,7 +57,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
           { value: '45', unit: 'g' },
         ],
         title: 'A two-dollar chip on a 45-gram airframe',
-        body: 'The board weighs 45 g without its battery, and carries megabytes of flash and half a megabyte of RAM. No operating system, no database, and no file system between the engine and the flash.',
+        body: 'The module costs a couple of dollars on the bill of materials, and the board weighs 45 g without its battery. It carries 8 MB of flash and half a megabyte of RAM, with no operating system, no database, and no file system between the engine and the flash.',
         image: {
           src: '/esp32s3-board.jpg',
           alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
@@ -73,21 +69,20 @@ import { companyCta, companyNav, creedLine, site } from '../config';
         kicker: 'The footprint',
         metrics: [{ value: '1,648', unit: 'B' }],
         title: 'The engine holds under two kilobytes while it runs',
-        body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included.',
+        body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included. A boot does no storage work to find them: the address is computed from the fields, so there is no index to rebuild.',
         note: 'The first start prepares the storage; later starts hold the same figure.',
       },
       {
         kicker: 'The comparison',
         metrics: [{ value: '100', unit: 'KB' }],
         title: 'What a database needs for the same question',
-        body: 'A minimum embedded database build needs an operating system and about 100 KB of heap. The engine answers from the same records in 1,648 bytes, with nothing running under it.',
+        body: 'A minimum SQLite build needs an operating system and about 100 KB of heap for its B-tree, and it rebuilds on boot: it replays its write-ahead log, while LittleFS walks its directory and NVS reads its page index into RAM. The engine recomputes an address instead, in 1,648 bytes, with nothing running under it.',
         note: 'The engine figure is measured on the board; the database figure is its published minimum.',
       },
       {
         kicker: 'The other side',
         title: 'The small part is the proof, not the ceiling',
-        point: 'What fits a two-dollar chip is what scales to a data centre.',
-        body: 'One segment in memory, an answer read from the address, and nothing to build as the log grows. The same engine serves firmware that never ran a database, AI clusters, swarms of agents, and systems in space.',
+        body: 'One segment in memory, an answer read from the address, and nothing to build as the log grows. The same engine runs from firmware to a data centre.',
       },
     ]}
     labels={['Part', 'Footprint', 'Compare', 'Beyond']}
@@ -97,12 +92,12 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     id="delta"
     eyebrow="Operations"
     title="One space for the fleet."
-    lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The run first is a fire on an island."
+    lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The first case is a fire on an island, because it shows the whole platform at once."
     panels={[
       {
         kicker: 'The run',
         title: 'A fire on an island, answered by the fleet already there',
-        body: 'A campaign opens on the island. Survey and thermal drones map the perimeter, a relay holds the link over the strait, crawlers and boats take the shore, and each intent is claimed by a different machine under the same wind and keep-out bounds. The operator reads the same record and changes the intent while the run is moving.',
+        body: 'A campaign opens on the island: survey and thermal drones map the perimeter, a relay holds the link over the strait, crawlers and boats take the shore, and each intent is claimed by a different machine under the same wind and keep-out bounds. The operator reads the same record and changes the intent while the run is moving.',
         note: 'Every campaign has this shape: a situation, a briefing, the objectives, the constraints, and the record.',
         image: {
           src: '/delta_devscr.jpg',
@@ -124,6 +119,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
       },
       {
         kicker: 'The span',
+        metrics: [{ value: '35,786', unit: 'km' }],
         title: 'Land, air, and orbit in one view',
         body: 'A rescue run reaches from a geostationary satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map. Each element is read where it is, and the run keeps one record across all of them.',
         image: {
@@ -136,12 +132,12 @@ import { companyCta, companyNav, creedLine, site } from '../config';
       {
         kicker: 'The seat',
         title: 'The operator stands inside the run',
-        body: `A dashboard reports from outside the machine. The cockpit is the entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside.`,
+        body: `On the island, the operator does not read a dashboard about the fire. The cockpit is the run's own coordinate space: the drones, their record, and the wind and keep-out bounds around them, with the intent changed from the same place the record is read.`,
       },
       {
         kicker: 'The campaign',
         title: 'A run another team can replay',
-        body: 'A campaign holds the situation, the briefing, the objectives, the constraints, and the record. A finished run becomes a package that can be handed on and compared against another.',
+        body: 'A finished run becomes a package that can be handed on and compared against another. The next campaign starts from it.',
       },
     ]}
     labels={['Run', 'Cell', 'Span', 'Seat', 'Campaign']}
@@ -152,7 +148,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     id="partners"
     eyebrow="Fit"
     title="Where the engine is the right answer."
-    lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries. Where they do, the engine is the answer."
+    lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries."
     panels={[
       {
         kicker: 'The condition',

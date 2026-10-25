@@ -84,6 +84,7 @@ export const companyNav: readonly NavItem[] = [
 export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const deltaNav: readonly NavItem[] = [
+  { label: 'Operations', href: '#operations' },
   { label: 'The seat', href: '#seat' },
   { label: 'The loop', href: '#loop' },
   { label: 'Campaigns', href: '#campaigns' },
