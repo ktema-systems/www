@@ -26,8 +26,8 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   <Hero
     eyebrow={creedLine}
     title="Replayable Agentic Computing"
-    lede="An insulin pump holds a dose. A drone turns back. A robot stops a line. Later, someone asks why, and the machine answers: what it was asked, what it did, and what limited it. That account sits on the device itself, at the moment it happened. The same record computes what happens next."
-    body="We make that answer the default: a spatiotemporal record engine on the machine, and a portable mission control where the operator rewinds and proves. It needs no operating system, no database, and no cloud, so the record stays where it was made. The same record computes the next state, so the account and the control are one system."
+    lede="An insulin pump holds a dose. A drone turns back. A robot stops a line. Later, someone asks why, and the machine answers: what it was asked, what it did, and what limited it. That account sits on the device itself, at the moment it happened. The same record computes the next state, so the account and the control are one system."
+    body="We make that answer the default: a spatiotemporal record engine on the machine, and a portable mission control where the operator rewinds and proves. It needs no operating system, no database, and no cloud, so the record stays where it was made."
     fieldReveal="scroll"
     depth
   >
@@ -114,31 +114,40 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     ]}
   />
 
-  <Section
+  <PanelDeck
     id="partners"
-    label="The fit"
-    title="Where the engine is the right answer"
-    lede="Three conditions hold: the question combines several axes; it has to be answered where the record was made; and the memory is the one the part carries. Where they do, a database does not fit in that memory and a cloud is beyond the link."
-  >
-    <div class="biz">
-      <div>
-        <p class="biz__k">The systems</p>
-        <p>Defense programs, medical device makers, vehicle programs, and energy operators. The machine serves for ten to thirty years, and the organization that shipped it answers for what it did.</p>
-      </div>
-      <div>
-        <p class="biz__k">The condition</p>
-        <p>A multi-axis question answered on the device with the link down, inside the memory the part has. No server in the path and no index to build.</p>
-      </div>
-      <div>
-        <p class="biz__k">Where it does not apply</p>
-        <p>If the record may leave the device, or the system already runs a database, that database is the simpler answer and the right one.</p>
-      </div>
-      <div>
-        <p class="biz__k">Why now</p>
-        <p>The EU AI Act requires logging over the life of a high-risk system, and the Cyber Resilience Act keeps a manufacturer answerable after it ships. A machine that carries its own record starts inside both.</p>
-      </div>
-    </div>
-  </Section>
+    eyebrow="The fit"
+    title="Where the engine is the right answer."
+    lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries. Where they do, the engine is the answer."
+    panels={[
+      {
+        kicker: 'The condition',
+        title: 'Answered on the machine, inside the memory it has',
+        point: 'The link is down, the question is multi-axis, and no database fits in the part.',
+        body: 'A record that stays on the machine answers from its own history. Nothing is built to answer it, and nothing has to be shipped out first.',
+      },
+      {
+        kicker: 'Everyday',
+        title: 'The same shape on things people already own',
+        point: 'A bike computer that keeps a season of rides. An espresso machine that remembers every shot.',
+        body: 'Which climb cost the battery, or what changed since Monday, answered on the device itself. No phone, no account, and no round trip.',
+      },
+      {
+        kicker: 'Critical systems',
+        title: 'Where the answer has to survive the audit',
+        point: 'Ten to thirty years in service, and the organization that shipped it answers for what it did.',
+        body: 'Defense programs, medical device makers, vehicle programs, and energy operators. The machine outlives the deployment, and the record has to outlive the machine.',
+        note: 'The EU AI Act requires logging over the life of a high-risk system, and the Cyber Resilience Act keeps a manufacturer answerable after it ships.',
+      },
+      {
+        kicker: 'Where it does not apply',
+        title: 'When a database is the right answer',
+        point: 'If the record may leave the device, a database already does this.',
+        body: 'A system that already runs a database, or one whose record may live on a server, does not need the engine. The boundary is part of the specification.',
+      },
+    ]}
+    labels={['Condition', 'Everyday', 'Critical', 'Not a fit']}
+  />
 
   <Section
     id="contact"
@@ -195,41 +204,4 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     padding-block: clamp(20px, 3vh, 32px) clamp(40px, 6vh, 80px);
   }
 
-  .biz {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--line);
-    border: 1px solid var(--line);
-  }
-
-  .biz > div {
-    background: var(--bg);
-    padding: 22px 24px;
-  }
-
-  .biz p {
-    margin: 0;
-  }
-
-  .biz p + p {
-    margin-top: 8px;
-    color: var(--fg-2);
-    font-size: 15px;
-    line-height: 1.55;
-  }
-
-  .biz__k {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--fg-3);
-  }
-
-  @media (max-width: 820px) {
-    .biz {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
 </style>

@@ -14,6 +14,8 @@ interface Panel {
   title: string;
   body: string;
   note?: string;
+  // The one line the panel has to land, set as a pull quote above the body.
+  point?: string;
   // The number the panel exists to land, set large beside the copy.
   metric?: { value: string; unit?: string };
   image?: PanelImage;
@@ -54,6 +56,7 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
                   </p>
                 )}
                 <h3>{panel.title}</h3>
+                {panel.point && <p class="panel__point">{panel.point}</p>}
                 <p class="panel__body">{panel.body}</p>
                 {panel.note && <p class="panel__note">{panel.note}</p>}
               </div>
@@ -194,6 +197,17 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
     font-stretch: 115%;
     letter-spacing: -0.015em;
     line-height: 1.12;
+  }
+
+  .panel__point {
+    margin: 2px 0 0;
+    padding-left: 14px;
+    border-left: 2px solid var(--accent);
+    font-size: clamp(1.02rem, 0.94rem + 0.4vw, 1.22rem);
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--fg);
+    text-wrap: pretty;
   }
 
   .panel__body {
