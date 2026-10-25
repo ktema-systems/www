@@ -88,7 +88,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
         kicker: 'The other side',
         title: 'The small part is the proof, not the ceiling',
         point: 'What fits a two-dollar chip is what scales to a data centre.',
-        body: 'One segment in memory, an answer read from the address, and three calls whatever the medium is. The same engine serves firmware that never ran a database, AI clusters, swarms of agents, and systems in space.',
+        body: 'One segment in memory, an answer read from the address, and nothing to build as the log grows. The same engine serves firmware that never ran a database, AI clusters, swarms of agents, and systems in space.',
       },
     ]}
     labels={['Part', 'Footprint', 'Surface', 'Beyond']}
@@ -98,11 +98,23 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     id="delta"
     eyebrow="Operations"
     title="One space for the fleet."
-    lede="The cockpit: robots, drones, agents, and the people who run them, read and commanded in one space over the record the machine keeps."
+    lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The case first is a fire on an island."
     panels={[
       {
-        kicker: 'The cockpit',
-        title: 'One space for every kind of machine',
+        kicker: 'The case',
+        title: 'A fire on an island, answered by the fleet already there',
+        body: 'A campaign opens on the island. Survey and thermal drones map the perimeter, a relay holds the link over the strait, crawlers and boats take the shore, and each intent is claimed by a different machine under the same wind and keep-out bounds. The operator reads the same record and changes the intent while the run is moving.',
+        note: 'Every campaign has this shape: a situation, a briefing, the objectives, the constraints, and the record.',
+        image: {
+          src: '/delta_devscr.jpg',
+          alt: 'Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers, boats and rovers in the middle, the island and its shoreline on the right, and the timeline below.',
+          width: 1842,
+          height: 1047,
+        },
+      },
+      {
+        kicker: 'The cell',
+        title: 'A factory cell runs on one intent',
         body: 'Servos, conveyors, cameras, maintenance robots, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
         image: {
           src: '/delta_scr_factory.jpeg',
@@ -126,12 +138,6 @@ import { companyCta, companyNav, creedLine, site } from '../config';
         kicker: 'The seat',
         title: 'The operator stands inside the run',
         body: `A dashboard reports from outside the machine. The cockpit is the entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside.`,
-        image: {
-          src: '/delta_devscr.jpg',
-          alt: 'The cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, and the record along the bottom.',
-          width: 1842,
-          height: 1047,
-        },
       },
       {
         kicker: 'The campaign',
@@ -139,7 +145,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
         body: 'A campaign holds the situation, the briefing, the objectives, the constraints, and the record. A finished run becomes a package that can be handed on and compared against another.',
       },
     ]}
-    labels={['Cockpit', 'Span', 'Seat', 'Campaign']}
+    labels={['Case', 'Cell', 'Span', 'Seat', 'Campaign']}
   />
 
   <PanelDeck
