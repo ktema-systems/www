@@ -33,14 +33,14 @@ import Section from './Section.astro';
       <div class="chart__rows">
         <div class="chart__row">
           <span class="chart__key">First start</span>
-          <span class="chart__val">2,384</span>
+          <span class="chart__val" data-count="2384">2,384</span>
           <span class="chart__track" aria-hidden="true">
             <span class="chart__fill" style="--to: 1"></span>
           </span>
         </div>
         <div class="chart__row">
           <span class="chart__key">Starts after</span>
-          <span class="chart__val">1,648</span>
+          <span class="chart__val" data-count="1648">1,648</span>
           <span class="chart__track" aria-hidden="true">
             <span class="chart__fill" style="--to: 0.691"></span>
           </span>
@@ -57,14 +57,14 @@ import Section from './Section.astro';
       <div class="chart__rows">
         <div class="chart__row">
           <span class="chart__key">Region of the 8 MB flash</span>
-          <span class="chart__val">2 MB</span>
+          <span class="chart__val"><span data-count="2">2</span> MB</span>
           <span class="chart__track" aria-hidden="true">
             <span class="chart__fill" style="--to: 0.25"></span>
           </span>
         </div>
         <div class="chart__row">
           <span class="chart__key">Application in its 1 MiB slot</span>
-          <span class="chart__val">447,968 B</span>
+          <span class="chart__val"><span data-count="447968">447,968</span> B</span>
           <span class="chart__track" aria-hidden="true">
             <span class="chart__fill" style="--to: 0.4272"></span>
           </span>
@@ -82,6 +82,28 @@ import Section from './Section.astro';
   </p>
   <p class="source">Measured on the board over four starts.</p>
 </Section>
+
+<script>
+  import { resetAll, rollAll } from '../scripts/count-up';
+
+  // The charts count up once, when the section is close enough to read, in the same
+  // roll the decks use.
+  const section = document.getElementById('device-run');
+
+  if (section) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          resetAll(section);
+          rollAll(section);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px -30% 0px' },
+    );
+    observer.observe(section);
+  }
+</script>
 
 <style>
   .device {
