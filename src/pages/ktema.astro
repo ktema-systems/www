@@ -5,6 +5,7 @@ import AddressFigure from '../components/AddressFigure.astro';
 import Product from '../components/Product.astro';
 import ProofDeck from '../components/ProofDeck.astro';
 import DeviceRun from '../components/DeviceRun.astro';
+import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
 import { product, productCta, productMenu, productNav } from '../config';
 
@@ -22,13 +23,92 @@ import { product, productCta, productMenu, productNav } from '../config';
   openProducts
 >
   <Hero
-    eyebrow="Ktema"
     title="Machine answers on its own."
-    lede="Ktema is a deterministic storage engine for multi-dimensional questions. It answers them on hardware that cannot run a database, with no operating system and no index. A boot does no storage work to find the record: the address is computed from the fields."
-    body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the device's own history, with no server, no network, and no cloud round trip. The same engine is built to run from a microcontroller with no operating system to a data center, and on a space system where nothing can be serviced."
+    subline="The record stays on the machine."
+    lede="Ktema is a deterministic record engine for products that have to answer for what they did. It answers multi-dimensional questions on hardware that cannot run a database, with no operating system, no index, and no storage work at boot."
+    body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the device's own history, with no server, no network, and no cloud round trip."
   >
+    <a class="btn btn--accent" href="#contact" slot="actions">Talk to us</a>
+    <p class="hero-note" slot="actions">
+      Design partners now. Public demos and private beta are on the way.
+    </p>
     <AddressFigure slot="figure" />
   </Hero>
+
+  <Section
+    id="why"
+    label="Why"
+    title="The machine has to answer for what it did."
+    lede="Three failures end a deployment. The record answers all three from the machine that made it."
+    wide
+  >
+    <div class="cards cards--3">
+      <div class="card">
+        <span class="card__value">The incident</span>
+        <p>
+          Why it acted, what it saw, and what limited it, read from the machine's own record rather
+          than from a log someone has to reconstruct.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card__value">The link drop</span>
+        <p>
+          The record stays on the machine, so the question is answered at the edge, with no server,
+          no network, and no cloud round trip.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card__value">The audit</span>
+        <p>
+          The record is the evidence a regulated product needs. The CRA reporting duty already
+          applies, and the AI Act asks for logging over the life of a high-risk system.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <Section
+    id="engine"
+    label="Engine"
+    title="A record written under its own address."
+    lede="Ktema stores the record where the question will look for it. A reader computes the address from the fields instead of walking an index."
+  >
+    <dl class="spec">
+      <dt>The address</dt>
+      <dd>
+        A record's fields are its coordinates. The engine computes the address from the record, so a
+        writer and a reader arrive at the same place without a lookup.
+      </dd>
+      <dt>The record</dt>
+      <dd>
+        Three kinds of entry: a fact, an intent, and a hint. Each is written once, under its own
+        coordinate.
+      </dd>
+      <dt>The question</dt>
+      <dd>
+        A question is a region on the same axes, such as one origin over a time window. The answer is
+        the set of records whose coordinates fall inside it. No index, and no scan from the start of
+        the log.
+      </dd>
+      <dt>The medium</dt>
+      <dd>
+        The engine asks the hardware for a region of flash, a write, and an erase. The record is
+        append-only; a segment is the unit of recovery, and the memory the engine holds is bounded by
+        one segment, not by the record count.
+      </dd>
+      <dt>The edge</dt>
+      <dd>
+        A C interface, including read and query, at the application edge. No operating system, no
+        file system, no database, and no bootloader change.
+      </dd>
+      <dt>The limit</dt>
+      <dd>
+        A question that needs a join across separate systems, or a record that may leave the device,
+        is a database's job. The engine is for the question answered where the record was made.
+      </dd>
+    </dl>
+  </Section>
+
   <ProofDeck />
   <DeviceRun />
   <Product />
@@ -38,3 +118,13 @@ import { product, productCta, productMenu, productNav } from '../config';
     body="Ktema runs inside the product you already ship. It needs no server, no network, and no database, and it fits the memory a small device has. Tell us what your machine has to answer, and we will show you what that query looks like on the device."
   />
 </Base>
+
+<style>
+  .hero-note {
+    flex-basis: 100%;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--fg-3);
+    text-wrap: pretty;
+  }
+</style>
