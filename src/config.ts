@@ -74,7 +74,7 @@ export const productMenu: readonly NavLink[] = [
 export const homeSections = {
   cases: { label: 'Cases', id: 'cases' },
   stack: { label: 'Stack', id: 'products' },
-  device: { label: 'Substantiation', id: 'device' },
+  device: { label: 'Validation', id: 'device' },
   operations: { label: 'Operations', id: 'delta' },
   fit: { label: 'Fit', id: 'partners' },
   contact: { label: 'Contact', id: 'contact' },
