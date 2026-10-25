@@ -225,11 +225,11 @@ const {
   .deck.is-live .deck__panel {
     grid-area: 1 / 1;
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(28px);
     pointer-events: none;
     transition:
-      opacity 420ms var(--ease),
-      transform 560ms var(--ease);
+      opacity 480ms var(--ease),
+      transform 640ms var(--ease);
   }
 
   .deck.is-live .deck__panel + .deck__panel {
@@ -246,7 +246,7 @@ const {
 
   .deck.is-live .deck__panel.is-past {
     opacity: 0;
-    transform: translateY(-24px);
+    transform: translateY(-28px);
   }
 
   @media (prefers-reduced-motion: reduce) {

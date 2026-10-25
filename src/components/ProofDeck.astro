@@ -515,16 +515,27 @@ const {
     margin: 0;
   }
 
+  /* The turn matches the cases deck: a step enters from below and the one it
+     replaced leaves upward. */
   .deck.is-live .step {
     grid-area: 1 / 1;
     opacity: 0;
+    transform: translateY(28px);
     pointer-events: none;
-    transition: opacity 420ms var(--ease);
+    transition:
+      opacity 480ms var(--ease),
+      transform 640ms var(--ease);
   }
 
   .deck.is-live .step.is-active {
     opacity: 1;
+    transform: none;
     pointer-events: auto;
+  }
+
+  .deck.is-live .step.is-past {
+    opacity: 0;
+    transform: translateY(-28px);
   }
 
   .deck.is-live .deck__list,
@@ -675,6 +686,7 @@ const {
   const setActive = (index: number) => {
     panels.forEach((panel, i) => {
       panel.classList.toggle('is-active', i === index);
+      panel.classList.toggle('is-past', i < index);
       panel.setAttribute('aria-hidden', i === index ? 'false' : 'true');
     });
 

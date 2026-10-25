@@ -335,17 +335,43 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
     padding-block: calc(var(--masthead-h) + 24px) 40px;
   }
 
+  /* The turn matches the cases deck: a panel enters from below, the one it replaced
+     leaves upward, and the list waits below the heading until the section is close. */
   .pdeck.is-live .panel {
     grid-area: 1 / 1;
     margin: 0;
     opacity: 0;
+    transform: translateY(28px);
     pointer-events: none;
-    transition: opacity 420ms var(--ease);
+    transition:
+      opacity 480ms var(--ease),
+      transform 640ms var(--ease);
   }
 
   .pdeck.is-live .panel.is-active {
     opacity: 1;
+    transform: none;
     pointer-events: auto;
+  }
+
+  .pdeck.is-live .panel.is-past {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+
+  .pdeck.is-live .pdeck__list,
+  .pdeck.is-live .pdeck__foot {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+  }
+
+  .pdeck.is-live.is-revealed .pdeck__list,
+  .pdeck.is-live.is-revealed .pdeck__foot {
+    opacity: 1;
+    transform: none;
   }
 
   @media (max-width: 860px) {
@@ -404,7 +430,10 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
     if (panels.length === 0) return;
 
     const show = (index: number) => {
-      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+      panels.forEach((panel, i) => {
+        panel.classList.toggle('is-active', i === index);
+        panel.classList.toggle('is-past', i < index);
+      });
       tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
       if (now) now.textContent = String(index + 1).padStart(2, '0');
     };
@@ -425,17 +454,30 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
     tabs.forEach((tab, index) => tab.addEventListener('click', () => jump(index)));
 
     let trigger: ScrollTrigger | null = null;
+    let reveal: IntersectionObserver | null = null;
 
     const stack = () => {
       trigger?.kill();
       trigger = null;
-      deck.classList.remove('is-live');
+      reveal?.disconnect();
+      reveal = null;
+      deck.classList.remove('is-live', 'is-revealed');
       panels.forEach((panel) => panel.classList.add('is-active'));
     };
 
     const start = () => {
       stack();
       deck.classList.add('is-live');
+      reveal = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            deck.classList.add('is-revealed');
+            reveal?.disconnect();
+          }
+        },
+        { rootMargin: '0px 0px -40% 0px' },
+      );
+      reveal.observe(deck);
       show(0);
       let current = 0;
 
