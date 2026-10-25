@@ -74,10 +74,10 @@ export const productMenu: readonly NavLink[] = [
 // to action beside it is the one link the page is trying to earn.
 export const companyNav: readonly NavItem[] = [
   { label: 'Stack', href: '#products', items: productMenu },
-  { label: 'Cases', href: '#cases' },
   { label: 'Device', href: '#device' },
   { label: 'Operations', href: '#delta' },
   { label: 'Fit', href: '#partners' },
+  { label: 'Cases', href: '#cases' },
   { label: 'Contact', href: '#contact' },
 ];
 
