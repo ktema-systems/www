@@ -84,6 +84,7 @@ export const companyNav: readonly NavItem[] = [
 export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const deltaNav: readonly NavItem[] = [
+  { label: 'The seat', href: '#seat' },
   { label: 'The loop', href: '#loop' },
   { label: 'Campaigns', href: '#campaigns' },
   { label: 'Contact', href: '#contact' },
@@ -94,15 +95,11 @@ export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
 export const productNav: readonly NavItem[] = [
   { label: 'Overview', href: '#product' },
   { label: 'Proof', href: '#proof' },
+  { label: 'Device', href: '#device-run' },
   { label: 'Contact', href: '#contact' },
 ];
 
 export const productCta: NavItem = { label: 'Get in touch', href: '#contact' };
-
-// The strip a product page carries. It holds no Products entry: the page arrives
-// with the panel unfolded, so the panel is the menu, and an entry that opens it
-// would be the second way to do what is already done.
-export const productPageNav: readonly NavItem[] = [{ label: 'Contact', href: '#contact' }];
 
 export const papers = [
   {

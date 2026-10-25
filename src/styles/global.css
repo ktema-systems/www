@@ -698,6 +698,11 @@ svg {
   color: var(--fg);
 }
 
+/* The section the page is showing, in the accent the panel's rail uses. */
+.masthead__nav a[aria-current="location"] {
+  color: var(--accent);
+}
+
 .masthead .btn {
   flex: 0 0 auto;
   font-size: 15.5px;

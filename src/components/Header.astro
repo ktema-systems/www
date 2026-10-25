@@ -354,4 +354,44 @@ const sheetItems = items.filter((item) => !item.items);
       { rootMargin: `-${barHeight}px 0px 0px 0px` },
     ).observe(heroCta);
   }
+
+  // The strip marks the section the page is showing, so the menu says where the
+  // reader is rather than only where they could go. A link whose target is missing
+  // is left alone: a page may carry the company strip without its sections.
+  const sectionLinks = Array.from(
+    masthead?.querySelectorAll<HTMLAnchorElement>('.masthead__nav a[href^="#"]') ?? [],
+  ).filter((link) => link.hash && document.querySelector(link.hash));
+
+  if (masthead && sectionLinks.length > 0) {
+    let ticking = false;
+
+    const mark = () => {
+      ticking = false;
+      const line = window.scrollY + masthead.offsetHeight + 24;
+      let active: HTMLAnchorElement = sectionLinks[0];
+
+      for (const link of sectionLinks) {
+        const target = document.querySelector<HTMLElement>(link.hash);
+        if (!target) continue;
+        if (target.getBoundingClientRect().top + window.scrollY <= line) {
+          active = link;
+        }
+      }
+
+      for (const link of sectionLinks) {
+        if (link === active) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      }
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(mark);
+    };
+
+    mark();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', mark);
+  }
 </script>

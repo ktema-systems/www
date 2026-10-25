@@ -3,7 +3,7 @@ import Base from './Base.astro';
 import Hero from '../components/Hero.astro';
 import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
-import { productCta, productMenu, productPageNav } from '../config';
+import { productCta, productMenu } from '../config';
 
 // The shell every product page but Delta and Ktema uses: a hero, the blocks the
 // product states about itself, and one way in. The shell is shared so the six pages
@@ -35,12 +35,19 @@ interface Props {
 }
 
 const { name, href, title, body, description, lede, blocks, contact } = Astro.props;
+
+// The strip lists every section the page carries, in the order the page reads, so a
+// reader can jump to the part they came for instead of scrolling the whole page.
+const nav = [
+  ...blocks.map((block) => ({ label: block.label, href: `#${block.id}` })),
+  { label: 'Contact', href: '#contact' },
+];
 ---
 
 <Base
   title={`${name}: ${title}`}
   description={description}
-  nav={productPageNav}
+  nav={nav}
   cta={productCta}
   products={productMenu}
   current={href}
