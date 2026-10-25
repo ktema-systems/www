@@ -29,9 +29,11 @@ interface Props {
   panels: Panel[];
   // Each panel's name in the footer, so the progress reads as a menu and jumps.
   labels?: readonly string[];
+  // A line under the deck about the material itself, such as a development build.
+  footnote?: string;
 }
 
-const { id, eyebrow, title, lede, panels, labels } = Astro.props;
+const { id, eyebrow, title, lede, panels, labels, footnote } = Astro.props;
 
 // A metric is written as it reads ("$2", "1,648"), and the counter needs the number
 // on its own. The digits are lifted out at build time; prefix and suffix stay text.
@@ -43,7 +45,7 @@ const splitMetric = (value: string) => {
 };
 ---
 
-<section class="pdeck" id={id} data-panel-deck style={`--steps: ${panels.length}`}>
+<section class:list={['pdeck', footnote && 'pdeck--noted']} id={id} data-panel-deck style={`--steps: ${panels.length}`}>
   <div class="pdeck__stage">
     <div class="wrap pdeck__grid">
       <header class="pdeck__head">
@@ -124,6 +126,8 @@ const splitMetric = (value: string) => {
         <div class="pdeck__rail"><span class="pdeck__bar" data-panel-bar></span></div>
         <p class="pdeck__cue">Scroll</p>
       </div>
+
+      {footnote && <p class="pdeck__note">{footnote}</p>}
     </div>
   </div>
 </section>
@@ -344,8 +348,28 @@ const splitMetric = (value: string) => {
     margin: 0;
   }
 
+  .pdeck__note {
+    margin: 0;
+    max-width: 62ch;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    line-height: 1.5;
+    color: var(--fg-3);
+  }
+
   .pdeck.is-live {
     height: calc(100svh + var(--steps) * 62svh);
+  }
+
+  /* A deck that carries a footnote gives the note the room it needs inside the
+     stage, so the line is readable without scrolling past the deck. */
+  .pdeck--noted .pdeck__stage {
+    padding-block: clamp(40px, 7vh, 80px) 28px;
+  }
+
+  .pdeck--noted .pdeck__grid {
+    gap: clamp(14px, 2vh, 22px);
   }
 
   .pdeck.is-live .pdeck__stage {
@@ -353,6 +377,10 @@ const splitMetric = (value: string) => {
     top: 0;
     height: 100svh;
     padding-block: calc(var(--masthead-h) + 24px) 40px;
+  }
+
+  .pdeck.is-live.pdeck--noted .pdeck__stage {
+    padding-block: calc(var(--masthead-h) + 12px) 20px;
   }
 
   /* The turn matches the cases deck: a panel enters from below, the one it replaced
@@ -380,7 +408,8 @@ const splitMetric = (value: string) => {
   }
 
   .pdeck.is-live .pdeck__list,
-  .pdeck.is-live .pdeck__foot {
+  .pdeck.is-live .pdeck__foot,
+  .pdeck.is-live .pdeck__note {
     opacity: 0;
     transform: translateY(18px);
     transition:
@@ -389,7 +418,8 @@ const splitMetric = (value: string) => {
   }
 
   .pdeck.is-live.is-revealed .pdeck__list,
-  .pdeck.is-live.is-revealed .pdeck__foot {
+  .pdeck.is-live.is-revealed .pdeck__foot,
+  .pdeck.is-live.is-revealed .pdeck__note {
     opacity: 1;
     transform: none;
   }
