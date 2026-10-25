@@ -42,11 +42,13 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     </div>
   </section>
 
+  <CaseDeck />
+
   <Layers />
 
   <PanelDeck
     id="device"
-    eyebrow="Device"
+    eyebrow="Substantiation"
     title="The record runs on the machine that made it."
     lede="A board of a few dozen grams, a chip that costs a couple of dollars, and no database under the engine. The records live in a partition of the flash the part already has."
     panels={[
@@ -178,8 +180,6 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     ]}
     labels={['Condition', 'Everyday', 'Critical', 'Not a fit']}
   />
-
-  <CaseDeck />
 
   <Section
     id="contact"
