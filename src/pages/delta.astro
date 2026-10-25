@@ -21,11 +21,16 @@ import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
   openProducts
 >
   <Hero
-    eyebrow="Delta"
-    title={delta.tagline}
-    lede="Delta is the Single Space Agentic AI Operation Platform: a cockpit where operators see and command robots, drones, codebases, agents, and the people who run them in one unified space. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable."
+    title={delta.category}
+    subline={delta.tagline}
+    lede="A cockpit where operators see and command robots, drones, codebases, agents, and the people who run them in one unified space. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable."
     body="What the machine does is the sum of the intents that enter the loop."
-  />
+  >
+    <a class="btn btn--accent" href="#contact" slot="actions">Talk to us</a>
+    <p class="hero-note" slot="actions">
+      Design partners now. The current demo runs on simulated data.
+    </p>
+  </Hero>
 
   <PanelDeck
     id="operations"

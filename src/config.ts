@@ -37,6 +37,7 @@ export const delta = {
   name: 'Delta',
   href: '/delta',
   title: 'the Single Space Agentic AI Operation Platform',
+  category: 'Single Space Agentic AI Operation',
   tagline: 'Every agentic entity in one space.',
   description:
     'Delta is the Single Space Agentic AI Operation Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
