@@ -52,25 +52,29 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   
   <Section
     id="partners"
-    label="Partners"
-    title="Built for the teams that carry the liability"
-    lede="We work with the teams that build these machines, from the first design to the field."
+    label="The sale"
+    title="What is sold, and to whom"
+    lede="The engine goes inside a machine someone else ships; the platform goes to the team that operates it. The buyer is the organization that answers for the machine long after it ships."
   >
     <div class="biz">
       <div>
-        <p class="biz__k">Who builds with it</p>
-        <p>Defense programs, medical device makers, vehicle programs, and energy operators. They build the machine and carry the liability for what it does in the real world.</p>
+        <p class="biz__k">What is sold</p>
+        <p>The engine as a licence per product, against the bill of materials. The record as an audit report, against liability and compliance. Delta as a subscription per deployment, against operations.</p>
       </div>
       <div>
-        <p class="biz__k">Why now</p>
-        <p>
-          The EU AI Act requires automatic logging over the life of a high-risk system, and the
-          Cyber Resilience Act keeps a manufacturer answerable for the software long after it ships.
-          A machine that carries its own record starts inside both instead of being retrofitted
-          into them.
-        </p>
+        <p class="biz__k">How it is sold</p>
+        <p>A firmware team licenses the engine and ships it inside its own system. A partner licenses it once across the systems it delivers. Delta can be bought alone, and gains the engine when the record has to be proved on the machine.</p>
+      </div>
+      <div>
+        <p class="biz__k">Who buys</p>
+        <p>Defense programs, medical device makers, vehicle programs, and energy operators. Three people sign the same answer: the executive who deploys, the operator who runs it, and the compliance officer who clears the market.</p>
+      </div>
+      <div>
+        <p class="biz__k">When it is the product</p>
+        <p>When a question over origin, event, and time has to be answered on the machine, with the link down and inside the memory the chip has. Where the record may leave the device, a database or a cloud already does that.</p>
       </div>
     </div>
+    <p class="biz-note">The EU AI Act requires automatic logging over the life of a high-risk system, and the Cyber Resilience Act keeps a manufacturer answerable after it ships. A machine that carries its own record starts inside both.</p>
   </Section>
 
   <Section
@@ -126,6 +130,19 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   /* The deck has no gap under it, and the link that closes the turn needs one. */
   .hl-close {
     padding-block: clamp(20px, 3vh, 32px) clamp(40px, 6vh, 80px);
+  }
+
+  /* The regulation line closes the grid as one more cell, so the sale reads as one
+     table rather than a table and a footnote. */
+  .biz-note {
+    margin: 0;
+    padding: 20px 24px;
+    border: 1px solid var(--line);
+    border-top: 0;
+    color: var(--fg-2);
+    font-size: 15px;
+    line-height: 1.55;
+    text-wrap: pretty;
   }
 
   .biz {

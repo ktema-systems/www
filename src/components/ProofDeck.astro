@@ -8,7 +8,6 @@
 // the failure this section exists to avoid.
 
 const steps = 4;
-const answers = Array.from({ length: 32 }, (_, index) => index);
 
 interface Props {
   eyebrow?: string;
@@ -18,8 +17,8 @@ interface Props {
 
 const {
   eyebrow = 'Proof',
-  title = 'The spatiotemporal record engine the machine keeps.',
-  lede = 'Three quantities, kept apart: what a record costs the medium, what a read costs in time and traffic, and what the engine holds in working memory. The address is the index, so a record\'s bytes stay flat in the volume, a read pays the volume in traffic, and working memory stays bounded by a segment.',
+  title = 'What the engine costs, on the machine and over the log.',
+  lede = 'Four numbers: what it takes to fit, what it costs to grow, what a question returns, and what the hardware has to provide.',
 } = Astro.props;
 ---
 
@@ -35,54 +34,47 @@ const {
       <ol class="deck__list">
         <li class="step" data-step>
           <div class="step__copy">
-            <p class="step__meta"><span>01</span><span>the medium</span></p>
+            <p class="step__meta"><span>01</span><span>the footprint</span></p>
             <p class="step__value">
-              <span data-count="482" data-decimals="0">482</span><span class="step__unit">B</span>
+              <span data-count="1648" data-decimals="0">1,648</span><span class="step__unit">B</span>
             </p>
             <p class="step__claim">
-              The address is the index. A record costs 482 bytes of flash with a thousand records
-              stored, and 483 with ten thousand.
+              The engine never holds more than 1,648 bytes of working memory on the board: a fortieth of the 64 KB arena it is
+              given.
             </p>
-            <p class="step__note">Ten times the records, one byte more per record.</p>
+            <p class="step__note">
+              An ESP32-S3 with 8 MB of flash, the records on the flash and the read path included.
+            </p>
           </div>
           <div class="step__fig">
-            <div class="row">
-              <span class="row__k">one record, 1,000 stored</span>
-              <span class="row__v">482 B</span>
-              <span class="row__track"><span class="row__fill" style="--to: 0.941"></span></span>
+            <div class="budget">
+              <span class="budget__fill" style="--to: 0.0251"></span>
+              <span class="budget__edge" style="--to: 0.0251" aria-hidden="true"></span>
             </div>
-            <div class="row">
-              <span class="row__k">one record, 10,000 stored</span>
-              <span class="row__v">483 B</span>
-              <span class="row__track"><span class="row__fill" style="--to: 0.943"></span></span>
-            </div>
-            <div class="split" aria-hidden="true">
-              <span class="split__seg split__seg--key" style="--w: 46.5">key</span>
-              <span class="split__seg split__seg--frame" style="--w: 10">framing</span>
-              <span class="split__seg split__seg--value" style="--w: 43.5">value</span>
-            </div>
-            <p class="split__legend">
-              <span class="legend__item"><span class="dot dot--key"></span>coordinate key, 224 B</span>
-              <span class="legend__item"><span class="dot dot--frame"></span>entry framing, 48 B</span>
-              <span class="legend__item"><span class="dot dot--value"></span>value and index, 210 B</span>
+            <p class="budget__legend">
+              <span>1,648 B at the peak</span>
+              <span>2.5% of a 64 KB budget</span>
             </p>
-            <p class="split__legend">Bars scaled to 512 B.</p>
+            <p class="split__legend">
+              The records sit on the flash. This is what the engine holds while it works, and it
+              does not grow with them.
+            </p>
           </div>
         </li>
 
         <li class="step" data-step>
           <div class="step__copy">
-            <p class="step__meta"><span>02</span><span>the read</span></p>
+            <p class="step__meta"><span>02</span><span>the growth</span></p>
             <p class="step__value">
               <span data-count="1.67" data-decimals="2">1.67</span><span class="step__unit">µs</span>
             </p>
             <p class="step__claim">
-              One record read back from the middle of ten thousand records: 1.67 µs against 1.04 µs
-              at a thousand.
+              A record read from the middle of ten thousand: 1.67 µs, against 1.04 µs at a
+              thousand.
             </p>
             <p class="step__note">
-              Ten times the records add two thirds of a microsecond, because a read does not walk the
-              log from its start.
+              Ten times the history adds two thirds of a microsecond, because a read does not walk
+              the log from its start.
             </p>
           </div>
           <div class="step__fig">
@@ -97,70 +89,61 @@ const {
               <span class="row__track"><span class="row__fill" style="--to: 1"></span></span>
             </div>
             <p class="delta">+0.63 µs, for ten times the records.</p>
-            <p class="split__legend">
-              Bars scaled to 1.67 µs. The bytes a read moves grow with the log; the time it takes
-              does not.
-            </p>
+            <p class="split__legend">Bars scaled to 1.67 µs.</p>
           </div>
         </li>
 
         <li class="step" data-step>
           <div class="step__copy">
-            <p class="step__meta"><span>03</span><span>the working memory</span></p>
+            <p class="step__meta"><span>03</span><span>the question</span></p>
             <p class="step__value">
-              <span data-count="5.3" data-decimals="1">5.3</span><span class="step__unit">%</span>
+              <span data-count="2.96" data-decimals="2">2.96</span><span class="step__unit">ms</span>
             </p>
             <p class="step__claim">
-              The whole run peaks at 3,504 bytes of the 65,536 it is given. The records are on the
-              flash; this is what the engine holds while it works.
+              A question that returns 1,001 records from ten thousand stored takes 2.96 ms.
             </p>
             <p class="step__note">
-              The same scenario the host runs, on riscv32imac under QEMU, with the medium at a fixed
-              address.
+              At a thousand records the same question returns 101, in 148 µs.
             </p>
           </div>
           <div class="step__fig">
-            <div class="budget">
-              <span class="budget__fill" style="--to: 0.0535"></span>
-              <span class="budget__edge" style="--to: 0.0535" aria-hidden="true"></span>
+            <div class="row">
+              <span class="row__k">1,000 stored · 101 returned</span>
+              <span class="row__v">148 µs</span>
+              <span class="row__track"><span class="row__fill" style="--to: 0.05"></span></span>
             </div>
-            <p class="budget__legend">
-              <span>3,504 B at the peak</span>
-              <span>one twentieth of 65,536 B</span>
-            </p>
-            <p class="split__legend">
-              Live state is 1,136 bytes and the run never holds more than 3,504. The history is in
-              the flash, and this figure does not grow with it.
-            </p>
+            <div class="row">
+              <span class="row__k">10,000 stored · 1,001 returned</span>
+              <span class="row__v">2.96 ms</span>
+              <span class="row__track"><span class="row__fill" style="--to: 1"></span></span>
+            </div>
+            <p class="delta">+2.81 ms, and 900 more records returned.</p>
+            <p class="split__legend">Bars scaled to 2.96 ms.</p>
           </div>
         </li>
 
         <li class="step" data-step>
           <div class="step__copy">
-            <p class="step__meta"><span>04</span><span>the question</span></p>
+            <p class="step__meta"><span>04</span><span>the integration</span></p>
             <p class="step__value">
-              <span data-count="0" data-decimals="0">0</span><span class="step__unit">B</span>
+              <span data-count="3" data-decimals="0">3</span><span class="step__unit">calls</span>
             </p>
             <p class="step__claim">
-              Answering a question costs the heap nothing at all. The peak before the query and the
-              peak after it are the same number.
+              The engine asks the hardware for three things: a region of flash, a write, and an
+              erase.
             </p>
-            <p class="step__note">Thirty-two matches over thirty-two records, read one at a time.</p>
+            <p class="step__note">
+              The log, the index on the flash, and the recovery above those three are the engine's.
+            </p>
           </div>
           <div class="step__fig">
-            <div class="answers" aria-hidden="true">
-              {
-                answers.map((index) => (
-                  <span class="answers__tick" style={`--i: ${index}`} />
-                ))
-              }
-            </div>
-            <p class="budget__legend">
-              <span>32 records matched</span>
-              <span>32 reads of 164 B</span>
+            <p class="split__legend">
+              <span class="legend__item"><span class="dot dot--key"></span>a region of flash</span>
+              <span class="legend__item"><span class="dot dot--frame"></span>a write</span>
+              <span class="legend__item"><span class="dot dot--value"></span>an erase</span>
             </p>
             <p class="split__legend">
-              An answer built in memory would hold the answer. This one walks one record at a time.
+              No operating system, no file system, and no database under it.
             </p>
           </div>
         </li>
@@ -176,9 +159,8 @@ const {
       </div>
 
       <p class="deck__source">
-        Host figures: release build, median of 51 samples. Part figures: the riscv32imac tier under
-        QEMU. Each figure says what it measures: flash for a record, bytes a read moves, or the
-        memory the engine holds.
+        The footprint is the ESP32-S3 run on the board. The read and the question are host figures:
+        release build, median of 51 samples. The three calls are the surface a firmware implements.
       </p>
     </div>
   </div>
@@ -463,25 +445,6 @@ const {
     font-variant-numeric: tabular-nums;
   }
 
-  .answers {
-    display: grid;
-    grid-template-columns: repeat(16, minmax(0, 1fr));
-    gap: 6px;
-  }
-
-  /* The same record glyph as step one, thirty-two times: the answer is records, not
-     a structure that holds them. */
-  .answers__tick {
-    height: 16px;
-    background: linear-gradient(
-      90deg,
-      var(--accent) 0 46.5%,
-      var(--accent-2) 46.5% 56.5%,
-      var(--line-2) 56.5% 100%
-    );
-    opacity: clamp(0, calc((var(--p, 1) - var(--i) * 0.028) * 10), 1);
-  }
-
   .deck__foot {
     display: flex;
     align-items: center;
@@ -583,10 +546,6 @@ const {
     .step {
       grid-template-columns: minmax(0, 1fr);
       gap: 28px;
-    }
-
-    .answers {
-      grid-template-columns: repeat(8, minmax(0, 1fr));
     }
 
     /* The legend below carries the three parts; the segments are too narrow for a label. */

@@ -75,7 +75,7 @@ export const productMenu: readonly NavLink[] = [
 export const companyNav: readonly NavItem[] = [
   { label: 'Products', href: '#products', items: productMenu },
   { label: 'Cases', href: '#cases' },
-  { label: 'Partners', href: '#partners' },
+  { label: 'Buyers', href: '#partners' },
   { label: 'Contact', href: '#contact' },
 ];
 
