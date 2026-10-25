@@ -5,7 +5,7 @@ const shot = {
   src: '/delta_devscr.jpg',
   width: 1842,
   height: 1047,
-  alt: 'The Delta cockpit during a demo campaign: intents and their claims on the left, the fleet and its live map in the middle, the projects and members on the right, and the record at the bottom.',
+  alt: 'The Delta cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, the projects on the right, and the record along the bottom.',
 };
 ---
 
@@ -21,14 +21,16 @@ const shot = {
     />
   </div>
   <figcaption>
-    A development build of Delta, running a demo campaign on a virtual scenario. The screen is the
-    operator's view: intents and their claims on the left, the fleet and its live map in the middle,
-    the record along the bottom. <span class="dshot__note">Delta is planned to be open source.</span>
+    A development build of Delta, running a demo campaign on a virtual scenario.
+    <span class="dshot__note">Delta is planned to be open source.</span>
   </figcaption>
 </figure>
 
 <style>
+  /* A screenshot of a build in progress is evidence rather than a hero, so it keeps a
+     reading width and leaves the section's measure to the text. */
   .dshot {
+    max-width: 640px;
     margin-bottom: 0;
   }
 

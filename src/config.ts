@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems makes autonomous machines answerable: a deterministic record on the device that explains any decision and computes the next state, a cockpit that replays the run, and a key that proves who was in control.',
+    'Ktema Systems makes autonomous machines answerable: a record engine that keeps a machine\'s whole history at a fixed cost in memory and time, a cockpit that replays the run, and a key that proves who was in control.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -27,7 +27,7 @@ export const product = {
   name: 'Ktema',
   href: '/ktema',
   description:
-    'Ktema is the deterministic storage engine that answers multi-dimensional queries on hardware that cannot run a database. It needs no index structure and no operating system.',
+    'Ktema is the record engine whose address is the index: a record costs the same with a thousand in the log or ten thousand, and a question is answered from the address.',
 } as const;
 
 // Delta is the Single Space Agentic AI Operation Platform, with the cockpit as the surface a
@@ -63,7 +63,7 @@ export type NavItem = { label: string; href: string; items?: readonly NavLink[] 
 export const productMenu: readonly NavLink[] = [
   { label: 'Ktema', note: 'Record', href: product.href },
   { label: 'Kletos', note: 'Execution', href: '/kletos' },
-  { label: 'Krisis', note: 'Governance', href: '/krisis' },
+  { label: 'Krisis', note: 'Judgment', href: '/krisis' },
   { label: 'Delta', note: 'Operation', href: delta.href },
   { label: 'Telos', note: 'Transport', href: '/telos' },
   { label: 'Kleis', note: 'Authorization', href: '/kleis' },

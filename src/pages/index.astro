@@ -12,8 +12,8 @@ import Section from '../components/Section.astro';
 import { companyCta, companyNav, creedLine, site } from '../config';
 
 // The company's landing page: the promise, the situations the product is built for,
-// one turn for each of the six products, and the stack they make together. The
-// detail lives on the product pages and in the pitch.
+// the six parts as one stack, one turn for each part, and the people it is built for.
+// The stack comes before the turns so a reader meets the map before the detail.
 ---
 
 <Base
@@ -48,89 +48,13 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 
   <CaseDeck />
 
-  <ProofDeck
-    eyebrow="Ktema · the time-machine data vault"
-    title="What it costs to remember everything."
-    lede="Microseconds on the host, bytes on the part. The volume grows and the record does not."
-  />
-  <div class="wrap hl-close">
-    <ProductLink href="/ktema" label="Ktema" />
-  </div>
-
-  <ProductHighlight
-    id="kletos"
-    name="Kletos"
-    meta="the autopilot"
-    title="One unit of work, four steps, one record"
-    lede="Work is stated, claimed, performed, and deposited as a fact, with a derivation that ties it to the intent that proposed it."
-    rows={[
-      {
-        k: 'Stated',
-        v: 'The work is stated, and the intent that proposes it is written with it.',
-      },
-      { k: 'Claimed', v: 'An agent, a machine, or a person takes it, and the claim is written.' },
-      { k: 'Performed', v: 'The work is done where the machine that took it runs.' },
-      {
-        k: 'Deposited',
-        v: 'The result is written as a fact, with a derivation that ties it to the intent.',
-      },
-    ]}
-    href="/kletos"
-  />
-
-  <ProductHighlight
-    id="krisis"
-    name="Krisis"
-    meta="the authority"
-    title="The rules the work runs inside"
-    lede="It sets what each action may do, chooses which model answers and at what cost, and keeps the work inside the rules a deployment declared."
-    rows={[
-      { k: 'The action', v: 'What each action may do, and what it may not.' },
-      { k: 'The model', v: 'Which model answers a request.' },
-      { k: 'The cost', v: 'What that answer costs.' },
-      { k: 'The terms', v: 'On what terms it is given.' },
-    ]}
-    href="/krisis"
-  />
-
-  <DeltaDeck eyebrow="Delta · the cockpit" title="Intent enters a moving run" />
-  <div class="wrap hl-close">
-    <ProductLink href="/delta" label="Delta" />
-  </div>
-
-  <ProductHighlight
-    id="telos"
-    name="Telos"
-    meta="the transport"
-    title="A step to another place is an address"
-    lede="Work is addressed by coordinate and reached by teleport, so an agent moves between work locations without walking a tree or scanning a path."
-    points={[
-      'Live execution states move between agents, people, and spaces.',
-      "It carries the operator's view to the machine, so the platform is a position inside the system rather than a window onto it.",
-    ]}
-    href="/telos"
-  />
-
-  <ProductHighlight
-    id="kleis"
-    name="Kleis"
-    meta="the seal"
-    title="It decides who enters"
-    lede="The key a holder presents, the seal that makes a copy of the files worth nothing, and the proof that the holder was there."
-    rows={[
-      { k: 'Who enters', v: 'Kleis, from the key the holder presents.' },
-      { k: 'What may be done', v: 'Krisis, from the rules the deployment declared.' },
-    ]}
-    href="/kleis"
-  />
-
-  <Layers />
-
+  <Layers /> 
+  
   <Section
     id="partners"
     label="Partners"
-    title="Built for physical AI autonomous systems"
-    lede="We work with the teams that build them and stand behind them after they ship."
+    title="Built for the teams that carry the liability"
+    lede="We work with the teams that build these machines, from the first design to the field."
   >
     <div class="biz">
       <div>
@@ -140,9 +64,10 @@ import { companyCta, companyNav, creedLine, site } from '../config';
       <div>
         <p class="biz__k">Why now</p>
         <p>
-          The EU AI Act and the Cyber Resilience Act require automatic logging over the life of a
-          high-risk system. A machine that carries its own record meets that requirement as it
-          ships.
+          The EU AI Act requires automatic logging over the life of a high-risk system, and the
+          Cyber Resilience Act keeps a manufacturer answerable for the software long after it ships.
+          A machine that carries its own record starts inside both instead of being retrofitted
+          into them.
         </p>
       </div>
     </div>
@@ -177,6 +102,11 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     position: relative;
     z-index: 1;
     padding-block: 4px clamp(40px, 6vh, 80px);
+    /* The scene opens wider than the window and settles into it. The part that hangs
+       past the edge is never on screen, and clipping it sideways keeps a phone from
+       scrolling the whole page to reach it. The vertical bleed is the point, so only
+       the horizontal axis is clipped. */
+    overflow-x: clip;
   }
 
   /* The sphere is the scene, so it may use the window rather than the reading column,

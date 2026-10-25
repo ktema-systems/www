@@ -192,7 +192,7 @@ const sheetItems = items.filter((item) => !item.items);
       trigger?.setAttribute('aria-expanded', String(open));
 
       window.clearTimeout(packTimer);
-      packTimer = window.setTimeout(() => masthead.classList.remove('is-settling'), 480);
+      packTimer = window.setTimeout(() => masthead.classList.remove('is-settling'), 320);
     };
 
     const open = () => {
@@ -236,15 +236,12 @@ const sheetItems = items.filter((item) => !item.items);
     }
 
     // The rail's light comes to rest over the product being read, so the panel says
-    // where the reader is instead of drifting past it. It centres on the name's text,
-    // not on the link's box: the box spans the whole column, and a light at the box
-    // centre sits to the right of the word a reader is looking at.
+    // where the reader is instead of drifting past it. The box is the column the panel
+    // gives that product, so its centre is the middle of the place the entry occupies.
     const currentEntry = menu.querySelector<HTMLElement>('a[aria-current="page"]');
-    const currentName = currentEntry?.querySelector<HTMLElement>('.product-menu__name');
 
     const settleThread = () => {
-      const anchor = currentName ?? currentEntry;
-      if (!anchor) {
+      if (!currentEntry) {
         return;
       }
 
@@ -253,10 +250,8 @@ const sheetItems = items.filter((item) => !item.items);
         return;
       }
 
-      const range = document.createRange();
-      range.selectNodeContents(anchor);
-      const textBox = range.getBoundingClientRect();
-      const center = ((textBox.left + textBox.width / 2 - panelBox.left) / panelBox.width) * 100;
+      const entryBox = currentEntry.getBoundingClientRect();
+      const center = ((entryBox.left + entryBox.width / 2 - panelBox.left) / panelBox.width) * 100;
       // The band is 22% of the rail, and background-position is a share of the space
       // left beside it, so the offset that centres the band is (center - 11) / 0.78.
       menu.style.setProperty('--focus', `${((center - 11) / 0.78).toFixed(2)}%`);
