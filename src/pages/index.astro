@@ -73,18 +73,26 @@ import { companyCta, companyNav, creedLine, site } from '../config';
       },
       {
         kicker: 'The footprint',
-        metric: { value: '1,648', unit: 'B' },
+        metrics: [{ value: '1,648', unit: 'B' }],
         title: 'The engine holds under two kilobytes while it runs',
         body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included.',
         note: 'The first start prepares the storage; later starts hold the same figure.',
       },
       {
         kicker: 'The surface',
-        metric: { value: '3', unit: 'calls' },
+        metrics: [{ value: '3', unit: 'calls' }],
         title: 'A region of flash, a write, and an erase',
         body: 'The log, the index on the medium, and the recovery above them belong to the engine, so a firmware team adds three calls to the partition it already drives.',
       },
+      {
+        kicker: 'The other side',
+        title: 'The small part is the proof, and not the ceiling',
+        point: 'What fits a two-dollar chip is what scales to a data centre.',
+        body: 'The cost is set by the design rather than by the machine: one segment held in memory, an answer read from the address, and three calls whatever the medium is. The same engine serves firmware that has never run a database, the clusters behind AI workloads, swarms of hundreds of thousands of agents, and systems in space that cannot be serviced.',
+        note: 'One engine from a microcontroller to a data centre, with three calls to port at each end.',
+      },
     ]}
+    labels={['Part', 'Footprint', 'Surface', 'Beyond']}
   />
 
   <PanelDeck
