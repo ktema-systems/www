@@ -94,9 +94,9 @@ export const deltaNav: readonly NavItem[] = [
 export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const productNav: readonly NavItem[] = [
-  { label: 'Product', href: '#product' },
   { label: 'Proof', href: '#proof' },
   { label: 'Device', href: '#device-run' },
+  { label: 'Product', href: '#product' },
   { label: 'Contact', href: '#contact' },
 ];
 

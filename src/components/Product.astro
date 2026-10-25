@@ -1,12 +1,11 @@
 ---
 import Section from './Section.astro';
-import { site } from '../config';
 
 const spec = [
   {
     term: 'Shipped as',
     detail:
-      'A component your team adds to the build it already ships. There is nothing to port and no platform to stand up.',
+      'A component your team adds to the build it already ships, with a C interface at its edge. There is nothing to port and no platform to stand up.',
   },
   {
     term: 'Self-contained',
@@ -28,6 +27,11 @@ const spec = [
     detail:
       'One codebase spans your product line, from the smallest target to the largest, so the record format does not change with the hardware.',
   },
+  {
+    term: 'The boundary',
+    detail:
+      'The record format and the research are public, so a second implementation can recompute an address. The engine, the device kernels, and the conformance program are the commercial layer.',
+  },
 ];
 ---
 
@@ -47,6 +51,12 @@ const spec = [
       ))
     }
   </dl>
+
+  <p class="note">
+    The record is also the evidence a regulated product needs. The CRA reporting duty has applied
+    since 11 September 2026, and its main obligations arrive in December 2027. The EU AI Act asks
+    for logging over the life of a high-risk system.
+  </p>
 
   <div>
     <h3>Rem, the reference product</h3>
