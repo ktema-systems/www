@@ -25,19 +25,14 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   <Hero
     eyebrow={creedLine}
     title="Replayable Agentic Computing"
-    lede="An insulin pump holds a dose. A drone turns back. A robot stops a line. Later, someone asks why, and the machine answers: what it was asked, what it did, and what limited it. That account sits on the device itself, at the moment it happened. The same record computes what happens next."
-    body="We make that answer the default. A spatiotemporal record engine on the machine, and a portable mission control where the operator rewinds and proves. No cloud. No database. The record stays where it was made, from edge sensors to space systems, from factory floors to defense programs."
+    lede="A machine acts, and later someone asks why. The record of what it was asked, what it did, and what limited it is kept on the machine, at the moment it happened."
+    body="Ktema Systems builds that record and the surface a person replays it from. The same record computes the next state, so the account and the control are one system."
     fieldReveal="scroll"
     depth
   >
     <a class="btn btn--accent" href={companyCta.href} slot="actions" data-hero-cta>
       {companyCta.label} 
     </a>
-
-    <p class="hero-cta-note" slot="actions">
-      Public demos and private beta are on the way.
-    </p>
-    
   </Hero>
 
   <section class="reach-band" aria-label="Where the engine runs">
@@ -52,29 +47,28 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   
   <Section
     id="partners"
-    label="The sale"
-    title="What is sold, and to whom"
-    lede="The engine goes inside a machine someone else ships; the platform goes to the team that operates it. The buyer is the organization that answers for the machine long after it ships."
+    label="The fit"
+    title="Where the engine is the right answer"
+    lede="Three conditions hold at once: the question spans origin, event, and time; it has to be answered where the record was made; and the memory is the one the part carries. Where they hold, a database does not fit in that memory and a cloud is beyond the link."
   >
     <div class="biz">
       <div>
-        <p class="biz__k">What is sold</p>
-        <p>The engine as a licence per product, against the bill of materials. The record as an audit report, against liability and compliance. Delta as a subscription per deployment, against operations.</p>
+        <p class="biz__k">The systems</p>
+        <p>Defense programs, medical device makers, vehicle programs, and energy operators. The machine serves for ten to thirty years, and the organization that shipped it answers for what it did.</p>
       </div>
       <div>
-        <p class="biz__k">How it is sold</p>
-        <p>A firmware team licenses the engine and ships it inside its own system. A partner licenses it once across the systems it delivers. Delta can be bought alone, and gains the engine when the record has to be proved on the machine.</p>
+        <p class="biz__k">The condition</p>
+        <p>A multi-axis question over origin, event, and time, answered on the device with the link down, inside the memory the part has. No server in the path and no index to build.</p>
       </div>
       <div>
-        <p class="biz__k">Who buys</p>
-        <p>Defense programs, medical device makers, vehicle programs, and energy operators. Three people sign the same answer: the executive who deploys, the operator who runs it, and the compliance officer who clears the market.</p>
+        <p class="biz__k">Where it does not apply</p>
+        <p>If the record may leave the device, or the system already runs a database, that database is the simpler answer and the right one.</p>
       </div>
       <div>
-        <p class="biz__k">When it is the product</p>
-        <p>When a question over origin, event, and time has to be answered on the machine, with the link down and inside the memory the chip has. Where the record may leave the device, a database or a cloud already does that.</p>
+        <p class="biz__k">Why now</p>
+        <p>The EU AI Act requires logging over the life of a high-risk system, and the Cyber Resilience Act keeps a manufacturer answerable after it ships. A machine that carries its own record starts inside both.</p>
       </div>
     </div>
-    <p class="biz-note">The EU AI Act requires automatic logging over the life of a high-risk system, and the Cyber Resilience Act keeps a manufacturer answerable after it ships. A machine that carries its own record starts inside both.</p>
   </Section>
 
   <Section
@@ -89,16 +83,6 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 </Base>
 
 <style>
-  /* The note is a footnote to the call: who can ask for a demo now, and when the
-     rest can. */
-  .hero-cta-note {
-    flex-basis: 100%;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--fg-3);
-    text-wrap: pretty;
-  }
-
   .reach-band {
     /* The globe starts behind the end of the promise: the copy is read against it,
        and the two are one scene rather than two stacked blocks. */
@@ -130,19 +114,6 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   /* The deck has no gap under it, and the link that closes the turn needs one. */
   .hl-close {
     padding-block: clamp(20px, 3vh, 32px) clamp(40px, 6vh, 80px);
-  }
-
-  /* The regulation line closes the grid as one more cell, so the sale reads as one
-     table rather than a table and a footnote. */
-  .biz-note {
-    margin: 0;
-    padding: 20px 24px;
-    border: 1px solid var(--line);
-    border-top: 0;
-    color: var(--fg-2);
-    font-size: 15px;
-    line-height: 1.55;
-    text-wrap: pretty;
   }
 
   .biz {
