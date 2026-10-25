@@ -46,7 +46,7 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
       <ol class="pdeck__list">
         {
           panels.map((panel, index) => (
-            <li class:list={['panel', index === 0 && 'is-active']} data-panel>
+            <li class:list={['panel', index === 0 && 'is-active', panel.image && 'panel--figure']} data-panel>
               <div class="panel__copy">
                 <p class="panel__kicker">{panel.kicker}</p>
                 {panel.metrics && (
@@ -154,6 +154,11 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
 
   .panel + .panel {
     margin-top: 48px;
+  }
+
+  /* A screenshot carries the panel, so it takes the wider column. */
+  .panel--figure {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 
   .panel__copy {

@@ -104,12 +104,23 @@ import { companyCta, companyNav, creedLine, site } from '../config';
       {
         kicker: 'The cockpit',
         title: 'One space for every kind of machine',
-        body: 'A flight controller, a robot on a line, and a software agent are read in the same place, and the operator acts from there rather than from three dashboards.',
+        body: 'Servos, conveyors, cameras, maintenance robots, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
         image: {
-          src: '/delta_devscr.jpg',
-          alt: 'The cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, and the record along the bottom.',
-          width: 1842,
-          height: 1047,
+          src: '/delta_scr_factory.jpeg',
+          alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
+          width: 1766,
+          height: 920,
+        },
+      },
+      {
+        kicker: 'The span',
+        title: 'Land, air, and orbit in one view',
+        body: 'A rescue run reaches from a geostationary satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map. Each element is read where it is, and the run keeps one record across all of them.',
+        image: {
+          src: '/delta_scr_satelite.jpeg',
+          alt: 'A rescue campaign on the map and in the cell view: satellites at 550, 1,200 and 35,786 km, rescue and medevac aircraft, escorts, the hospital, and the operators on one space.',
+          width: 1265,
+          height: 686,
         },
       },
       {
@@ -123,6 +134,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
         body: 'A campaign holds the situation, the briefing, the objectives, the constraints, and the record. A finished run becomes a package that can be handed on and compared against another.',
       },
     ]}
+    labels={['Cockpit', 'Span', 'Seat', 'Campaign']}
   />
 
   <PanelDeck
