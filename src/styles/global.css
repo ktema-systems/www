@@ -366,6 +366,15 @@ svg {
   color: var(--fg-3);
 }
 
+/* The line under a hero's call: the same note on every product page. */
+.hero-note {
+  flex-basis: 100%;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg-3);
+  text-wrap: pretty;
+}
+
 /* A short list of statements. The marker is a small square rather than a glyph, so
    it sits with the figures and the tables, which carry no bullets either. */
 .points {

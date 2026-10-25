@@ -2,6 +2,12 @@
 // The homepage's deck: one screen, one situation at a time, walked by the page's
 // own scroll. The panels are real markup, so the section reads as a list without
 // a script and as a deck once the scroll drives it.
+interface Props {
+  id?: string;
+  eyebrow?: string;
+}
+
+const { id = 'cases', eyebrow = 'Cases' } = Astro.props;
 
 const cases = [
   {
@@ -53,11 +59,11 @@ const cases = [
 ];
 ---
 
-<section class="cases" id="cases" data-cases style={`--cases: ${cases.length}`}>
+<section class="cases" id={id} data-cases style={`--cases: ${cases.length}`}>
   <div class="cases__stage" data-cases-stage>
     <div class="wrap cases__grid">
       <header class="cases__head">
-        <p class="eyebrow">Cases</p>
+        <p class="eyebrow">{eyebrow}</p>
         <h2>Every incident ends in a question.</h2>
         <p class="lede">
           Situations the system is built for. Each question is answered by coordinate from the

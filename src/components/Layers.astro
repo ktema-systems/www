@@ -1,6 +1,13 @@
 ---
 import PanelDeck from './PanelDeck.astro';
 
+interface Props {
+  id?: string;
+  eyebrow?: string;
+}
+
+const { id = 'products', eyebrow = 'Stack' } = Astro.props;
+
 // The stack as a deck: one part per panel, and only what that part is worth to the
 // system. The six names sit in the footer, so the progress is also the menu into the
 // stack, and a reader who wants Ktema alone can go straight to it.
@@ -48,8 +55,8 @@ const labels = parts.map((part) => part.label);
 ---
 
 <PanelDeck
-  id="products"
-  eyebrow="Stack"
+  id={id}
+  eyebrow={eyebrow}
   title="Six parts. Take the ones your system needs."
   lede="Each part stands on its own and meets the others on the same record. A device team can ship Ktema alone; an operating team can start with Delta and add the engine when the record has to be proved on the machine."
   panels={panels}

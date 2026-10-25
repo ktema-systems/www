@@ -69,17 +69,31 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Kleis', note: 'Authorization', href: '/kleis' },
 ];
 
-// Each page carries its own strip, and the anchor hrefs are relative to the page
-// that renders them. The strip is what the masthead scrolls sideways, and the call
-// to action beside it is the one link the page is trying to earn.
-export const companyNav: readonly NavItem[] = [
-  { label: 'Stack', href: '#products', items: productMenu },
-  { label: 'Device', href: '#device' },
-  { label: 'Operations', href: '#delta' },
-  { label: 'Fit', href: '#partners' },
-  { label: 'Cases', href: '#cases' },
-  { label: 'Contact', href: '#contact' },
-];
+// One definition of the homepage's sections drives both the page and the header, so
+// a label or an anchor cannot drift between them. The page renders in this order.
+export const homeSections = {
+  cases: { label: 'Cases', id: 'cases' },
+  stack: { label: 'Stack', id: 'products' },
+  device: { label: 'Substantiation', id: 'device' },
+  operations: { label: 'Operations', id: 'delta' },
+  fit: { label: 'Fit', id: 'partners' },
+  contact: { label: 'Contact', id: 'contact' },
+} as const;
+
+export const homeSectionOrder = [
+  'cases',
+  'stack',
+  'device',
+  'operations',
+  'fit',
+  'contact',
+] as const;
+
+export const companyNav: readonly NavItem[] = homeSectionOrder.map((key) => ({
+  label: homeSections[key].label,
+  href: `#${homeSections[key].id}`,
+  ...(key === 'stack' ? { items: productMenu } : {}),
+}));
 
 export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
 

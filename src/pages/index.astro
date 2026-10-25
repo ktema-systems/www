@@ -6,11 +6,10 @@ import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
 import PanelDeck from '../components/PanelDeck.astro';
-import { companyCta, companyNav, creedLine, site } from '../config';
+import { companyCta, companyNav, creedLine, homeSections, site } from '../config';
 
-// The company's landing page: the promise, the situations the product is built for,
-// the six parts as one stack, one turn for each part, and the people it is built for.
-// The stack comes before the turns so a reader meets the map before the detail.
+// The company's landing page. The sections render in homeSectionOrder, and the
+// header derives from homeSections, so a name or an anchor is changed in one place.
 ---
 
 <Base
@@ -42,13 +41,13 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     </div>
   </section>
 
-  <CaseDeck />
+  <CaseDeck id={homeSections.cases.id} eyebrow={homeSections.cases.label} />
 
-  <Layers />
+  <Layers id={homeSections.stack.id} eyebrow={homeSections.stack.label} />
 
   <PanelDeck
-    id="device"
-    eyebrow="Substantiation"
+    id={homeSections.device.id}
+    eyebrow={homeSections.device.label}
     title="The record runs on the machine that made it."
     lede="A board of a few dozen grams, a chip that costs a couple of dollars, and no database under the engine. The records live in a partition of the flash the part already has."
     panels={[
@@ -91,8 +90,8 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   />
 
   <PanelDeck
-    id="delta"
-    eyebrow="Operations"
+    id={homeSections.operations.id}
+    eyebrow={homeSections.operations.label}
     title="One space for the fleet."
     lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The first case is a fire on an island, because it shows the whole platform at once."
     panels={[
@@ -147,8 +146,8 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   />
 
   <PanelDeck
-    id="partners"
-    eyebrow="Fit"
+    id={homeSections.fit.id}
+    eyebrow={homeSections.fit.label}
     title="Where the engine is the right answer."
     lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries."
     panels={[
@@ -182,8 +181,8 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   />
 
   <Section
-    id="contact"
-    label="Contact"
+    id={homeSections.contact.id}
+    label={homeSections.contact.label}
     title="Building a system that has to answer for itself?"
     lede="Write to us. We work with design partners now."
     band

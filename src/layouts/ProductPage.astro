@@ -27,14 +27,27 @@ interface Props {
   name: string;
   href: string;
   title: string;
+  subline: string;
   body?: string;
   description: string;
   lede: string;
   blocks: Block[];
   contact: { title: string; lede: string; body: string };
+  note?: string;
 }
 
-const { name, href, title, body, description, lede, blocks, contact } = Astro.props;
+const {
+  name,
+  href,
+  title,
+  subline,
+  body,
+  description,
+  lede,
+  blocks,
+  contact,
+  note = 'Design partners now. Public demos and private beta are on the way.',
+} = Astro.props;
 
 // The strip lists every section the page carries, in the order the page reads, so a
 // reader can jump to the part they came for instead of scrolling the whole page.
@@ -53,7 +66,10 @@ const nav = [
   current={href}
   openProducts
 >
-  <Hero eyebrow={name} title={title} lede={lede} body={body} />
+  <Hero title={title} subline={subline} lede={lede} body={body}>
+    <a class="btn btn--accent" href="#contact" slot="actions">Talk to us</a>
+    <p class="hero-note" slot="actions">{note}</p>
+  </Hero>
 
   {
     blocks.map((block) => (
