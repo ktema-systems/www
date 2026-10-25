@@ -9,6 +9,7 @@ import ProductLink from '../components/ProductLink.astro';
 import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
+import PanelDeck from '../components/PanelDeck.astro';
 import { companyCta, companyNav, creedLine, site } from '../config';
 
 // The company's landing page: the promise, the situations the product is built for,
@@ -25,14 +26,18 @@ import { companyCta, companyNav, creedLine, site } from '../config';
   <Hero
     eyebrow={creedLine}
     title="Replayable Agentic Computing"
-    lede="A machine acts, and later someone asks why. The record of what it was asked, what it did, and what limited it is kept on the machine, at the moment it happened."
-    body="Ktema Systems builds that record and the surface a person replays it from. The same record computes the next state, so the account and the control are one system."
+    lede="An insulin pump holds a dose. A drone turns back. A robot stops a line. Later, someone asks why, and the machine answers: what it was asked, what it did, and what limited it. That account sits on the device itself, at the moment it happened. The same record computes what happens next."
+    body="We make that answer the default: a spatiotemporal record engine on the machine, and a portable mission control where the operator rewinds and proves. It needs no operating system, no database, and no cloud, so the record stays where it was made. The same record computes the next state, so the account and the control are one system."
     fieldReveal="scroll"
     depth
   >
     <a class="btn btn--accent" href={companyCta.href} slot="actions" data-hero-cta>
       {companyCta.label} 
     </a>
+
+    <p class="hero-cta-note" slot="actions">
+      Public demos and private beta are on the way.
+    </p>
   </Hero>
 
   <section class="reach-band" aria-label="Where the engine runs">
@@ -43,8 +48,69 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 
   <CaseDeck />
 
-  <Layers /> 
-  
+  <Layers />
+
+  <PanelDeck
+    id="device"
+    eyebrow="Device"
+    title="The record runs on the machine that made it."
+    lede="A LiteWing flight controller: an ESP32-S3 with 8 MB of flash. The engine keeps its records in a partition of that flash and reads them back after a restart."
+    panels={[
+      {
+        kicker: 'The board',
+        title: 'An ESP32-S3, a battery, and a partition',
+        body: 'The flight controller is the computer. The record is written into a 2 MB partition of the flash the board already has, and read back from it on the next start.',
+        image: {
+          src: '/esp32s3-board.jpg',
+          alt: 'An ESP32-S3-WROOM-1 module on a LiteWing flight-controller board, with its battery and USB bridge attached.',
+          width: 1440,
+          height: 739,
+        },
+      },
+      {
+        kicker: 'The run',
+        title: 'Three records, kept across four starts',
+        body: 'Each boot writes one record and reads back the ones before it. The record written by the previous boot is found by its coordinate rather than by a search, so a restart is the only thing that separates the two.',
+        note: 'Measured on the board: 1,648 bytes of working memory at the peak.',
+      },
+      {
+        kicker: 'The surface',
+        title: 'Three calls to the hardware',
+        body: 'A region of flash, a write, and an erase. The log, the index on the medium, and the recovery above them belong to the engine, so a firmware team adds three calls to the partition it already drives.',
+      },
+    ]}
+  />
+
+  <PanelDeck
+    id="delta"
+    eyebrow="Delta"
+    title="One space for the fleet."
+    lede="Delta is the cockpit: robots, drones, agents, and the people who run them, read and commanded in one space over the record the machine keeps."
+    panels={[
+      {
+        kicker: 'The cockpit',
+        title: 'One space for every kind of machine',
+        body: 'A flight controller, a robot on a line, and a software agent are read in the same place, and the operator acts from there rather than from three dashboards.',
+        image: {
+          src: '/delta_devscr.jpg',
+          alt: 'The Delta cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, and the record along the bottom.',
+          width: 1842,
+          height: 1047,
+        },
+      },
+      {
+        kicker: 'The seat',
+        title: 'The operator stands inside the run',
+        body: `A dashboard reports from outside the machine. Delta is the entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside.`,
+      },
+      {
+        kicker: 'The campaign',
+        title: 'A run another team can replay',
+        body: 'A campaign holds the situation, the briefing, the objectives, the constraints, and the record. A finished run becomes a package that can be handed on and compared against another.',
+      },
+    ]}
+  />
+
   <Section
     id="partners"
     label="The fit"
@@ -83,6 +149,16 @@ import { companyCta, companyNav, creedLine, site } from '../config';
 </Base>
 
 <style>
+  /* The note is a footnote to the call: who can ask for a demo now, and when the
+     rest can. */
+  .hero-cta-note {
+    flex-basis: 100%;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--fg-3);
+    text-wrap: pretty;
+  }
+
   .reach-band {
     /* The globe starts behind the end of the promise: the copy is read against it,
        and the two are one scene rather than two stacked blocks. */

@@ -1,0 +1,346 @@
+---
+// A short scroll-driven deck for the home page: one idea per panel, with the figure
+// beside the copy. The panels are real markup, so the section reads as a list without
+// a script and as a deck once the scroll drives it.
+interface PanelImage {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+}
+
+interface Panel {
+  kicker: string;
+  title: string;
+  body: string;
+  note?: string;
+  image?: PanelImage;
+}
+
+interface Props {
+  id: string;
+  eyebrow: string;
+  title: string;
+  lede: string;
+  panels: Panel[];
+}
+
+const { id, eyebrow, title, lede, panels } = Astro.props;
+---
+
+<section class="pdeck" id={id} data-panel-deck style={`--steps: ${panels.length}`}>
+  <div class="pdeck__stage">
+    <div class="wrap pdeck__grid">
+      <header class="pdeck__head">
+        <p class="eyebrow">{eyebrow}</p>
+        <h2>{title}</h2>
+        <p class="lede">{lede}</p>
+      </header>
+
+      <ol class="pdeck__list">
+        {
+          panels.map((panel, index) => (
+            <li class:list={['panel', index === 0 && 'is-active']} data-panel>
+              <div class="panel__copy">
+                <p class="panel__kicker">{panel.kicker}</p>
+                <h3>{panel.title}</h3>
+                <p class="panel__body">{panel.body}</p>
+                {panel.note && <p class="panel__note">{panel.note}</p>}
+              </div>
+              {panel.image && (
+                <figure class="panel__figure">
+                  <img
+                    src={panel.image.src}
+                    alt={panel.image.alt}
+                    width={panel.image.width}
+                    height={panel.image.height}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </figure>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="pdeck__foot">
+        <p class="pdeck__count">
+          <span data-panel-now>01</span>
+          <span class="pdeck__of">/ {String(panels.length).padStart(2, '0')}</span>
+        </p>
+        <div class="pdeck__rail"><span class="pdeck__bar" data-panel-bar></span></div>
+        <p class="pdeck__cue">Scroll</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pdeck {
+    position: relative;
+  }
+
+  .pdeck__stage {
+    display: grid;
+    align-items: center;
+    padding-block: clamp(48px, 8vh, 96px);
+  }
+
+  .pdeck__grid {
+    display: grid;
+    gap: clamp(20px, 3vh, 32px);
+  }
+
+  .pdeck__head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .pdeck__head h2 {
+    margin: 0;
+    font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.4rem);
+    font-stretch: 115%;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
+
+  .pdeck__list {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+  }
+
+  .panel + .panel {
+    margin-top: 48px;
+  }
+
+  .panel__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .panel__kicker {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .panel__copy h3 {
+    margin: 0;
+    font-size: clamp(1.4rem, 1.2rem + 1vw, 1.9rem);
+    font-weight: 600;
+    font-stretch: 115%;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+  }
+
+  .panel__body {
+    margin: 0;
+    max-width: 42rem;
+    color: var(--fg-2);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .panel__note {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--fg-3);
+  }
+
+  .panel__figure {
+    margin: 0;
+  }
+
+  .panel__figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+
+  .pdeck__foot {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    color: var(--fg-3);
+  }
+
+  .pdeck:not(.is-live) .pdeck__foot {
+    display: none;
+  }
+
+  .pdeck__count {
+    margin: 0;
+    color: var(--fg);
+  }
+
+  .pdeck__of {
+    margin-left: 4px;
+    color: var(--fg-3);
+  }
+
+  .pdeck__rail {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background: var(--line-2);
+  }
+
+  .pdeck__bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 100%;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  .pdeck__cue {
+    margin: 0;
+  }
+
+  .pdeck.is-live {
+    height: calc(100svh + var(--steps) * 62svh);
+  }
+
+  .pdeck.is-live .pdeck__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    padding-block: calc(var(--masthead-h) + 24px) 40px;
+  }
+
+  .pdeck.is-live .panel {
+    grid-area: 1 / 1;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 420ms var(--ease);
+  }
+
+  .pdeck.is-live .panel.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (max-width: 860px) {
+    .panel {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 22px;
+    }
+
+    .pdeck.is-live .pdeck__stage {
+      height: auto;
+      min-height: 100svh;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pdeck.is-live {
+      height: auto;
+    }
+
+    .pdeck.is-live .pdeck__stage {
+      position: static;
+      height: auto;
+    }
+
+    .pdeck.is-live .panel {
+      grid-area: auto;
+      opacity: 1;
+      pointer-events: auto;
+      transition: none;
+    }
+
+    .pdeck.is-live .panel + .panel {
+      margin-top: 48px;
+    }
+
+    .pdeck__foot {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import ScrollTrigger from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const tooSmall = window.matchMedia('(max-height: 559px), (max-width: 359px) and (max-height: 620px)');
+
+  document.querySelectorAll<HTMLElement>('[data-panel-deck]').forEach((deck) => {
+    const panels = Array.from(deck.querySelectorAll<HTMLElement>('[data-panel]'));
+    const bar = deck.querySelector<HTMLElement>('[data-panel-bar]');
+    const now = deck.querySelector<HTMLElement>('[data-panel-now]');
+    if (panels.length === 0) return;
+
+    let trigger: ScrollTrigger | null = null;
+
+    const stack = () => {
+      trigger?.kill();
+      trigger = null;
+      deck.classList.remove('is-live');
+      panels.forEach((panel) => panel.classList.add('is-active'));
+    };
+
+    const start = () => {
+      stack();
+      deck.classList.add('is-live');
+
+      const show = (index: number) => {
+        panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+        if (now) now.textContent = String(index + 1).padStart(2, '0');
+      };
+
+      show(0);
+      let current = 0;
+
+      trigger = ScrollTrigger.create({
+        trigger: deck,
+        start: 'top top',
+        end: 'bottom bottom',
+        onUpdate: (self) => {
+          if (bar) bar.style.transform = `scaleX(${self.progress})`;
+          const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
+          if (index !== current) {
+            current = index;
+            show(index);
+          }
+        },
+      });
+    };
+
+    const apply = () => {
+      if (reduce.matches || tooSmall.matches) stack();
+      else start();
+    };
+
+    apply();
+    reduce.addEventListener('change', apply);
+    tooSmall.addEventListener('change', apply);
+  });
+</script>

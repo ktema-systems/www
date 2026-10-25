@@ -37,7 +37,7 @@ export const delta = {
   name: 'Delta',
   href: '/delta',
   title: 'the Single Space Agentic AI Operation Platform',
-  tagline: 'Every kind of autonomous workforce in one space.',
+  tagline: 'Every agentic entity in one space.',
   description:
     'Delta is the Single Space Agentic AI Operation Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
 } as const;
@@ -73,7 +73,7 @@ export const productMenu: readonly NavLink[] = [
 // that renders them. The strip is what the masthead scrolls sideways, and the call
 // to action beside it is the one link the page is trying to earn.
 export const companyNav: readonly NavItem[] = [
-  { label: 'Products', href: '#products', items: productMenu },
+  { label: 'Stack', href: '#products', items: productMenu },
   { label: 'Cases', href: '#cases' },
   { label: 'Fit', href: '#partners' },
   { label: 'Contact', href: '#contact' },
