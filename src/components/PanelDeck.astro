@@ -23,9 +23,11 @@ interface Props {
   title: string;
   lede: string;
   panels: Panel[];
+  // Each panel's name in the footer, so the progress reads as a menu and jumps.
+  labels?: readonly string[];
 }
 
-const { id, eyebrow, title, lede, panels } = Astro.props;
+const { id, eyebrow, title, lede, panels, labels } = Astro.props;
 ---
 
 <section class="pdeck" id={id} data-panel-deck style={`--steps: ${panels.length}`}>
@@ -69,6 +71,21 @@ const { id, eyebrow, title, lede, panels } = Astro.props;
           <span data-panel-now>01</span>
           <span class="pdeck__of">/ {String(panels.length).padStart(2, '0')}</span>
         </p>
+        {
+          labels && (
+            <div class="pdeck__tabs">
+              {labels.map((label, index) => (
+                <button
+                  type="button"
+                  class:list={['pdeck__tab', index === 0 && 'is-active']}
+                  data-panel-tab={index}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )
+        }
         <div class="pdeck__rail"><span class="pdeck__bar" data-panel-bar></span></div>
         <p class="pdeck__cue">Scroll</p>
       </div>
@@ -195,6 +212,33 @@ const { id, eyebrow, title, lede, panels } = Astro.props;
     color: var(--fg);
   }
 
+  .pdeck__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+  }
+
+  .pdeck__tab {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--fg-3);
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+    transition: color 200ms var(--ease);
+  }
+
+  .pdeck__tab:hover,
+  .pdeck__tab:focus-visible {
+    color: var(--fg);
+  }
+
+  .pdeck__tab.is-active {
+    color: var(--accent);
+  }
+
   .pdeck__of {
     margin-left: 4px;
     color: var(--fg-3);
@@ -296,7 +340,29 @@ const { id, eyebrow, title, lede, panels } = Astro.props;
     const panels = Array.from(deck.querySelectorAll<HTMLElement>('[data-panel]'));
     const bar = deck.querySelector<HTMLElement>('[data-panel-bar]');
     const now = deck.querySelector<HTMLElement>('[data-panel-now]');
+    const tabs = Array.from(deck.querySelectorAll<HTMLButtonElement>('[data-panel-tab]'));
     if (panels.length === 0) return;
+
+    const show = (index: number) => {
+      panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
+      tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
+      if (now) now.textContent = String(index + 1).padStart(2, '0');
+    };
+
+    // A label jumps to its panel: in the deck the target is that panel's share of the
+    // section's scroll range, and in the stacked state it is the panel itself.
+    const jump = (index: number) => {
+      const motion = reduce.matches ? 'auto' : 'smooth';
+      if (!deck.classList.contains('is-live')) {
+        panels[index]?.scrollIntoView({ behavior: motion, block: 'start' });
+        return;
+      }
+      const top = deck.getBoundingClientRect().top + window.scrollY;
+      const range = deck.offsetHeight - window.innerHeight;
+      window.scrollTo({ top: top + ((index + 0.5) / panels.length) * range, behavior: motion });
+    };
+
+    tabs.forEach((tab, index) => tab.addEventListener('click', () => jump(index)));
 
     let trigger: ScrollTrigger | null = null;
 
@@ -310,12 +376,6 @@ const { id, eyebrow, title, lede, panels } = Astro.props;
     const start = () => {
       stack();
       deck.classList.add('is-live');
-
-      const show = (index: number) => {
-        panels.forEach((panel, i) => panel.classList.toggle('is-active', i === index));
-        if (now) now.textContent = String(index + 1).padStart(2, '0');
-      };
-
       show(0);
       let current = 0;
 
