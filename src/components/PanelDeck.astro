@@ -32,6 +32,15 @@ interface Props {
 }
 
 const { id, eyebrow, title, lede, panels, labels } = Astro.props;
+
+// A metric is written as it reads ("$2", "1,648"), and the counter needs the number
+// on its own. The digits are lifted out at build time; prefix and suffix stay text.
+const splitMetric = (value: string) => {
+  const match = value.match(/^([^0-9]*)([\d,]+)(.*)$/);
+  if (!match) return { prefix: '', digits: '', target: 0, suffix: value };
+  const [, prefix, digits, suffix] = match;
+  return { prefix, digits, target: Number(digits.replace(/,/g, '')), suffix };
+};
 ---
 
 <section class="pdeck" id={id} data-panel-deck style={`--steps: ${panels.length}`}>
@@ -51,12 +60,23 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
                 <p class="panel__kicker">{panel.kicker}</p>
                 {panel.metrics && (
                   <p class="panel__metrics">
-                    {panel.metrics.map((metric) => (
-                      <span class="panel__metric">
-                        <span class="panel__value">{metric.value}</span>
-                        {metric.unit && <span class="panel__unit">{metric.unit}</span>}
-                      </span>
-                    ))}
+                    {panel.metrics.map((metric) => {
+                      const parts = splitMetric(metric.value);
+                      return (
+                        <span class="panel__metric">
+                          {parts.digits ? (
+                            <span class="panel__value">
+                              {parts.prefix}
+                              <span data-count={parts.target}>{parts.digits}</span>
+                              {parts.suffix}
+                            </span>
+                          ) : (
+                            <span class="panel__value">{metric.value}</span>
+                          )}
+                          {metric.unit && <span class="panel__unit">{metric.unit}</span>}
+                        </span>
+                      );
+                    })}
                   </p>
                 )}
                 <h3>{panel.title}</h3>
@@ -416,6 +436,7 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
 <script>
   import gsap from 'gsap';
   import ScrollTrigger from 'gsap/ScrollTrigger';
+  import { resetAll, rollAll } from '../scripts/count-up';
 
   gsap.registerPlugin(ScrollTrigger);
 
@@ -436,6 +457,12 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
       });
       tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
       if (now) now.textContent = String(index + 1).padStart(2, '0');
+
+      const panel = panels[index];
+      if (panel && deck.classList.contains('is-revealed')) {
+        resetAll(panel);
+        rollAll(panel);
+      }
     };
 
     // A label jumps to its panel: in the deck the target is that panel's share of the
@@ -473,6 +500,11 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
           if (entries.some((entry) => entry.isIntersecting)) {
             deck.classList.add('is-revealed');
             reveal?.disconnect();
+            const panel = panels.find((item) => item.classList.contains('is-active'));
+            if (panel) {
+              resetAll(panel);
+              rollAll(panel);
+            }
           }
         },
         { rootMargin: '0px 0px -40% 0px' },
