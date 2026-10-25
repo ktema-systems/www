@@ -58,9 +58,12 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     panels={[
       {
         kicker: 'The part',
-        metric: { value: '$2', unit: 'MCU' },
-        title: 'A chip that costs a couple of dollars, with nothing under the engine',
-        body: 'Megabytes of flash and half a megabyte of RAM. No operating system, no database, and no file system between the engine and the flash.',
+        metrics: [
+          { value: '$2', unit: 'MCU' },
+          { value: '45', unit: 'g' },
+        ],
+        title: 'A two-dollar chip on a 45-gram airframe',
+        body: 'The board weighs 45 g without its battery, and carries megabytes of flash and half a megabyte of RAM. No operating system, no database, and no file system between the engine and the flash.',
         image: {
           src: '/esp32s3-board.jpg',
           alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',

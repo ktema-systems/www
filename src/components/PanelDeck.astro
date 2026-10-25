@@ -16,8 +16,8 @@ interface Panel {
   note?: string;
   // The one line the panel has to land, set as a pull quote above the body.
   point?: string;
-  // The number the panel exists to land, set large beside the copy.
-  metric?: { value: string; unit?: string };
+  // The numbers the panel exists to land, set large beside the copy.
+  metrics?: Array<{ value: string; unit?: string }>;
   image?: PanelImage;
 }
 
@@ -49,10 +49,14 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
             <li class:list={['panel', index === 0 && 'is-active']} data-panel>
               <div class="panel__copy">
                 <p class="panel__kicker">{panel.kicker}</p>
-                {panel.metric && (
-                  <p class="panel__metric">
-                    <span class="panel__value">{panel.metric.value}</span>
-                    {panel.metric.unit && <span class="panel__unit">{panel.metric.unit}</span>}
+                {panel.metrics && (
+                  <p class="panel__metrics">
+                    {panel.metrics.map((metric) => (
+                      <span class="panel__metric">
+                        <span class="panel__value">{metric.value}</span>
+                        {metric.unit && <span class="panel__unit">{metric.unit}</span>}
+                      </span>
+                    ))}
                   </p>
                 )}
                 <h3>{panel.title}</h3>
@@ -167,11 +171,17 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
     color: var(--accent);
   }
 
+  .panel__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 32px;
+    margin: 2px 0 0;
+  }
+
   .panel__metric {
     display: flex;
     align-items: baseline;
     gap: 8px;
-    margin: 2px 0 0;
     font-variant-numeric: tabular-nums;
   }
 
