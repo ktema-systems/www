@@ -54,38 +54,41 @@ import { companyCta, companyNav, creedLine, site } from '../config';
     id="device"
     eyebrow="Device"
     title="The record runs on the machine that made it."
-    lede="A LiteWing flight controller: an ESP32-S3 with 8 MB of flash. The engine keeps its records in a partition of that flash and reads them back after a restart."
+    lede="A board of a few dozen grams, a chip that costs a couple of dollars, and no database under the engine. The records live in a partition of the flash the part already has."
     panels={[
       {
-        kicker: 'The board',
-        title: 'An ESP32-S3, a battery, and a partition',
-        body: 'The flight controller is the computer. The record is written into a 2 MB partition of the flash the board already has, and read back from it on the next start.',
+        kicker: 'The part',
+        metric: { value: '$2', unit: 'MCU' },
+        title: 'A chip that costs a couple of dollars, with nothing under the engine',
+        body: 'Megabytes of flash and half a megabyte of RAM. No operating system, no database, and no file system between the engine and the flash.',
         image: {
           src: '/esp32s3-board.jpg',
-          alt: 'An ESP32-S3-WROOM-1 module on a LiteWing flight-controller board, with its battery and USB bridge attached.',
+          alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
           width: 1440,
           height: 739,
         },
       },
       {
-        kicker: 'The run',
-        title: 'Three records, kept across four starts',
-        body: 'Each boot writes one record and reads back the ones before it. The record written by the previous boot is found by its coordinate rather than by a search, so a restart is the only thing that separates the two.',
-        note: 'Measured on the board: 1,648 bytes of working memory at the peak.',
+        kicker: 'The footprint',
+        metric: { value: '1,648', unit: 'B' },
+        title: 'The engine holds under two kilobytes while it runs',
+        body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included.',
+        note: 'The first start prepares the storage; later starts hold the same figure.',
       },
       {
         kicker: 'The surface',
-        title: 'Three calls to the hardware',
-        body: 'A region of flash, a write, and an erase. The log, the index on the medium, and the recovery above them belong to the engine, so a firmware team adds three calls to the partition it already drives.',
+        metric: { value: '3', unit: 'calls' },
+        title: 'A region of flash, a write, and an erase',
+        body: 'The log, the index on the medium, and the recovery above them belong to the engine, so a firmware team adds three calls to the partition it already drives.',
       },
     ]}
   />
 
   <PanelDeck
     id="delta"
-    eyebrow="Delta"
+    eyebrow="Operations"
     title="One space for the fleet."
-    lede="Delta is the cockpit: robots, drones, agents, and the people who run them, read and commanded in one space over the record the machine keeps."
+    lede="The cockpit: robots, drones, agents, and the people who run them, read and commanded in one space over the record the machine keeps."
     panels={[
       {
         kicker: 'The cockpit',
@@ -93,7 +96,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
         body: 'A flight controller, a robot on a line, and a software agent are read in the same place, and the operator acts from there rather than from three dashboards.',
         image: {
           src: '/delta_devscr.jpg',
-          alt: 'The Delta cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, and the record along the bottom.',
+          alt: 'The cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, and the record along the bottom.',
           width: 1842,
           height: 1047,
         },
@@ -101,7 +104,7 @@ import { companyCta, companyNav, creedLine, site } from '../config';
       {
         kicker: 'The seat',
         title: 'The operator stands inside the run',
-        body: `A dashboard reports from outside the machine. Delta is the entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside.`,
+        body: `A dashboard reports from outside the machine. The cockpit is the entity's own coordinate space, with its record and the constraints that bound it, read and acted on from the inside.`,
       },
       {
         kicker: 'The campaign',

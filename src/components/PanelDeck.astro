@@ -14,6 +14,8 @@ interface Panel {
   title: string;
   body: string;
   note?: string;
+  // The number the panel exists to land, set large beside the copy.
+  metric?: { value: string; unit?: string };
   image?: PanelImage;
 }
 
@@ -45,6 +47,12 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
             <li class:list={['panel', index === 0 && 'is-active']} data-panel>
               <div class="panel__copy">
                 <p class="panel__kicker">{panel.kicker}</p>
+                {panel.metric && (
+                  <p class="panel__metric">
+                    <span class="panel__value">{panel.metric.value}</span>
+                    {panel.metric.unit && <span class="panel__unit">{panel.metric.unit}</span>}
+                  </p>
+                )}
                 <h3>{panel.title}</h3>
                 <p class="panel__body">{panel.body}</p>
                 {panel.note && <p class="panel__note">{panel.note}</p>}
@@ -154,6 +162,29 @@ const { id, eyebrow, title, lede, panels, labels } = Astro.props;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--accent);
+  }
+
+  .panel__metric {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 2px 0 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .panel__value {
+    font-size: clamp(2.6rem, 1.4rem + 3vw, 4rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+  }
+
+  .panel__unit {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-3);
   }
 
   .panel__copy h3 {
