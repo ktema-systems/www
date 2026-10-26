@@ -371,7 +371,7 @@ const splitMetric = (value: string) => {
   }
 
   .pdeck.is-live {
-    height: calc(100svh + var(--steps) * 62svh);
+    height: calc(100svh + var(--steps) * 82svh);
   }
 
   /* A deck that carries a footnote gives the note the room it needs inside the
@@ -404,8 +404,8 @@ const splitMetric = (value: string) => {
     transform: translateY(28px);
     pointer-events: none;
     transition:
-      opacity 480ms var(--ease),
-      transform 640ms var(--ease);
+      opacity 560ms var(--ease-deck),
+      transform 820ms var(--ease-deck);
   }
 
   .pdeck.is-live .panel.is-active {
@@ -439,12 +439,88 @@ const splitMetric = (value: string) => {
   @media (max-width: 860px) {
     .panel {
       grid-template-columns: minmax(0, 1fr);
-      gap: 22px;
+      gap: 14px;
     }
 
+    /* The deck keeps one panel in the window, so a phone gets a smaller scale of the
+       same panel. A panel that still runs past the window scrolls inside the stage
+       instead of being cut at the bottom edge. */
     .pdeck.is-live .pdeck__stage {
-      height: auto;
-      min-height: 100svh;
+      height: 100svh;
+      min-height: 0;
+      align-items: start;
+      overflow-y: auto;
+    }
+
+    .pdeck__stage,
+    .pdeck--noted .pdeck__stage,
+    .pdeck.is-live .pdeck__stage,
+    .pdeck.is-live.pdeck--noted .pdeck__stage {
+      padding-block: calc(var(--masthead-h) + 12px) 16px;
+    }
+
+    .pdeck__grid,
+    .pdeck--noted .pdeck__grid {
+      gap: 12px;
+    }
+
+    .pdeck__head {
+      gap: 6px;
+    }
+
+    .pdeck__head h2 {
+      font-size: 1.4rem;
+    }
+
+    .pdeck__head .lede {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .panel__copy {
+      gap: 6px;
+    }
+
+    .panel__metrics {
+      gap: 4px 20px;
+    }
+
+    .panel__value {
+      font-size: clamp(1.8rem, 1.4rem + 2vw, 2.4rem);
+    }
+
+    .panel__unit {
+      font-size: 10px;
+    }
+
+    .panel__copy h3 {
+      font-size: 1.15rem;
+    }
+
+    .panel__point {
+      padding-left: 10px;
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    .panel__body {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .panel__note,
+    .pdeck__foot,
+    .pdeck__note {
+      font-size: 10px;
+    }
+
+    .pdeck__foot {
+      gap: 12px;
+    }
+
+    .panel__figure img {
+      max-height: 32svh;
+      object-fit: cover;
     }
   }
 
@@ -487,6 +563,7 @@ const splitMetric = (value: string) => {
 
   document.querySelectorAll<HTMLElement>('[data-panel-deck]').forEach((deck) => {
     const panels = Array.from(deck.querySelectorAll<HTMLElement>('[data-panel]'));
+    const stage = deck.querySelector<HTMLElement>('.pdeck__stage');
     const bar = deck.querySelector<HTMLElement>('[data-panel-bar]');
     const now = deck.querySelector<HTMLElement>('[data-panel-now]');
     const tabs = Array.from(deck.querySelectorAll<HTMLButtonElement>('[data-panel-tab]'));
@@ -499,6 +576,8 @@ const splitMetric = (value: string) => {
       });
       tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
       if (now) now.textContent = String(index + 1).padStart(2, '0');
+      // A phone scrolls a long panel inside the stage, so the next one opens at its head.
+      if (stage) stage.scrollTop = 0;
 
       const panel = panels[index];
       if (panel && deck.classList.contains('is-revealed')) {
@@ -555,13 +634,23 @@ const splitMetric = (value: string) => {
       show(0);
       let current = 0;
 
+      // A panel turns only once the scroll is a fifth of a unit past the boundary,
+      // and it holds that far back again, so a flick cannot run the deck past the reader.
+      const HOLD = 0.22;
+      const pick = (position: number) => {
+        let next = current;
+        while (next < panels.length - 1 && position >= next + 1 + HOLD) next += 1;
+        while (next > 0 && position <= next - HOLD) next -= 1;
+        return next;
+      };
+
       trigger = ScrollTrigger.create({
         trigger: deck,
         start: 'top top',
         end: 'bottom bottom',
         onUpdate: (self) => {
           if (bar) bar.style.transform = `scaleX(${self.progress})`;
-          const index = Math.min(panels.length - 1, Math.floor(self.progress * panels.length));
+          const index = pick(self.progress * panels.length);
           if (index !== current) {
             current = index;
             show(index);

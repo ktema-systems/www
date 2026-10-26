@@ -33,6 +33,9 @@ const {
   fieldReveal = 'now',
   depth = false,
 } = Astro.props;
+
+// A newline in the copy is a line break the caller asked for; HTML would collapse it.
+const lines = (text: string) => text.split('\n').map((line) => line.trim());
 ---
 
 <section class="hero" id="top">
@@ -49,8 +52,16 @@ const {
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>
       {subline && <p class="hero__subline">{subline}</p>}
-      <p class="hero__lede">{lede}</p>
-      {body && <p class:list={['hero__body', depth && 'hero__body--deep']}>{body}</p>}
+      <p class="hero__lede">
+        {lines(lede).map((line, index) => <>{index > 0 && <br />}{line}</>)}
+      </p>
+      {
+        body && (
+          <p class:list={['hero__body', depth && 'hero__body--deep']}>
+            {lines(body).map((line, index) => <>{index > 0 && <br />}{line}</>)}
+          </p>
+        )
+      }
       {
         Astro.slots.has('actions') && (
           <div class="hero__actions">

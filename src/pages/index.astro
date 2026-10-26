@@ -30,8 +30,7 @@ const operationsPanels = [
   {
     kicker: 'The run',
     title: 'A fire on an island, answered by the fleet already there',
-    body: 'Survey and thermal drones map the perimeter, a relay holds the link over the strait, and crawlers and boats take the shore. Each intent is claimed by a different machine under the same wind and keep-out bounds, and the operator changes it while the run moves.',
-    note: 'Every campaign has this shape: a situation, a briefing, the objectives, the constraints, and the record.',
+    body: 'Survey and thermal drones map the perimeter, a relay holds the link over the strait, and crawlers and boats take the shore. One intent carries every machine, and the operator changes it while the run moves.',
     image: {
       src: '/delta_devscr.jpg',
       alt: 'Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers, boats and rovers in the middle, the island and its shoreline on the right, and the timeline below.',
@@ -42,7 +41,7 @@ const operationsPanels = [
   {
     kicker: 'The cell',
     title: 'A workforce runs on one intent',
-    body: 'Servos, conveyors, cameras, maintenance robots, software agents, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
+    body: 'Servos, conveyors, cameras, maintenance robots, software agents, and the people who run them, in one cell view. An intent is written once, and the cell answers from it.',
     image: {
       src: '/delta_scr_factory.jpeg',
       alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
@@ -54,7 +53,7 @@ const operationsPanels = [
     kicker: 'The span',
     metrics: [{ value: '35,786', unit: 'km' }],
     title: 'Land, air, and orbit in one view',
-    body: 'A rescue run reaches from a geostationary satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map. Each element is read where it is, and the run keeps one record across all of them.',
+    body: 'A rescue run reaches from a satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map.',
     image: {
       src: '/delta_scr_satelite.jpeg',
       alt: 'A rescue campaign on the map and in the cell view: satellites at 550, 1,200 and 35,786 km, rescue and medevac aircraft, escorts, the hospital, and the operators on one space.',
@@ -65,17 +64,17 @@ const operationsPanels = [
   {
     kicker: 'The seat',
     title: 'The operator stands inside the run',
-    body: `On the island, the operator stands in the run: the drones, their record, and the wind and keep-out bounds around them, with the intent changed from the same place the record is read.`,
+    body: `On the island, the operator stands in the run: the drones, their record, and the bounds around them, with the intent changed from where the record is read.`,
   },
   {
     kicker: 'The chain',
     title: 'The ask and the act stay one chain',
-    body: 'A request is stated, claimed, performed, and written as a result, with the link back to the request. The chain holds across agents, people, machines, and outside systems, so a run can be read back the way it happened.',
+    body: 'A request is stated, claimed, performed, and written as a result, with the link back to the request. One chain across agents, people, machines, and outside systems.',
   },
   {
     kicker: 'The terms',
     title: 'The rules are written before the work starts',
-    body: 'A smart contract or a governance rule sets which model answers, at what cost, and on whose authority, and the record is checked against it, so an audit reads a rule and a run.',
+    body: 'A smart contract or a governance rule sets which model answers, at what cost, and on whose authority. The record is checked against it.',
   },
   {
     kicker: 'The campaign',
@@ -88,12 +87,12 @@ const enginePanels = [
   {
     kicker: 'The engine',
     title: 'One engine, every process',
-    body: 'The engine runs in the software that needs it: a service, an operating system, an agent, a gateway, or a device. It attaches to the stack already there.',
+    body: 'It runs where the work runs: a service, an operating system, an agent, or a device.',
   },
   {
     kicker: 'Alongside the database',
     title: 'Keep the database. Send it fewer questions',
-    body: 'A multi-axis question normally costs an index per axis—written, rebuilt, and kept. The engine answers from the record itself, so you keep your Postgres, SQLite, or existing database for transactions, and send only the multi-axis queries to the engine. No second index to maintain.',
+    body: 'A multi-axis question costs an index per axis. The engine answers it from the record. Your database keeps transactions.',
   },
   {
     kicker: 'The part',
@@ -102,7 +101,7 @@ const enginePanels = [
       { value: '45', unit: 'g' },
     ],
     title: 'A two-dollar chip on a 45-gram airframe',
-    body: 'A two-dollar module on a 45-gram board without its battery, with 8 MB of flash and half a megabyte of RAM. The engine writes to the flash directly.',
+    body: 'A two-dollar module on a board without its battery: 8 MB of flash and half a megabyte of RAM.',
     image: {
       src: '/esp32s3-board.jpg',
       alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
@@ -114,13 +113,13 @@ const enginePanels = [
     kicker: 'The footprint',
     metrics: [{ value: '1,648', unit: 'B' }],
     title: 'The same engine holds under two kilobytes on the part',
-    body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included. A boot does no storage work to find them.',
-    note: 'The first start prepares the storage; later starts hold the same figure.',
+    body: 'Peak working memory on the part, records on the flash, read path included. A boot does no storage work to find them.',
+    note: 'The first start prepares the storage; later starts hold this figure.',
   },
   {
     kicker: 'The range',
     title: 'One format across the range',
-    body: 'The working memory stays flat as the log grows. On the RISC-V reference part, which carries 256 KB of flash and 64 KB of SRAM, the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash.',
+    body: 'Working memory stays flat as the log grows. On the RISC-V reference part (256 KB flash, 64 KB SRAM), the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash.',
   },
 ];
 
@@ -134,7 +133,7 @@ const fitPanels = [
   {
     kicker: 'Everyday',
     title: 'The same shape on things people already run',
-    point: 'A service that keeps a season of runs. A bike computer that keeps a season of rides.',
+    point: 'A service that keeps a year of runs. A bike computer that keeps a season of rides.',
     body: 'Which deploy cost the latency, or what changed since Monday, answered in the process itself. No account and no round trip.',
   },
   {
@@ -142,13 +141,13 @@ const fitPanels = [
     title: 'Where the answer has to survive the audit',
     point: 'Ten to thirty years in service, and the organization that shipped it answers for what it did.',
     body: 'Defense programs, medical device makers, vehicle programs, and energy operators. The machine outlives the deployment, and the record has to outlive the machine.',
-    note: 'For medical and automotive programs, the EU AI Act requires logging over the life of a high-risk system. For industrial and energy programs, the CRA reporting duty has applied since 11 September 2026, with main obligations from 11 December 2027. A defense program answers to its own regime.'
+    note: 'Medical and automotive: the EU AI Act requires logging over the life of a high-risk system. Industrial and energy: the CRA reporting duty has applied since 11 September 2026, with main obligations from 11 December 2027. Defense answers to its own regime.',
   },
   {
     kicker: 'The boundary',
     title: 'The line sits above the engine',
     point: 'If the system has to answer from its own record, the engine is the answer.',
-    body: 'What happens above that line is yours: your database, your cloud, and your services. You connect it and feed it as you already do, and the format does not change with that choice.',
+    body: 'What happens above that line is yours: your database, your cloud, and your services. Connect it as you already do; the format does not change.',
   },
 ];
 
@@ -168,9 +167,8 @@ const assertNever = (value: never): never => {
         eyebrow=""
         title="Replayable Agentic Computing"
         subline="Every agent acts. Answer stays on it."
-        lede="AI agent books shipment. Drone turns back. Insulin pump holds dose. Robot stops line.
-        Later, someone asks why, and the system answers from its own record: what was asked, what it did, and what limited it."
-        body="We answer multi-axis questions without an index to maintain. We turn intent into verified work, enforce the rules that bound it, and put the operator inside the machine's own space to rewind and prove the decision. One open format. A proprietary build, for any target. Your stack stays unchanged.",
+        lede="AI agent books shipment. Drone turns back. Insulin pump holds dose. Robot stops line. Later, someone asks why, and the system answers from its own record: what was asked, what it did, and what limited it."
+        body="We answer multi-axis questions without an index to maintain. We turn intent into verified work, enforce the rules that bound it, and put the operator inside the machine's own space to rewind and prove the decision. One open format. A proprietary build for any target. Your stack stays unchanged.",
         fieldReveal="scroll"
         depth
       >
@@ -188,7 +186,7 @@ const assertNever = (value: never): never => {
       <Reach
         caption={{
           lead: 'One space and protocol, from chip to orbit.',
-          body: 'Each agent, service, or machine keeps its own record. Records meet at the same point without talking. One record explains a move and the state it reached. Connect through your existing infrastructure — or let our mission control do it.',
+          body: 'Each agent, service, or machine keeps its own record. Records meet at the same point without talking. One record explains a move and the state it reached. Connect through your own infrastructure, or through our mission control.',
         }}
       />
     </div>
@@ -204,7 +202,7 @@ const assertNever = (value: never): never => {
             id={section.id}
             eyebrow={section.label}
             title="One space for the work."
-            lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside. The first case is a fire on an island, because it shows the whole platform at once."
+            lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside. The first case is a fire on an island."
             panels={operationsPanels}
             labels={['Run', 'Cell', 'Span', 'Seat', 'Chain', 'Terms', 'Campaign']}
             footnote="Pre-release development builds on simulated campaign data."
@@ -216,10 +214,9 @@ const assertNever = (value: never): never => {
             id={section.id}
             eyebrow={section.label}
             title="One engine, from a server to a two-dollar drone."
-            lede="The same format runs on a server, in an operating system, beside a database, and on a two-dollar drone. The drone is the floor, not the product."
+            lede="The same format runs on a server, beside a database, and on a two-dollar drone. The drone is the floor, not the product."
             panels={enginePanels}
             labels={['Engine', 'Alongside', 'Part', 'Footprint', 'Range']}
-            footnote="The board is the smallest end of the range; the same engine runs in software."
           />
         );
       case 'cases':
@@ -230,7 +227,7 @@ const assertNever = (value: never): never => {
             id={section.id}
             eyebrow={section.label}
             title="Where the record answers from itself."
-            lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the system has."
+            lede="The question combines several axes, it has to be answered where the record was made, and the memory is the one the system has."
             panels={fitPanels}
             labels={['Condition', 'Everyday', 'Critical', 'Boundary']}
           />

@@ -212,6 +212,9 @@
   --section-y: clamp(104px, 11vh, 136px);
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* The decks move on the reader's scroll, where the expo-out curve reads as a
+     flick. This one spreads the travel and settles late, so a panel arrives. */
+  --ease-deck: cubic-bezier(0.4, 0.02, 0.24, 1);
   --dur: 320ms;
 }
 
