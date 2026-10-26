@@ -250,14 +250,10 @@ const sheetItems = items.filter((item) => !item.items);
       }
 
       const entryBox = currentEntry.getBoundingClientRect();
-      // The entry is a column and its name is a block across it, so both the entry and
-      // the block centre right of the word. The name's text node is the word.
-      const nameElement = currentEntry.querySelector<HTMLElement>('.product-menu__name');
-      const range = document.createRange();
-      range.selectNodeContents(nameElement ?? currentEntry);
-      const labelBox = range.getBoundingClientRect();
-      const box = labelBox.width > 0 ? labelBox : entryBox;
-      const center = ((box.left + box.width / 2 - panelBox.left) / panelBox.width) * 100;
+      // The light sits at the centre of the entry's box, which is the column the panel
+      // gives the product, so it marks the row rather than the word inside it.
+      const center =
+        ((entryBox.left + entryBox.width / 2 - panelBox.left) / panelBox.width) * 100;
       // The band is 22% of the rail, and background-position is a share of the space
       // left beside it, so the offset that centres the band is (center - 11) / 0.78.
       menu.style.setProperty('--focus', `${((center - 11) / 0.78).toFixed(2)}%`);

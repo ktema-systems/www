@@ -875,6 +875,17 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   background-position: var(--focus, -40%) 0;
 }
 
+/* A page whose panel arrives open parks the light rather than running the thread
+   from the start, and it stays dark until the light has a place to rest. The arrival
+   is the open panel, not a light travelling to its position. */
+.masthead[data-open-products="true"] .product-menu::before {
+  animation: none;
+}
+
+.masthead[data-open-products="true"] .product-menu:not(.has-focus)::before {
+  opacity: 0;
+}
+
 .product-menu__inner {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));

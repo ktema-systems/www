@@ -101,7 +101,7 @@ const enginePanels = [
       { value: '45', unit: 'g' },
     ],
     title: 'A two-dollar chip on a 45-gram airframe',
-    body: 'A two-dollar module on a board without its battery: 8 MB of flash and half a megabyte of RAM.',
+    body: 'A two-dollar module on a board with 8 MB of flash and half a megabyte of RAM.',
     image: {
       src: '/esp32s3-board.jpg',
       alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
@@ -166,9 +166,9 @@ const assertNever = (value: never): never => {
     <Hero
         eyebrow=""
         title="Replayable Agentic Computing"
-        subline="Every agent acts. Answer stays on it."
-        lede="AI agent books shipment. Drone turns back. Insulin pump holds dose. Robot stops line. Later, someone asks why, and the system answers from its own record: what was asked, what it did, and what limited it."
-        body="We answer multi-axis questions without an index to maintain. We turn intent into verified work, enforce the rules that bound it, and put the operator inside the machine's own space to rewind and prove the decision. One open format. Extreme portability. $2 chip to a data center. Your stack stays unchanged.",
+        subline="Every act, answerable."
+        lede="An agent books a shipment. A drone turns back. An insulin pump holds a dose. A robot stops a line. Later, someone asks why, and the system answers from its own record: what was asked, what it did, and what limited it."
+        body="We answer multi-axis questions without an index to maintain, turn intent into verified work, and put the operator inside the machine's own space to replay and prove the decision. One open format, from a two-dollar chip to a data center, and your stack stays as it is."
         fieldReveal="scroll"
         depth
       >
@@ -185,8 +185,8 @@ const assertNever = (value: never): never => {
     <div class="wrap">
       <Reach
         caption={{
-          lead: 'One space and protocol, from chip to orbit.',
-          body: 'Each agent, service, or machine keeps its own record. Records meet at the same point without talking. One record explains a move and the state it reached. Connect through your own infrastructure, or through our mission control.',
+          lead: 'One space and format, from chip to orbit.',
+          body: 'Each agent, service, or machine keeps its own record. A record from one is read at the same coordinate by another, with no translator between them. One record explains a move and the state it reached. Connect through your own infrastructure, or through our mission control.',
         }}
       />
     </div>
@@ -205,7 +205,7 @@ const assertNever = (value: never): never => {
             lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside. The first case is a fire on an island."
             panels={operationsPanels}
             labels={['Run', 'Cell', 'Span', 'Seat', 'Chain', 'Terms', 'Campaign']}
-            footnote="Pre-release development builds on simulated campaign data."
+            footnote="Pre-release development builds on simulated campaign data. Delta is planned to be open source."
           />
         );
       case 'engine':
@@ -227,7 +227,7 @@ const assertNever = (value: never): never => {
             id={section.id}
             eyebrow={section.label}
             title="Where the record answers from itself."
-            lede="The question combines several axes, it has to be answered where the record was made, and the memory is the one the system has."
+            lede="The question combines several axes. It has to be answered where the record was made, inside the memory the system has."
             panels={fitPanels}
             labels={['Condition', 'Everyday', 'Critical', 'Boundary']}
           />
