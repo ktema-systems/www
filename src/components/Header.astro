@@ -1,9 +1,8 @@
 ---
-import { companyCta, companyNav, site, type NavItem, type NavLink } from '../config';
+import { companyCta, defaultNav, site, type NavItem, type NavLink } from '../config';
 
 // Each page hands its own strip in, because an anchor points at a section the page
-// it sits on carries. The default is the company home's, so a page that passes
-// nothing still gets a working masthead.
+// it sits on carries. A page that passes nothing gets the site's fallback strip.
 interface Props {
   items?: readonly NavItem[];
   cta?: NavItem;
@@ -18,7 +17,7 @@ interface Props {
 }
 
 const {
-  items = companyNav,
+  items = defaultNav,
   cta = companyCta,
   products,
   current,
@@ -368,7 +367,7 @@ const sheetItems = items.filter((item) => !item.items);
     const mark = () => {
       ticking = false;
       const line = window.scrollY + masthead.offsetHeight + 24;
-      let active: HTMLAnchorElement = sectionLinks[0];
+      let active: HTMLAnchorElement | null = null;
 
       for (const link of sectionLinks) {
         const target = document.querySelector<HTMLElement>(link.hash);

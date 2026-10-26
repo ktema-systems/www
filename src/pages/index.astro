@@ -6,10 +6,25 @@ import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
 import PanelDeck from '../components/PanelDeck.astro';
-import { companyCta, companyNav, homeSectionOrder, homeSections, site } from '../config';
+import { companyCta, productMenu, site, type NavItem } from '../config';
 
-// The company's landing page. Hero and Reach lead the page; every section below
-// them renders in homeSectionOrder, so the header and the page share one order.
+// The homepage owns its sections and its strip. The order, labels, and anchors below
+// drive both the page and the header, so they cannot drift.
+
+const homeSections = [
+  { key: 'stack', label: 'Stack', id: 'products' },
+  { key: 'operations', label: 'Operations', id: 'delta' },
+  { key: 'engine', label: 'Engine', id: 'engine' },
+  { key: 'cases', label: 'Cases', id: 'cases' },
+  { key: 'fit', label: 'Fit', id: 'partners' },
+  { key: 'contact', label: 'Contact', id: 'contact' },
+] as const;
+
+const companyNav: readonly NavItem[] = homeSections.map(({ key, label, id }) => ({
+  label,
+  href: `#${id}`,
+  ...(key === 'stack' ? { items: productMenu } : {}),
+}));
 
 const operationsPanels = [
   {
@@ -26,8 +41,8 @@ const operationsPanels = [
   },
   {
     kicker: 'The cell',
-    title: 'A factory cell runs on one intent',
-    body: 'Servos, conveyors, cameras, maintenance robots, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
+    title: 'A workforce runs on one intent',
+    body: 'Servos, conveyors, cameras, maintenance robots, software agents, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
     image: {
       src: '/delta_scr_factory.jpeg',
       alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
@@ -53,13 +68,33 @@ const operationsPanels = [
     body: `On the island, the operator stands in the run: the drones, their record, and the wind and keep-out bounds around them, with the intent changed from the same place the record is read.`,
   },
   {
+    kicker: 'The chain',
+    title: 'The ask and the act stay one chain',
+    body: 'A request is stated, claimed, performed, and written as a result, with the link back to the request. The chain holds across agents, people, machines, and outside systems, so a run can be read back the way it happened.',
+  },
+  {
+    kicker: 'The terms',
+    title: 'The rules are written before the work starts',
+    body: 'A smart contract or a governance rule sets which model answers, at what cost, and on whose authority, and the record is checked against it, so an audit reads a rule and a run.',
+  },
+  {
     kicker: 'The campaign',
     title: 'A run another team can replay',
     body: 'A finished run becomes a package that can be handed on and compared against another. The next campaign starts from it.',
   },
 ];
 
-const devicePanels = [
+const enginePanels = [
+  {
+    kicker: 'The engine',
+    title: 'One engine, every process',
+    body: 'The engine runs in the software that needs it: a service, an operating system, an agent, a gateway, or a device. It attaches to the stack already there.',
+  },
+  {
+    kicker: 'Alongside the database',
+    title: 'Keep the database. Send it fewer questions',
+    body: 'A multi-axis question normally costs an index per axis—written, rebuilt, and kept. The engine answers from the record itself, so you keep your Postgres, SQLite, or existing database for transactions, and send only the multi-axis queries to the engine. No second index to maintain.',
+  },
   {
     kicker: 'The part',
     metrics: [
@@ -78,20 +113,13 @@ const devicePanels = [
   {
     kicker: 'The footprint',
     metrics: [{ value: '1,648', unit: 'B' }],
-    title: 'The engine holds under two kilobytes while it runs',
+    title: 'The same engine holds under two kilobytes on the part',
     body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included. A boot does no storage work to find them.',
     note: 'The first start prepares the storage; later starts hold the same figure.',
   },
   {
-    kicker: 'The comparison',
-    metrics: [{ value: '100', unit: 'KB' }],
-    title: 'What a database needs for the same question',
-    body: 'A minimum SQLite build needs an operating system and about 100 KB of heap for its B-tree, and it rebuilds on boot. The engine holds 1,648 bytes, with nothing running under it.',
-    note: 'The engine figure is measured on the board; the database figure is its published minimum.',
-  },
-  {
     kicker: 'The range',
-    title: 'The same engine runs from firmware to a data centre',
+    title: 'One format across the range',
     body: 'The working memory stays flat as the log grows. On the RISC-V reference part, which carries 256 KB of flash and 64 KB of SRAM, the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash.',
   },
 ];
@@ -99,15 +127,15 @@ const devicePanels = [
 const fitPanels = [
   {
     kicker: 'The condition',
-    title: 'Answered on the machine, inside the memory it has',
-    point: 'The link is down, the question is multi-axis, and no database fits in the part.',
-    body: 'A record made on the machine answers from its own history.',
+    title: 'Answered where the record is made, inside the memory it has',
+    point: 'The question is multi-axis, and the answer has to come from the record the system keeps.',
+    body: 'A record made where the work runs answers from its own history.',
   },
   {
     kicker: 'Everyday',
-    title: 'The same shape on things people already own',
-    point: 'A bike computer that keeps a season of rides. An espresso machine that remembers every shot.',
-    body: 'Which climb cost the battery, or what changed since Monday, answered on the device itself. No phone, no account, and no round trip.',
+    title: 'The same shape on things people already run',
+    point: 'A service that keeps a season of runs. A bike computer that keeps a season of rides.',
+    body: 'Which deploy cost the latency, or what changed since Monday, answered in the process itself. No account and no round trip.',
   },
   {
     kicker: 'Critical systems',
@@ -117,12 +145,17 @@ const fitPanels = [
     note: 'For medical and automotive programs, the EU AI Act requires logging over the life of a high-risk system. For industrial and energy programs, the CRA reporting duty has applied since 11 September 2026, with main obligations from 11 December 2027. A defense program answers to its own regime.'
   },
   {
-    kicker: 'Where it does not apply',
-    title: 'When a database is the right answer',
-    point: 'If the record may leave the device, a database already does this.',
-    body: 'A system that already runs a database, or one whose record may live on a server, does not need the engine. The boundary is part of the specification.',
+    kicker: 'The boundary',
+    title: 'The line sits above the engine',
+    point: 'If the system has to answer from its own record, the engine is the answer.',
+    body: 'What happens above that line is yours: your database, your cloud, and your services. You connect it and feed it as you already do, and the format does not change with that choice.',
   },
 ];
+
+const assertNever = (value: never): never => {
+  throw new Error(`Unhandled home section: ${JSON.stringify(value)}`);
+};
+
 ---
 
 <Base
@@ -134,9 +167,9 @@ const fitPanels = [
     <Hero
         eyebrow=""
         title="Replayable Agentic Computing"
-        subline="Autonomous machine acts. Answer stays on it."
-        lede="An insulin pump holds a dose. A drone turns back. Later, someone asks why, and the machine answers from the record it keeps: what it was asked, what it did, and what limited it."
-        body="The spatiotemporal record is made on the machine with no OS, database, or cloud. Nothing above it moves. One format. It drops into your infrastructure. A portable mission cockpit is where the operator rewinds and proves."
+        subline="Every agent acts. Answer stays on it."
+        lede="A software agent books a shipment. A drone turns back. An insulin pump holds a dose. Later, someone asks why, and the system answers from the record it keeps by default: what was asked, what it did, and what limited it."
+        body="We answer multi-axis questions without an index to maintain. We turn intent into verified work, enforce the rules that bound it, and put the operator inside the machine's own space to rewind and prove the decision. One open format, in software or on a device, on the stack you already use."
         fieldReveal="scroll"
         depth
       >
@@ -154,58 +187,58 @@ const fitPanels = [
       <Reach
         caption={{
           lead: 'One space and protocol, from chip to orbit.',
-          body: 'Each machine holds its record at its coordinate. Records meet at the same point. A path is an address move; one record explains both the move and the state. Connect via your infrastructure, or let our mission control do it.',
+          body: 'Each agent, service, or machine keeps its own record. Records meet at the same point without talking. One record explains a move and the state it reached. Connect through your existing infrastructure — or let our mission control do it.',
         }}
       />
     </div>
   </section>
 
-  {homeSectionOrder.map((key) => {
-    switch (key) {
+  {homeSections.map((section) => {
+    switch (section.key) {
       case 'stack':
-        return <Layers id={homeSections.stack.id} eyebrow={homeSections.stack.label} />;
+        return <Layers id={section.id} eyebrow={section.label} />;
       case 'operations':
         return (
           <PanelDeck
-            id={homeSections.operations.id}
-            eyebrow={homeSections.operations.label}
-            title="One space for the fleet."
-            lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The first case is a fire on an island, because it shows the whole platform at once."
+            id={section.id}
+            eyebrow={section.label}
+            title="One space for the work."
+            lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside. The first case is a fire on an island, because it shows the whole platform at once."
             panels={operationsPanels}
-            labels={['Run', 'Cell', 'Span', 'Seat', 'Campaign']}
+            labels={['Run', 'Cell', 'Span', 'Seat', 'Chain', 'Terms', 'Campaign']}
             footnote="Pre-release development builds on simulated campaign data."
           />
         );
-      case 'device':
+      case 'engine':
         return (
           <PanelDeck
-            id={homeSections.device.id}
-            eyebrow={homeSections.device.label}
-            title="The engine runs on even the cheapest machine."
-            lede="A board of a few dozen grams, a chip that costs a couple of dollars, and the records in a partition of the flash the part already has."
-            panels={devicePanels}
-            labels={['Part', 'Footprint', 'Compare', 'Beyond']}
-            footnote="Validation continues past the board into RTL equivalence and FPGA timing."
+            id={section.id}
+            eyebrow={section.label}
+            title="One engine, from a server to a two-dollar drone."
+            lede="The same format runs on a server, in an operating system, beside a database, and on a two-dollar drone. The drone is the floor, not the product."
+            panels={enginePanels}
+            labels={['Engine', 'Alongside', 'Part', 'Footprint', 'Range']}
+            footnote="The board is the smallest end of the range; the same engine runs in software."
           />
         );
       case 'cases':
-        return <CaseDeck id={homeSections.cases.id} eyebrow={homeSections.cases.label} />;
+        return <CaseDeck id={section.id} eyebrow={section.label} />;
       case 'fit':
         return (
           <PanelDeck
-            id={homeSections.fit.id}
-            eyebrow={homeSections.fit.label}
-            title="Where the engine is the right answer."
-            lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries."
+            id={section.id}
+            eyebrow={section.label}
+            title="Where the record answers from itself."
+            lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the system has."
             panels={fitPanels}
-            labels={['Condition', 'Everyday', 'Critical', 'Not a fit']}
+            labels={['Condition', 'Everyday', 'Critical', 'Boundary']}
           />
         );
       case 'contact':
         return (
           <Section
-            id={homeSections.contact.id}
-            label={homeSections.contact.label}
+            id={section.id}
+            label={section.label}
             title="Building a system that has to answer for itself?"
             lede="Write to us. The design-partner program is open now."
             band
@@ -214,7 +247,7 @@ const fitPanels = [
           </Section>
         );
       default:
-        return null;
+        return assertNever(section);
     }
   })}
 </Base>

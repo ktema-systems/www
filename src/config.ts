@@ -11,9 +11,9 @@ export const site = {
   // it carries this qualifier. The preprints use the same one on the affiliation
   // line.
   legalStatus: 'pre-incorporation',
-  tagline: 'Machine answers.',
+  tagline: 'Every act, answerable.',
   description:
-    'Ktema Systems makes autonomous machines answerable: a record engine that keeps a machine\'s whole history with memory that does not grow with the log, a cockpit that replays the run, and a key that proves who was in control.',
+    'Ktema Systems makes every autonomous act answerable: a portable record engine with memory that does not grow with the log, an execution layer that binds intent to work, a cockpit that replays the run, governance over what the work may do, and a key that proves who was in control.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -27,7 +27,7 @@ export const product = {
   name: 'Ktema',
   href: '/ktema',
   description:
-    'Ktema is the record engine whose address is the index: the working memory it needs does not grow with the log, and a question is answered from the address.',
+    'Ktema is a portable multi-dimensional query engine: working memory does not grow with the log, and a question is answered without an index to maintain.',
 } as const;
 
 // Delta is the Single-Space Agentic Operations Platform, with the cockpit as the surface a
@@ -58,54 +58,14 @@ export const productMenu: readonly NavLink[] = [
   { label: 'Kleis', note: 'Authorization', href: '/kleis' },
 ];
 
-// One definition of the homepage's sections drives both the page and the header, so
-// a label or an anchor cannot drift between them. The page renders in this order.
-export const homeSections = {
-  cases: { label: 'Cases', id: 'cases' },
-  stack: { label: 'Stack', id: 'products' },
-  device: { label: 'Validation', id: 'device' },
-  operations: { label: 'Operations', id: 'delta' },
-  fit: { label: 'Fit', id: 'partners' },
-  contact: { label: 'Contact', id: 'contact' },
-} as const;
-
-export const homeSectionOrder = [
-  'stack',
-  'operations',
-  'device',
-  'cases',
-  'fit',
-  'contact',
-] as const;
-
-export const companyNav: readonly NavItem[] = homeSectionOrder.map((key) => ({
-  label: homeSections[key].label,
-  href: `#${homeSections[key].id}`,
-  ...(key === 'stack' ? { items: productMenu } : {}),
-}));
+// The fallback strip for a page that carries no nav of its own. The homepage passes
+// its own sections, because an anchor points at a section that page carries.
+export const defaultNav: readonly NavItem[] = [
+  { label: 'Products', href: '/#products', items: productMenu },
+  { label: 'Contact', href: '/#contact' },
+];
 
 export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
-
-export const deltaNav: readonly NavItem[] = [
-  { label: 'Operations', href: '#operations' },
-  { label: 'The seat', href: '#seat' },
-  { label: 'The loop', href: '#loop' },
-  { label: 'Campaigns', href: '#campaigns' },
-  { label: 'Contact', href: '#contact' },
-];
-
-export const deltaCta: NavItem = { label: 'Get in touch', href: '#contact' };
-
-export const productNav: readonly NavItem[] = [
-  { label: 'Why', href: '#why' },
-  { label: 'Engine', href: '#engine' },
-  { label: 'Proof', href: '#proof' },
-  { label: 'Device', href: '#device-run' },
-  { label: 'Product', href: '#product' },
-  { label: 'Contact', href: '#contact' },
-];
-
-export const productCta: NavItem = { label: 'Get in touch', href: '#contact' };
 
 export const papers = [
   {

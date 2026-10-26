@@ -4,18 +4,26 @@ import Hero from '../components/Hero.astro';
 import PanelDeck from '../components/PanelDeck.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
 import Section from '../components/Section.astro';
-import { delta, deltaCta, deltaNav, productMenu, site } from '../config';
+import { companyCta, delta, productMenu, site, type NavItem } from '../config';
 
 // Delta's page: the platform, the cases it runs, the seat it gives the operator,
 // and the loop. The island run comes first because it shows the whole platform at
 // once, and the hand-off carries the reader to the loop underneath.
+
+const deltaNav: readonly NavItem[] = [
+  { label: 'Operations', href: '#operations' },
+  { label: 'The seat', href: '#seat' },
+  { label: 'The loop', href: '#loop' },
+  { label: 'Campaigns', href: '#campaigns' },
+  { label: 'Contact', href: '#contact' },
+];
 ---
 
 <Base
   title={`${delta.name}: ${delta.title}`}
   description={delta.description}
   nav={deltaNav}
-  cta={deltaCta}
+  cta={companyCta}
   products={productMenu}
   current={delta.href}
   openProducts

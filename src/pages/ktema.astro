@@ -7,26 +7,34 @@ import ProofDeck from '../components/ProofDeck.astro';
 import DeviceRun from '../components/DeviceRun.astro';
 import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
-import { product, productCta, productMenu, productNav } from '../config';
+import { companyCta, product, productMenu, type NavItem } from '../config';
 
 // The engine's page: what it is, what it measures, and how it ships. The market
 // case and the comparison against other stores stay in the pitch.
+const productNav: readonly NavItem[] = [
+  { label: 'Why', href: '#why' },
+  { label: 'Engine', href: '#engine' },
+  { label: 'Proof', href: '#proof' },
+  { label: 'Device', href: '#device-run' },
+  { label: 'Product', href: '#product' },
+  { label: 'Contact', href: '#contact' },
+];
 ---
 
 <Base
   title={`${product.name}: deterministic storage engine`}
   description={product.description}
   nav={productNav}
-  cta={productCta}
+  cta={companyCta}
   products={productMenu}
   current={product.href}
   openProducts
 >
   <Hero
-    title="Machine answers on its own."
-    subline="One engine from a microcontroller to a data centre."
-    lede="Ktema is a deterministic record engine for products that have to answer for what they did. It answers multi-dimensional questions on hardware that cannot run a database, with no operating system, no index, and no storage work at boot."
-    body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the device's own history, with or without a server, a network, or a cloud round trip."
+    title="The record answers on its own."
+    subline="One engine from a server to a two-dollar drone."
+    lede="Ktema is a multi-dimensional query engine for products and services that have to answer for what they did. It answers across several axes in a service, beside the database you already run, or on hardware that cannot run one, with no operating system under the engine, no storage work at boot, and no index to maintain."
+    body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the record it keeps, with or without a server, a network, or a cloud round trip."
   >
     <a class="btn btn--accent" href="#contact" slot="actions">Talk to us</a>
     <p class="hero-note" slot="actions">
@@ -38,7 +46,7 @@ import { product, productCta, productMenu, productNav } from '../config';
   <Section
     id="why"
     label="Why"
-    title="The machine has to answer for what it did."
+    title="The system has to answer for what it did."
     lede="Three failures end a deployment. The record answers all three from the machine that made it."
     wide
   >
@@ -93,19 +101,22 @@ import { product, productCta, productMenu, productNav } from '../config';
       </dd>
       <dt>The medium</dt>
       <dd>
-        The engine asks the hardware for a region of flash, a write, and an erase. The record is
-        append-only; a segment is the unit of recovery, and the memory the engine holds is bounded by
-        one segment, not by the record count.
+        The engine asks the medium for a region, a write, and an erase. On a part that is a region of
+        flash; in a service it is the storage the process already has. The record is append-only; a
+        segment is the unit of recovery, and the memory the engine holds is bounded by one segment,
+        not by the record count.
       </dd>
       <dt>The edge</dt>
       <dd>
-        A C interface, including read and query, at the application edge. It links into the build
-        you already ship: no operating system, no file system, and no database.
+        A Rust library with a C ABI, including read and query, at the application edge. It links into
+        the build you already ship, or the service you already run: no operating system, no file
+        system, and no database under the engine.
       </dd>
       <dt>The limit</dt>
       <dd>
-        A question that needs a join across separate systems, or a record that may leave the device,
-        is a database's job. The engine is for the question answered where the record was made.
+        A question that needs a join across separate systems, or a record that may leave the process
+        or the device, is a database's job. The engine is for the question answered where the record
+        was made.
       </dd>
     </dl>
   </Section>

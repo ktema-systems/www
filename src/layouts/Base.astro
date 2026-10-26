@@ -8,7 +8,7 @@ interface Props {
   title: string;
   description: string;
   // The page's own strip and call to action. A page that passes neither gets the
-  // company home's, which is what the header defaults to.
+  // site's fallback strip, which is what the header defaults to.
   nav?: readonly NavItem[];
   cta?: NavItem;
   // The products panel's entries. It is separate from the nav because a product

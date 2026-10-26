@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { companyNav, product, site } from '../config';
+import { defaultNav, product, site } from '../config';
 ---
 
 <Base
@@ -21,9 +21,9 @@ import { companyNav, product, site } from '../config';
         <ul class="links">
           <li><a href="/">{site.name} from the top</a></li>
           {
-            companyNav.map((item) => (
+            defaultNav.map((item) => (
               <li>
-                <a href={`/${item.href}`}>{item.label}</a>
+                <a href={item.href}>{item.label}</a>
               </li>
             ))
           }
