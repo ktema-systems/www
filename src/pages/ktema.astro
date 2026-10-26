@@ -26,11 +26,11 @@ import { product, productCta, productMenu, productNav } from '../config';
     title="Machine answers on its own."
     subline="One engine from a microcontroller to a data centre."
     lede="Ktema is a deterministic record engine for products that have to answer for what they did. It answers multi-dimensional questions on hardware that cannot run a database, with no operating system, no index, and no storage work at boot."
-    body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the device's own history, with no server, no network, and no cloud round trip."
+    body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the device's own history, with or without a server, a network, or a cloud round trip."
   >
     <a class="btn btn--accent" href="#contact" slot="actions">Talk to us</a>
     <p class="hero-note" slot="actions">
-      Design partners now. Public demos and private beta are on the way.
+      The design-partner program is open. Public previews and the private beta are on the way.
     </p>
     <AddressFigure slot="figure" />
   </Hero>
@@ -53,15 +53,16 @@ import { product, productCta, productMenu, productNav } from '../config';
       <div class="card">
         <span class="card__value">The link drop</span>
         <p>
-          The record stays on the machine, so the question is answered at the edge, with no server,
-          no network, and no cloud round trip.
+          The record is made on the machine, so the question is answered there, with or without a
+          server, a network, or a cloud in the path.
         </p>
       </div>
       <div class="card">
         <span class="card__value">The audit</span>
         <p>
-          The record is the evidence a regulated product needs. The CRA reporting duty already
-          applies, and the AI Act asks for logging over the life of a high-risk system.
+          For medical, automotive, industrial, and energy products, the record is the evidence a
+          regulator asks for. The CRA reporting duty already applies, and the AI Act asks for
+          logging over the life of a high-risk system.
         </p>
       </div>
     </div>
@@ -98,8 +99,8 @@ import { product, productCta, productMenu, productNav } from '../config';
       </dd>
       <dt>The edge</dt>
       <dd>
-        A C interface, including read and query, at the application edge. No operating system, no
-        file system, no database, and no bootloader change.
+        A C interface, including read and query, at the application edge. It links into the build
+        you already ship: no operating system, no file system, and no database.
       </dd>
       <dt>The limit</dt>
       <dd>
@@ -114,8 +115,8 @@ import { product, productCta, productMenu, productNav } from '../config';
   <Product />
   <Contact
     title="Put the engine inside your product"
-    lede="If your device has to answer multi-dimensional questions on the spot, we should talk. We work with design partners now."
-    body="Ktema runs inside the product you already ship. It needs no server, no network, and no database, and it fits the memory a small device has. Tell us what your machine has to answer, and we will show you what that query looks like on the device."
+    lede="If your device has to answer multi-dimensional questions on the spot, we should talk."
+    body="Ktema links into the product you already ship. It leaves the server, the network, and the database you already run where they are, and it fits the memory a small device carries. Tell us what your machine has to answer, and we will show you what that query looks like on the device."
   />
 </Base>
 

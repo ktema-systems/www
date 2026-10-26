@@ -13,7 +13,7 @@ export const site = {
   legalStatus: 'pre-incorporation',
   tagline: 'Machine answers.',
   description:
-    'Ktema Systems makes autonomous machines answerable: a record engine that keeps a machine\'s whole history at a fixed cost in memory and time, a cockpit that replays the run, and a key that proves who was in control.',
+    'Ktema Systems makes autonomous machines answerable: a record engine that keeps a machine\'s whole history with memory that does not grow with the log, a cockpit that replays the run, and a key that proves who was in control.',
   github: 'https://github.com/ktema-systems',
   docs: 'https://docs.ktema.systems',
   // The address published on the documentation footer.
@@ -27,33 +27,21 @@ export const product = {
   name: 'Ktema',
   href: '/ktema',
   description:
-    'Ktema is the record engine whose address is the index: a record costs the same with a thousand in the log or ten thousand, and a question is answered from the address.',
+    'Ktema is the record engine whose address is the index: the working memory it needs does not grow with the log, and a question is answered from the address.',
 } as const;
 
-// Delta is the Single Space Agentic AI Operation Platform, with the cockpit as the surface a
+// Delta is the Single-Space Agentic Operations Platform, with the cockpit as the surface a
 // person commands the run from. A campaign is one run inside a project, and a
 // finished run is a package that can be replayed and compared.
 export const delta = {
   name: 'Delta',
   href: '/delta',
-  title: 'the Single Space Agentic AI Operation Platform',
+  title: 'the Single-Space Agentic Operations Platform',
   category: 'Single-Space Agentic Operations Platform',
   tagline: 'Every agent, mobilized in one space.',
   description:
-    'Delta is the Single Space Agentic AI Operation Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
+    'Delta is the Single-Space Agentic Operations Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
 } as const;
-
-// The three lines that state the three layers. The first two are the wings as they
-// are already published; the third completes them for the governance layer.
-export const creed = [
-  { product: 'Ktema', line: 'Deterministic Record.' },
-  { product: 'Kletos', line: 'Accountable Execution.' },
-  { product: 'Krisis', line: 'Portable Control.' },
-] as const;
-
-// The three lines as one, for the masthead-height slot on the home page. It is the
-// three products' own promises in one breath, which is what the page goes on to show.
-export const creedLine = creed.map((entry) => entry.line).join(' ');
 
 export type NavLink = { label: string; href: string; note?: string };
 
@@ -82,10 +70,10 @@ export const homeSections = {
 } as const;
 
 export const homeSectionOrder = [
-  'cases',
   'stack',
-  'device',
   'operations',
+  'device',
+  'cases',
   'fit',
   'contact',
 ] as const;

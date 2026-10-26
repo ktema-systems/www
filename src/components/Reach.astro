@@ -14,6 +14,15 @@
   a spin of a drawing.
 */
 
+interface Props {
+  caption: {
+    lead: string;
+    body: string;
+  };
+}
+
+const { caption } = Astro.props;
+
 const DEG = Math.PI / 180;
 const round = (value: number) => Math.round(value * 10) / 10;
 const tidy = (value: number) => Math.round(value * 100) / 100;
@@ -782,9 +791,7 @@ const payload = {
   <script type="application/json" id="reach-space" set:html={JSON.stringify(payload)} />
 
   <figcaption class="reach__caption">
-    <b>One space and protocol, from chip to orbit.</b> Each machine keeps its own record at
-    its own coordinate. Two records meet where they reach the same point. A path through that
-    space is a vector, so the same record explains a move and computes the next state.
+    <b>{caption.lead}</b> {caption.body}
   </figcaption>
 </figure>
 

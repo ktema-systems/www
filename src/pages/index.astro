@@ -6,10 +6,123 @@ import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
 import PanelDeck from '../components/PanelDeck.astro';
-import { companyCta, companyNav, creedLine, homeSections, site } from '../config';
+import { companyCta, companyNav, homeSectionOrder, homeSections, site } from '../config';
 
-// The company's landing page. The sections render in homeSectionOrder, and the
-// header derives from homeSections, so a name or an anchor is changed in one place.
+// The company's landing page. Hero and Reach lead the page; every section below
+// them renders in homeSectionOrder, so the header and the page share one order.
+
+const operationsPanels = [
+  {
+    kicker: 'The run',
+    title: 'A fire on an island, answered by the fleet already there',
+    body: 'Survey and thermal drones map the perimeter, a relay holds the link over the strait, and crawlers and boats take the shore. Each intent is claimed by a different machine under the same wind and keep-out bounds, and the operator changes it while the run moves.',
+    note: 'Every campaign has this shape: a situation, a briefing, the objectives, the constraints, and the record.',
+    image: {
+      src: '/delta_devscr.jpg',
+      alt: 'Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers, boats and rovers in the middle, the island and its shoreline on the right, and the timeline below.',
+      width: 1842,
+      height: 1047,
+    },
+  },
+  {
+    kicker: 'The cell',
+    title: 'A factory cell runs on one intent',
+    body: 'Servos, conveyors, cameras, maintenance robots, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
+    image: {
+      src: '/delta_scr_factory.jpeg',
+      alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
+      width: 1766,
+      height: 920,
+    },
+  },
+  {
+    kicker: 'The span',
+    metrics: [{ value: '35,786', unit: 'km' }],
+    title: 'Land, air, and orbit in one view',
+    body: 'A rescue run reaches from a geostationary satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map. Each element is read where it is, and the run keeps one record across all of them.',
+    image: {
+      src: '/delta_scr_satelite.jpeg',
+      alt: 'A rescue campaign on the map and in the cell view: satellites at 550, 1,200 and 35,786 km, rescue and medevac aircraft, escorts, the hospital, and the operators on one space.',
+      width: 1265,
+      height: 686,
+    },
+  },
+  {
+    kicker: 'The seat',
+    title: 'The operator stands inside the run',
+    body: `On the island, the operator stands in the run: the drones, their record, and the wind and keep-out bounds around them, with the intent changed from the same place the record is read.`,
+  },
+  {
+    kicker: 'The campaign',
+    title: 'A run another team can replay',
+    body: 'A finished run becomes a package that can be handed on and compared against another. The next campaign starts from it.',
+  },
+];
+
+const devicePanels = [
+  {
+    kicker: 'The part',
+    metrics: [
+      { value: '$2', unit: 'MCU' },
+      { value: '45', unit: 'g' },
+    ],
+    title: 'A two-dollar chip on a 45-gram airframe',
+    body: 'A two-dollar module on a 45-gram board without its battery, with 8 MB of flash and half a megabyte of RAM. The engine writes to the flash directly.',
+    image: {
+      src: '/esp32s3-board.jpg',
+      alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
+      width: 1440,
+      height: 739,
+    },
+  },
+  {
+    kicker: 'The footprint',
+    metrics: [{ value: '1,648', unit: 'B' }],
+    title: 'The engine holds under two kilobytes while it runs',
+    body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included. A boot does no storage work to find them.',
+    note: 'The first start prepares the storage; later starts hold the same figure.',
+  },
+  {
+    kicker: 'The comparison',
+    metrics: [{ value: '100', unit: 'KB' }],
+    title: 'What a database needs for the same question',
+    body: 'A minimum SQLite build needs an operating system and about 100 KB of heap for its B-tree, and it rebuilds on boot. The engine holds 1,648 bytes, with nothing running under it.',
+    note: 'The engine figure is measured on the board; the database figure is its published minimum.',
+  },
+  {
+    kicker: 'The range',
+    title: 'The same engine runs from firmware to a data centre',
+    body: 'The working memory stays flat as the log grows. On the RISC-V reference part, which carries 256 KB of flash and 64 KB of SRAM, the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash.',
+  },
+];
+
+const fitPanels = [
+  {
+    kicker: 'The condition',
+    title: 'Answered on the machine, inside the memory it has',
+    point: 'The link is down, the question is multi-axis, and no database fits in the part.',
+    body: 'A record made on the machine answers from its own history.',
+  },
+  {
+    kicker: 'Everyday',
+    title: 'The same shape on things people already own',
+    point: 'A bike computer that keeps a season of rides. An espresso machine that remembers every shot.',
+    body: 'Which climb cost the battery, or what changed since Monday, answered on the device itself. No phone, no account, and no round trip.',
+  },
+  {
+    kicker: 'Critical systems',
+    title: 'Where the answer has to survive the audit',
+    point: 'Ten to thirty years in service, and the organization that shipped it answers for what it did.',
+    body: 'Defense programs, medical device makers, vehicle programs, and energy operators. The machine outlives the deployment, and the record has to outlive the machine.',
+    note: 'For medical and automotive programs, the EU AI Act requires logging over the life of a high-risk system. For industrial and energy programs, the CRA reporting duty has applied since 11 September 2026, with main obligations from 11 December 2027. A defense program answers to its own regime.'
+  },
+  {
+    kicker: 'Where it does not apply',
+    title: 'When a database is the right answer',
+    point: 'If the record may leave the device, a database already does this.',
+    body: 'A system that already runs a database, or one whose record may live on a server, does not need the engine. The boundary is part of the specification.',
+  },
+];
 ---
 
 <Base
@@ -18,183 +131,96 @@ import { companyCta, companyNav, creedLine, homeSections, site } from '../config
   nav={companyNav}
   cta={companyCta}
 >
-  <Hero
-    eyebrow={creedLine}
-    title="Replayable Agentic Computing"
-    subline="Autonomous machines act. Later, someone asks why."
-    lede="An insulin pump holds a dose. A drone turns back. A robot stops a line. Later, someone asks why, and the machine answers: what it was asked, what it did, and what limited it. That account sits on the device itself, at the moment it happened."
-    body="We make that answer the default: a spatiotemporal record engine on the machine, and a portable mission control where the operator rewinds and proves. The record works without an operating system, a database, or a cloud, means it works with them. One format, your existing infrastructure."
-    fieldReveal="scroll"
-    depth
-  >
+    <Hero
+        eyebrow=""
+        title="Replayable Agentic Computing"
+        subline="Autonomous machine acts. Answer stays on it."
+        lede="An insulin pump holds a dose. A drone turns back. Later, someone asks why, and the machine answers from the record it keeps: what it was asked, what it did, and what limited it."
+        body="The spatiotemporal record is made on the machine with no OS, database, or cloud. Nothing above it moves. One format. It drops into your infrastructure. A portable mission cockpit is where the operator rewinds and proves."
+        fieldReveal="scroll"
+        depth
+      >
     <a class="btn btn--accent" href={companyCta.href} slot="actions" data-hero-cta>
       {companyCta.label} 
     </a>
 
     <p class="hero-cta-note" slot="actions">
-      Public demos and private beta are on the way.
+      Public previews and the private beta are on the way.
     </p>
   </Hero>
 
   <section class="reach-band" aria-label="Where the engine runs">
     <div class="wrap">
-      <Reach />
+      <Reach
+        caption={{
+          lead: 'One space and protocol, from chip to orbit.',
+          body: 'Each machine holds its record at its coordinate. Records meet at the same point. A path is an address move; one record explains both the move and the state. Connect via your infrastructure, or let our mission control do it.',
+        }}
+      />
     </div>
   </section>
 
-  <CaseDeck id={homeSections.cases.id} eyebrow={homeSections.cases.label} />
-
-  <Layers id={homeSections.stack.id} eyebrow={homeSections.stack.label} />
-
-  <PanelDeck
-    id={homeSections.device.id}
-    eyebrow={homeSections.device.label}
-    title="The record runs on the machine that made it."
-    lede="A board of a few dozen grams, a chip that costs a couple of dollars, and no database under the engine. The records live in a partition of the flash the part already has."
-    panels={[
-      {
-        kicker: 'The part',
-        metrics: [
-          { value: '$2', unit: 'MCU' },
-          { value: '45', unit: 'g' },
-        ],
-        title: 'A two-dollar chip on a 45-gram airframe',
-        body: 'The module costs a couple of dollars on the bill of materials, and the board weighs 45 g without its battery. It carries 8 MB of flash and half a megabyte of RAM, with no operating system, no database, and no file system between the engine and the flash.',
-        image: {
-          src: '/esp32s3-board.jpg',
-          alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
-          width: 1440,
-          height: 739,
-        },
-      },
-      {
-        kicker: 'The footprint',
-        metrics: [{ value: '1,648', unit: 'B' }],
-        title: 'The engine holds under two kilobytes while it runs',
-        body: 'That is the peak working memory measured on the part, with the records on the flash and the read path included. A boot does no storage work to find them: the address is computed from the fields, so there is no index to rebuild.',
-        note: 'The first start prepares the storage; later starts hold the same figure.',
-      },
-      {
-        kicker: 'The comparison',
-        metrics: [{ value: '100', unit: 'KB' }],
-        title: 'What a database needs for the same question',
-        body: 'A minimum SQLite build needs an operating system and about 100 KB of heap for its B-tree, and it rebuilds on boot: it replays its write-ahead log, while LittleFS walks its directory and NVS reads its page index into RAM. The engine recomputes an address instead, in 1,648 bytes, with nothing running under it.',
-        note: 'The engine figure is measured on the board; the database figure is its published minimum.',
-      },
-      {
-        kicker: 'The other side',
-        title: 'The small part is the proof, not the ceiling',
-        body: 'One segment in memory, an answer read from the address, and nothing to build as the log grows. The same engine runs from firmware to a data centre.',
-      },
-    ]}
-    labels={['Part', 'Footprint', 'Compare', 'Beyond']}
-    footnote="Validation continues past the board into RTL equivalence, FPGA timing, and OpenRAM macros."
-  />
-
-  <PanelDeck
-    id={homeSections.operations.id}
-    eyebrow={homeSections.operations.label}
-    title="One space for the fleet."
-    lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The first case is a fire on an island, because it shows the whole platform at once."
-    panels={[
-      {
-        kicker: 'The run',
-        title: 'A fire on an island, answered by the fleet already there',
-        body: 'A campaign opens on the island: survey and thermal drones map the perimeter, a relay holds the link over the strait, crawlers and boats take the shore, and each intent is claimed by a different machine under the same wind and keep-out bounds. The operator reads the same record and changes the intent while the run is moving.',
-        note: 'Every campaign has this shape: a situation, a briefing, the objectives, the constraints, and the record.',
-        image: {
-          src: '/delta_devscr.jpg',
-          alt: 'Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers, boats and rovers in the middle, the island and its shoreline on the right, and the timeline below.',
-          width: 1842,
-          height: 1047,
-        },
-      },
-      {
-        kicker: 'The cell',
-        title: 'A factory cell runs on one intent',
-        body: 'Servos, conveyors, cameras, maintenance robots, and the people who run them, read in the same cell view. An intent is written once, and every agent under the cell answers from it.',
-        image: {
-          src: '/delta_scr_factory.jpeg',
-          alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
-          width: 1766,
-          height: 920,
-        },
-      },
-      {
-        kicker: 'The span',
-        metrics: [{ value: '35,786', unit: 'km' }],
-        title: 'Land, air, and orbit in one view',
-        body: 'A rescue run reaches from a geostationary satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map. Each element is read where it is, and the run keeps one record across all of them.',
-        image: {
-          src: '/delta_scr_satelite.jpeg',
-          alt: 'A rescue campaign on the map and in the cell view: satellites at 550, 1,200 and 35,786 km, rescue and medevac aircraft, escorts, the hospital, and the operators on one space.',
-          width: 1265,
-          height: 686,
-        },
-      },
-      {
-        kicker: 'The seat',
-        title: 'The operator stands inside the run',
-        body: `On the island, the operator does not read a dashboard about the fire. The cockpit is the run's own coordinate space: the drones, their record, and the wind and keep-out bounds around them, with the intent changed from the same place the record is read.`,
-      },
-      {
-        kicker: 'The campaign',
-        title: 'A run another team can replay',
-        body: 'A finished run becomes a package that can be handed on and compared against another. The next campaign starts from it.',
-      },
-    ]}
-    labels={['Run', 'Cell', 'Span', 'Seat', 'Campaign']}
-    footnote="Pre-release development builds on simulated demo data."
-  />
-
-  <PanelDeck
-    id={homeSections.fit.id}
-    eyebrow={homeSections.fit.label}
-    title="Where the engine is the right answer."
-    lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries."
-    panels={[
-      {
-        kicker: 'The condition',
-        title: 'Answered on the machine, inside the memory it has',
-        point: 'The link is down, the question is multi-axis, and no database fits in the part.',
-        body: 'A record that stays on the machine answers from its own history. Nothing is built to answer it, and nothing has to be shipped out first.',
-      },
-      {
-        kicker: 'Everyday',
-        title: 'The same shape on things people already own',
-        point: 'A bike computer that keeps a season of rides. An espresso machine that remembers every shot.',
-        body: 'Which climb cost the battery, or what changed since Monday, answered on the device itself. No phone, no account, and no round trip.',
-      },
-      {
-        kicker: 'Critical systems',
-        title: 'Where the answer has to survive the audit',
-        point: 'Ten to thirty years in service, and the organization that shipped it answers for what it did.',
-        body: 'Defense programs, medical device makers, vehicle programs, and energy operators. The machine outlives the deployment, and the record has to outlive the machine.',
-        note: 'The EU AI Act requires logging over the life of a high-risk system. The Cyber Resilience Act\'s reporting duty has applied since 11 September 2026, and its main obligations, including the software bill of materials, apply from 11 December 2027.'
-      },
-      {
-        kicker: 'Where it does not apply',
-        title: 'When a database is the right answer',
-        point: 'If the record may leave the device, a database already does this.',
-        body: 'A system that already runs a database, or one whose record may live on a server, does not need the engine. The boundary is part of the specification.',
-      },
-    ]}
-    labels={['Condition', 'Everyday', 'Critical', 'Not a fit']}
-  />
-
-  <Section
-    id={homeSections.contact.id}
-    label={homeSections.contact.label}
-    title="Building a system that has to answer for itself?"
-    lede="Write to us. We work with design partners now."
-    band
-  >
-    <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
-  </Section>
+  {homeSectionOrder.map((key) => {
+    switch (key) {
+      case 'stack':
+        return <Layers id={homeSections.stack.id} eyebrow={homeSections.stack.label} />;
+      case 'operations':
+        return (
+          <PanelDeck
+            id={homeSections.operations.id}
+            eyebrow={homeSections.operations.label}
+            title="One space for the fleet."
+            lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. The first case is a fire on an island, because it shows the whole platform at once."
+            panels={operationsPanels}
+            labels={['Run', 'Cell', 'Span', 'Seat', 'Campaign']}
+            footnote="Pre-release development builds on simulated campaign data."
+          />
+        );
+      case 'device':
+        return (
+          <PanelDeck
+            id={homeSections.device.id}
+            eyebrow={homeSections.device.label}
+            title="The engine runs on even the cheapest machine."
+            lede="A board of a few dozen grams, a chip that costs a couple of dollars, and the records in a partition of the flash the part already has."
+            panels={devicePanels}
+            labels={['Part', 'Footprint', 'Compare', 'Beyond']}
+            footnote="Validation continues past the board into RTL equivalence and FPGA timing."
+          />
+        );
+      case 'cases':
+        return <CaseDeck id={homeSections.cases.id} eyebrow={homeSections.cases.label} />;
+      case 'fit':
+        return (
+          <PanelDeck
+            id={homeSections.fit.id}
+            eyebrow={homeSections.fit.label}
+            title="Where the engine is the right answer."
+            lede="Three conditions hold: the question combines several axes, it has to be answered where the record was made, and the memory is the one the part carries."
+            panels={fitPanels}
+            labels={['Condition', 'Everyday', 'Critical', 'Not a fit']}
+          />
+        );
+      case 'contact':
+        return (
+          <Section
+            id={homeSections.contact.id}
+            label={homeSections.contact.label}
+            title="Building a system that has to answer for itself?"
+            lede="Write to us. The design-partner program is open now."
+            band
+          >
+            <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
+          </Section>
+        );
+      default:
+        return null;
+    }
+  })}
 </Base>
 
 <style>
-  /* The note is a footnote to the call: who can ask for a demo now, and when the
+  /* The note is a footnote to the call: who can ask for a preview now, and when the
      rest can. */
   .hero-cta-note {
     flex-basis: 100%;

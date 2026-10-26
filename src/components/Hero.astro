@@ -46,9 +46,9 @@ const {
   {field && <HeroField reveal={fieldReveal} />}
   <div class="wrap">
     <div class="hero__head">
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>
       {subline && <p class="hero__subline">{subline}</p>}
-      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <p class="hero__lede">{lede}</p>
       {body && <p class:list={['hero__body', depth && 'hero__body--deep']}>{body}</p>}
       {
@@ -106,7 +106,7 @@ const {
 
   /* The tagline is three sentences, so it is set as a line rather than a label. */
   .hero .eyebrow {
-    font-size: 16px;
+    font-size: 14px;
     letter-spacing: 0.05em;
     line-height: 1.4;
     text-transform: none;

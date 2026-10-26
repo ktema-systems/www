@@ -63,7 +63,7 @@ import Section from './Section.astro';
           </span>
         </div>
         <div class="chart__row">
-          <span class="chart__key">Application in its 1 MiB slot</span>
+          <span class="chart__key">ESP32-S3 build in its 1 MiB slot</span>
           <span class="chart__val"><span data-count="447968">447,968</span> B</span>
           <span class="chart__track" aria-hidden="true">
             <span class="chart__fill" style="--to: 0.4272"></span>
@@ -71,14 +71,15 @@ import Section from './Section.astro';
         </div>
       </div>
       <p class="chart__note">
-        A quarter of the flash and less than half its slot, with the bootloader untouched.
+        The image carries the engine and the Delta client. A quarter of the flash and less than half
+        its slot.
       </p>
     </figure>
   </div>
 
   <p class="close">
-    It asks the hardware for three things: a region of flash, a write, and an erase. Everything above
-    that is Ktema.
+    It asks the hardware for three things: a region of flash, a write, and an erase. One partition
+    line. The bootloader untouched. Everything above that line is Ktema.
   </p>
   <p class="source">Measured on the board over four starts.</p>
 </Section>
