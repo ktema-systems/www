@@ -273,7 +273,8 @@ const splitMetric = (value: string) => {
     align-items: center;
     justify-items: center;
     min-height: 100svh;
-    padding-block: calc(var(--masthead-h) + var(--deck-roof)) var(--deck-foot-gap);
+    padding-block: calc(var(--masthead-h) + var(--safe-top) + var(--deck-roof))
+      calc(var(--deck-foot-gap) + var(--safe-bottom));
   }
 
   .deck__grid {
@@ -692,7 +693,10 @@ const splitMetric = (value: string) => {
     block-size: auto;
     max-block-size: min(
       var(--deck-h),
-      calc(100svh - var(--masthead-h) - var(--deck-roof) - var(--deck-foot-gap))
+      calc(
+        100svh - var(--masthead-h) - var(--safe-top) - var(--safe-bottom) - var(--deck-roof) -
+          var(--deck-foot-gap)
+      )
     );
     grid-template-rows: auto auto auto;
   }
@@ -707,7 +711,7 @@ const splitMetric = (value: string) => {
      and takes the room the frame has. The stage scrolls if even that is not enough,
      rather than letting a slide run over the heading. The copy and the figure are one
      column here, so their gap, the frame's gaps, and the roof tighten together.
-     Only the desktop frame is affected; a phone already fills and scrolls. */
+     Only the desktop frame is affected; a phone already hugs and scrolls. */
   @media (min-width: 861px) {
     .deck--stage-size {
       --deck-gap: clamp(12px, 1.8vh, 22px);
@@ -780,9 +784,9 @@ const splitMetric = (value: string) => {
     transform: none;
   }
 
-  /* On a phone the box fills the window, because there is no room for air over it,
-     and a slide that still runs past the edge scrolls inside the stage. The values
-     above tighten here, never at the call site. */
+  /* On a phone the frame hugs its tallest slide and is centred in the window, with
+     the same cap as the desktop frame. A slide that still runs past the edge scrolls
+     inside the stage. The values above tighten here, never at the call site. */
   @media (max-width: 860px) {
     .deck {
       --deck-title: 1.4rem;
@@ -805,23 +809,25 @@ const splitMetric = (value: string) => {
     .deck.is-live .deck__stage {
       height: 100svh;
       min-height: 0;
-      align-items: stretch;
+      align-items: safe center;
       overflow-y: auto;
     }
 
+    /* The frame hugs the tallest slide rather than filling the window, and the cap
+       keeps a short deck from spreading over the whole screen. A slide taller than
+       the cap still scrolls inside the stage. */
     .deck.is-live .deck__grid {
-      block-size: 100%;
-      max-block-size: none;
-      grid-template-rows: auto 1fr auto;
-    }
-
-    .deck.is-live .deck__list {
-      align-content: stretch;
+      block-size: auto;
+      max-block-size: min(
+        var(--deck-h),
+        calc(100svh - var(--masthead-h) - var(--safe-top) - var(--safe-bottom) - 12px - 16px)
+      );
     }
 
     .deck__stage,
     .deck.is-live .deck__stage {
-      padding-block: calc(var(--masthead-h) + 12px) 16px;
+      padding-block: calc(var(--masthead-h) + var(--safe-top) + 12px)
+        calc(16px + var(--safe-bottom));
     }
 
     .deck__head {
@@ -903,7 +909,6 @@ const splitMetric = (value: string) => {
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const tooSmall = window.matchMedia('(max-height: 559px), (max-width: 359px) and (max-height: 620px)');
-  const touch = ScrollTrigger.isTouch === 1;
 
   document.querySelectorAll<HTMLElement>('[data-deck]').forEach((deck) => {
     const slides = Array.from(deck.querySelectorAll<HTMLElement>('[data-slide]'));
@@ -955,12 +960,10 @@ const splitMetric = (value: string) => {
 
     let trigger: ScrollTrigger | null = null;
     let reveal: IntersectionObserver | null = null;
-    let settled = 0;
 
     const stack = () => {
       trigger?.kill();
       trigger = null;
-      window.clearTimeout(settled);
       reveal?.disconnect();
       reveal = null;
       deck.classList.remove('is-live', 'is-revealed');
@@ -985,20 +988,10 @@ const splitMetric = (value: string) => {
       show(0);
 
       let current = 0;
-      let last = 0;
 
-      // A slide turns only once the scroll is a fifth of a unit past the boundary, and
-      // it holds that far back again, so a flick cannot run the deck past the reader.
-      const HOLD = 0.22;
-      const pick = (position: number) => {
-        let next = current;
-        while (next < slides.length - 1 && position >= next + 1 + HOLD) next += 1;
-        while (next > 0 && position <= next - HOLD) next -= 1;
-        return next;
-      };
-
-      // A touch scroll keeps accelerating after the finger lifts, so on touch the index
-      // is applied once the scroll settles; a wheel already moves in steps.
+      // The slide follows the scroll directly, in the same way on a wheel and on a
+      // touch: each slide owns one share of the section's range, and the section is
+      // left for the next one only after the last share has passed.
       const turn = (index: number) => {
         if (index === current) return;
         current = index;
@@ -1010,22 +1003,16 @@ const splitMetric = (value: string) => {
         start: 'top top',
         end: 'bottom bottom',
         onUpdate: (self) => {
-          last = self.progress;
           if (bar) bar.style.transform = `scaleX(${self.progress})`;
-          const index = pick(last * slides.length);
+          const position = self.progress * slides.length;
+          const index = Math.min(slides.length - 1, Math.floor(position));
           // A figure that moves with the scroll reads this instead of owning a trigger.
           deck.dispatchEvent(
             new CustomEvent('deck:progress', {
-              detail: { index, local: Math.min(1, Math.max(0, last * slides.length - index)) },
+              detail: { index, local: Math.min(1, Math.max(0, position - index)) },
             }),
           );
-          if (!touch) {
-            turn(index);
-            return;
-          }
-          if (index === current) return;
-          window.clearTimeout(settled);
-          settled = window.setTimeout(() => turn(pick(last * slides.length)), 140);
+          turn(index);
         },
       });
     };

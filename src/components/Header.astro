@@ -350,10 +350,21 @@ const sheetItems = items.filter((item) => !item.items);
   const barCtaButton = barCta?.querySelector<HTMLElement>('.btn');
 
   if (masthead && heroCta && barCta && barCtaButton) {
-    const width = Math.ceil(barCtaButton.getBoundingClientRect().width);
-    if (width > 0) {
-      masthead.style.setProperty('--cta-w', `${width + 8}px`);
-    }
+    // The bar hides the call until the hero's has passed, so the box is open for the
+    // measurement: a closed box would hand back the clipped width. The web font can
+    // arrive after the first layout, so the width is read again once it is ready.
+    const measure = () => {
+      barCta.style.maxWidth = 'none';
+      const width = Math.ceil(barCtaButton.getBoundingClientRect().width);
+      barCta.style.maxWidth = '';
+      if (width > 0) {
+        masthead.style.setProperty('--cta-w', `${width + 8}px`);
+      }
+    };
+
+    measure();
+    void document.fonts?.ready.then(measure);
+    window.addEventListener('resize', measure);
 
     const barHeight = Math.ceil(masthead.getBoundingClientRect().height);
     new IntersectionObserver(

@@ -65,7 +65,7 @@ export const defaultNav: readonly NavItem[] = [
   { label: 'Contact', href: '/#contact' },
 ];
 
-export const companyCta: NavItem = { label: 'Get in touch', href: '#contact' };
+export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 
 export const papers = [
   {

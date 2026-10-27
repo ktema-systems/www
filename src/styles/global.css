@@ -180,6 +180,11 @@
 
   --page: 1120px;
   --gutter: 40px;
+  /* The safe-area insets are read once here: the masthead carries the top one as
+     padding, so its glass reaches over the notch, and the deck and the anchors
+     clear the same band. On a device without an inset they are zero. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* The sticky masthead's height sets two offsets that must move with it: where
      an anchor jump lands, and where the section labels stick. */
   --masthead-h: 60px;
@@ -243,7 +248,7 @@ body {
 }
 
 [id] {
-  scroll-margin-top: calc(var(--masthead-h) + 28px);
+  scroll-margin-top: calc(var(--masthead-h) + var(--safe-top) + 28px);
 }
 
 h1,
@@ -319,7 +324,8 @@ svg {
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
-  padding-inline: var(--gutter);
+  padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px))
+    max(var(--gutter), env(safe-area-inset-right, 0px));
 }
 
 .skip {
@@ -446,10 +452,10 @@ svg {
 .masthead {
   /* Room above the lockup only, so the bar grows downwards rather than both ways: the
      room it needs is at the top of the page, and a shorter drawn box keeps the glass
-     off the copy below for longer. The whole box is handed back as a negative margin,
-     so the page starts at the top of the window and nothing below moves as the bar
-     changes height. */
-  padding-top: var(--brand-lift);
+     off the copy below for longer. The safe-area band is part of the box, so the
+     surface reaches over the notch, while the negative margin hands back only the
+     drawn bar and leaves the page below that band. */
+  padding-top: calc(var(--brand-lift) + var(--safe-top));
   position: sticky;
   top: 0;
   z-index: 10;
@@ -470,17 +476,29 @@ svg {
 }
 
 /* The top band carries a soft lift in the page colour, so the lockup and the menu read
-   over whatever the field draws behind them. It belongs to the page at its top: once the
-   bar draws its own glass, or a panel opens over it, the lift is gone. */
-.masthead::before {
+   over whatever the field draws behind them. The safe-area band is filled flat and the
+   lift keeps its own height below it, so the notch is covered without compressing the
+   ramp the lockup sits on. It belongs to the page at its top: once the bar draws its
+   own glass, or a panel opens over it, the lift is gone. */
+.masthead::before,
+.masthead::after {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: clamp(84px, 8.35vw, 120px);
   pointer-events: none;
   z-index: -1;
   opacity: calc(1 - var(--masthead-progress));
   transition: opacity 260ms var(--ease);
+}
+
+.masthead::before {
+  height: var(--safe-top);
+  background: var(--bg);
+}
+
+.masthead::after {
+  inset: var(--safe-top) 0 auto;
+  height: clamp(84px, 8.35vw, 120px);
   background: linear-gradient(
     to bottom,
     var(--bg) 0%,
@@ -1032,7 +1050,7 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
 
 .section__label {
   position: sticky;
-  top: calc(var(--masthead-h) + 32px);
+  top: calc(var(--masthead-h) + var(--safe-top) + 32px);
   align-self: start;
   font-family: var(--mono);
   font-size: 11.5px;
