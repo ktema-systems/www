@@ -1,420 +1,46 @@
 ---
+import Deck from './Deck.astro';
 import LoopFigure from './LoopFigure.astro';
 import CampaignFigure from './CampaignFigure.astro';
 
-// The site's scroll-driven explanation deck: the loop first, then one run through it.
-interface Props {
-  eyebrow?: string;
-  title?: string;
-  lede?: string;
-}
-
-const {
-  eyebrow = 'The loop',
-  title = 'Intent enters a moving run',
-  lede = 'A run is not a command. The loop comes first, then one run where intent enters while the work is moving.',
-} = Astro.props;
+// The run's own deck: the loop first, then one run through it. The deck supplies the
+// stage and the walk; the two figures move with the scroll, so they are passed as
+// slots and animated by the script below.
+const slides = [
+  {
+    kicker: 'The premise',
+    title: 'A run is not a command',
+    body: 'A command asks for an output and waits. An autonomous system keeps running, and a person can enter at any point with a new intent, a limit, or a correction. What the machine does is the sum of those entries.',
+    stacked: true,
+  },
+  {
+    kicker: 'The run',
+    title: 'The villa evacuation',
+    body: 'An emergency lift on the Monaco coast. The operator calls the lift. The hospital adds a 75-second bound for the scan. Both enter while the work is moving. The run starts when the emergency is declared and ends when treatment begins.',
+    note: 'One run, three entries, one 75-second bound.',
+    stacked: true,
+  },
+];
 ---
 
-<section class="deck" id="loop" data-delta-deck style="--panels: 2">
-  <div class="deck__stage" data-deck-stage>
-    <div class="wrap deck__grid">
-      <header class="deck__head">
-        <p class="eyebrow">{eyebrow}</p>
-        <h2>{title}</h2>
-        <p class="lede">{lede}</p>
-      </header>
-
-      <ol class="deck__list">
-        <li class="deck__panel is-active" data-deck-panel>
-          <div class="deck__copy">
-            <p class="deck__kicker">The premise</p>
-            <h3>A run is not a command</h3>
-            <p class="deck__lede">
-              A command asks for an output and waits. An autonomous system keeps running, and a
-              person can enter at any point with a new intent, a limit, or a correction. What the
-              machine does is the sum of those entries.
-            </p>
-          </div>
-          <LoopFigure />
-        </li>
-
-        <li class="deck__panel" data-deck-panel>
-          <div class="deck__copy">
-            <p class="deck__kicker">The run</p>
-            <h3>The villa evacuation</h3>
-            <p class="deck__lede">
-              An emergency lift on the Monaco coast. The operator calls the lift. The hospital adds a
-              75-second bound for the scan. Both enter while the work is moving. The run starts when
-              the emergency is declared and ends when treatment begins.
-            </p>
-          </div>
-          <CampaignFigure />
-          <p class="deck__facts">One run, three entries, one 75-second bound.</p>
-        </li>
-      </ol>
-
-      <div class="deck__foot">
-        <p class="deck__count">
-          <span data-deck-now>01</span>
-          <span class="deck__of">/ 02</span>
-        </p>
-        <div class="deck__rail"><span class="deck__bar" data-deck-bar></span></div>
-        <p class="deck__cue">Scroll</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<style>
-  .deck {
-    position: relative;
-  }
-
-  .deck__stage {
-    display: grid;
-    align-items: center;
-    min-height: 100svh;
-    padding-block: calc(var(--masthead-h) + 16px) 28px;
-  }
-
-  .deck__grid {
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    gap: clamp(16px, 2.2vh, 28px);
-    min-height: min(76svh, 720px);
-  }
-
-  .deck__head {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .deck__head h2 {
-    margin: 0;
-    font-size: clamp(1.7rem, 1.2rem + 2vw, 2.6rem);
-    font-stretch: 115%;
-    letter-spacing: -0.015em;
-    line-height: 1.08;
-  }
-
-  .deck__head .lede {
-    max-width: 44rem;
-  }
-
-  .deck__list {
-    display: grid;
-    align-content: center;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .deck__panel {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .deck__panel > :global(figure) {
-    width: 100%;
-  }
-
-  .deck__panel + .deck__panel {
-    margin-top: 28px;
-    padding-top: 0;
-  }
-
-  .deck:not(.is-live) .deck__list {
-    align-content: start;
-  }
-
-  .deck__copy {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    max-width: 52rem;
-  }
-
-  .deck__kicker {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-  }
-
-  .deck__copy h3 {
-    margin: 0;
-    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem);
-    font-weight: 600;
-    font-stretch: 115%;
-    letter-spacing: -0.015em;
-    line-height: 1.1;
-  }
-
-  .deck__lede {
-    margin: 0;
-    color: var(--fg-2);
-    font-size: 16.5px;
-    line-height: 1.55;
-  }
-
-  .deck__facts {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    color: var(--fg-3);
-  }
-
-  .deck__foot {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    letter-spacing: 0.1em;
-    color: var(--fg-3);
-  }
-
-  .deck:not(.is-live) .deck__foot {
-    display: none;
-  }
-
-  .deck__count {
-    margin: 0;
-    color: var(--fg);
-  }
-
-  .deck__of {
-    margin-left: 4px;
-    color: var(--fg-3);
-  }
-
-  .deck__rail {
-    position: relative;
-    flex: 1;
-    height: 1px;
-    background: var(--line-2);
-  }
-
-  .deck__bar {
-    position: absolute;
-    inset: 0;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-
-  .deck__cue {
-    margin: 0;
-    text-transform: uppercase;
-  }
-
-  .deck.is-live {
-    height: calc(100svh + var(--panels) * 90svh);
-  }
-
-  .deck.is-live .deck__stage {
-    position: sticky;
-    top: 0;
-    height: 100svh;
-  }
-
-  .deck.is-live .deck__panel {
-    grid-area: 1 / 1;
-    opacity: 0;
-    transform: translateY(28px);
-    pointer-events: none;
-    transition:
-      opacity 480ms var(--ease),
-      transform 640ms var(--ease);
-  }
-
-  .deck.is-live .deck__panel + .deck__panel {
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  .deck.is-live .deck__panel.is-active {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-  }
-
-  .deck.is-live .deck__panel.is-past {
-    opacity: 0;
-    transform: translateY(-28px);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .deck.is-live {
-      height: auto;
-    }
-
-    .deck.is-live .deck__stage {
-      position: static;
-      height: auto;
-    }
-
-    .deck.is-live .deck__panel {
-      opacity: 1;
-      transform: none;
-      pointer-events: auto;
-    }
-
-    .deck.is-live .deck__panel + .deck__panel {
-      margin-top: 36px;
-      padding-top: 36px;
-    }
-
-    .deck.is-live .deck__foot {
-      display: none;
-    }
-  }
-
-  @media (max-width: 720px) {
-    .deck__stage {
-      padding-block: calc(var(--masthead-h) + 12px) 10px;
-    }
-
-    .deck__grid {
-      min-height: 0;
-      gap: 6px;
-    }
-
-    .deck__copy {
-      gap: 4px;
-    }
-
-    .deck__head {
-      gap: 6px;
-    }
-
-    .deck__head h2 {
-      font-size: 1.45rem;
-    }
-
-    .deck__head .lede {
-      font-size: 14px;
-      line-height: 1.4;
-    }
-
-    .deck__copy h3 {
-      font-size: 1.3rem;
-    }
-
-    .deck__lede {
-      font-size: 14.5px;
-      line-height: 1.45;
-    }
-
-    .deck__facts {
-      font-size: 10.5px;
-    }
-  }
-
-  /* A small phone has no room for the section's summary line above the deck; the
-     first panel states the same thing. */
-  @media (max-width: 720px) and (max-height: 760px) {
-    .deck__head .lede {
-      display: none;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .deck__head h2 {
-      font-size: 1.3rem;
-    }
-
-    .deck__copy h3 {
-      font-size: 1.2rem;
-    }
-
-    .deck__lede {
-      font-size: 13px;
-      line-height: 1.38;
-    }
-  }
-
-  @media (max-width: 380px) and (max-height: 620px) {
-    .deck__stage {
-      padding-block: calc(var(--masthead-h) + 2px) 4px;
-    }
-
-    .deck__grid {
-      gap: 6px;
-    }
-
-    .deck__copy {
-      gap: 4px;
-    }
-
-    .deck__facts {
-      display: none;
-    }
-  }
-
-  /* A laptop with little height runs the deck too, so the stage has to give back
-     the room the head and the gaps were taking. */
-  @media (min-width: 721px) and (max-height: 820px) {
-    .deck__stage {
-      padding-block: calc(var(--masthead-h) + 2px) 8px;
-    }
-
-    .deck__grid {
-      min-height: 0;
-      gap: 6px;
-    }
-
-    .deck__head {
-      gap: 6px;
-    }
-
-    .deck__head .lede {
-      font-size: 15px;
-    }
-  }
-</style>
+<Deck
+  id="loop"
+  eyebrow="The loop"
+  title="Intent enters a moving run"
+  lede="A run is not a command. The loop comes first, then one run where intent enters while the work is moving."
+  slides={slides}
+  size="stage"
+>
+  <LoopFigure slot="figure-0" />
+  <CampaignFigure slot="figure-1" />
+</Deck>
 
 <script>
-  import gsap from 'gsap';
-  import ScrollTrigger from 'gsap/ScrollTrigger';
-
-  gsap.registerPlugin(ScrollTrigger);
-
-  const region = document.querySelector<HTMLElement>('[data-delta-deck]');
-  const panels = region
-    ? Array.from(region.querySelectorAll<HTMLElement>('[data-deck-panel]'))
-    : [];
-  const bar = region?.querySelector<HTMLElement>('[data-deck-bar]');
-  const now = region?.querySelector<HTMLElement>('[data-deck-now]');
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  // A stage this small cannot hold the deck, so it stays a list there: a phone in
-  // landscape, a window dragged to a sliver, or the smallest phones.
-  const tooSmall = window.matchMedia(
-    '(max-height: 559px), (max-width: 359px) and (max-height: 620px)',
-  );
-
-  const setActive = (index: number) => {
-    panels.forEach((panel, i) => {
-      panel.classList.toggle('is-active', i === index);
-      panel.classList.toggle('is-past', i < index);
-      panel.setAttribute('aria-hidden', i === index ? 'false' : 'true');
-    });
-
-    if (now) {
-      now.textContent = String(index + 1).padStart(2, '0');
-    }
-  };
+  const deck = document.querySelector<HTMLElement>('#loop[data-deck]');
 
   const setLoop = (local: number) => {
-    const ring = region?.querySelector<HTMLElement>('[data-loop-ring]');
-    const nodes = region
-      ? Array.from(region.querySelectorAll<HTMLElement>('[data-loop-node]'))
-      : [];
+    const ring = deck?.querySelector<HTMLElement>('[data-loop-ring]');
+    const nodes = deck ? Array.from(deck.querySelectorAll<HTMLElement>('[data-loop-node]')) : [];
 
     if (ring) {
       ring.style.transform = `translate(-50%, -50%) rotate(${local * 180}deg)`;
@@ -427,7 +53,7 @@ const {
   };
 
   const setCampaign = (local: number) => {
-    const figure = region?.querySelector<HTMLElement>('[data-campaign]');
+    const figure = deck?.querySelector<HTMLElement>('[data-campaign]');
     if (!figure) return;
 
     const start = Number(figure.dataset.start ?? 8);
@@ -459,63 +85,14 @@ const {
     });
   };
 
-  const update = (progress: number) => {
-    const index = Math.min(panels.length - 1, Math.floor(progress * panels.length));
-    const local = Math.min(1, Math.max(0, progress * panels.length - index));
+  // Stacked, the deck has no walk, so both figures are drawn whole.
+  setLoop(1);
+  setCampaign(1);
 
-    if (!panels[index]?.classList.contains('is-active')) {
-      setActive(index);
-    }
-
-    if (index === 0) {
-      setLoop(local);
-    } else {
-      setCampaign(local);
-    }
-  };
-
-  let trigger: ScrollTrigger | null = null;
-
-  const stack = () => {
-    trigger?.kill();
-    trigger = null;
-    region?.classList.remove('is-live');
-
-    panels.forEach((panel) => {
-      panel.classList.add('is-active');
-      panel.classList.remove('is-past');
-      panel.setAttribute('aria-hidden', 'false');
-    });
-  };
-
-  const start = () => {
-    if (!region) return;
-    stack();
-    region.classList.add('is-live');
-    setActive(0);
-    setLoop(0);
-    setCampaign(0);
-
-    trigger = ScrollTrigger.create({
-      trigger: region,
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => {
-        if (bar) {
-          bar.style.transform = `scaleX(${self.progress})`;
-        }
-        update(self.progress);
-      },
-    });
-  };
-
-  const apply = () => {
-    if (!region || panels.length === 0) return;
-    if (reduce.matches || tooSmall.matches) stack();
-    else start();
-  };
-
-  apply();
-  reduce.addEventListener('change', apply);
-  tooSmall.addEventListener('change', apply);
+  // The deck reports where the walk is; each figure spends its own slide's progress.
+  deck?.addEventListener('deck:progress', (event) => {
+    const { index, local } = (event as CustomEvent<{ index: number; local: number }>).detail;
+    if (index === 0) setLoop(local);
+    else setCampaign(local);
+  });
 </script>

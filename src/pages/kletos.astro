@@ -1,43 +1,118 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
+// The execution page. The order is the layer's own: the unit, the three ways a call
+// arrives, the two ends a person holds, the reach, the build's own numbers, and the
+// pieces that hold it. Every figure here is one this tree's notes record.
 const blocks = [
   {
     id: 'unit',
     label: 'The unit',
-    title: 'Stated, claimed, performed, deposited',
+    title: 'One call, from the stated work to the fact',
+    lede: 'Every container of work holds a queue, and the queue carries a local name in every domain: a backlog, an ECO list, a work order list, a worklist, a manifest. The call is the unit that moves it.',
     rows: [
-      { k: 'Stated', v: 'The work is stated, and the intent that proposes it is written with it.' },
+      { k: 'Stated', v: 'A person writes the work. The intent carries what was asked, who asked, and what constrains it.' },
       { k: 'Claimed', v: 'An agent, a machine, or a person takes it, and the claim is written.' },
-      { k: 'Performed', v: 'The work is done where the machine that took it runs.' },
+      { k: 'Performed', v: 'The command runs on the machine that took it.' },
       {
         k: 'Deposited',
-        v: 'The result is written as a fact, with a derivation that ties it to the intent.',
+        v: 'The result is written as a fact, with the evidence that the work was done.',
       },
     ],
-    note: 'The derivation is what binds execution to intent: an action is read with the ask that produced it.',
+    note: 'A call names one machine and one of its commands, with arguments. A planner produces a call, a model proposes one, and an outside agent sends one. The executor is one function for all three.',
+  },
+  {
+    id: 'entries',
+    label: 'Three ways in',
+    title: 'A sentence, a model, an outside agent',
+    rows: [
+      {
+        k: 'The line',
+        v: 'The console reads a sentence into calls and dispatches them to the machines.',
+      },
+      {
+        k: 'The model',
+        v: 'A model proposes the same calls through tool calling, and they run through the same executor.',
+      },
+      {
+        k: 'The outside agent',
+        v: 'MCP publishes every command as a tool and every entity as a resource. An outside agent calls a machine the way it calls anything else.',
+      },
+    ],
+    note: 'A model is optional. With none configured, the deterministic reader is the whole path.',
+  },
+  {
+    id: 'ends',
+    label: 'The two ends',
+    title: 'A person states the work, and a person accepts it',
+    prose: [
+      'A person opens a project, writes a line, and watches the turn. That line is the first end.',
+      'The second is the acceptance, written as a note in the thread: the decision sits where the person and the agent both read it, and it runs no turn.',
+      'Approval is per project and carried by the deployment: every call, calls on request, or none. A call that waits for an answer waits for the person who can give it.',
+    ],
+    note: 'The machine holds the middle. The boundary sits outside the loop, where the first goal is stated and where the result is judged.',
   },
   {
     id: 'reach',
     label: 'The reach',
-    title: 'Five kinds of entity',
-    prose: [
-      'Agents, signals, machines, people, and outside systems. A phone states the work, a host performs it on the operator\'s own machine, and a desktop receives the result, with no remote desktop and no file transfer.',
+    title: 'Five executor types, one contract',
+    rows: [
+      {
+        k: 'Agent',
+        v: 'Software work, from a service to a desktop. It is the first type, and the one that runs today.',
+      },
+      { k: 'Signal', v: 'Measurement and industrial signalling.' },
+      { k: 'Hardware', v: 'Robotics and automation.' },
+      { k: 'Human-machine', v: 'Work where a person is inside the loop.' },
+      { k: 'Bridge', v: 'An outside system, read and written through the same calls.' },
     ],
+    note: 'A deployment takes one of two shapes. A hub binds the nodes and carries the calls. Without a dispatcher, the board allocates by claims, and an entry nobody claims expires. The suite runs either shape, under load and failure.',
   },
   {
-    id: 'model',
-    label: 'The model',
-    title: 'A model proposes, and the run stays one chain',
-    prose: [
-      'A model proposes work. The request, the machine that took it, and the result stay one chain on the record.',
+    id: 'today',
+    label: 'Today',
+    title: 'What runs, measured on one host',
+    rows: [
+      {
+        k: 'A turn',
+        v: 'End to end on one host under one operator, including a request from a phone.',
+      },
+      { k: 'A call', v: 'A device acts within eighty milliseconds of the dispatch.' },
+      {
+        k: 'A move',
+        v: 'Six position readings, eighty milliseconds apart. The motion is in the record, and the app interpolates nothing.',
+      },
+      { k: 'One host', v: 'Three nodes bound to seven projects.' },
+      {
+        k: 'A node',
+        v: 'About 19 MB resident. One static binary, with no runtime or daemon beside it.',
+      },
+      { k: 'The check', v: 'The contract check passes with no model in the path.' },
     ],
+    note: 'The derivation that ties a fact back to its intent is the next build. No delivery rate and no cost per delivery are measured beyond one operator.',
   },
   {
-    id: 'in-use',
-    label: 'In use',
-    title: 'A fleet on one host',
-    prose: ['The Kletos fleet runs dozens of instances on one host.'],
+    id: 'parts',
+    label: 'The parts',
+    title: 'The pieces, and who holds each one',
+    rows: [
+      {
+        k: 'The lifecycle',
+        v: 'actus, Apache-2.0. Working, with a conformance suite that has a stub tier and a real-agent tier.',
+      },
+      {
+        k: 'The protocol',
+        v: 'neXus, published. A store of facts, intents, and hints is a blackboard.',
+      },
+      { k: 'The node', v: 'telos, a prebuilt image. The source is private.' },
+      { k: 'Certification', v: 'The suite runs in actus CI today. The mark it leads to does not exist yet.' },
+      {
+        k: 'Operations',
+        v: 'The first operator runs the layer. Nothing is operated for anyone else yet.',
+      },
+      { k: 'The client', v: 'kletos, private. The surface a person uses.' },
+    ],
+    note: 'Kletos keeps no durable record, verifies nothing, and does not judge the worth of an action. The record belongs to the substrate: one coordinate space, where a delivery is an address anyone holding the specification can recompute.',
   },
 ];
 ---
@@ -47,13 +122,15 @@ const blocks = [
   href="/kletos"
   title="Intent delivers."
   subline="The chain from ask to delivery stays one record."
-  description="Kletos is the execution layer: work is stated, claimed, performed, and deposited on the same record as the intent that proposed it."
-  lede="The autopilot. Work is stated, claimed, performed, and deposited on the same record, with a derivation that ties it to the intent that proposed it."
-  body="The project performs the work a team owed, and the team keeps the two ends."
+  description="Kletos is the execution layer: work is stated as an intent, claimed and performed by a node, and deposited as a fact with the evidence that ties it to the ask."
+  lede="The execution layer. Work is stated as an intent, claimed by a node, performed on the machine that claimed it, and deposited as a fact. The ask, the claim, and the result stay one chain."
+  body="A project used to be the work a team owed.
+The project performs that work now, and the team keeps the two ends: stating the work and accepting the outcome."
   blocks={blocks}
+  note="The design-partner program is open. The layer runs on one operator's host today."
   contact={{
     title: 'Put a run through the layer',
     lede: 'If work moves through agents, machines, and people at once, we should talk.',
-    body: 'Tell us how a task reaches the machine that performs it today, and we will show you the same task as one chain on the record.',
+    body: 'Bring one queue and the people who work it, and we will show the same work as one chain on the record.',
   }}
 />

@@ -1,6 +1,9 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
+// The seal's page. The order is the object's own: the gate, the three things it does,
+// the three names a deployment keeps apart, the two-key rule, what runs, and what the
+// free tier carries. The built and not-built split is the pitch's own table.
 const blocks = [
   {
     id: 'gate',
@@ -11,28 +14,123 @@ const blocks = [
       { k: 'Who enters', v: 'Kleis, from the key the holder presents.' },
       { k: 'What may be done', v: 'Krisis, from the rules the deployment declared.' },
     ],
+    note: "It is not a layer, a router, or a governor. Nothing passes through it, it chooses no destination, and it sets no rule. It opens the place the record already lives in, and the reader follows the record's own address once inside.",
   },
   {
-    id: 'boundary',
-    label: 'The boundary',
-    title: 'The format is public. The proof is not.',
-    prose: [
-      'A second implementation can recompute an address from the public format. The proof is the part a copy cannot inherit: the key a holder presents, the seal that makes the files worthless without it, and the proof that the holder was in control. A deployment that needs that proof carries Kleis.',
+    id: 'does',
+    label: 'What it does',
+    title: 'The ignition, the gatekeeper, the proof',
+    rows: [
+      {
+        k: 'The ignition',
+        v: 'A pilot presents a key and the machine wakes. The interface starts on the key rather than attaching to it after a login.',
+      },
+      {
+        k: 'The gatekeeper',
+        v: "The record is sealed to the carrier. A copy of the files opens nothing, because the part that turns the seal stays in the holder's hand.",
+      },
+      {
+        k: 'The proof',
+        v: 'A carrier cannot be copied like a file. Presenting it is the claim, and the record of the presentation is what an auditor, an insurer, or a court reads later.',
+      },
     ],
+    note: 'The format is public, and a second implementation can recompute an address from it. The proof is the part a copy cannot inherit.',
   },
   {
-    id: 'line',
-    label: 'Licensing',
-    title: 'A separate product line',
-    prose: ['A deployment that does not carry Kleis stays on the free tier.'],
-  },
-  {
-    id: 'open',
-    label: 'Not settled',
-    title: 'The two-key mode',
-    prose: [
-      'A two-key mode for acts that cannot be undone is a candidate. Its specification is still open.',
+    id: 'key',
+    label: 'The key',
+    title: 'One key, many rooms',
+    rows: [
+      {
+        k: 'Project',
+        v: 'The room a person opens: its places, entities, campaign, and record. It says nothing about where the bytes are.',
+      },
+      {
+        k: 'Kleis',
+        v: 'The gate and its identity: the key that admits the room, and the stores the room holds.',
+      },
+      {
+        k: 'Volume',
+        v: 'A Ktema volume: facts, intents, hints, and their payloads, on any medium. The project key opens it.',
+      },
     ],
+    note: 'One key opens many rooms. One room is opened by one key and holds many stores. A plain volume is opened, not decrypted, by the carrier, so an ordinary store attaches without converting it.',
+  },
+  {
+    id: 'double',
+    label: 'Double Kleis',
+    title: 'Two keys for the acts that cannot be undone',
+    rows: [
+      {
+        k: 'The intent',
+        v: 'An agent requests an act whose consequence cannot be undone.',
+      },
+      { k: 'The class', v: 'Krisis assigns the act to the two-person class and stops it.' },
+      { k: 'The first key', v: 'A holder presents a key, and the gate stays closed.' },
+      {
+        k: 'The second key',
+        v: 'A different holder presents a key inside the declared window.',
+      },
+      { k: 'The release', v: 'Kletos unlocks execution on the second presentation.' },
+      {
+        k: 'The record',
+        v: 'Ktema writes both presentations beside the act, on one coordinate.',
+      },
+    ],
+    note: 'Two different holders, one window, one record. A second presentation by the same holder is not a second key. Krisis says the act needs two, and Kleis proves who presented.',
+  },
+  {
+    id: 'today',
+    label: 'Today',
+    title: 'What runs, and what is not built',
+    rows: [
+      {
+        k: 'A volume',
+        v: 'A directory of facts, intents, and hints, addressed by content. Built, format 0.1.',
+      },
+      {
+        k: 'A reader',
+        v: 'Records leave a volume without the storage engine, and the stream is followed as it is written.',
+      },
+      {
+        k: 'The record source',
+        v: "A volume is the record source of the cockpit's own development loop.",
+      },
+      {
+        k: "The agent's tools",
+        v: 'The storage is exposed to agents as tools: facts, intents, and hints.',
+      },
+      {
+        k: "A turn's record",
+        v: 'Partial. The simulated turn path still writes its own log.',
+      },
+      {
+        k: 'The seal',
+        v: 'A volume sealed to a key, with a copy opening nothing. Not built.',
+      },
+      { k: 'Two keys', v: 'Two holders releasing one act. Not built.' },
+    ],
+    note: 'The rows that say built are the ones a person can run today. The seal, the door, the stores a room holds behind it, and the release on a second key are the next builds.',
+  },
+  {
+    id: 'tiers',
+    label: 'The tiers',
+    title: 'What the free tier holds, and what the key adds',
+    rows: [
+      {
+        k: 'Basic',
+        v: 'The interface, the engine, and a local volume. The full record, the agent workforce, one space at a time, software protection.',
+      },
+      {
+        k: 'Pro',
+        v: 'A key. A sealed room, several rooms on one key, extended stores, handover.',
+      },
+      {
+        k: 'Enterprise',
+        v: 'Keys and the middleware at the edge. Many machines under one key, audit reports, the governance handshake before an act that cannot be undone.',
+      },
+    ],
+    note: 'Basic is the shape that runs today, with no seal and no key in front of it. The paid half is sold twice: to a machine maker as middleware on the bill of materials, and to an operator as a key that opens their own stores.',
   },
 ];
 ---
@@ -43,9 +141,10 @@ const blocks = [
   title="The seal on the record."
   subline="A copy is worth nothing without the holder."
   description="Kleis is the physical gate into the record: the key a holder presents, the seal that makes a copy worth nothing, and the proof that the holder was there."
-  lede="The key a holder presents, the seal that makes a copy of the files worth nothing, and the proof that the holder was there."
+  lede="The gate into the record. A holder presents a key, the room opens, and the presentation is written as a proof. The memory behind the door is Ktema's, the work is Kletos's, and the limits are Krisis's."
   body="It decides who enters, not what the holder may do."
   blocks={blocks}
+  note="The design-partner program is open. The free tier runs today; the key is the product."
   contact={{
     title: 'Decide who enters',
     lede: 'If a copy of the files has to be worth nothing without the holder, we should talk.',

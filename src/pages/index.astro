@@ -1,11 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import CaseDeck from '../components/CaseDeck.astro';
 import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
-import PanelDeck from '../components/PanelDeck.astro';
+import Deck from '../components/Deck.astro';
 import { companyCta, productMenu, site, type NavItem } from '../config';
 
 // The homepage owns its sections and its strip. The order, labels, and anchors below
@@ -14,6 +13,7 @@ import { companyCta, productMenu, site, type NavItem } from '../config';
 const homeSections = [
   { key: 'stack', label: 'Stack', id: 'products' },
   { key: 'operations', label: 'Operations', id: 'delta' },
+  { key: 'accountability', label: 'Accountability', id: 'accountability' },
   { key: 'engine', label: 'Engine', id: 'engine' },
   { key: 'cases', label: 'Cases', id: 'cases' },
   { key: 'fit', label: 'Fit', id: 'partners' },
@@ -29,7 +29,7 @@ const companyNav: readonly NavItem[] = homeSections.map(({ key, label, id }) => 
 const operationsPanels = [
   {
     kicker: 'The run',
-    title: 'A fire on an island, answered by the fleet already there',
+    title: 'A fire on an island, met by the fleet already there',
     body: 'Survey and thermal drones map the perimeter, a relay holds the link over the strait, and crawlers and boats take the shore. One intent carries every machine, and the operator changes it while the run moves.',
     image: {
       src: '/delta_devscr.jpg',
@@ -41,7 +41,7 @@ const operationsPanels = [
   {
     kicker: 'The cell',
     title: 'A workforce runs on one intent',
-    body: 'Servos, conveyors, cameras, maintenance robots, software agents, and the people who run them, in one cell view. An intent is written once, and the cell answers from it.',
+    body: 'Servos, conveyors, cameras, maintenance robots, software agents, and the people who run them, in one cell view. An intent is written once, and the cell runs on it.',
     image: {
       src: '/delta_scr_factory.jpeg',
       alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
@@ -74,7 +74,7 @@ const operationsPanels = [
   {
     kicker: 'The terms',
     title: 'The rules are written before the work starts',
-    body: 'A smart contract or a governance rule sets which model answers, at what cost, and on whose authority. The record is checked against it.',
+    body: 'A smart contract or a governance rule sets which model may act, at what cost, and on whose authority. The record is checked against it.',
   },
   {
     kicker: 'The campaign',
@@ -83,25 +83,35 @@ const operationsPanels = [
   },
 ];
 
+const accountabilityPanels = [
+  {
+    kicker: 'The intent',
+    title: 'The intent is the boundary',
+    body: 'A person states the work and the constraints once. The gate that binds an agent to them sits above the machines, not inside them. A call an agent originates is denied by default.',
+  },
+  {
+    kicker: 'The chain',
+    title: 'The act and the record are one chain',
+    body: 'What was asked, who claimed it, what was done, and what it produced stay one chain. Nothing is joined from separate logs after the fact.',
+  },
+  {
+    kicker: 'The replay',
+    title: 'The run replays from the record',
+    body: 'Every act carries an address anyone can recompute. The run replays from the record itself, on any target, years later.',
+  },
+];
+
 const enginePanels = [
   {
-    kicker: 'The engine',
-    title: 'One engine, every process',
-    body: 'It runs where the work runs: a service, an operating system, an agent, or a device.',
-  },
-  {
-    kicker: 'Alongside the database',
-    title: 'Keep the database. Send it fewer questions',
-    body: 'A multi-axis question costs an index per axis. The engine answers it from the record. Your database keeps transactions.',
-  },
-  {
-    kicker: 'The part',
+    kicker: 'The Validation',
     metrics: [
       { value: '$2', unit: 'MCU' },
       { value: '45', unit: 'g' },
+      { value: '1,648', unit: 'B' },
     ],
     title: 'A two-dollar chip on a 45-gram airframe',
-    body: 'A two-dollar module on a board with 8 MB of flash and half a megabyte of RAM.',
+    body: 'A $2 module with 8 MB of flash and 512 KB of RAM. The engine executes multi-axis queries and maintains its record within a 1,648-byte footprint.',
+    note: 'The initial boot prepares the volume; all subsequent boots operate within this peak.',
     image: {
       src: '/esp32s3-board.jpg',
       alt: 'A small flight-controller board with an ESP32-S3 module, its battery, and a USB bridge.',
@@ -110,44 +120,98 @@ const enginePanels = [
     },
   },
   {
-    kicker: 'The footprint',
-    metrics: [{ value: '1,648', unit: 'B' }],
-    title: 'The same engine holds under two kilobytes on the part',
-    body: 'Peak working memory on the part, records on the flash, read path included. A boot does no storage work to find them.',
-    note: 'The first start prepares the storage; later starts hold this figure.',
+    kicker: 'The hard end',
+    title: '64 KB of SRAM, and no operating system',
+    body: 'On the RISC-V reference part, 256 KB of flash and 64 KB of SRAM, the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash. Its heap peaks at 2,163 B, and no resident index grows with the record count.',
   },
   {
-    kicker: 'The range',
-    title: 'One format across the range',
-    body: 'Working memory stays flat as the log grows. On the RISC-V reference part (256 KB flash, 64 KB SRAM), the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash.',
+    kicker: 'The comparison',
+    title: 'What the same question costs elsewhere',
+    body: 'A general database needs an operating system and 100 KB or more of heap. An embedded key-value store keeps one axis and a RAM index. The engine resolves across axes with no resident index and no operating system.',
+  },
+  {
+    kicker: 'Alongside the database',
+    title: 'Keep the database. Send it fewer questions',
+    body: 'A multi-axis question costs an index per axis. The engine resolves it from the record. Your database keeps transactions.',
   },
 ];
 
 const fitPanels = [
   {
-    kicker: 'The condition',
-    title: 'Answered where the record is made, inside the memory it has',
-    point: 'The question is multi-axis, and the answer has to come from the record the system keeps.',
-    body: 'A record made where the work runs answers from its own history.',
-  },
-  {
     kicker: 'Everyday',
     title: 'The same shape on things people already run',
     point: 'A service that keeps a year of runs. A bike computer that keeps a season of rides.',
-    body: 'Which deploy cost the latency, or what changed since Monday, answered in the process itself. No account and no round trip.',
+    body: 'Which deploy cost the latency, or what changed since Monday, settled in the process itself. No account and no round trip.',
   },
   {
     kicker: 'Critical systems',
-    title: 'Where the answer has to survive the audit',
-    point: 'Ten to thirty years in service, and the organization that shipped it answers for what it did.',
+    title: 'Where the record has to survive the audit',
+    point: 'Ten to thirty years in service, and the organization that shipped it is accountable for what it did.',
     body: 'Defense programs, medical device makers, vehicle programs, and energy operators. The machine outlives the deployment, and the record has to outlive the machine.',
     note: 'Medical and automotive: the EU AI Act requires logging over the life of a high-risk system. Industrial and energy: the CRA reporting duty has applied since 11 September 2026, with main obligations from 11 December 2027. Defense answers to its own regime.',
   },
   {
     kicker: 'The boundary',
     title: 'The line sits above the engine',
-    point: 'If the system has to answer from its own record, the engine is the answer.',
-    body: 'What happens above that line is yours: your database, your cloud, and your services. Connect it as you already do; the format does not change.',
+    point: 'The engine holds the record. Everything above the line is yours.',
+    body: 'A record made where the work runs is proved from its own history. Your database, your cloud, and your services stay above it, and the format does not change.',
+  },
+];
+
+const caseSlides = [
+  {
+    meta: 'Pump',
+    stamp: '03:14',
+    title: 'The dose was held.',
+    rows: [
+      { label: 'The question', text: 'How did the dose and the response move together over the last 24 hours, and was the alarm justified?' },
+      { label: 'What the record must hold', text: 'Three weeks of readings on the pump itself, the earlier occlusion they match, and the entry that held the next dose.', rule: true },
+    ],
+  },
+  {
+    meta: 'Robot',
+    stamp: '14:22',
+    title: 'The line stopped.',
+    rows: [
+      { label: 'The question', text: 'Which decision led to the failure, and who authorized it?' },
+      { label: 'What the record must hold', text: 'The ask, who took it, what was produced, and who approved it.', rule: true },
+    ],
+  },
+  {
+    meta: 'Drone',
+    stamp: '09:41',
+    title: 'The link dropped.',
+    rows: [
+      { label: 'The question', text: 'What did the sensors see before it, and was the operator warned?' },
+      { label: 'What the record must hold', text: 'The readings on the airframe, ordered by time, with the last acknowledged command.', rule: true },
+    ],
+  },
+  {
+    meta: 'Vehicle',
+    stamp: '21:07',
+    title: 'The system intervened.',
+    rows: [
+      { label: 'The question', text: 'Which sensor and which model agreed before the intervention, and which did not?' },
+      { label: 'What the record must hold', text: "Both readings, the model's output, and the rule that allowed the action.", rule: true },
+    ],
+  },
+  {
+    meta: 'Workflow',
+    stamp: '08:12',
+    title: 'The hand-off failed.',
+    rows: [
+      { label: 'The question', text: 'Which agent claimed the work, which tool did it call, and what did it hand on?' },
+      { label: 'What the record must hold', text: 'The intent, the claim, the tool call, and the record the next agent received.', rule: true },
+    ],
+  },
+  {
+    meta: 'Software agent',
+    stamp: '11:48',
+    title: 'The agent responded.',
+    rows: [
+      { label: 'The question', text: 'Which model responded, at what cost, and on whose authority?' },
+      { label: 'What the record must hold', text: 'The model, the price, and the authority, in one record beside the result.', rule: true },
+    ],
   },
 ];
 
@@ -164,14 +228,14 @@ const assertNever = (value: never): never => {
   cta={companyCta}
 >
     <Hero
-        eyebrow=""
-        title="Replayable Agentic Computing"
-        subline="Every act, answerable."
-        lede="An agent books a shipment. A drone turns back. An insulin pump holds a dose. A robot stops a line. Later, someone asks why, and the system answers from its own record: what was asked, what it did, and what limited it."
-        body="We answer multi-axis questions without an index to maintain, turn intent into verified work, and put the operator inside the machine's own space to replay and prove the decision. One open format, from a two-dollar chip to a data center, and your stack stays as it is."
-        fieldReveal="scroll"
-        depth
-      >
+      eyebrow=""
+      title="Replayable Agentic Computing"
+      subline="Every autonomous act, accountable."
+      lede="AI agent books shipment. Drone turns back. Insulin pump holds dose. Robot stops line. Later, someone asks why. System answers from record: what was asked, what it did, and what limited it."
+      body="We turn intent into verified work, bind the act and the record together, and let the operator ask and prove the decision from the inside. One open format, from a two-dollar chip to a hyperscale data center, and your infrastructure stays as it is."
+      fieldReveal="scroll"
+      depth
+    >
     <a class="btn btn--accent" href={companyCta.href} slot="actions" data-hero-cta>
       {companyCta.label} 
     </a>
@@ -186,7 +250,7 @@ const assertNever = (value: never): never => {
       <Reach
         caption={{
           lead: 'One space and format, from chip to orbit.',
-          body: 'Each agent, service, or machine keeps its own record. A record from one is read at the same coordinate by another, with no translator between them. One record explains a move and the state it reached. Connect through your own infrastructure, or through our mission control.',
+          body: 'Each agent, service, or machine keeps its own record. A record from one is read at the same coordinate by another, with no translator between them. One record traces a move and the state it reached. Connect through your own infrastructure, or through our mission control.',
         }}
       />
     </div>
@@ -198,38 +262,57 @@ const assertNever = (value: never): never => {
         return <Layers id={section.id} eyebrow={section.label} />;
       case 'operations':
         return (
-          <PanelDeck
+          <Deck
             id={section.id}
             eyebrow={section.label}
             title="One space for the work."
-            lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside. The first case is a fire on an island."
-            panels={operationsPanels}
+            lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside."
+            slides={operationsPanels}
             labels={['Run', 'Cell', 'Span', 'Seat', 'Chain', 'Terms', 'Campaign']}
             footnote="Pre-release development builds on simulated campaign data. Delta is planned to be open source."
           />
         );
-      case 'engine':
+      case 'accountability':
         return (
-          <PanelDeck
+          <Deck
             id={section.id}
             eyebrow={section.label}
-            title="One engine, from a server to a two-dollar drone."
-            lede="The same format runs on a server, beside a database, and on a two-dollar drone. The drone is the floor, not the product."
-            panels={enginePanels}
-            labels={['Engine', 'Alongside', 'Part', 'Footprint', 'Range']}
+            title="Inside the intent, on the record."
+            lede="Accountable execution for an autonomous system: the intent bounds the work, the act stays on the record, and the run replays."
+            slides={accountabilityPanels}
+            labels={['Intent', 'Chain', 'Replay']}
+          />
+        );
+      case 'engine':
+        return (
+          <Deck
+            id={section.id}
+            eyebrow={section.label}
+            title="One engine, from a data center to the smallest part."
+            lede="The range runs from a server to the smallest part a product ships. The engine has validated at this absolute limit."
+            slides={enginePanels}
+            labels={['Validation', 'Hard end', 'Compare', 'Alongside']}
           />
         );
       case 'cases':
-        return <CaseDeck id={section.id} eyebrow={section.label} />;
-      case 'fit':
         return (
-          <PanelDeck
+          <Deck
             id={section.id}
             eyebrow={section.label}
-            title="Where the record answers from itself."
-            lede="The question combines several axes. It has to be answered where the record was made, inside the memory the system has."
-            panels={fitPanels}
-            labels={['Condition', 'Everyday', 'Critical', 'Boundary']}
+            title="One record, every agent."
+            lede="A pump, a robot, a drone, a vehicle, a workflow, a software agent. The same record holds what was asked, what was done, and what bounded it."
+            slides={caseSlides}
+          />
+        );
+      case 'fit':
+        return (
+          <Deck
+            id={section.id}
+            eyebrow={section.label}
+            title="Where the record stands on its own."
+            lede="The question combines several axes. It has to be settled where the record was made, inside the memory the system has."
+            slides={fitPanels}
+            labels={['Everyday', 'Critical', 'Boundary']}
           />
         );
       case 'contact':

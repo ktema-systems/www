@@ -815,17 +815,13 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   overflow: hidden;
 }
 
-/* A band of light runs the full width of the rule and drifts along it, so the
-   panel reads as moving glass rather than a fixed sheet. The phone's sheet uses
-   the same line, because it is the same gesture at a narrower width. */
-.product-menu::before,
+/* The phone's sheet carries a band of light that runs the width of its rule and
+   drifts along it, so the sheet reads as moving glass rather than a fixed one. */
 .site-menu::before {
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
   height: 2px;
-  /* A faint rail with a soft band travelling along it, so the panel reads as
-     moving glass rather than a fixed sheet. The phone's sheet uses the same line. */
   background-color: color-mix(in srgb, var(--accent) 16%, transparent);
   background-image: linear-gradient(
     90deg,
@@ -844,6 +840,46 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   transition: transform 260ms var(--ease);
 }
 
+/* The panel's rail is that hairline alone. Its light is an element below, because
+   the light has a place rather than a course. */
+.product-menu::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background-color: color-mix(in srgb, var(--accent) 16%, transparent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms var(--ease);
+}
+
+/* The light sits at the centre of the current product's label. Its horizontal
+   place is `--focus`, the label centre as a share of the panel, written by the
+   header script; `translateX(-50%)` centres the band on that value and nothing
+   else. Do not add a horizontal offset here, a margin, or a rail inset: a light
+   moved off the label marks the wrong product, and that has regressed before.
+   A panel with no current product has no place to park, so it carries no light. */
+.product-menu__light {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 22%;
+  height: 2px;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 36%,
+    var(--accent) 50%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 64%,
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 26%, transparent);
+  opacity: 0;
+  left: var(--focus, 50%);
+  transform: translateX(-50%);
+  transition: opacity 260ms var(--ease);
+}
+
 .masthead.is-open .product-menu {
   grid-template-rows: 1fr;
   border-bottom-width: 1px;
@@ -854,7 +890,20 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
 .masthead.is-open .product-menu::before,
 .masthead.is-menu .site-menu::before {
   transform: scaleX(1);
+}
+
+.masthead.is-menu .site-menu::before {
   animation: product-thread 11s linear infinite;
+}
+
+/* The parked light: the label's own centre, and nothing else. The rest of the rail
+   dims, which is what makes a still light read as a position rather than a pause. */
+.masthead.is-open .product-menu.has-focus .product-menu__light {
+  opacity: 1;
+}
+
+.masthead.is-open .product-menu.has-focus::before {
+  background-color: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
 @keyframes product-thread {
@@ -864,26 +913,6 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   to {
     background-position: 140% 0;
   }
-}
-
-/* The light comes to rest over the product the reader is on, so the rail says where
-   they are instead of drifting past it. The rest of the rail dims, which is what
-   makes the parked light read as a position rather than a pause. */
-.masthead.is-open .product-menu.has-focus::before {
-  animation: none;
-  background-color: color-mix(in srgb, var(--accent) 7%, transparent);
-  background-position: var(--focus, -40%) 0;
-}
-
-/* A page whose panel arrives open parks the light rather than running the thread
-   from the start, and it stays dark until the light has a place to rest. The arrival
-   is the open panel, not a light travelling to its position. */
-.masthead[data-open-products="true"] .product-menu::before {
-  animation: none;
-}
-
-.masthead[data-open-products="true"] .product-menu:not(.has-focus)::before {
-  opacity: 0;
 }
 
 .product-menu__inner {
@@ -1613,10 +1642,11 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
 }
 
 /* The narrowest rows cannot hold the brand, the call to action and the toggle at
-   once. The contact section is in the sheet, so the button steps out first. */
+   the full size, so the button steps down instead of leaving the row. */
 @media (max-width: 380px) {
-  .masthead__cta {
-    display: none;
+  .masthead__cta .btn {
+    padding: 7px 11px;
+    font-size: 12.5px;
   }
 }
 

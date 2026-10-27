@@ -1,5 +1,5 @@
 ---
-import PanelDeck from './PanelDeck.astro';
+import Deck from './Deck.astro';
 
 interface Props {
   id?: string;
@@ -15,8 +15,8 @@ const parts = [
   {
     label: 'Ktema',
     kicker: 'Ktema · the record',
-    title: 'The query engine that needs no index',
-    body: 'It answers multi-axis questions beside the database you already run, from the record itself.',
+    title: 'The record engine, with no index to maintain',
+    body: 'Intent, act, and outcome in one record, kept beside the database you already run.',
   },
   {
     label: 'Kletos',
@@ -40,7 +40,7 @@ const parts = [
     label: 'Telos',
     kicker: 'Telos · the transport',
     title: 'A step to another place is an address',
-    body: 'Live work moves between agents, people, and spaces.',
+    body: 'Live state moves between agents, people, and spaces.',
   },
   {
     label: 'Kleis',
@@ -54,11 +54,11 @@ const panels = parts.map(({ kicker, title, body }) => ({ kicker, title, body }))
 const labels = parts.map((part) => part.label);
 ---
 
-<PanelDeck
+<Deck
   id={id}
   eyebrow={eyebrow}
-  title="Deterministic Record. Accountable Execution. Portable Control."
-  lede="Ktema Systems is the whole stack, and each part stands on its own. One spatiotemporal record, on any target."
-  panels={panels}
+  title="Spatiotemporal Record. Accountable Execution. Portable Control. Verifiable Seal."
+  lede="Ktema Systems is the whole stack, and each part stands on its own: one record, from a service to a two-dollar part, for execution that can be trusted and checked."
+  slides={panels}
   labels={labels}
 />

@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
-import PanelDeck from '../components/PanelDeck.astro';
+import Deck from '../components/Deck.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
 import DeltaShot from '../components/DeltaShot.astro';
 import Section from '../components/Section.astro';
@@ -41,12 +41,12 @@ const deltaNav: readonly NavItem[] = [
     </p>
   </Hero>
 
-  <PanelDeck
+  <Deck
     id="operations"
     eyebrow="Operations"
     title="Three runs, one space."
     lede="Delta is the cockpit of a campaign: the machines, the people, and the record of a run, read together. Each case is read from the seat inside the run."
-    panels={[
+    slides={[
       {
         kicker: 'The run',
         title: 'A fire on an island, answered by the fleet already there',

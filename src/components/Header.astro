@@ -80,6 +80,7 @@ const sheetItems = items.filter((item) => !item.items);
   {
     productLinks.length > 0 && (
       <div class="product-menu" id="products-menu" data-products-menu>
+        <span class="product-menu__light" aria-hidden="true"></span>
         <div class="product-menu__fold">
           <div class="wrap product-menu__inner">
             {productLinks.map((entry) => (
@@ -235,8 +236,9 @@ const sheetItems = items.filter((item) => !item.items);
     }
 
     // The rail's light comes to rest over the product being read, so the panel says
-    // where the reader is instead of drifting past it. The box is the column the panel
-    // gives that product, so its centre is the middle of the place the entry occupies.
+    // where the reader is instead of drifting past it. The place it holds is the
+    // centre of the label's text, which is left-aligned in its column: a range gives
+    // the word's own box, where the span and the column both run past it.
     const currentEntry = menu.querySelector<HTMLElement>('a[aria-current="page"]');
 
     const settleThread = () => {
@@ -245,23 +247,33 @@ const sheetItems = items.filter((item) => !item.items);
       }
 
       const panelBox = menu.getBoundingClientRect();
-      if (panelBox.width === 0) {
+      const label = currentEntry.querySelector<HTMLElement>('.product-menu__name') ?? currentEntry;
+      const range = document.createRange();
+      range.selectNodeContents(label);
+      const labelBox = range.getBoundingClientRect();
+      // Before the sheet is laid out the boxes are zero, and a measurement taken then
+      // parks the light against the edge of the rail.
+      if (panelBox.width === 0 || labelBox.width === 0) {
         return;
       }
 
-      const entryBox = currentEntry.getBoundingClientRect();
-      // The light sits at the centre of the entry's box, which is the column the panel
-      // gives the product, so it marks the row rather than the word inside it.
-      const center =
-        ((entryBox.left + entryBox.width / 2 - panelBox.left) / panelBox.width) * 100;
-      // The band is 22% of the rail, and background-position is a share of the space
-      // left beside it, so the offset that centres the band is (center - 11) / 0.78.
-      menu.style.setProperty('--focus', `${((center - 11) / 0.78).toFixed(2)}%`);
+      // The stylesheet puts the band's centre at this value. Never convert it to a
+      // background offset, and never add a horizontal shift at the label's end.
+      const center = ((labelBox.left + labelBox.width / 2 - panelBox.left) / panelBox.width) * 100;
+      menu.style.setProperty('--focus', `${center.toFixed(2)}%`);
       menu.classList.add('has-focus');
     };
 
-    settleThread();
-    window.addEventListener('resize', settleThread);
+    // The first frames can precede the sheet's layout and the web font, so the rail is
+    // measured again once both are in place.
+    const settleSoon = () => {
+      requestAnimationFrame(() => requestAnimationFrame(settleThread));
+    };
+
+    settleSoon();
+    window.addEventListener('load', settleSoon);
+    window.addEventListener('resize', settleSoon);
+    void document.fonts?.ready.then(settleThread);
 
     // A product page arrives with the panel unfolded, and that is a greeting rather
     // than a fixture: the page's own top is the one place the panel belongs, so it
