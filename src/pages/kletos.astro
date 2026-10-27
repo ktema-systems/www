@@ -13,13 +13,13 @@ const blocks = [
     rows: [
       { k: 'Stated', v: 'A person writes the work. The intent carries what was asked, who asked, and what constrains it.' },
       { k: 'Claimed', v: 'An agent, a machine, or a person takes it, and the claim is written.' },
-      { k: 'Performed', v: 'The command runs on the machine that took it.' },
+      { k: 'Performed', v: 'The party that claimed it performs it.' },
       {
         k: 'Deposited',
         v: 'The result is written as a fact, with the evidence that the work was done.',
       },
     ],
-    note: 'A call names one machine and one of its commands, with arguments. A planner produces a call, a model proposes one, and an outside agent sends one. The executor is one function for all three.',
+    note: 'One request, one machine, one action. A planner, a model, and an outside agent all send the same thing, and the layer answers them the same way.',
   },
   {
     id: 'entries',
@@ -28,18 +28,18 @@ const blocks = [
     rows: [
       {
         k: 'The line',
-        v: 'The console reads a sentence into calls and dispatches them to the machines.',
+        v: 'The console turns a sentence into work and sends it to the machines.',
       },
       {
         k: 'The model',
-        v: 'A model proposes the same calls through tool calling, and they run through the same executor.',
+        v: 'A model proposes the same work, and the layer accepts it the same way.',
       },
       {
         k: 'The outside agent',
-        v: 'MCP publishes every command as a tool and every entity as a resource. An outside agent calls a machine the way it calls anything else.',
+        v: 'An outside agent reaches every machine as a tool, and reads each one as a resource.',
       },
     ],
-    note: 'A model is optional. With none configured, the deterministic reader is the whole path.',
+    note: 'A model is optional. The layer runs without one.',
   },
   {
     id: 'ends',
@@ -48,7 +48,7 @@ const blocks = [
     prose: [
       'A person opens a project, writes a line, and watches the turn. That line is the first end.',
       'The second is the acceptance, written as a note in the thread: the decision sits where the person and the agent both read it, and it runs no turn.',
-      'Approval is per project and carried by the deployment: every call, calls on request, or none. A call that waits for an answer waits for the person who can give it.',
+      'Approval is a deployment setting: every action, actions on request, or none. A call that waits for an answer waits for the person who can give it.',
     ],
     note: 'The machine holds the middle. The boundary sits outside the loop, where the first goal is stated and where the result is judged.',
   },
@@ -66,7 +66,7 @@ const blocks = [
       { k: 'Human-machine', v: 'Work where a person is inside the loop.' },
       { k: 'Bridge', v: 'An outside system, read and written through the same calls.' },
     ],
-    note: 'A deployment takes one of two shapes. A hub binds the nodes and carries the calls. Without a dispatcher, the board allocates by claims, and an entry nobody claims expires. The suite runs either shape, under load and failure.',
+    note: 'A deployment is supervised, with a hub that binds the work, or peer to peer, where the board allocates by claims. One contract holds both, and the conformance suite reports whether a deployment conforms.',
   },
   {
     id: 'today',
@@ -80,39 +80,16 @@ const blocks = [
       { k: 'A call', v: 'A device acts within eighty milliseconds of the dispatch.' },
       {
         k: 'A move',
-        v: 'Six position readings, eighty milliseconds apart. The motion is in the record, and the app interpolates nothing.',
+        v: 'The record holds the path, so a replay draws where the machine went.',
       },
       { k: 'One host', v: 'Three nodes bound to seven projects.' },
       {
         k: 'A node',
-        v: 'About 19 MB resident. One static binary, with no runtime or daemon beside it.',
+        v: 'About 19 MB resident. One file to deploy, with nothing else to install or operate.',
       },
       { k: 'The check', v: 'The contract check passes with no model in the path.' },
     ],
     note: 'The derivation that ties a fact back to its intent is the next build. No delivery rate and no cost per delivery are measured beyond one operator.',
-  },
-  {
-    id: 'parts',
-    label: 'The parts',
-    title: 'The pieces, and who holds each one',
-    rows: [
-      {
-        k: 'The lifecycle',
-        v: 'actus, Apache-2.0. Working, with a conformance suite that has a stub tier and a real-agent tier.',
-      },
-      {
-        k: 'The protocol',
-        v: 'neXus, published. A store of facts, intents, and hints is a blackboard.',
-      },
-      { k: 'The node', v: 'telos, a prebuilt image. The source is private.' },
-      { k: 'Certification', v: 'The suite runs in actus CI today. The mark it leads to does not exist yet.' },
-      {
-        k: 'Operations',
-        v: 'The first operator runs the layer. Nothing is operated for anyone else yet.',
-      },
-      { k: 'The client', v: 'kletos, private. The surface a person uses.' },
-    ],
-    note: 'Kletos keeps no durable record, verifies nothing, and does not judge the worth of an action. The record belongs to the substrate: one coordinate space, where a delivery is an address anyone holding the specification can recompute.',
   },
 ];
 ---

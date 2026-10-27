@@ -1,31 +1,105 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
+// The governance page. The order follows the object: the bound it puts on a narrowed
+// range, the decisions it makes, where the terms come from, the acts that need two
+// holders, what is defined today, and who buys it. Every claim here is one the notes
+// under docs/ktmas record; the rows that are not built say so.
 const blocks = [
+  {
+    id: 'bound',
+    label: 'The bound',
+    title: 'It bounds the range the record has narrowed',
+    lede: 'A record says what happened. Run it forward and it also says how little can happen next.',
+    rows: [
+      {
+        k: 'The range',
+        v: 'What the machine can still reach, narrowed by the trail the record already holds. The longer the trail, the smaller the range.',
+      },
+      {
+        k: 'The terms',
+        v: 'The bound a deployment declares: what an action may do, on what authority, at what cost.',
+      },
+      {
+        k: 'The hold',
+        v: 'Work that leaves the terms does not run.',
+      },
+      {
+        k: 'The answer',
+        v: 'When someone asks afterwards, the rule and the record answer together.',
+      },
+    ],
+    note: 'The narrowing is deterministic: the same record leaves the same range. Krisis is where the bound on that range is declared.',
+  },
   {
     id: 'decision',
     label: 'The decision',
-    title: 'Which model answers, at what cost, on which terms',
+    title: 'Which model answers, at what cost, with what authority',
     rows: [
       { k: 'The action', v: 'What each action may do, and what it may not.' },
       { k: 'The model', v: 'Which model answers a request.' },
       { k: 'The cost', v: 'What that answer costs.' },
-      { k: 'The terms', v: 'On what terms it is given.' },
+      { k: 'The authority', v: 'Who may move an agent, and with what authority.' },
+      { k: 'The terms', v: 'On what terms the answer is given.' },
     ],
+    note: 'One rule set answers all five, so the same request is read the same way twice.',
   },
   {
-    id: 'source',
-    label: 'Where the terms come from',
-    title: 'A rule written with the deployment',
+    id: 'declared',
+    label: 'The terms',
+    title: 'Written with the deployment, checked against the record',
     prose: [
-      'Its structure comes from the smart contract and from governance systems. The terms of an answer are written with the deployment and checked against the record, so an audit reads a rule and a record.',
+      'The terms take the form a smart contract and a governance system already take, and they are written when the deployment is. An auditor reads a rule and reads a record.',
+      'The record says what the machine did. The rule says what it was allowed to do. Holding the two together is the work of the layer.',
     ],
+    note: 'It governs storage and execution together, so the same terms are read by the record and by the work.',
   },
   {
-    id: 'artifact',
-    label: 'The first artifact',
-    title: 'One model, checked several ways',
-    prose: ['The first artifact is a single model, checked several ways against one reference.'],
+    id: 'twokeys',
+    label: 'Two keys',
+    title: 'Two holders, one window',
+    rows: [
+      { k: 'The class', v: 'Krisis places the act in the two-person class and holds it.' },
+      { k: 'The window', v: 'How long a second key may still arrive is declared with the class.' },
+      { k: 'The release', v: 'Kletos unlocks the work on the second presentation.' },
+      { k: 'The proof', v: 'Kleis proves who presented each key.' },
+      { k: 'The record', v: 'Both presentations sit beside the act on one coordinate.' },
+    ],
+    note: "The class is Krisis's. The identity of a holder is Kleis's, the release is Kletos's, and the record is Ktema's.",
+  },
+  {
+    id: 'today',
+    label: 'Today',
+    title: 'What is defined, and what is not',
+    rows: [
+      { k: 'The role', v: 'Defined: the layer governs storage and execution together.' },
+      { k: 'The project', v: 'Not started. The governance role is defined, the project is not.' },
+      { k: 'The terms engine', v: 'In development.' },
+      { k: 'The two-key class', v: 'Defined. It needs the seal, and Kleis is not built.' },
+      { k: 'The price', v: 'Set when the project is defined.' },
+      { k: 'The first artifact', v: 'A single model, checked several ways against one reference.' },
+    ],
+    note: 'No deployment carries Krisis today. These rows are the definition, and the first project definition is what moves them.',
+  },
+  {
+    id: 'buyer',
+    label: 'The buyer',
+    title: 'The operator who has to answer for it',
+    rows: [
+      {
+        k: 'A regulated operator',
+        v: 'A deployment that must account for which model answered, at what cost, and on whose authority.',
+      },
+      {
+        k: 'An enterprise operator',
+        v: 'A fleet where an agent can move a machine, and the terms of that move have to be readable later.',
+      },
+      {
+        k: 'What it is bought with',
+        v: 'A bound is only as good as the trail behind it, so the layer is bought with Ktema and Kletos.',
+      },
+    ],
+    note: 'What the buyer wants is an answer that survives an audit, which is why the price lands on the layer that holds the record.',
   },
 ];
 ---
@@ -35,9 +109,9 @@ const blocks = [
   href="/krisis"
   title="Judgment governs."
   subline="Every action carries its terms."
-  description="Krisis is the governance layer: it sets what each action may do, and keeps the work inside the rules a deployment declared."
-  lede="The authority. It sets what each action may do, chooses which model answers and at what cost, and keeps the work inside the rules a deployment declared."
-  body="It governs storage and execution together."
+  description="Krisis is the governance layer: it declares what each action may do, which model answers, at what cost and with what authority, and holds the work inside those terms."
+  lede="The authority. It bounds the range the record has narrowed: what each action may do, which model answers, at what cost, and on what authority."
+  body="It governs storage and execution together. The terms are declared with the deployment, so an audit reads a rule and a record."
   blocks={blocks}
   contact={{
     title: 'Declare what the work may do',

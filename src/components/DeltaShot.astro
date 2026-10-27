@@ -1,11 +1,11 @@
 ---
-// The cockpit at work, kept small: it is a development build on demo material, so
-// the figure is evidence of the shape rather than a product shot.
+// The seat rather than the cockpit: a single record opened on the left, the run
+// still live behind it. Cropped to the app so it does not repeat a deck frame.
 const shot = {
-  src: '/delta_devscr.jpg',
+  src: '/delta_seat.jpg',
   width: 1842,
-  height: 1047,
-  alt: 'The Delta cockpit on a demo campaign: an intent list on the left, the fleet and its map in the middle, the projects on the right, and the record along the bottom.',
+  height: 1144,
+  alt: 'A Delta run on Rescue Wing: Island Fire with one record opened on the left. The panel reads ground-station-2/link: kind, written at, origin, payload, and an address derived from the payload, the origin and the creator, while the intents, the cell and the island stay behind it.',
 };
 ---
 
@@ -21,7 +21,9 @@ const shot = {
     />
   </div>
   <figcaption>
-    A development build of Delta, running a demo campaign on a virtual scenario.
+    One fact, opened where the run is acted on: what it is, where it came from, and the
+    address derived from it, read from a development build on a virtual scenario.
+    {' '}
     <span class="dshot__note">Delta is planned to be open source.</span>
   </figcaption>
 </figure>
@@ -36,7 +38,7 @@ const shot = {
 
   .dshot__frame {
     width: 100%;
-    aspect-ratio: 1842 / 1047;
+    aspect-ratio: 1842 / 1144;
     border: 1px solid var(--line);
     border-radius: 8px;
     overflow: hidden;

@@ -331,15 +331,6 @@ const joins = segments.map(({ from, to, a, b, distance }) => {
   };
 });
 
-// Each state carries its own combination of the points where two reads meet, so the
-// three are three readings of the space rather than one point repeated.
-const stride = Math.max(1, Math.floor(joins.length / 3));
-const STATE_JOINS = [0, 1, 2].map((state) =>
-  [0, 1, 2].map((step) => (state * 2 + step * stride) % joins.length),
-);
-const stateThreads = STATE_JOINS.flatMap((joinIndices, state) =>
-  joinIndices.map((joinIndex) => ({ state, joinIndex })),
-);
 
 const particles = field.map((particle) => ({
   cx: round(particle.at.x),
@@ -407,22 +398,24 @@ const pathOf = (ring: Ring) => {
   return `${parts.join(' ')} Z`;
 };
 
-// Two shells of the same lattice for the volume. The space forks after the read: a
-// deterministic record does not commit to one future, so the fabric carries the
-// branches that follow the instant it read, and the figure draws them as three copies
-// of the same lattice, each displaced along a direction of its own.
-const BRANCH_RADIUS = RADIUS * 0.12;
-// The states stand on a shallow arc around the sphere: it takes the width the paragraph
-// leaves, level with the sphere, so none of them drops into the text below.
-const BRANCH_ARC_X = RADIUS * 2;
-const BRANCH_ARC_Y = RADIUS * 0.9;
+// Two shells of the same lattice for the volume. The space forks after the read: the
+// future is a range, and the record written so far narrows it. That narrowing is the
+// caption's claim; the figure draws the range as three generations of the same lattice at
+// the parent's own size, turned to another meridian phase and displaced by a share of the
+// radius, standing on the sphere as afterimages instead of orbiting it as satellites.
+const BRANCH_RADIUS = RADIUS * 0.92;
+// The displacement stays small on purpose: enough that three generations are told apart,
+// small enough that none of them leaves the parent's footprint.
+const BRANCH_ARC_X = RADIUS * 0.3;
+const BRANCH_ARC_Y = RADIUS * 0.18;
 const BRANCH_ANGLES = [40, 220, 320].map((degrees) => degrees * DEG);
-// The last state is left open: the instant after the read has not been classified yet, so
-// the space carries more futures than it draws.
+// The phase keeps the three generations apart to the eye. The space they describe is the
+// same one.
+const BRANCH_PHASES = [14, 28, 42];
 const BRANCH_NAMES = ['a', 'b', 'c'];
 
-// The arc is solved in the camera frame at the sphere's depth, so a state keeps its place
-// in the composition while the sphere turns underneath it.
+// The displacement is solved in the camera frame at the sphere's depth, so a generation
+// keeps its place in the composition while the sphere turns underneath it.
 const orbitOffset = (angle: number, yaw: number, tilt: number): Vec3 => {
   const p = FOCAL / DIST;
   const across = (BRANCH_ARC_X * Math.cos(angle)) / p;
@@ -439,16 +432,33 @@ const orbitOffset = (angle: number, yaw: number, tilt: number): Vec3 => {
 const branches = BRANCH_ANGLES.map((angle, index) => {
   const offset = orbitOffset(angle, YAW, TILT);
   const centre = project(...offset);
+  // The name sits on its own copy's rim, at a bearing of its own, so it travels with the
+  // state it names instead of holding a fixed place in the frame.
+  const dirX = Math.cos(angle);
+  const dirY = -Math.sin(angle);
+  const rim = BRANCH_RADIUS * centre.p * 1.04 + 12;
+  const labelX = Math.min(
+    VIEW_X + VIEW_W - 62,
+    Math.max(VIEW_X + 62, centre.x + dirX * rim),
+  );
+  const labelY = Math.min(
+    VIEW_Y + VIEW_H - 14,
+    Math.max(VIEW_Y + 18, centre.y + dirY * rim),
+  );
   return {
     name: BRANCH_NAMES[index] as string,
+    anchor: dirX > 0.2 ? 'start' : dirX < -0.2 ? 'end' : 'middle',
     angle,
     offset,
     x: round(centre.x),
     y: round(centre.y),
-    labelTop: round(centre.y - 1),
-    labelLetter: round(centre.y + 11),
+    labelX: round(labelX),
+    labelTop: round(labelY - 1),
+    labelLetter: round(labelY + 11),
     radius: round(BRANCH_RADIUS),
-    rings: latticeRings(BRANCH_RADIUS, 0, offset, [0, 60, 120], [-30, 0, 30]),
+    // A generation is the parent's whole lattice, re-read: the ribs move with the phase
+    // and the parallels stay, so the copy is the same field and not a smaller sketch.
+    rings: latticeRings(BRANCH_RADIUS, BRANCH_PHASES[index], offset, MERIDIANS, PARALLELS),
   };
 });
 
@@ -463,7 +473,6 @@ const payload = {
   dist: DIST,
   ox: OX,
   oy: OY,
-  radius: round(RADIUS),
   tilt: round(TILT * 1000) / 1000,
   yaw: round(YAW * 1000) / 1000,
   limit: round(reachLimit),
@@ -505,7 +514,7 @@ const payload = {
   <svg
     viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`}
     role="img"
-    aria-label="Hosts attached to one sphere of coordinates: each host carries the engine at its own coordinate, two hosts are joined where their reads reach the same point, and when an instant closes it forks into the composite states a, b, and c, the last of them still open"
+    aria-label="Hosts attached to one sphere of coordinates: each host carries the engine at its own coordinate, two hosts are joined where their reads reach the same point, and when an instant closes the same space is generated again, so the future states it admits stand on the sphere as afterimages, three generations of the same space"
   >
 
     <defs>
@@ -518,6 +527,33 @@ const payload = {
         <stop offset="55%" stop-color="var(--fg)" stop-opacity="0.02" />
         <stop offset="100%" stop-color="var(--fg)" stop-opacity="0" />
       </radialGradient>
+      <!--
+        One gradient per link: the band is mapped onto that link's own direction, so it
+        crosses a short link and a long one on the same clock. The stops are a long wash,
+        a little over half the link, fading from nothing through a low shoulder to a
+        centre and back: the length and the falloff are what make it read as light moving
+        over the wire rather than as a segment of the wire switching on.
+      -->
+      {joins.map((_join, index) => (
+        <linearGradient
+          id={`reach-signal-${index}`}
+          gradientUnits="userSpaceOnUse"
+          x1="0"
+          y1="0"
+          x2="1"
+          y2="0"
+        >
+          <stop offset="0" stop-color="#fff" stop-opacity="0" />
+          <stop offset="0.22" stop-color="#fff" stop-opacity="0" />
+          <stop offset="0.32" stop-color="#fff" stop-opacity="0.22" />
+          <stop offset="0.42" stop-color="#fff" stop-opacity="0.6" />
+          <stop offset="0.5" stop-color="#fff" stop-opacity="1" />
+          <stop offset="0.58" stop-color="#fff" stop-opacity="0.6" />
+          <stop offset="0.68" stop-color="#fff" stop-opacity="0.22" />
+          <stop offset="0.78" stop-color="#fff" stop-opacity="0" />
+          <stop offset="1" stop-color="#fff" stop-opacity="0" />
+        </linearGradient>
+      ))}
     </defs>
 
     {
@@ -527,9 +563,15 @@ const payload = {
           {branch.rings.map((ring) => (
             <path d={pathOf(ring)} />
           ))}
-          <text class="reach__branch-name" x={branch.x} y={branch.labelTop} opacity="0">
-            <tspan>State Fabric</tspan>
-            <tspan class="reach__branch-letter" x={branch.x} y={branch.labelLetter}>
+          <text
+            class="reach__branch-name"
+            x={branch.labelX}
+            y={branch.labelTop}
+            text-anchor={branch.anchor}
+            opacity="0"
+          >
+            <tspan>Future State</tspan>
+            <tspan class="reach__branch-letter" x={branch.labelX} y={branch.labelLetter}>
               {branch.name.toUpperCase()}
             </tspan>
           </text>
@@ -594,41 +636,35 @@ const payload = {
       </g>
 
       {
-        joins.map((join) => (
+        joins.map((join, index) => (
           <g class="reach__join" data-join data-read={join.threshold}>
             <line
+              class="reach__join-line"
               x1={round(nodes[join.a].at.x)}
               y1={round(nodes[join.a].at.y)}
               x2={round(nodes[join.b].at.x)}
               y2={round(nodes[join.b].at.y)}
             />
-            <circle cx={join.midX} cy={join.midY} r="1.7" />
+            <circle class="reach__join-dot" cx={join.midX} cy={join.midY} r="1.7" />
+            <line
+              class="reach__signal-halo"
+              stroke={`url(#reach-signal-${index})`}
+              x1={round(nodes[join.a].at.x)}
+              y1={round(nodes[join.a].at.y)}
+              x2={round(nodes[join.b].at.x)}
+              y2={round(nodes[join.b].at.y)}
+            />
+            <line
+              class="reach__signal-core"
+              stroke={`url(#reach-signal-${index})`}
+              x1={round(nodes[join.a].at.x)}
+              y1={round(nodes[join.a].at.y)}
+              x2={round(nodes[join.b].at.x)}
+              y2={round(nodes[join.b].at.y)}
+            />
           </g>
         ))
       }
-    </g>
-
-    <g class="reach__threads">
-      {stateThreads.map(({ state, joinIndex }) => (
-        <line
-          class="reach__thread"
-          data-state={state}
-          data-point={joinIndex}
-          opacity="0"
-        />
-      ))}
-    </g>
-
-    <g class="reach__state-points">
-      {stateThreads.map(({ state, joinIndex }) => (
-        <circle
-          class="reach__state-point"
-          data-state={state}
-          data-point={joinIndex}
-          r="2.6"
-          opacity="0"
-        />
-      ))}
     </g>
 
     <g class="reach__hosts">
@@ -859,37 +895,29 @@ const payload = {
     stroke-width: 0.6;
   }
 
-  /* The fork: three states of the same lattice, each the execution that follows the
-     instant the read. They carry the accent because they are what the record
-     becomes, and the parent's outline steps back so they are the figure. */
+  /* The fork: three generations of the same lattice, the future states the record admits,
+     each at the parent's own size so they stand on the sphere rather than around it. They
+     carry the accent because they are what the record becomes, and the parent's outline
+     steps back so they are the figure. */
   .reach__branch circle,
   .reach__branch path {
     fill: none;
     stroke: var(--accent);
-    stroke-width: 0.7;
+    stroke-width: 0.6;
+    /* A generation is an afterimage: its rim carries it and its wire stays a texture,
+       so three of them read as three spheres and not as one net. */
+    stroke-opacity: 0.13;
   }
 
   .reach__branch circle {
-    stroke-width: 0.8;
-  }
-
-  /* Each state is a copy of the space, so the points where two reads meet have copies
-     inside it. The threads mark the correspondence and the dots mark the copies. */
-  .reach__thread {
-    stroke: var(--fg);
-    stroke-width: 0.3;
-    stroke-dasharray: 2 4;
-  }
-
-  .reach__state-point {
-    fill: var(--accent);
+    stroke-width: 0.85;
+    stroke-opacity: 0.5;
   }
 
   .reach__branch-name {
     font-family: var(--text);
     font-size: 8.5px;
     letter-spacing: 0.06em;
-    text-anchor: middle;
     fill: var(--accent);
     /* A halo in the page colour keeps the label legible over its own wires. */
     paint-order: stroke;
@@ -904,7 +932,7 @@ const payload = {
   }
 
   .reach.is-forked .reach__sphere {
-    opacity: 0.1;
+    opacity: 0.08;
   }
 
   .reach__volume {
@@ -934,14 +962,30 @@ const payload = {
     transition: opacity 420ms var(--ease);
   }
 
-  .reach__join line {
+  .reach__join-line {
     stroke: var(--fg);
     stroke-width: 0.55;
     opacity: 0.17;
   }
 
-  .reach__join circle {
+  .reach__join-dot {
     fill: var(--fg);
+  }
+
+  /* A signal crosses a joined link and returns, so the link reads as carrying traffic
+     rather than as a line that happens to be drawn. The light is the link's own gradient
+     and not a dash, so both ends of the band fade and the wire itself never lights up.
+     The stroke is set on the element: a colour here would override the gradient. The
+     halo is a second, wider stroke rather than a blur, which keeps thirty of them cheap
+     on a phone. */
+  .reach__signal-core {
+    stroke-width: 0.85;
+    stroke-opacity: 0.28;
+  }
+
+  .reach__signal-halo {
+    stroke-width: 3.2;
+    stroke-opacity: 0.06;
   }
 
   .reach__join.is-joined {
@@ -1003,7 +1047,8 @@ const payload = {
 
   @media (max-width: 720px) {
     /* At phone scale the small names are specks; the icons and the caption carry it. */
-    .reach__label {
+    .reach__label,
+    .reach__branch-name {
       display: none;
     }
 
@@ -1054,6 +1099,12 @@ const payload = {
     .reach__caption {
       transition: none;
     }
+
+    /* A signal is motion by definition, so it is left out rather than frozen. */
+    .reach__signal-halo,
+    .reach__signal-core {
+      display: none;
+    }
   }
 </style>
 
@@ -1094,7 +1145,6 @@ const payload = {
     dist: number;
     ox: number;
     oy: number;
-    radius: number;
     tilt: number;
     yaw: number;
     limit: number;
@@ -1144,9 +1194,6 @@ const payload = {
     let resumeAt = 0;
     let visible = true;
     let lastFrame = performance.now();
-    // The scale the CSS transform currently applies, so the arc can be kept inside the
-    // window without reading layout every frame.
-    let visualScale = 1;
 
     const projectAt = (x: number, y: number, z: number, angle: number) => {
       const across = x * Math.cos(angle) - z * Math.sin(angle);
@@ -1161,12 +1208,11 @@ const payload = {
     // lattice the sphere is, so it turns with the sphere instead of holding its frame.
     const project = (x: number, y: number, z: number) => projectAt(x, y, z, yaw);
 
-    // A state stands on a shallow arc around the sphere, level with it: the offset is
-    // solved in the camera frame so the three of them use the width and none of them
-    // drops into the paragraph below.
-    const orbitOffset = (angle: number, at: number, arcX: number): Vec3 => {
+    // A generation's displacement is solved in the camera frame so the copy keeps its
+    // place in the composition while the sphere turns underneath it.
+    const orbitOffset = (angle: number, at: number): Vec3 => {
       const p = space.focal / space.dist;
-      const across = (arcX * Math.cos(angle)) / p;
+      const across = (space.arcX * Math.cos(angle)) / p;
       const up = (space.arcY * Math.sin(angle)) / p;
       const depthAxis = up * Math.sin(tilt);
       const y = up * Math.cos(tilt);
@@ -1217,6 +1263,7 @@ const payload = {
           paths: Array.from(element.querySelectorAll<SVGPathElement>('path')),
           circle: element.querySelector<SVGCircleElement>('circle'),
           offset: group?.offset ?? null,
+          opacity: group?.opacity ?? 1,
         };
       },
     );
@@ -1250,22 +1297,17 @@ const payload = {
     const sphereEl = svg.querySelector<SVGCircleElement>('.reach__sphere');
     const particleEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-particle]'));
     const extentEls = Array.from(svg.querySelectorAll<SVGCircleElement>('[data-extent]'));
-    const threadEls = Array.from(svg.querySelectorAll<SVGLineElement>('.reach__thread'));
-    const statePointEls = Array.from(
-      svg.querySelectorAll<SVGCircleElement>('.reach__state-point'),
+    const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map(
+      (element, index) => ({
+        element,
+        line: element.querySelector('.reach__join-line') as SVGLineElement,
+        dot: element.querySelector('.reach__join-dot') as SVGCircleElement,
+        halo: element.querySelector('.reach__signal-halo') as SVGLineElement,
+        core: element.querySelector('.reach__signal-core') as SVGLineElement,
+        signal: svg.querySelector<SVGLinearGradientElement>(`#reach-signal-${index}`),
+        read: Number(element.dataset.read ?? 1),
+      }),
     );
-    // The midpoint of each join is the point the threads leave from.
-    const joinPoints: Vec3[] = space.joins.map((join) => {
-      const a = space.nodes[join.a].p;
-      const b = space.nodes[join.b].p;
-      return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
-    });
-    const joinEls = Array.from(svg.querySelectorAll<SVGGElement>('[data-join]')).map((element) => ({
-      element,
-      line: element.querySelector('line') as SVGLineElement,
-      dot: element.querySelector('circle') as SVGCircleElement,
-      read: Number(element.dataset.read ?? 1),
-    }));
     const labels = Array.from(svg.querySelectorAll<SVGTextElement>('[data-label]'));
     const marks = Array.from(svg.querySelectorAll<SVGGElement>('[data-mark]'));
 
@@ -1275,10 +1317,25 @@ const payload = {
 
     // Label widths do not change with the turn, so they are measured once.
     const widths = new Map<string, number>();
+    const branchWidths: number[] = [];
     const measure = () => {
       labels.forEach((label) => {
         widths.set(label.dataset.label ?? '', label.getComputedTextLength());
       });
+      branchEls.forEach((branch, index) => {
+        const span = branch.label?.querySelector('tspan');
+        branchWidths[index] = span ? span.getComputedTextLength() : 58;
+      });
+    };
+
+    // How far past the frame's right edge the window still shows, in view units. The figure
+    // draws outside its own box, so a name may hang over the edge where the window has
+    // room for it, and is held inside where the window ends at the frame.
+    let labelRoom = 0;
+    const measureRoom = () => {
+      const rect = svg.getBoundingClientRect();
+      const unit = rect.width / viewBox.width;
+      labelRoom = Math.max(0, (document.documentElement.clientWidth - rect.right) / unit);
     };
     measure();
     document.fonts?.ready.then(measure).catch(() => {});
@@ -1298,16 +1355,14 @@ const payload = {
       return { x1, x2: x1 + width, y1: y - 6.5, y2: y + 2 };
     };
 
+    // One crossing of a link, and the return, on the same clock. Slow, because the figure
+    // is a backdrop, but fast enough to be found while the section holds the screen.
+    const SIGNAL_PERIOD = 8;
+
     const render = () => {
       const frame = svg.viewBox.baseVal;
-      // The arc shrinks on a narrow window, so all three states stay in view.
-      const pxPerUnit = (svg.clientWidth / viewBox.width) * visualScale;
-      const room =
-        (document.documentElement.clientWidth / 2 - 16) / pxPerUnit -
-        (space.branches[0]?.radius ?? 0);
-      const arcX = Math.min(space.arcX, room);
-      // The states ride the turn: their arc is behind the sphere by the same angle the
-      // sphere has turned, so they come round it like satellites.
+      // The generations ride the turn: the displacement follows the angle the sphere has
+      // turned, so the field is re-read from where the reader has brought it.
       const drift = (yaw - space.yaw) * 0.55;
 
       for (const group of groupEls) {
@@ -1391,21 +1446,6 @@ const payload = {
         .map((entry) => entry.glyphBox)
         .filter((box): box is NonNullable<typeof box> => box !== null);
 
-      // A forked state is an obstacle too, once it has separated from the sphere.
-      space.branches.forEach((branch) => {
-        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw, arcX);
-        const centre = project(ox * fork, oy * fork, oz * fork);
-        // Before the states separate they sit at the centre, so only the part that has
-        // moved out is an obstacle.
-        const radius = branch.radius * centre.p * 1.04 * fork;
-        taken.push({
-          x1: centre.x - radius,
-          x2: centre.x + radius,
-          y1: centre.y - radius,
-          y2: centre.y + radius,
-        });
-      });
-
       [...placed]
         .sort((a, b) => b.depth - a.depth)
         .forEach(({ node, glyphX, glyphY }) => {
@@ -1445,11 +1485,11 @@ const payload = {
           if (!blocked) taken.push(box);
         });
 
-      // A state that comes round the near side is painted over the one behind it, so a
-      // crossing reads as depth and not as two lattices fused into one.
+      // A generation that comes round the near side is painted over the one behind it, so
+      // a crossing reads as depth and not as three lattices fused into one.
       const layered: Array<{ element: SVGGElement; depth: number }> = [];
-      branchEls.forEach((branch) => {
-        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw, arcX);
+      branchEls.forEach((branch, index) => {
+        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw);
         const spread = fork;
         const centre = project(ox * spread, oy * spread, oz * spread);
         layered.push({ element: branch.element, depth: centre.p });
@@ -1468,43 +1508,32 @@ const payload = {
           );
         });
 
+        const rim = branch.radius * centre.p * 1.04;
         branch.circle?.setAttribute('cx', centre.x.toFixed(1));
         branch.circle?.setAttribute('cy', centre.y.toFixed(1));
-        branch.circle?.setAttribute('r', (branch.radius * centre.p * 1.04).toFixed(1));
+        branch.circle?.setAttribute('r', rim.toFixed(1));
 
-        branch.label?.setAttribute('x', centre.x.toFixed(1));
-        branch.label?.setAttribute('y', (centre.y - 1).toFixed(1));
-        branch.letter?.setAttribute('x', centre.x.toFixed(1));
-        branch.letter?.setAttribute('y', (centre.y + 11).toFixed(1));
-      });
-
-      // Each state holds its own combination of the points where two reads meet. The
-      // thread runs from that point in the sphere to its copy inside the state, and the
-      // dot marks the copy.
-      threadEls.forEach((thread, index) => {
-        const branch = branchEls[Number(thread.dataset.state ?? 0)];
-        if (!branch) return;
-        const point = joinPoints[Number(thread.dataset.point ?? 0)];
-        if (!point) return;
-        const [ox, oy, oz] = orbitOffset(branch.angle + drift, yaw, arcX);
-        const k = branch.radius / space.radius;
-        const start = project(point[0], point[1], point[2]);
-        const at = project(
-          ox * fork + point[0] * k,
-          oy * fork + point[1] * k,
-          oz * fork + point[2] * k,
+        // The name rides its own copy at a fixed bearing, so a turn carries the three
+        // names around the sphere with the states they name. The frame pulls a name back
+        // inside rather than cutting it off.
+        const dirX = Math.cos(branch.angle);
+        const dirY = -Math.sin(branch.angle);
+        const anchor = dirX > 0.2 ? 'start' : dirX < -0.2 ? 'end' : 'middle';
+        const width = branchWidths[index] ?? 58;
+        const y = Math.min(
+          frame.y + frame.height - 6,
+          Math.max(frame.y + 18, centre.y + dirY * (rim + 12)),
         );
-        thread.setAttribute('x1', start.x.toFixed(1));
-        thread.setAttribute('y1', start.y.toFixed(1));
-        thread.setAttribute('x2', at.x.toFixed(1));
-        thread.setAttribute('y2', at.y.toFixed(1));
-        thread.setAttribute('opacity', (fork * 0.8).toFixed(3));
-        const dot = statePointEls[index];
-        if (dot) {
-          dot.setAttribute('cx', at.x.toFixed(1));
-          dot.setAttribute('cy', at.y.toFixed(1));
-          dot.setAttribute('opacity', (fork * 0.9).toFixed(3));
-        }
+        const x = centre.x + dirX * (rim + 12);
+        const left = anchor === 'start' ? x : anchor === 'end' ? x - width : x - width / 2;
+        const right = frame.x + frame.width + labelRoom - 6;
+        let shift = 0;
+        if (left < frame.x + 6) shift = frame.x + 6 - left;
+        if (left + shift + width > right) shift = right - width - left;
+        branch.label?.setAttribute('x', (x + shift).toFixed(1));
+        branch.label?.setAttribute('y', (y - 1).toFixed(1));
+        branch.letter?.setAttribute('x', (x + shift).toFixed(1));
+        branch.letter?.setAttribute('y', (y + 11).toFixed(1));
       });
 
       if (sphereEl) {
@@ -1544,6 +1573,32 @@ const payload = {
         );
         element.dot.setAttribute('cx', mid.x.toFixed(1));
         element.dot.setAttribute('cy', mid.y.toFixed(1));
+
+        // A link that has not closed yet carries nothing, so its signal is not placed.
+        if (!element.element.classList.contains('is-joined')) return;
+
+        // A light crosses the link and comes back. Each link starts at a different share
+        // of the clock, so a joined pair pulses instead of the whole figure blinking in
+        // step. The band is mapped onto the link's own direction, so a long link and a
+        // short one are crossed on the same clock.
+        const phase = ((performance.now() / 1000 / SIGNAL_PERIOD + index * 0.37) % 2 + 2) % 2;
+        const travel = phase < 1 ? phase : 2 - phase;
+        for (const signal of [element.halo, element.core]) {
+          signal.setAttribute('x1', start.x.toFixed(1));
+          signal.setAttribute('y1', start.y.toFixed(1));
+          signal.setAttribute('x2', end.x.toFixed(1));
+          signal.setAttribute('y2', end.y.toFixed(1));
+        }
+        if (element.signal) {
+          const dx = end.x - start.x;
+          const dy = end.y - start.y;
+          const length = Math.hypot(dx, dy) || 1;
+          const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+          element.signal.setAttribute(
+            'gradientTransform',
+            `translate(${start.x.toFixed(1)} ${start.y.toFixed(1)}) rotate(${angle.toFixed(2)}) scale(${length.toFixed(1)} 1) translate(${(travel - 0.5).toFixed(3)} 0)`,
+          );
+        }
       });
     };
 
@@ -1606,10 +1661,14 @@ const payload = {
         label.classList.toggle('is-active', justNow);
       });
 
-      // The copies arrive with the split and the parent steps behind them.
+      // The copies arrive with the split and the parent's own shells step back, so the
+      // field the reader ends on is the one the instant generated.
+      groupEls.forEach((group) => {
+        group.element.style.opacity = (group.opacity * (1 - 0.4 * fork)).toFixed(3);
+      });
       branchEls.forEach((branch) => {
-        branch.element.setAttribute('style', `opacity: ${(fork * 0.68).toFixed(3)}`);
-        // The name arrives once the state has separated, so it never reads over the
+        branch.element.setAttribute('style', `opacity: ${(fork * 0.9).toFixed(3)}`);
+        // The name arrives once the copy has separated, so it never reads over the
         // sphere it just left.
         branch.label?.setAttribute(
           'opacity',
@@ -1665,6 +1724,7 @@ const payload = {
       measureApproach();
     };
     syncOpening();
+    measureRoom();
 
     const hero = figure.closest('.reach-band')?.previousElementSibling;
     if (hero) {
@@ -1681,6 +1741,7 @@ const payload = {
         openingWidth = document.documentElement.clientWidth;
         openingHeight = document.documentElement.clientHeight;
         syncOpening();
+        measureRoom();
         requestAnimationFrame(() => ScrollTrigger.refresh());
       },
       { passive: true },
@@ -1693,11 +1754,11 @@ const payload = {
       const approach = Math.min(1, Math.max(0, window.scrollY / approachEnd));
       const startScale = openScale();
       const scale = startScale - (startScale - restScale()) * approach;
-      visualScale = scale;
       if (Math.abs(scale - lastScale) > 0.001) {
         lastScale = scale;
         svg.style.setProperty('--reach-scale', scale.toFixed(3));
         svg.style.setProperty('--reach-hosts', approach.toFixed(3));
+        measureRoom();
       }
       // The sphere moves from the right edge to the centre as it shrinks, so the frame
       // lands centred whichever width the window has.
@@ -1712,6 +1773,7 @@ const payload = {
       if (Math.abs(shift - lastShift) > 0.5) {
         lastShift = shift;
         svg.style.setProperty('--reach-shift', `${shift.toFixed(1)}px`);
+        measureRoom();
       }
 
       if (visible && !dragging && !reduce.matches && now > resumeAt) {

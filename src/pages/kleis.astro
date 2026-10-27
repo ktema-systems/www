@@ -3,7 +3,7 @@ import ProductPage from '../layouts/ProductPage.astro';
 
 // The seal's page. The order is the object's own: the gate, the three things it does,
 // the three names a deployment keeps apart, the two-key rule, what runs, and what the
-// free tier carries. The built and not-built split is the pitch's own table.
+// free tier carries. The copy states what the buyer gets, and keeps the mechanics out.
 const blocks = [
   {
     id: 'gate',
@@ -14,7 +14,7 @@ const blocks = [
       { k: 'Who enters', v: 'Kleis, from the key the holder presents.' },
       { k: 'What may be done', v: 'Krisis, from the rules the deployment declared.' },
     ],
-    note: "It is not a layer, a router, or a governor. Nothing passes through it, it chooses no destination, and it sets no rule. It opens the place the record already lives in, and the reader follows the record's own address once inside.",
+    note: 'It is not a layer, a router, or a governor. Nothing passes through it, it routes nothing, and it sets no rule. It opens the record the deployment already keeps.',
   },
   {
     id: 'does',
@@ -23,18 +23,18 @@ const blocks = [
     rows: [
       {
         k: 'The ignition',
-        v: 'A pilot presents a key and the machine wakes. The interface starts on the key rather than attaching to it after a login.',
+        v: 'A pilot presents a key and the machine wakes. The workspace opens with the workforce behind it.',
       },
       {
         k: 'The gatekeeper',
-        v: "The record is sealed to the carrier. A copy of the files opens nothing, because the part that turns the seal stays in the holder's hand.",
+        v: "The record is sealed to the carrier. A copy of the files opens nothing, and the seal turns in the holder's hand alone.",
       },
       {
         k: 'The proof',
         v: 'A carrier cannot be copied like a file. Presenting it is the claim, and the record of the presentation is what an auditor, an insurer, or a court reads later.',
       },
     ],
-    note: 'The format is public, and a second implementation can recompute an address from it. The proof is the part a copy cannot inherit.',
+    note: 'The format is public. The proof is the part a copy cannot inherit.',
   },
   {
     id: 'key',
@@ -43,7 +43,7 @@ const blocks = [
     rows: [
       {
         k: 'Project',
-        v: 'The room a person opens: its places, entities, campaign, and record. It says nothing about where the bytes are.',
+        v: 'The room a person opens: its places, entities, campaign, and record. It says nothing about where the data is kept.',
       },
       {
         k: 'Kleis',
@@ -51,33 +51,24 @@ const blocks = [
       },
       {
         k: 'Volume',
-        v: 'A Ktema volume: facts, intents, hints, and their payloads, on any medium. The project key opens it.',
+        v: 'The record itself, on any medium: facts, intents, hints, and their payloads. The project key opens it.',
       },
     ],
-    note: 'One key opens many rooms. One room is opened by one key and holds many stores. A plain volume is opened, not decrypted, by the carrier, so an ordinary store attaches without converting it.',
+    note: 'One key opens many rooms. One room is opened by one key and holds many stores. An ordinary store joins the room without being converted.',
   },
   {
     id: 'double',
     label: 'Double Kleis',
     title: 'Two keys for the acts that cannot be undone',
     rows: [
-      {
-        k: 'The intent',
-        v: 'An agent requests an act whose consequence cannot be undone.',
-      },
-      { k: 'The class', v: 'Krisis assigns the act to the two-person class and stops it.' },
-      { k: 'The first key', v: 'A holder presents a key, and the gate stays closed.' },
-      {
-        k: 'The second key',
-        v: 'A different holder presents a key inside the declared window.',
-      },
-      { k: 'The release', v: 'Kletos unlocks execution on the second presentation.' },
-      {
-        k: 'The record',
-        v: 'Ktema writes both presentations beside the act, on one coordinate.',
-      },
+      { k: 'The intent', v: 'An agent proposes an act whose consequence cannot be undone.' },
+      { k: 'The class', v: 'Krisis places the act in the two-person class and holds it.' },
+      { k: 'The first key', v: 'A holder presents a key. The gate stays closed.' },
+      { k: 'The second key', v: 'A second holder presents a key inside the declared window.' },
+      { k: 'The release', v: 'The work starts on the second presentation.' },
+      { k: 'The record', v: 'Both presentations sit beside the act in one record.' },
     ],
-    note: 'Two different holders, one window, one record. A second presentation by the same holder is not a second key. Krisis says the act needs two, and Kleis proves who presented.',
+    note: 'Two different holders, one window, one record. A second presentation by the same holder is not a second key. The rule already governs a launch, an operating room, and a large settlement.',
   },
   {
     id: 'today',
@@ -85,29 +76,20 @@ const blocks = [
     title: 'What runs, and what is not built',
     rows: [
       {
-        k: 'A volume',
-        v: 'A directory of facts, intents, and hints, addressed by content. Built, format 0.1.',
+        k: 'The record',
+        v: 'Facts, intents, hints, and their payloads in one volume, on any medium. Built, format 0.1.',
       },
       {
-        k: 'A reader',
-        v: 'Records leave a volume without the storage engine, and the stream is followed as it is written.',
+        k: 'Reading',
+        v: 'Another program reads the record from the volume, including records written while it reads. Built.',
       },
       {
-        k: 'The record source',
-        v: "A volume is the record source of the cockpit's own development loop.",
+        k: 'The interface',
+        v: 'The run is drawn from a volume rather than from its own file. Built.',
       },
-      {
-        k: "The agent's tools",
-        v: 'The storage is exposed to agents as tools: facts, intents, and hints.',
-      },
-      {
-        k: "A turn's record",
-        v: 'Partial. The simulated turn path still writes its own log.',
-      },
-      {
-        k: 'The seal',
-        v: 'A volume sealed to a key, with a copy opening nothing. Not built.',
-      },
+      { k: 'The agents', v: 'The record is served to agents as tools. Built.' },
+      { k: "A run's record", v: 'Partial. The simulated run still writes its own log.' },
+      { k: 'The seal', v: 'A volume that opens only with the key. Not built.' },
       { k: 'Two keys', v: 'Two holders releasing one act. Not built.' },
     ],
     note: 'The rows that say built are the ones a person can run today. The seal, the door, the stores a room holds behind it, and the release on a second key are the next builds.',
