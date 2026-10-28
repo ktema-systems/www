@@ -40,22 +40,10 @@ const blocks = [
     title: 'A run is sealed where it stands, and built again where it lands',
     prose: [
       'A workspace is not a process image. It is sealed as three things: the name of the work, the history that produced it, and the part the history does not reach. The destination builds the workspace from those three, and the run continues under the same name.',
-      'Authority is not carried. The destination issues its own credentials inside the authority the source already held, so a move never widens what the operator may do.',
-      'A machine that cannot carry the workspace says so, and the record states which part was left out. A move that narrowed the run reads as a narrowed run, and one that could not run reads as a failure.',
+      'Authority is issued at the destination inside the bounds the source already held, so a move never widens what the operator may do.',
+      'A machine that cannot carry the whole workspace states which part it leaves out, and the record carries that statement. A run that arrived reduced reads as a reduced run.',
     ],
     note: 'The identity is held by the record. The machine that carries it is replaceable.',
-  },
-  {
-    id: 'today',
-    label: 'Today',
-    title: 'What exists, and what does not',
-    rows: [
-      { k: 'Both directions', v: 'A state can be sent and received. Built.' },
-      { k: 'As one operation', v: 'The step that moves an operator from one place to another is the next build.' },
-      { k: 'The teleport', v: 'Seven steps are written for it: pin, seal, announce, admit, build, resume, attest. Nothing of it is built.' },
-      { k: 'In a deployment', v: 'No deployment carries Telos today.' },
-    ],
-    note: 'The two directions run. The move and the teleport are not something a buyer can use yet.',
   },
   {
     id: 'buyer',
@@ -72,7 +60,7 @@ const blocks = [
       },
       {
         k: 'A team that works in two places',
-        v: 'Work that starts on a desk and has to continue on a machine somewhere else, under the same record and the same authority.',
+        v: 'Work that starts on a desk and continues on a machine somewhere else, under the same record and the same authority.',
       },
     ],
     note: 'The alternative is a screen that shows a result after the fact, which is the thing this layer exists to replace.',
@@ -90,6 +78,7 @@ const blocks = [
   body="The machine becomes a place a person can enter, and a run sealed on one machine continues on another."
   blocks={blocks}
   figure="telos"
+  note="Work moves to a place, not along a path."
   contact={{
     title: 'Move the operator, not the data',
     lede: 'If an operator has to stand inside a run rather than watch it, we should talk.',

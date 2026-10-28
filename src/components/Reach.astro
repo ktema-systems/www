@@ -398,11 +398,20 @@ const pathOf = (ring: Ring) => {
   return `${parts.join(' ')} Z`;
 };
 
+// FUTURE STATES ARE SEALED.
+// The satellite layer below is kept whole and switched off, so it can be revived for
+// another use. While this flag is false no branch geometry is emitted, the payload carries
+// an empty branch list, the client runs the fork at zero, and the read takes the whole
+// scroll: the figure reads as one space, with nothing reserved for what is not drawn.
+// Turn the flag on to restore the layer exactly as it was.
+const FUTURE_STATES = false;
+
 // Two shells of the same lattice for the volume. The space forks after the read: the
 // future is a range, and the record written so far narrows it. That narrowing is the
 // caption's claim; the figure draws the range as three generations of the same lattice at
 // the parent's own size, turned to another meridian phase and displaced by a share of the
 // radius, standing on the sphere as afterimages instead of orbiting it as satellites.
+// This is the sealed layer: read it as a whole, then read FUTURE_STATES.
 const BRANCH_RADIUS = RADIUS * 0.92;
 // The displacement stays small on purpose: enough that three generations are told apart,
 // small enough that none of them leaves the parent's footprint.
@@ -429,7 +438,7 @@ const orbitOffset = (angle: number, yaw: number, tilt: number): Vec3 => {
   ];
 };
 
-const branches = BRANCH_ANGLES.map((angle, index) => {
+const branchGeometry = BRANCH_ANGLES.map((angle, index) => {
   const offset = orbitOffset(angle, YAW, TILT);
   const centre = project(...offset);
   // The name sits on its own copy's rim, at a bearing of its own, so it travels with the
@@ -461,6 +470,10 @@ const branches = BRANCH_ANGLES.map((angle, index) => {
     rings: latticeRings(BRANCH_RADIUS, BRANCH_PHASES[index], offset, MERIDIANS, PARALLELS),
   };
 });
+
+// The one line the seal rests on. Everything below reads `branches`, so an empty list is
+// the same as the layer not existing.
+const branches: typeof branchGeometry = FUTURE_STATES ? branchGeometry : [];
 
 const shells = [
   { opacity: 0.085, rings: latticeRings(RADIUS, 0, [0, 0, 0], MERIDIANS, PARALLELS) },
@@ -514,7 +527,7 @@ const payload = {
   <svg
     viewBox={`${VIEW_X} ${VIEW_Y} ${VIEW_W} ${VIEW_H}`}
     role="img"
-    aria-label="Hosts attached to one sphere of coordinates: each host carries the engine at its own coordinate, two hosts are joined where their reads reach the same point, and when an instant closes the same space is generated again, so the future states it admits stand on the sphere as afterimages, three generations of the same space"
+    aria-label="Hosts attached to one sphere of coordinates: each host carries the engine at its own coordinate, and two hosts are joined where their reads reach the same point"
   >
 
     <defs>
@@ -898,7 +911,8 @@ const payload = {
   /* The fork: three generations of the same lattice, the future states the record admits,
      each at the parent's own size so they stand on the sphere rather than around it. They
      carry the accent because they are what the record becomes, and the parent's outline
-     steps back so they are the figure. */
+     steps back so they are the figure. These rules belong to the sealed layer: no element
+     carries the classes while FUTURE_STATES is false, and they stay for its return. */
   .reach__branch circle,
   .reach__branch path {
     fill: none;
@@ -1046,8 +1060,14 @@ const payload = {
   }
 
   @media (max-width: 720px) {
-    /* At phone scale the small names are specks; the icons and the caption carry it. */
-    .reach__label,
+    /* The host names stay on a phone. The drawing is scaled by the pin, so the type is set
+       larger in user units to land near its desktop size, and the collision pass decides
+       which names fit instead of every name going. */
+    .reach__label {
+      font-size: 12px;
+    }
+
+    /* The future-state names belong to the sealed layer and keep their old treatment. */
     .reach__branch-name {
       display: none;
     }
@@ -1190,6 +1210,10 @@ const payload = {
     let progress = 0;
     // How far the space has forked, from none to three copies fully apart.
     let fork = 0;
+    // The branch layer is sealed in the component above, and an empty branch list is what
+    // switching it off looks like from here: the space never forks, so the read takes the
+    // whole scroll and the shells keep their weight to the end.
+    const futureStates = space.branches.length > 0;
     let dragging = false;
     let resumeAt = 0;
     let visible = true;
@@ -1630,8 +1654,10 @@ const payload = {
 
     const paint = (value: number) => {
       const whole = Math.min(1, Math.max(0, value));
-      progress = Math.min(1, whole / READ_SHARE);
-      const split = Math.min(1, Math.max(0, (whole - READ_SHARE) / FORK_SHARE));
+      progress = futureStates ? Math.min(1, whole / READ_SHARE) : whole;
+      const split = futureStates
+        ? Math.min(1, Math.max(0, (whole - READ_SHARE) / FORK_SHARE))
+        : 0;
       fork = split * split * (3 - 2 * split);
 
       // The particles are sorted by the progress at which a read reaches them, so
@@ -1855,12 +1881,14 @@ const payload = {
       // The whole story: the read closed and the space divided.
       paint(1);
     } else {
-      // Pinned for both acts: the read closes, then the space divides.
+      // Pinned for the acts that run. With the fork sealed there is one act, so the pin
+      // is sized for the read alone and no scroll is spent on a second act that is not
+      // drawn. The read was given about a thousand pixels when it shared the pin, so it
+      // keeps its pace.
       ScrollTrigger.create({
         trigger: figure,
         start: pinStart,
-        // Long enough for both acts and for the paragraph that follows them.
-        end: '+=2000',
+        end: futureStates ? '+=2000' : '+=1000',
         pin: true,
         onUpdate: (self) => paint(self.progress),
         onRefresh: (self) => paint(self.progress),

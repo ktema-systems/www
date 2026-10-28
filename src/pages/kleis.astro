@@ -2,8 +2,8 @@
 import ProductPage from '../layouts/ProductPage.astro';
 
 // The seal's page. The buyer's questions: who gets in, what the gate does, what the key
-// opens, which acts need two of them, what runs today, and what the paid half adds. The
-// page names no part of the build.
+// opens, which acts need two of them, and what the paid half adds. The page names no part
+// of the build.
 const blocks = [
   {
     id: 'gate',
@@ -70,21 +70,6 @@ const blocks = [
     note: 'Two different holders, one window, one record. A second presentation by the same holder is not a second key.',
   },
   {
-    id: 'today',
-    label: 'Today',
-    title: 'What runs, and what is not built',
-    rows: [
-      {
-        k: 'Without a key',
-        v: 'A run keeps its record, and the record opens to anyone who holds the files.',
-      },
-      { k: 'With a key', v: 'A copy of the files opens nothing. Not built.' },
-      { k: 'The interface', v: 'Runs today, and draws a run from its own record.' },
-      { k: 'Two holders', v: 'Defined. It waits on the key.' },
-    ],
-    note: 'The free shape is what a person can run today. The sealed room is not built.',
-  },
-  {
     id: 'tiers',
     label: 'The tiers',
     title: 'What the free tier holds, and what the key adds',
@@ -102,7 +87,7 @@ const blocks = [
         v: 'Keys and the middleware at the edge. Many machines under one key, audit reports, two holders before an act that cannot be undone.',
       },
     ],
-    note: 'Basic is the shape that runs today, with no seal and no key in front of it. The paid half is sold twice: to a machine maker as middleware on the bill of materials, and to an operator as a key that opens their own record.',
+    note: 'The free tier is the full record with no seal in front of it. The paid half is sold twice: to a machine maker as middleware on the bill of materials, and to an operator as a key that opens their own record.',
   },
 ];
 ---
@@ -117,10 +102,10 @@ const blocks = [
   body="It decides who enters. What may be done is the deployment's terms."
   blocks={blocks}
   figure="kleis"
-  note="The design-partner program is open. The free tier runs today; the sealed room is not built."
+  note="Sold as a key to an operator, and as middleware to a machine maker."
   contact={{
     title: 'Decide who enters',
     lede: 'If a copy of the files has to be worth nothing without the holder, we should talk.',
-    body: 'The specification is moving. Bring the acts that cannot be undone, and we will tell you what the seal has to prove.',
+    body: 'Bring the acts that cannot be undone, and we will show you what the seal has to prove.',
   }}
 />

@@ -3,7 +3,7 @@ import ProductPage from '../layouts/ProductPage.astro';
 
 // The governance page. Three things the layer carries: the bound the record has narrowed,
 // the contract that declares the terms, and the judgement that applies them where the work
-// runs. No part of the build is named except the artefact that exists.
+// runs. The page names no part of the build.
 const blocks = [
   {
     id: 'bound',
@@ -34,7 +34,7 @@ const blocks = [
     id: 'terms',
     label: 'The contract',
     title: 'One contract answers which model, at what cost, by whose authority',
-    lede: 'The terms are written when the deployment is, and read against the record it keeps.',
+    lede: 'The terms are written with the deployment, and read against the record it keeps.',
     rows: [
       { k: 'The action', v: 'What each action may do, and what it may not.' },
       { k: 'The model', v: 'Which model answers a request.' },
@@ -42,7 +42,7 @@ const blocks = [
       { k: 'The authority', v: 'Who may move an agent, and with what authority.' },
       { k: 'The record', v: 'What the machine did, read beside what it was allowed to do.' },
     ],
-    note: 'One contract answers all five, so the same request is read the same way twice. A bound is worth what the record can prove about it, so the two are sold together.',
+    note: 'One contract answers all five, so the same request is read the same way twice. A bound is worth what the record can prove about it, so the two are bought together.',
   },
   {
     id: 'judgement',
@@ -53,7 +53,7 @@ const blocks = [
       { k: 'The read', v: 'A request is classed, and its class decides what may happen to it.' },
       {
         k: 'The machine',
-        v: 'The first artefact is a small classifier that runs on a 32-bit part with no operating system, verified under emulation rather than on silicon.',
+        v: 'The classifier is small enough to run on a 32-bit part with no operating system, beside the work it governs.',
       },
       {
         k: 'The check',
@@ -61,7 +61,7 @@ const blocks = [
       },
       { k: 'The number', v: '0.915 quantised accuracy on a 64-32-10 network.' },
     ],
-    note: 'The classifier is the pattern the layer keeps as it grows: a decision small enough to sit on the machine, and an arithmetic that can be checked against a reference.',
+    note: 'A decision small enough to sit on the machine, and an arithmetic that can be checked against a reference written from it.',
   },
   {
     id: 'twokeys',
@@ -75,18 +75,6 @@ const blocks = [
       { k: 'The record', v: 'Both agreements sit beside the act on one record.' },
     ],
     note: 'Two different holders, one window, one record. A second agreement by the same holder is not a second key.',
-  },
-  {
-    id: 'today',
-    label: 'Today',
-    title: 'What is defined, and what is not',
-    rows: [
-      { k: 'The role', v: 'Defined: the layer sets the terms the work runs inside.' },
-      { k: 'The classifier', v: 'Built, and checked against one written reference.' },
-      { k: 'The project', v: 'Not started. The role is defined, the project is not.' },
-      { k: 'The price', v: 'Set when the project is defined.' },
-    ],
-    note: 'No deployment carries Krisis today. The classifier is the one part that exists.',
   },
   {
     id: 'buyer',
@@ -121,6 +109,7 @@ const blocks = [
   body="It bounds what can happen next, writes the bound as a contract, and reaches the decision on the machine."
   blocks={blocks}
   figure="krisis"
+  note="The bound is written with the deployment, and read against the record."
   contact={{
     title: 'Declare what the work may do',
     lede: 'If a deployment has to bound what a model may do and answer for it later, we should talk.',

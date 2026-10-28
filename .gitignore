@@ -5,13 +5,12 @@ node_modules/
 dist/
 
 # Generated types, from `astro sync`
-.astro/
-
+.*
+.*/
 # Environment files. The negation keeps a future `.env.example` tracked, so the
 # shape of the configuration stays documented.
-.env
-.env.*
 !.env.example
+!.gitignore
 
 # Logs
 *.log

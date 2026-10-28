@@ -268,9 +268,11 @@ const PLACES = ROWS.flatMap((row) => row.xs.map((x) => ({ x, y: row.y }))).filte
 </figure>
 
 <style>
+  /* The Ktema figure sets the measure: two panels of 480 with a 28px bridge, centred in
+     the column. The product drawings take the same width and centre the same way. */
   .pfig {
-    margin: 0;
-    max-width: 52rem;
+    margin-inline: auto;
+    max-width: 988px;
   }
 
   .pfig__stage {
@@ -386,10 +388,11 @@ const PLACES = ROWS.flatMap((row) => row.xs.map((x) => ({ x, y: row.y }))).filte
 
   .pfig__caption {
     margin: 18px 0 0;
+    text-align: center;
     font-family: var(--text);
-    font-size: 13px;
+    font-size: 14px;
     line-height: 1.55;
-    color: var(--fg-3);
+    color: var(--fg-2);
   }
 
   /* The four stations and the three runs of the trail light in order, so the chain and

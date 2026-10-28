@@ -1,9 +1,9 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
-// The execution page. What the buyer gets, in the order it happens: one call, the ways
-// work arrives, the two ends a person holds, what the layer drives, and what runs today.
-// The page names no part of the build, only what a deployment does with it.
+// The execution page. The product as it is sold: one call, the ways work arrives, the two
+// ends a person holds, what the layer drives, and the scale it carries. The page names no
+// part of the build.
 const blocks = [
   {
     id: 'call',
@@ -45,7 +45,7 @@ const blocks = [
     label: 'What it drives',
     title: 'Software, signals, hardware, people, outside systems',
     rows: [
-      { k: 'Software', v: 'Work inside a service or on a desktop. It is the first kind, and the one that runs today.' },
+      { k: 'Software', v: 'Work inside a service or on a desktop.' },
       { k: 'Signals', v: 'Measurement and industrial signalling.' },
       { k: 'Hardware', v: 'Robots and automation.' },
       { k: 'People', v: 'Work where a person is part of the loop.' },
@@ -54,18 +54,18 @@ const blocks = [
     note: 'One contract covers all five, so a deployment does not change shape when another kind of machine or agent joins it.',
   },
   {
-    id: 'today',
-    label: 'Today',
-    title: 'What one host runs',
+    id: 'scale',
+    label: 'The scale',
+    title: 'One host carries the fleet',
+    lede: 'A node is small enough that a host carries many, and the fleet still answers as one record.',
     rows: [
-      { k: 'A turn', v: 'End to end on one host under one operator, including a request from a phone.' },
+      { k: 'A node', v: 'About 19 MB resident, with the editor, the terminals, and git inside that figure.' },
+      { k: 'A host', v: 'Three nodes and seven projects under one operator.' },
       { k: 'A device', v: 'Acts within eighty milliseconds of being asked.' },
-      { k: 'One host', v: 'Three nodes, seven projects.' },
-      { k: 'A node', v: 'About 19 MB resident. One file to deploy.' },
-      { k: 'A run, moved', v: 'A run is sealed on one machine and built again on another. Seven steps are written for it; nothing of it is built.' },
-      { k: 'No model', v: 'The contract check passes with no model in the path.' },
+      { k: 'A turn', v: 'End to end on one host, including a request from a phone.' },
+      { k: 'A run, moved', v: 'A workspace is sealed on one machine and built again on another, under the same record.' },
     ],
-    note: 'The proof that ties a result back to its ask is the next build. Delivery rate and cost per delivery are not measured beyond one operator.',
+    note: 'The run starts at the phone that asked, continues on the host that performed it, and is read back as one chain.',
   },
 ];
 ---
@@ -80,7 +80,7 @@ const blocks = [
   body="A project used to be the work a team owed. The project performs that work now."
   blocks={blocks}
   figure="kletos"
-  note="The design-partner program is open. The layer runs on one operator's host today."
+  note="One contract for a person, a model, a machine, and an outside system."
   contact={{
     title: 'Put a run through the layer',
     lede: 'If work moves through agents, machines, and people at once, we should talk.',
