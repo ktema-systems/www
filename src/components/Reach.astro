@@ -1356,10 +1356,19 @@ const payload = {
     // draws outside its own box, so a name may hang over the edge where the window has
     // room for it, and is held inside where the window ends at the frame.
     let labelRoom = 0;
+    // The span a name may use, in user units. On a phone the globe is wider than the
+    // column, so the frame's own edges are off screen: a name is held inside the part of
+    // the drawing the window shows, not inside the frame.
+    let labelSpan = { x1: viewBox.x + 6, x2: viewBox.x + viewBox.width - 6 };
     const measureRoom = () => {
       const rect = svg.getBoundingClientRect();
       const unit = rect.width / viewBox.width;
-      labelRoom = Math.max(0, (document.documentElement.clientWidth - rect.right) / unit);
+      const client = document.documentElement.clientWidth;
+      labelRoom = Math.max(0, (client - rect.right) / unit);
+      labelSpan = {
+        x1: viewBox.x + Math.max(0, -rect.left) / unit + 6,
+        x2: viewBox.x + (Math.min(client, rect.right) - rect.left) / unit - 6,
+      };
     };
     measure();
     document.fonts?.ready.then(measure).catch(() => {});
@@ -1491,13 +1500,11 @@ const payload = {
           }
           y = Math.min(frame.y + frame.height - 6, Math.max(frame.y + 16, y));
           const box = labelBox(x, y, anchor, width);
-          // A name that would leave the frame is carried back inside it, so a turn
+          // A name that would leave the window is carried back inside it, so a turn
           // never cuts one off.
           let shift = 0;
-          if (box.x1 < frame.x + 6) shift = frame.x + 6 - box.x1;
-          if (box.x2 + shift > frame.x + frame.width - 6) {
-            shift = frame.x + frame.width - 6 - box.x2;
-          }
+          if (box.x1 < labelSpan.x1) shift = labelSpan.x1 - box.x1;
+          if (box.x2 + shift > labelSpan.x2) shift = labelSpan.x2 - box.x2;
           x += shift;
           box.x1 += shift;
           box.x2 += shift;
