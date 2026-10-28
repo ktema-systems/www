@@ -20,7 +20,7 @@ const captions: Record<Props['kind'], string> = {
   kleis:
     'Two different holders present inside one window, the gate opens on both, and the record names both.',
   krisis: 'The request is judged, the terms are read, and the act either runs or is held.',
-  telos: 'The goal travels by address, and the workspace is built again where it lands.',
+  telos: 'The operator stands in one runner node, and the goal lands in the other, where the workspace is built.',
 };
 
 const text = caption ?? captions[kind];
@@ -234,8 +234,9 @@ const PLACES = ROWS.flatMap((row) => row.xs.map((x) => ({ x, y: row.y }))).filte
 
             <g class="pfig__origin">
               <polygon class="pfig__mark" points={hex(30)} transform="translate(240 130)" />
-              <text class="pfig__label" x="240" y="178" text-anchor="middle">
-                HERE
+              <text class="pfig__label" x="240" y="172" text-anchor="middle">
+                <tspan x="240">SOURCE</tspan>
+                <tspan x="240" dy="1.15em">RUNNER</tspan>
               </text>
             </g>
             <g class="pfig__seat-here">
@@ -248,8 +249,9 @@ const PLACES = ROWS.flatMap((row) => row.xs.map((x) => ({ x, y: row.y }))).filte
 
             <g class="pfig__dest">
               <polygon class="pfig__mark" points={hex(30)} transform="translate(420 64)" />
-              <text class="pfig__label" x="420" y="112" text-anchor="middle">
-                THERE
+              <text class="pfig__label" x="420" y="106" text-anchor="middle">
+                <tspan x="420">TARGET</tspan>
+                <tspan x="420" dy="1.15em">RUNNER</tspan>
               </text>
             </g>
             <g class="pfig__seat-there">

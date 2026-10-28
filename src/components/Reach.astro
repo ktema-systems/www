@@ -1388,6 +1388,17 @@ const payload = {
       return { x1, x2: x1 + width, y1: y - 6.5, y2: y + 2 };
     };
 
+    // A name is tried on its own side first, then on the other side, then above and below,
+    // so a host is left unnamed only when it has no clear space around it at all.
+    const otherSide = (side: string) => {
+      if (side === 'left') return 'right';
+      if (side === 'right') return 'left';
+      return side === 'above' ? 'below' : 'above';
+    };
+
+    const anchorOf = (side: string) =>
+      side === 'left' ? 'end' : side === 'above' || side === 'below' ? 'middle' : 'start';
+
     // One crossing of a link, and the return, on the same clock. Slow, because the figure
     // is a backdrop, but fast enough to be found while the section holds the screen.
     const SIGNAL_PERIOD = 8;
@@ -1479,41 +1490,53 @@ const payload = {
         .map((entry) => entry.glyphBox)
         .filter((box): box is NonNullable<typeof box> => box !== null);
 
+      const offset = 20;
       [...placed]
         .sort((a, b) => b.depth - a.depth)
         .forEach(({ node, glyphX, glyphY }) => {
           const label = labelById.get(node.id);
           if (!label) return;
-          const anchor = label.getAttribute('text-anchor');
           const width = widths.get(node.id) ?? 60;
-          const offset = 20;
-          let x = glyphX + offset;
-          let y = glyphY + 2;
-          if (node.side === 'left') x = glyphX - offset;
-          if (node.side === 'above') {
-            x = glyphX;
-            y = glyphY - 15;
-          }
-          if (node.side === 'below') {
-            x = glyphX;
-            y = glyphY + 22;
-          }
-          y = Math.min(frame.y + frame.height - 6, Math.max(frame.y + 16, y));
-          const box = labelBox(x, y, anchor, width);
-          // A name that would leave the window is carried back inside it, so a turn
-          // never cuts one off.
-          let shift = 0;
-          if (box.x1 < labelSpan.x1) shift = labelSpan.x1 - box.x1;
-          if (box.x2 + shift > labelSpan.x2) shift = labelSpan.x2 - box.x2;
-          x += shift;
-          box.x1 += shift;
-          box.x2 += shift;
-          label.setAttribute('x', x.toFixed(1));
-          label.setAttribute('y', y.toFixed(1));
+          const preferred = node.side ?? 'right';
+          const sides = [preferred, otherSide(preferred), 'above', 'below'].filter(
+            (side, index, all) => all.indexOf(side) === index,
+          );
 
-          const blocked = taken.some((other) => overlaps(box, other));
-          label.style.setProperty('--shown', blocked ? '0' : '1');
-          if (!blocked) taken.push(box);
+          label.style.setProperty('--shown', '0');
+          for (const side of sides) {
+            let x = glyphX + offset;
+            let y = glyphY + 2;
+            if (side === 'left') x = glyphX - offset;
+            if (side === 'above') {
+              x = glyphX;
+              y = glyphY - 15;
+            }
+            if (side === 'below') {
+              x = glyphX;
+              y = glyphY + 22;
+            }
+            y = Math.min(frame.y + frame.height - 6, Math.max(frame.y + 16, y));
+
+            const anchor = anchorOf(side);
+            const box = labelBox(x, y, anchor, width);
+            // A name that would leave the window is carried back inside it, so a turn
+            // never cuts one off.
+            let shift = 0;
+            if (box.x1 < labelSpan.x1) shift = labelSpan.x1 - box.x1;
+            if (box.x2 + shift > labelSpan.x2) shift = labelSpan.x2 - box.x2;
+            x += shift;
+            box.x1 += shift;
+            box.x2 += shift;
+
+            if (taken.some((other) => overlaps(box, other))) continue;
+
+            taken.push(box);
+            label.setAttribute('text-anchor', anchor);
+            label.setAttribute('x', x.toFixed(1));
+            label.setAttribute('y', y.toFixed(1));
+            label.style.setProperty('--shown', '1');
+            break;
+          }
         });
 
       // A generation that comes round the near side is painted over the one behind it, so

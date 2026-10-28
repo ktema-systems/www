@@ -272,13 +272,11 @@ h2 {
 }
 
 h1 {
-  font-weight: 600;
   letter-spacing: -0.006em;
   line-height: 1.1;
 }
 
 h2 {
-  font-weight: 500;
   letter-spacing: -0.002em;
   line-height: 1.16;
   font-size: clamp(1.58rem, 1.1rem + 1.5vw, 2.28rem);
@@ -286,7 +284,6 @@ h2 {
 
 h3 {
   font-size: 15px;
-  font-weight: 600;
   letter-spacing: 0;
   line-height: 1.4;
 }
