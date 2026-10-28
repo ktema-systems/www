@@ -1,9 +1,9 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
-// The seal's page. The order is the object's own: the gate, the three things it does,
-// the three names a deployment keeps apart, the two-key rule, what runs, and what the
-// free tier carries. The copy states what the buyer gets, and keeps the mechanics out.
+// The seal's page. The buyer's questions: who gets in, what the gate does, what the key
+// opens, which acts need two of them, what runs today, and what the paid half adds. The
+// page names no part of the build.
 const blocks = [
   {
     id: 'gate',
@@ -12,9 +12,9 @@ const blocks = [
     lede: 'Two different questions, and Kleis answers the first.',
     rows: [
       { k: 'Who enters', v: 'Kleis, from the key the holder presents.' },
-      { k: 'What may be done', v: 'Krisis, from the rules the deployment declared.' },
+      { k: 'What may be done', v: 'The rules the deployment declared.' },
     ],
-    note: 'It is not a layer, a router, or a governor. Nothing passes through it, it routes nothing, and it sets no rule. It opens the record the deployment already keeps.',
+    note: 'It sits in front of the record the deployment already keeps. It opens that record, and it sets no rule of its own.',
   },
   {
     id: 'does',
@@ -23,7 +23,7 @@ const blocks = [
     rows: [
       {
         k: 'The ignition',
-        v: 'A pilot presents a key and the machine wakes. The workspace opens with the workforce behind it.',
+        v: 'A holder presents a key and the machine wakes. The workspace opens with the workforce behind it.',
       },
       {
         k: 'The gatekeeper',
@@ -31,44 +31,43 @@ const blocks = [
       },
       {
         k: 'The proof',
-        v: 'A carrier cannot be copied like a file. Presenting it is the claim, and the record of the presentation is what an auditor, an insurer, or a court reads later.',
+        v: 'A carrier cannot be copied like a file. Presenting it proves the holder without handing the secret over, and the record of the presentation is what an auditor, an insurer, or a court reads later.',
       },
     ],
     note: 'The format is public. The proof is the part a copy cannot inherit.',
   },
   {
-    id: 'key',
+    id: 'rooms',
     label: 'The key',
     title: 'One key, many rooms',
     rows: [
       {
-        k: 'Project',
-        v: 'The room a person opens: its places, entities, campaign, and record. It says nothing about where the data is kept.',
+        k: 'A room',
+        v: 'The places, the entities, and the record of one deployment. A room says nothing about where the data is kept.',
       },
       {
-        k: 'Kleis',
-        v: 'The gate and its identity: the key that admits the room, and the stores the room holds.',
+        k: 'A key',
+        v: 'A key opens its rooms and holds the identity that admits a holder.',
       },
       {
-        k: 'Volume',
-        v: 'The record itself, on any medium: facts, intents, hints, and their payloads. The project key opens it.',
+        k: 'Several rooms',
+        v: 'One key can open more than one, and a room is opened by one key.',
       },
     ],
-    note: 'One key opens many rooms. One room is opened by one key and holds many stores. An ordinary store joins the room without being converted.',
+    note: 'An ordinary store joins a room without being converted.',
   },
   {
     id: 'double',
-    label: 'Double Kleis',
-    title: 'Two keys for the acts that cannot be undone',
+    label: 'Two keys',
+    title: 'For the acts that cannot be undone',
     rows: [
-      { k: 'The intent', v: 'An agent proposes an act whose consequence cannot be undone.' },
-      { k: 'The class', v: 'Krisis places the act in the two-person class and holds it.' },
+      { k: 'The act', v: 'An agent proposes an act whose consequence cannot be undone.' },
+      { k: 'The class', v: 'The deployment places that class of act under two holders, and holds it.' },
       { k: 'The first key', v: 'A holder presents a key. The gate stays closed.' },
       { k: 'The second key', v: 'A second holder presents a key inside the declared window.' },
-      { k: 'The release', v: 'The work starts on the second presentation.' },
       { k: 'The record', v: 'Both presentations sit beside the act in one record.' },
     ],
-    note: 'Two different holders, one window, one record. A second presentation by the same holder is not a second key. The rule already governs a launch, an operating room, and a large settlement.',
+    note: 'Two different holders, one window, one record. A second presentation by the same holder is not a second key.',
   },
   {
     id: 'today',
@@ -76,23 +75,14 @@ const blocks = [
     title: 'What runs, and what is not built',
     rows: [
       {
-        k: 'The record',
-        v: 'Facts, intents, hints, and their payloads in one volume, on any medium. Built, format 0.1.',
+        k: 'Without a key',
+        v: 'A run keeps its record, and the record opens to anyone who holds the files.',
       },
-      {
-        k: 'Reading',
-        v: 'Another program reads the record from the volume, including records written while it reads. Built.',
-      },
-      {
-        k: 'The interface',
-        v: 'The run is drawn from a volume rather than from its own file. Built.',
-      },
-      { k: 'The agents', v: 'The record is served to agents as tools. Built.' },
-      { k: "A run's record", v: 'Partial. The simulated run still writes its own log.' },
-      { k: 'The seal', v: 'A volume that opens only with the key. Not built.' },
-      { k: 'Two keys', v: 'Two holders releasing one act. Not built.' },
+      { k: 'With a key', v: 'A copy of the files opens nothing. Not built.' },
+      { k: 'The interface', v: 'Runs today, and draws a run from its own record.' },
+      { k: 'Two holders', v: 'Defined. It waits on the key.' },
     ],
-    note: 'The rows that say built are the ones a person can run today. The seal, the door, the stores a room holds behind it, and the release on a second key are the next builds.',
+    note: 'The free shape is what a person can run today. The sealed room is not built.',
   },
   {
     id: 'tiers',
@@ -101,7 +91,7 @@ const blocks = [
     rows: [
       {
         k: 'Basic',
-        v: 'The interface, the engine, and a local volume. The full record, the agent workforce, one space at a time, software protection.',
+        v: 'The interface, the record, and the agent workforce, one space at a time, on one machine.',
       },
       {
         k: 'Pro',
@@ -109,10 +99,10 @@ const blocks = [
       },
       {
         k: 'Enterprise',
-        v: 'Keys and the middleware at the edge. Many machines under one key, audit reports, the governance handshake before an act that cannot be undone.',
+        v: 'Keys and the middleware at the edge. Many machines under one key, audit reports, two holders before an act that cannot be undone.',
       },
     ],
-    note: 'Basic is the shape that runs today, with no seal and no key in front of it. The paid half is sold twice: to a machine maker as middleware on the bill of materials, and to an operator as a key that opens their own stores.',
+    note: 'Basic is the shape that runs today, with no seal and no key in front of it. The paid half is sold twice: to a machine maker as middleware on the bill of materials, and to an operator as a key that opens their own record.',
   },
 ];
 ---
@@ -123,10 +113,11 @@ const blocks = [
   title="The seal on the record."
   subline="A copy is worth nothing without the holder."
   description="Kleis is the physical gate into the record: the key a holder presents, the seal that makes a copy worth nothing, and the proof that the holder was there."
-  lede="The gate into the record. A holder presents a key, the room opens, and the presentation is written as a proof. The memory behind the door is Ktema's, the work is Kletos's, and the limits are Krisis's."
-  body="It decides who enters, not what the holder may do."
+  lede="A holder presents a key, the room opens, and the presentation is written as a proof."
+  body="It decides who enters. What may be done is the deployment's terms."
   blocks={blocks}
-  note="The design-partner program is open. The free tier runs today; the key is the product."
+  figure="kleis"
+  note="The design-partner program is open. The free tier runs today; the sealed room is not built."
   contact={{
     title: 'Decide who enters',
     lede: 'If a copy of the files has to be worth nothing without the holder, we should talk.',

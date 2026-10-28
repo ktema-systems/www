@@ -1,23 +1,81 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
+// The transport page. What the buyer gets: an operator who stands where the work is, work
+// that is named by its place, a live state that travels, and a run that is sealed on one
+// machine and built again on another. The page names no part of the build.
 const blocks = [
   {
-    id: 'address',
-    label: 'The address',
-    title: 'No tree to walk, no path to scan',
+    id: 'position',
+    label: 'The position',
+    title: 'The operator stands where the work is',
+    lede: 'A window reports what a machine did. Telos puts the operator inside the machine.',
     prose: [
-      'The coordinate is the address. A step between two work locations is a jump to the second address, with no index to consult and no path to scan.',
+      'What the operator reads is the run itself, from the place it is happening, so a decision is made where the work is and not in a report about it.',
+      'The same position is what makes a fleet readable: every machine is a place, and the operator moves between them without leaving the space.',
     ],
   },
   {
-    id: 'carrier',
-    label: 'What it carries',
-    title: 'Live execution states',
+    id: 'address',
+    label: 'The address',
+    title: 'Work is named by its place, and it lands there',
     prose: [
-      'Live execution states move between agents, people, and spaces, so an operator can stand inside a machine\'s own spatiotemporal coordinate space and replay what it saw.',
+      'A goal is written with the coordinate of the place it belongs to. It lands at the node that holds that place, and nothing between the two points is walked, indexed, or scanned.',
+      'A person, an agent, and a machine receive the same address, so a handover between them costs no translation.',
     ],
-    note: 'Delta uses the same move to place an operator inside a run.',
+    note: 'A machine on the other side of the world is reached the same way as one on the same desk.',
+  },
+  {
+    id: 'state',
+    label: 'What travels',
+    title: 'The live state of a run',
+    prose: [
+      'What moves is the state of a run at that moment: what the machine sees, what bounds it, and what it is about to do.',
+      'Because the state travels, the person who receives it can read the run while it moves, and replay what it saw before the moment they arrived.',
+    ],
+  },
+  {
+    id: 'teleport',
+    label: 'The teleport',
+    title: 'A run is sealed where it stands, and built again where it lands',
+    prose: [
+      'A workspace is not a process image. It is sealed as three things: the name of the work, the history that produced it, and the part the history does not reach. The destination builds the workspace from those three, and the run continues under the same name.',
+      'Authority is not carried. The destination issues its own credentials inside the authority the source already held, so a move never widens what the operator may do.',
+      'A machine that cannot carry the workspace says so, and the record states which part was left out. A move that narrowed the run reads as a narrowed run, and one that could not run reads as a failure.',
+    ],
+    note: 'The identity is held by the record. The machine that carries it is replaceable.',
+  },
+  {
+    id: 'today',
+    label: 'Today',
+    title: 'What exists, and what does not',
+    rows: [
+      { k: 'Both directions', v: 'A state can be sent and received. Built.' },
+      { k: 'As one operation', v: 'The step that moves an operator from one place to another is the next build.' },
+      { k: 'The teleport', v: 'Seven steps are written for it: pin, seal, announce, admit, build, resume, attest. Nothing of it is built.' },
+      { k: 'In a deployment', v: 'No deployment carries Telos today.' },
+    ],
+    note: 'The two directions run. The move and the teleport are not something a buyer can use yet.',
+  },
+  {
+    id: 'buyer',
+    label: 'The buyer',
+    title: 'Who stands inside',
+    rows: [
+      {
+        k: 'A fleet operator',
+        v: 'A team that has to act inside a machine at the moment it acts, and cannot wait for a report to be assembled.',
+      },
+      {
+        k: 'An auditor',
+        v: "A reader who has to see what the machine saw, from the machine's own position, at the moment it acted.",
+      },
+      {
+        k: 'A team that works in two places',
+        v: 'Work that starts on a desk and has to continue on a machine somewhere else, under the same record and the same authority.',
+      },
+    ],
+    note: 'The alternative is a screen that shows a result after the fact, which is the thing this layer exists to replace.',
   },
 ];
 ---
@@ -27,10 +85,11 @@ const blocks = [
   href="/telos"
   title="Work moves by coordinate."
   subline="The operator stands inside the machine."
-  description="Telos is the transport layer: it moves work between agents, people, and spaces, and carries the operator into the machine."
-  lede="The transport layer. Work is addressed by coordinate and reached by teleport, so an agent moves between work locations without walking a tree or scanning a path."
-  body="It carries the operator's view to the machine, which is what makes the platform a position inside the system rather than a window onto it."
+  description="Telos is the transport layer: work is named by its place and lands there, a live run travels with the operator inside it, and a run sealed on one machine is built again on another."
+  lede="An operator who stands where the work is, and work that moves to a place instead of along a path."
+  body="The machine becomes a place a person can enter, and a run sealed on one machine continues on another."
   blocks={blocks}
+  figure="telos"
   contact={{
     title: 'Move the operator, not the data',
     lede: 'If an operator has to stand inside a run rather than watch it, we should talk.',

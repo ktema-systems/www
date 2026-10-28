@@ -1,0 +1,604 @@
+---
+/*
+  One drawing per product page, in the language the hero field already uses: the mark's
+  hexagon, thin strokes, the accent for the one thing the page claims, and mono labels.
+
+  Every drawing moves with the reader's scroll through a CSS scroll timeline, and a
+  browser without one shows the drawing at rest, which is the state the caption names.
+  The geometry is chosen so the resting shape already says the sentence.
+*/
+
+interface Props {
+  kind: 'kletos' | 'kleis' | 'krisis' | 'telos';
+  caption?: string;
+}
+
+const { kind, caption } = Astro.props;
+
+const captions: Record<Props['kind'], string> = {
+  kletos: 'One ask, one claim, one performance, one result, and a single record under all four.',
+  kleis:
+    'Two different holders present inside one window, the gate opens on both, and the record names both.',
+  krisis: 'The request is judged, the terms are read, and the act either runs or is held.',
+  telos: 'The goal travels by address, and the workspace is built again where it lands.',
+};
+
+const text = caption ?? captions[kind];
+
+const round = (value: number) => Math.round(value * 10) / 10;
+
+// The mark's hexagon, drawn point up, so every drawing speaks the same shape.
+const hex = (radius: number) =>
+  Array.from({ length: 6 }, (_, index) => {
+    const angle = (index * Math.PI) / 3;
+    return `${round(radius * Math.sin(angle))},${round(-radius * Math.cos(angle))}`;
+  }).join(' ');
+
+const STATIONS = [
+  { x: 120, label: 'STATED' },
+  { x: 270, label: 'CLAIMED' },
+  { x: 420, label: 'PERFORMED' },
+  { x: 570, label: 'DEPOSITED' },
+];
+
+// The trail on the axis: three runs of ticks, lit in order as the figure is scrolled.
+const TRAIL = [
+  [80, 130, 180],
+  [230, 280],
+  [330, 380, 430, 480, 530],
+];
+
+// The judgement that reads a request: three layers, each narrower than the one before.
+const JUDGEMENT = [
+  { x: 186, ys: [100, 115, 130, 145, 160] },
+  { x: 222, ys: [108, 122, 136, 150] },
+  { x: 258, ys: [116, 130, 144] },
+];
+
+// The address space Telos moves through: a lattice of places, with no path between them.
+const ROWS = [
+  { y: 64, xs: [180, 300, 420, 540] },
+  { y: 130, xs: [120, 240, 360, 480, 600] },
+  { y: 196, xs: [180, 300, 420, 540] },
+];
+
+const EDGES: Array<[number, number, number, number]> = [];
+for (let row = 0; row < ROWS.length - 1; row += 1) {
+  for (const x of ROWS[row].xs) {
+    for (const next of ROWS[row + 1].xs) {
+      if (Math.abs(next - x) === 60) {
+        EDGES.push([x, ROWS[row].y, next, ROWS[row + 1].y]);
+      }
+    }
+  }
+}
+
+// The two places that carry a hexagon are drawn as places, not as lattice points.
+const PLACES = ROWS.flatMap((row) => row.xs.map((x) => ({ x, y: row.y }))).filter(
+  (place) => !(place.x === 240 && place.y === 130) && !(place.x === 420 && place.y === 64),
+);
+---
+
+<figure class="pfig" data-kind={kind}>
+  <div class="pfig__stage">
+    <svg viewBox="0 0 720 260" role="img">
+      <title>{text}</title>
+
+      {
+        kind === 'kletos' && (
+          <>
+            <line class="pfig__rule" x1="60" y1="120" x2="660" y2="120" />
+            {STATIONS.map((station, index) => (
+              <g class="pfig__step" data-step={index + 1}>
+                <polygon
+                  class="pfig__mark"
+                  points={hex(11)}
+                  transform={`translate(${station.x} 120)`}
+                />
+                <text class="pfig__label" x={station.x} y="90" text-anchor="middle">
+                  {station.label}
+                </text>
+                <line class="pfig__hair" x1={station.x} y1="132" x2={station.x} y2="172" />
+              </g>
+            ))}
+            <g class="pfig__record">
+              <rect x="120" y="172" width="450" height="30" rx="3" />
+              <text class="pfig__note" x="345" y="192" text-anchor="middle">
+                one record
+              </text>
+            </g>
+          </>
+        )
+      }
+
+      {
+        kind === 'kleis' && (
+          <>
+            <line class="pfig__hair" x1="112" y1="110" x2="300" y2="110" />
+            <line class="pfig__hair" x1="608" y1="150" x2="420" y2="150" />
+
+            {/* The window holds both presentations. Its two slots are the only thing the
+                two keys share, and an act is released when both are filled. */}
+            <rect class="pfig__window" x="306" y="92" width="108" height="72" rx="2" />
+            <circle class="pfig__slot" cx="330" cy="110" r="7" />
+            <circle class="pfig__slot" cx="390" cy="150" r="7" />
+            <text class="pfig__label" x="360" y="82" text-anchor="middle">
+              THE WINDOW
+            </text>
+
+            {/* Two keys, one per holder, drawn as a commitment rather than a secret: the
+                ring travels, and the claim inside it is confirmed only in the window. */}
+            <g class="pfig__first">
+              <circle class="pfig__commit" cx="96" cy="110" r="8" />
+              <line class="pfig__commit" x1="104" y1="110" x2="128" y2="110" />
+              <line class="pfig__commit" x1="121" y1="110" x2="121" y2="118" />
+              <circle class="pfig__commit-dot pfig__commit-dot--a" cx="96" cy="110" r="2.6" />
+            </g>
+            <text class="pfig__label" x="96" y="88" text-anchor="middle">
+              HOLDER A
+            </text>
+
+            <g class="pfig__second">
+              <circle class="pfig__commit" cx="624" cy="150" r="8" />
+              <line class="pfig__commit" x1="616" y1="150" x2="592" y2="150" />
+              <line class="pfig__commit" x1="599" y1="150" x2="599" y2="158" />
+              <circle class="pfig__commit-dot pfig__commit-dot--b" cx="624" cy="150" r="2.6" />
+            </g>
+            <text class="pfig__label" x="624" y="174" text-anchor="middle">
+              HOLDER B
+            </text>
+
+            <line class="pfig__hair" x1="360" y1="164" x2="360" y2="176" />
+            <g class="pfig__gate">
+              <rect x="336" y="176" width="24" height="40" />
+              <rect class="pfig__gate-leaf" x="360" y="176" width="24" height="40" />
+            </g>
+            <line class="pfig__hair" x1="360" y1="216" x2="360" y2="228" />
+
+            <g class="pfig__record-g">
+              <line class="pfig__rule" x1="306" y1="228" x2="414" y2="228" />
+              {[330, 348, 366, 384, 402].map((x) => (
+                <line class="pfig__tickline" x1={x} y1="221" x2={x} y2="235" />
+              ))}
+            </g>
+            <text class="pfig__label" x="430" y="232" text-anchor="start">
+              ONE RECORD
+            </text>
+          </>
+        )
+      }
+
+      {
+        kind === 'krisis' && (
+          <>
+            <circle class="pfig__request" cx="70" cy="130" r="4" />
+            <text class="pfig__label" x="70" y="108" text-anchor="middle">
+              REQUEST
+            </text>
+            <line class="pfig__hair" x1="80" y1="130" x2="176" y2="130" />
+
+            {JUDGEMENT.map((column, index) => (
+              <g class={`pfig__judge pfig__judge--${index + 1}`}>
+                {column.ys.map((y) => (
+                  <circle class="pfig__dot" cx={column.x} cy={y} r="2.2" />
+                ))}
+              </g>
+            ))}
+            <text class="pfig__label" x="222" y="82" text-anchor="middle">
+              JUDGEMENT
+            </text>
+            <line class="pfig__hair" x1="268" y1="130" x2="330" y2="130" />
+
+            <g class="pfig__terms-g">
+              <rect x="330" y="102" width="96" height="56" rx="2" />
+              <line class="pfig__hair" x1="342" y1="118" x2="414" y2="118" />
+              <line class="pfig__hair" x1="342" y1="130" x2="414" y2="130" />
+              <line class="pfig__hair" x1="342" y1="142" x2="392" y2="142" />
+            </g>
+            <text class="pfig__label" x="378" y="90" text-anchor="middle">
+              THE TERMS
+            </text>
+
+            <g class="pfig__act-g">
+              <line class="pfig__act" x1="426" y1="130" x2="650" y2="130" />
+            </g>
+            <text class="pfig__label pfig__label--accent" x="650" y="114" text-anchor="end">
+              THE ACT
+            </text>
+
+            <g class="pfig__hold-g">
+              <line class="pfig__hold" x1="560" y1="132" x2="560" y2="188" />
+              <rect x="556" y="188" width="8" height="8" />
+            </g>
+            <text class="pfig__label" x="578" y="196" text-anchor="start">
+              HELD
+            </text>
+          </>
+        )
+      }
+
+      {
+        kind === 'telos' && (
+          <>
+            <g class="pfig__lattice">
+              {EDGES.map(([x1, y1, x2, y2]) => (
+                <line class="pfig__edge" x1={x1} y1={y1} x2={x2} y2={y2} />
+              ))}
+              {PLACES.map((place) => (
+                <circle class="pfig__place-dot" cx={place.x} cy={place.y} r="2" />
+              ))}
+            </g>
+
+            {/* One jump across the space. Every place it passes is left as it was. */}
+            <line class="pfig__jump" x1="240" y1="130" x2="420" y2="64" />
+
+            <g class="pfig__origin">
+              <polygon class="pfig__mark" points={hex(30)} transform="translate(240 130)" />
+              <text class="pfig__label" x="240" y="178" text-anchor="middle">
+                HERE
+              </text>
+            </g>
+            <g class="pfig__seat-here">
+              <circle class="pfig__seat" cx="240" cy="130" r="9" />
+              <line class="pfig__hair" x1="240" y1="117" x2="240" y2="109" />
+              <line class="pfig__hair" x1="227" y1="130" x2="219" y2="130" />
+              <line class="pfig__hair" x1="253" y1="130" x2="261" y2="130" />
+              <line class="pfig__hair" x1="240" y1="143" x2="240" y2="151" />
+            </g>
+
+            <g class="pfig__dest">
+              <polygon class="pfig__mark" points={hex(30)} transform="translate(420 64)" />
+              <text class="pfig__label" x="420" y="112" text-anchor="middle">
+                THERE
+              </text>
+            </g>
+            <g class="pfig__seat-there">
+              <circle class="pfig__seat" cx="420" cy="64" r="9" />
+              <line class="pfig__hair" x1="420" y1="51" x2="420" y2="43" />
+              <line class="pfig__hair" x1="407" y1="64" x2="399" y2="64" />
+              <line class="pfig__hair" x1="433" y1="64" x2="441" y2="64" />
+              <line class="pfig__hair" x1="420" y1="77" x2="420" y2="85" />
+            </g>
+          </>
+        )
+      }
+    </svg>
+  </div>
+  <figcaption class="pfig__caption">{text}</figcaption>
+</figure>
+
+<style>
+  .pfig {
+    margin: 0;
+    max-width: 52rem;
+  }
+
+  .pfig__stage {
+    width: 100%;
+  }
+
+  .pfig svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .pfig text {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    fill: var(--fg-3);
+  }
+
+  .pfig__label--accent {
+    fill: var(--accent);
+  }
+
+  .pfig__rule,
+  .pfig__hair,
+  .pfig__fan,
+  .pfig__bound,
+  .pfig__jump,
+  .pfig__mark,
+  .pfig__edge,
+  .pfig__window,
+  .pfig__record rect,
+  .pfig__gate rect,
+  .pfig__terms-g rect,
+  .pfig__hold-g rect {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .pfig__mark {
+    opacity: 0.55;
+  }
+
+  /* The accent carries the one thing the page claims: the bound on the range, the two
+     commitments the gate waits for, the act that runs, and the seat the operator takes. */
+  .pfig__bound,
+  .pfig__commit,
+  .pfig__seat,
+  .pfig__act,
+  .pfig__request {
+    stroke: var(--accent);
+    stroke-width: 1.6;
+    fill: none;
+  }
+
+  .pfig__request,
+  .pfig__commit-dot {
+    fill: var(--accent);
+    stroke: none;
+  }
+
+  .pfig__window {
+    stroke-dasharray: 3 5;
+    opacity: 0.7;
+  }
+
+  /* The empty slots the two commitments fill. They are drawn before either arrives, so
+     the resting drawing already says what the gate is waiting for. */
+  .pfig__slot {
+    fill: none;
+    stroke: var(--fg);
+    stroke-width: 1;
+    stroke-dasharray: 2 4;
+    opacity: 0.5;
+  }
+
+  .pfig__knob,
+  .pfig__dot,
+  .pfig__place-dot {
+    fill: var(--fg);
+    opacity: 0.5;
+    stroke: none;
+  }
+
+  .pfig__edge {
+    opacity: 0.16;
+  }
+
+  .pfig__hold {
+    stroke: var(--fg);
+    stroke-width: 1;
+    opacity: 0.7;
+  }
+
+  .pfig__gate-leaf {
+    transform-origin: 360px 197px;
+  }
+
+  .pfig__tickline {
+    stroke: var(--fg);
+    stroke-width: 1;
+    opacity: 0.6;
+  }
+
+  .pfig__jump {
+    stroke-dasharray: 2 7;
+    opacity: 0.7;
+  }
+
+  .pfig__caption {
+    margin: 18px 0 0;
+    font-family: var(--text);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--fg-3);
+  }
+
+  /* The four stations and the three runs of the trail light in order, so the chain and
+     the record advance with the scroll instead of arriving whole. */
+  @keyframes pfig-in {
+    from {
+      opacity: 0.22;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* The two commitments reach the window, and the gate opens on the second one. */
+  @keyframes pfig-first {
+    from {
+      opacity: 0.3;
+      transform: none;
+    }
+    to {
+      opacity: 1;
+      transform: translate(234px, 0);
+    }
+  }
+
+  @keyframes pfig-second {
+    from {
+      opacity: 0.3;
+      transform: none;
+    }
+    to {
+      opacity: 1;
+      transform: translate(-234px, 0);
+    }
+  }
+
+  @keyframes pfig-gate {
+    to {
+      transform: translateX(10px);
+    }
+  }
+
+  /* The seat does not cross the space: it leaves one place and is built at the other. */
+  @keyframes pfig-leave {
+    to {
+      opacity: 0.1;
+    }
+  }
+
+  @keyframes pfig-arrive {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* A presentation is a commitment that checks out. The ring travels, and the claim
+     inside it is confirmed only after it reaches the window, never before. */
+  @keyframes pfig-verify {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .pfig__step,
+      .pfig__first,
+      .pfig__second,
+      .pfig__gate-leaf,
+      .pfig__record-g,
+      .pfig__commit-dot,
+      .pfig__judge,
+      .pfig__terms-g,
+      .pfig__act-g,
+      .pfig__hold-g,
+      .pfig__jump,
+      .pfig__seat-here,
+      .pfig__seat-there {
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+      }
+
+      .pfig__step[data-step='1'] {
+        animation-name: pfig-in;
+        animation-range: cover 10% cover 34%;
+      }
+
+      .pfig__step[data-step='2'] {
+        animation-name: pfig-in;
+        animation-range: cover 26% cover 50%;
+      }
+
+      .pfig__step[data-step='3'] {
+        animation-name: pfig-in;
+        animation-range: cover 42% cover 66%;
+      }
+
+      .pfig__step[data-step='4'] {
+        animation-name: pfig-in;
+        animation-range: cover 58% cover 82%;
+      }
+
+      .pfig__first {
+        animation-name: pfig-first;
+        animation-range: cover 12% cover 36%;
+      }
+
+      .pfig__second {
+        animation-name: pfig-second;
+        animation-range: cover 30% cover 54%;
+      }
+
+      .pfig__commit-dot--a {
+        animation-name: pfig-verify;
+        animation-range: cover 32% cover 42%;
+      }
+
+      .pfig__commit-dot--b {
+        animation-name: pfig-verify;
+        animation-range: cover 50% cover 60%;
+      }
+
+      .pfig__gate-leaf {
+        animation-name: pfig-gate;
+        animation-range: cover 52% cover 68%;
+        animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+
+      .pfig__record-g {
+        animation-name: pfig-in;
+        animation-range: cover 62% cover 84%;
+      }
+
+      .pfig__judge--1 {
+        animation-name: pfig-in;
+        animation-range: cover 10% cover 26%;
+      }
+
+      .pfig__judge--2 {
+        animation-name: pfig-in;
+        animation-range: cover 22% cover 38%;
+      }
+
+      .pfig__judge--3 {
+        animation-name: pfig-in;
+        animation-range: cover 34% cover 50%;
+      }
+
+      .pfig__terms-g {
+        animation-name: pfig-in;
+        animation-range: cover 46% cover 62%;
+      }
+
+      .pfig__act-g {
+        animation-name: pfig-in;
+        animation-range: cover 58% cover 78%;
+      }
+
+      .pfig__hold-g {
+        animation-name: pfig-in;
+        animation-range: cover 70% cover 88%;
+      }
+
+      .pfig__jump {
+        animation-name: pfig-in;
+        animation-range: cover 16% cover 40%;
+      }
+
+      .pfig__seat-here {
+        animation-name: pfig-leave;
+        animation-range: cover 44% cover 58%;
+      }
+
+      .pfig__seat-there {
+        animation-name: pfig-arrive;
+        animation-range: cover 56% cover 72%;
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pfig__first,
+    .pfig__second,
+    .pfig__gate-leaf,
+    .pfig__seat-there {
+      transform: none;
+    }
+
+    /* The recording of a jump is the resting state, so the seat is at its destination
+       and the origin seat is gone. */
+    .pfig__seat-here {
+      opacity: 0.1;
+    }
+  }
+
+  @media (max-width: 720px) {
+    /* The drawing is scaled to the column, so the labels grow with it and stay legible
+       rather than thinning to specks. 18 units clears the fan and the act line. */
+    .pfig text {
+      font-size: 18px;
+      letter-spacing: 0.1em;
+    }
+  }
+</style>

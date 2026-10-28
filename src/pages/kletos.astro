@@ -1,43 +1,31 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
-// The execution page. The order is the layer's own: the unit, the three ways a call
-// arrives, the two ends a person holds, the reach, the build's own numbers, and the
-// pieces that hold it. Every figure here is one this tree's notes record.
+// The execution page. What the buyer gets, in the order it happens: one call, the ways
+// work arrives, the two ends a person holds, what the layer drives, and what runs today.
+// The page names no part of the build, only what a deployment does with it.
 const blocks = [
   {
-    id: 'unit',
-    label: 'The unit',
-    title: 'One call, from the stated work to the fact',
-    lede: 'Every container of work holds a queue, and the queue carries a local name in every domain: a backlog, an ECO list, a work order list, a worklist, a manifest. The call is the unit that moves it.',
+    id: 'call',
+    label: 'One call',
+    title: 'The ask, the work, and the result stay one record',
+    lede: 'Every team owes work, and every container of it has a local name: a backlog, an ECO list, a work order list, a manifest. The call is how that work moves.',
     rows: [
-      { k: 'Stated', v: 'A person writes the work. The intent carries what was asked, who asked, and what constrains it.' },
+      { k: 'Stated', v: 'A person writes the work: what is asked, who asks, and what limits it.' },
       { k: 'Claimed', v: 'An agent, a machine, or a person takes it, and the claim is written.' },
-      { k: 'Performed', v: 'The party that claimed it performs it.' },
-      {
-        k: 'Deposited',
-        v: 'The result is written as a fact, with the evidence that the work was done.',
-      },
+      { k: 'Performed', v: 'The work runs on the machine that took it.' },
+      { k: 'Deposited', v: 'The result is written with the evidence that the work was done.' },
     ],
-    note: 'One request, one machine, one action. A planner, a model, and an outside agent all send the same thing, and the layer answers them the same way.',
+    note: 'A planner, a model, and an outside system ask the same way, and one record answers each of them.',
   },
   {
-    id: 'entries',
-    label: 'Three ways in',
-    title: 'A sentence, a model, an outside agent',
+    id: 'arrives',
+    label: 'How work arrives',
+    title: 'A sentence, a model, an outside system',
     rows: [
-      {
-        k: 'The line',
-        v: 'The console turns a sentence into work and sends it to the machines.',
-      },
-      {
-        k: 'The model',
-        v: 'A model proposes the same work, and the layer accepts it the same way.',
-      },
-      {
-        k: 'The outside agent',
-        v: 'An outside agent reaches every machine as a tool, and reads each one as a resource.',
-      },
+      { k: 'A person', v: 'A sentence on the console becomes the work.' },
+      { k: 'A model', v: 'A model proposes the same work, and it is taken the same way.' },
+      { k: 'An outside system', v: 'A system the layer does not own calls the same way, and reads each machine as a resource.' },
     ],
     note: 'A model is optional. The layer runs without one.',
   },
@@ -46,50 +34,38 @@ const blocks = [
     label: 'The two ends',
     title: 'A person states the work, and a person accepts it',
     prose: [
-      'A person opens a project, writes a line, and watches the turn. That line is the first end.',
-      'The second is the acceptance, written as a note in the thread: the decision sits where the person and the agent both read it, and it runs no turn.',
+      'The first end is the ask: a person opens a project, writes a line, and watches it move.',
+      'The second end is the acceptance, written where the person and the agent both read it. It runs no work of its own.',
       'Approval is a deployment setting: every action, actions on request, or none. A call that waits for an answer waits for the person who can give it.',
     ],
-    note: 'The machine holds the middle. The boundary sits outside the loop, where the first goal is stated and where the result is judged.',
+    note: 'The machine holds the middle. The two ends stay with people.',
   },
   {
-    id: 'reach',
-    label: 'The reach',
-    title: 'Five executor types, one contract',
+    id: 'drives',
+    label: 'What it drives',
+    title: 'Software, signals, hardware, people, outside systems',
     rows: [
-      {
-        k: 'Agent',
-        v: 'Software work, from a service to a desktop. It is the first type, and the one that runs today.',
-      },
-      { k: 'Signal', v: 'Measurement and industrial signalling.' },
-      { k: 'Hardware', v: 'Robotics and automation.' },
-      { k: 'Human-machine', v: 'Work where a person is inside the loop.' },
-      { k: 'Bridge', v: 'An outside system, read and written through the same calls.' },
+      { k: 'Software', v: 'Work inside a service or on a desktop. It is the first kind, and the one that runs today.' },
+      { k: 'Signals', v: 'Measurement and industrial signalling.' },
+      { k: 'Hardware', v: 'Robots and automation.' },
+      { k: 'People', v: 'Work where a person is part of the loop.' },
+      { k: 'Outside systems', v: 'A system the layer does not own, read and written the same way as the rest.' },
     ],
-    note: 'A deployment is supervised, with a hub that binds the work, or peer to peer, where the board allocates by claims. One contract holds both, and the conformance suite reports whether a deployment conforms.',
+    note: 'One contract covers all five, so a deployment does not change shape when another kind of machine or agent joins it.',
   },
   {
     id: 'today',
     label: 'Today',
-    title: 'What runs, measured on one host',
+    title: 'What one host runs',
     rows: [
-      {
-        k: 'A turn',
-        v: 'End to end on one host under one operator, including a request from a phone.',
-      },
-      { k: 'A call', v: 'A device acts within eighty milliseconds of the dispatch.' },
-      {
-        k: 'A move',
-        v: 'The record holds the path, so a replay draws where the machine went.',
-      },
-      { k: 'One host', v: 'Three nodes bound to seven projects.' },
-      {
-        k: 'A node',
-        v: 'About 19 MB resident. One file to deploy, with nothing else to install or operate.',
-      },
-      { k: 'The check', v: 'The contract check passes with no model in the path.' },
+      { k: 'A turn', v: 'End to end on one host under one operator, including a request from a phone.' },
+      { k: 'A device', v: 'Acts within eighty milliseconds of being asked.' },
+      { k: 'One host', v: 'Three nodes, seven projects.' },
+      { k: 'A node', v: 'About 19 MB resident. One file to deploy.' },
+      { k: 'A run, moved', v: 'A run is sealed on one machine and built again on another. Seven steps are written for it; nothing of it is built.' },
+      { k: 'No model', v: 'The contract check passes with no model in the path.' },
     ],
-    note: 'The derivation that ties a fact back to its intent is the next build. No delivery rate and no cost per delivery are measured beyond one operator.',
+    note: 'The proof that ties a result back to its ask is the next build. Delivery rate and cost per delivery are not measured beyond one operator.',
   },
 ];
 ---
@@ -99,11 +75,11 @@ const blocks = [
   href="/kletos"
   title="Intent delivers."
   subline="The chain from ask to delivery stays one record."
-  description="Kletos is the execution layer: work is stated as an intent, claimed and performed by a node, and deposited as a fact with the evidence that ties it to the ask."
-  lede="The execution layer. Work is stated as an intent, claimed by a node, performed on the machine that claimed it, and deposited as a fact. The ask, the claim, and the result stay one chain."
-  body="A project used to be the work a team owed.
-The project performs that work now, and the team keeps the two ends: stating the work and accepting the outcome."
+  description="Kletos is the execution layer: work is stated, claimed, performed, and deposited on one record, so a result is read with the ask that produced it."
+  lede="The work a team owes gets done, and the team keeps the two ends: stating the work and accepting the outcome."
+  body="A project used to be the work a team owed. The project performs that work now."
   blocks={blocks}
+  figure="kletos"
   note="The design-partner program is open. The layer runs on one operator's host today."
   contact={{
     title: 'Put a run through the layer',

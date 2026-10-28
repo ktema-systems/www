@@ -1,6 +1,7 @@
 ---
 import Base from './Base.astro';
 import Hero from '../components/Hero.astro';
+import ProductFigure from '../components/ProductFigure.astro';
 import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
 import { companyCta, productMenu } from '../config';
@@ -34,6 +35,8 @@ interface Props {
   blocks: Block[];
   contact: { title: string; lede: string; body: string };
   note?: string;
+  // The one drawing that shows what the product does, drawn under the hero copy.
+  figure?: 'kletos' | 'kleis' | 'krisis' | 'telos';
 }
 
 const {
@@ -47,6 +50,7 @@ const {
   blocks,
   contact,
   note = 'The design-partner program is open. Public previews and the private beta are on the way.',
+  figure,
 } = Astro.props;
 
 // The strip lists every section the page carries, in the order the page reads, so a
@@ -67,6 +71,7 @@ const nav = [
   openProducts
 >
   <Hero title={title} subline={subline} lede={lede} body={body}>
+    {figure && <ProductFigure slot="figure" kind={figure} />}
     <a class="btn btn--accent" href="#contact" slot="actions">Talk to us</a>
     <p class="hero-note" slot="actions">{note}</p>
   </Hero>

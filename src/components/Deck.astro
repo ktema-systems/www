@@ -908,7 +908,32 @@ const splitMetric = (value: string) => {
   gsap.registerPlugin(ScrollTrigger);
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const tooSmall = window.matchMedia('(max-height: 559px), (max-width: 359px) and (max-height: 620px)');
+  const coarse = window.matchMedia('(pointer: coarse)');
+
+  // A deck's mode is read from the small viewport height, which stays put when a phone's
+  // own toolbar slides away. A media query on the layout height moves with that toolbar,
+  // and a deck rebuilt in the middle of a scroll takes the document's height with it:
+  // every section below the reader jumps and every trigger is measured again.
+  let smallViewport = 0;
+  const measureViewport = () => {
+    const probe = document.createElement('div');
+    probe.style.cssText =
+      'position:absolute;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
+    document.body.append(probe);
+    smallViewport = probe.getBoundingClientRect().height;
+    probe.remove();
+  };
+
+  // One refresh for every deck that changed mode in the same frame.
+  let refreshQueued = false;
+  const refreshOnce = () => {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    window.requestAnimationFrame(() => {
+      refreshQueued = false;
+      ScrollTrigger.refresh();
+    });
+  };
 
   document.querySelectorAll<HTMLElement>('[data-deck]').forEach((deck) => {
     const slides = Array.from(deck.querySelectorAll<HTMLElement>('[data-slide]'));
@@ -937,7 +962,7 @@ const splitMetric = (value: string) => {
       tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
       if (now) now.textContent = String(index + 1).padStart(2, '0');
       // A phone scrolls a long slide inside the stage, so the next one opens at its head.
-      if (stage) stage.scrollTop = 0;
+      if (stage && stage.scrollTop !== 0) stage.scrollTop = 0;
 
       const slide = slides[index];
       if (slide && deck.classList.contains('is-revealed')) play(slide);
@@ -1017,13 +1042,40 @@ const splitMetric = (value: string) => {
       });
     };
 
-    const apply = () => {
-      if (reduce.matches || tooSmall.matches) stack();
-      else start();
+    let live = false;
+    let queued = false;
+    let lastWidth = 0;
+
+    const apply = (forced = false) => {
+      queued = false;
+      const width = document.documentElement.clientWidth;
+      // On a phone the layout height moves with the browser's own toolbar, and that is not
+      // a new layout: the mode is re-read when the width, the motion preference, or the
+      // pointer changes. On a desktop a height change is the reader's own resize.
+      if (!forced && coarse.matches && width === lastWidth) return;
+      lastWidth = width;
+      measureViewport();
+      const short = smallViewport <= 559 || (width <= 359 && smallViewport <= 620);
+      const next = !reduce.matches && !short;
+      if (next === live) return;
+      live = next;
+      if (next) start();
+      else stack();
+      // Every deck below, and the page's pin, were measured against the height this one
+      // has just changed.
+      refreshOnce();
+    };
+
+    // A resize arrives repeatedly while a window is dragged or a toolbar moves, and the
+    // mode is only worth re-reading once per frame.
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      window.requestAnimationFrame(() => apply());
     };
 
     apply();
-    reduce.addEventListener('change', apply);
-    tooSmall.addEventListener('change', apply);
+    reduce.addEventListener('change', () => apply(true));
+    addEventListener('resize', schedule, { passive: true });
   });
 </script>

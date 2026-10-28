@@ -1,10 +1,9 @@
 ---
 import ProductPage from '../layouts/ProductPage.astro';
 
-// The governance page. The order follows the object: the bound it puts on a narrowed
-// range, the decisions it makes, where the terms come from, the acts that need two
-// holders, what is defined today, and who buys it. Every claim here is one the notes
-// under docs/ktmas record; the rows that are not built say so.
+// The governance page. Three things the layer carries: the bound the record has narrowed,
+// the contract that declares the terms, and the judgement that applies them where the work
+// runs. No part of the build is named except the artefact that exists.
 const blocks = [
   {
     id: 'bound',
@@ -32,54 +31,62 @@ const blocks = [
     note: 'The narrowing is deterministic: the same record leaves the same range. Krisis is where the bound on that range is declared.',
   },
   {
-    id: 'decision',
-    label: 'The decision',
-    title: 'Which model answers, at what cost, with what authority',
+    id: 'terms',
+    label: 'The contract',
+    title: 'One contract answers which model, at what cost, by whose authority',
+    lede: 'The terms are written when the deployment is, and read against the record it keeps.',
     rows: [
       { k: 'The action', v: 'What each action may do, and what it may not.' },
       { k: 'The model', v: 'Which model answers a request.' },
       { k: 'The cost', v: 'What that answer costs.' },
       { k: 'The authority', v: 'Who may move an agent, and with what authority.' },
-      { k: 'The terms', v: 'On what terms the answer is given.' },
+      { k: 'The record', v: 'What the machine did, read beside what it was allowed to do.' },
     ],
-    note: 'One rule set answers all five, so the same request is read the same way twice.',
+    note: 'One contract answers all five, so the same request is read the same way twice. A bound is worth what the record can prove about it, so the two are sold together.',
   },
   {
-    id: 'declared',
-    label: 'The terms',
-    title: 'Written with the deployment, checked against the record',
-    prose: [
-      'The terms take the form a smart contract and a governance system already take, and they are written when the deployment is. An auditor reads a rule and reads a record.',
-      'The record says what the machine did. The rule says what it was allowed to do. Holding the two together is the work of the layer.',
+    id: 'judgement',
+    label: 'The judgement',
+    title: 'The decision is made where the work runs',
+    lede: 'A decision that waits for a round trip is a report. The layer answers on the machine.',
+    rows: [
+      { k: 'The read', v: 'A request is classed, and its class decides what may happen to it.' },
+      {
+        k: 'The machine',
+        v: 'The first artefact is a small classifier that runs on a 32-bit part with no operating system, verified under emulation rather than on silicon.',
+      },
+      {
+        k: 'The check',
+        v: 'The same arithmetic is written four ways: compiled, hand-written for the part, in hardware, and as the plain reference the other three are held to.',
+      },
+      { k: 'The number', v: '0.915 quantised accuracy on a 64-32-10 network.' },
     ],
-    note: 'It governs storage and execution together, so the same terms are read by the record and by the work.',
+    note: 'The classifier is the pattern the layer keeps as it grows: a decision small enough to sit on the machine, and an arithmetic that can be checked against a reference.',
   },
   {
     id: 'twokeys',
-    label: 'Two keys',
-    title: 'Two holders, one window',
+    label: 'Two holders',
+    title: 'The acts that cannot be undone',
     rows: [
-      { k: 'The class', v: 'Krisis places the act in the two-person class and holds it.' },
-      { k: 'The window', v: 'How long a second key may still arrive is declared with the class.' },
-      { k: 'The release', v: 'Kletos unlocks the work on the second presentation.' },
-      { k: 'The proof', v: 'Kleis proves who presented each key.' },
-      { k: 'The record', v: 'Both presentations sit beside the act on one coordinate.' },
+      { k: 'The class', v: 'Which acts need two holders. Declared with the deployment.' },
+      { k: 'The window', v: 'How long a second holder may still agree.' },
+      { k: 'The hold', v: 'The act waits while the class holds it.' },
+      { k: 'The release', v: 'It starts when a second holder agrees inside the window.' },
+      { k: 'The record', v: 'Both agreements sit beside the act on one record.' },
     ],
-    note: "The class is Krisis's. The identity of a holder is Kleis's, the release is Kletos's, and the record is Ktema's.",
+    note: 'Two different holders, one window, one record. A second agreement by the same holder is not a second key.',
   },
   {
     id: 'today',
     label: 'Today',
     title: 'What is defined, and what is not',
     rows: [
-      { k: 'The role', v: 'Defined: the layer governs storage and execution together.' },
-      { k: 'The project', v: 'Not started. The governance role is defined, the project is not.' },
-      { k: 'The terms engine', v: 'In development.' },
-      { k: 'The two-key class', v: 'Defined. It needs the seal, and Kleis is not built.' },
+      { k: 'The role', v: 'Defined: the layer sets the terms the work runs inside.' },
+      { k: 'The classifier', v: 'Built, and checked against one written reference.' },
+      { k: 'The project', v: 'Not started. The role is defined, the project is not.' },
       { k: 'The price', v: 'Set when the project is defined.' },
-      { k: 'The first artifact', v: 'A single model, checked several ways against one reference.' },
     ],
-    note: 'No deployment carries Krisis today. These rows are the definition, and the first project definition is what moves them.',
+    note: 'No deployment carries Krisis today. The classifier is the one part that exists.',
   },
   {
     id: 'buyer',
@@ -96,7 +103,7 @@ const blocks = [
       },
       {
         k: 'What it is bought with',
-        v: 'A bound is only as good as the trail behind it, so the layer is bought with Ktema and Kletos.',
+        v: 'A bound is only as good as the trail behind it, so the layer is bought with the record.',
       },
     ],
     note: 'What the buyer wants is an answer that survives an audit, which is why the price lands on the layer that holds the record.',
@@ -109,10 +116,11 @@ const blocks = [
   href="/krisis"
   title="Judgment governs."
   subline="Every action carries its terms."
-  description="Krisis is the governance layer: it declares what each action may do, which model answers, at what cost and with what authority, and holds the work inside those terms."
-  lede="The authority. It bounds the range the record has narrowed: what each action may do, which model answers, at what cost, and on what authority."
-  body="It governs storage and execution together. The terms are declared with the deployment, so an audit reads a rule and a record."
+  description="Krisis is the judgment layer: it declares what each action may do, which model answers and at what cost, writes the terms as a contract, and decides on the machine where the work runs."
+  lede="The terms a deployment declares, held against the record of what the machine did."
+  body="It bounds what can happen next, writes the bound as a contract, and reaches the decision on the machine."
   blocks={blocks}
+  figure="krisis"
   contact={{
     title: 'Declare what the work may do',
     lede: 'If a deployment has to bound what a model may do and answer for it later, we should talk.',
