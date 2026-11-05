@@ -85,7 +85,7 @@ export const papers = [
   },
   {
     title:
-      'neXus: Peer-to-peer state fabric for agents and storage, from microcontrollers to data centers',
+      'neXus: Content-Addressed State Fabric for Heterogeneous Systems',
     when: 'September 2026',
     href: 'https://doi.org/10.5281/zenodo.22303887',
   },
