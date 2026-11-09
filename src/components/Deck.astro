@@ -91,7 +91,7 @@ const figures = await Promise.all(
 const hasFigure = (slide: Slide, index: number) =>
   Boolean(slide.image || slide.gauge || slide.bars || figures[index]);
 
-// A metric is written as it reads ("$2", "1,648"), and the counter needs the number
+// A metric is written as it reads ("1,648", "45"), and the counter needs the number
 // on its own. The digits are lifted out at build time; prefix and suffix stay text.
 const splitMetric = (value: string) => {
   const match = value.match(/^([^0-9]*)([\d,]+)(.*)$/);
