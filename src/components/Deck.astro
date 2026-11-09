@@ -91,6 +91,10 @@ const figures = await Promise.all(
 const hasFigure = (slide: Slide, index: number) =>
   Boolean(slide.image || slide.gauge || slide.bars || figures[index]);
 
+// A photograph opens at its own size. The section carries one overlay for every
+// figure, seeded from the first so the element is never empty.
+const firstImage = slides.find((slide) => slide.image)?.image;
+
 // A metric is written as it reads ("1,648", "45"), and the counter needs the number
 // on its own. The digits are lifted out at build time; prefix and suffix stay text.
 const splitMetric = (value: string) => {
@@ -169,14 +173,16 @@ const splitMetric = (value: string) => {
               {hasFigure(slide, index) && (
                 <figure class="slide__figure">
                   {slide.image && (
-                    <img
-                      src={slide.image.src}
-                      alt={slide.image.alt}
-                      width={slide.image.width}
-                      height={slide.image.height}
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    <button type="button" class="slide__zoom" data-zoom aria-label="View at full size">
+                      <img
+                        src={slide.image.src}
+                        alt={slide.image.alt}
+                        width={slide.image.width}
+                        height={slide.image.height}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </button>
                   )}
                   {slide.gauge && (
                     <div class="gauge">
@@ -241,6 +247,15 @@ const splitMetric = (value: string) => {
       {footnote && <p class="deck__note">{footnote}</p>}
     </div>
   </div>
+
+  {firstImage && (
+    <dialog class="deck__zoom" data-zoom-dialog aria-label="Enlarged figure">
+      <form method="dialog">
+        <button type="submit" class="deck__zoom-close">Close</button>
+      </form>
+      <img src={firstImage.src} alt={firstImage.alt} data-zoom-image />
+    </dialog>
+  )}
 </section>
 
 <style>
@@ -473,6 +488,80 @@ const splitMetric = (value: string) => {
     height: auto;
     border: 1px solid var(--line);
     border-radius: 6px;
+  }
+
+  /* The deck shows the shape of a screen; a reader who needs the words inside it
+     asks for the whole frame. The figure is a button because that is what it is. */
+  .slide__zoom {
+    display: block;
+    inline-size: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .slide__zoom img {
+    transition: border-color 200ms var(--ease);
+  }
+
+  .slide__zoom:hover img,
+  .slide__zoom:focus-visible img {
+    border-color: var(--accent);
+  }
+
+  .deck__zoom {
+    display: grid;
+    gap: 8px;
+    max-inline-size: calc(100vw - 48px);
+    max-block-size: calc(100svh - 48px);
+    padding: 10px;
+    border: 1px solid var(--line-2);
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .deck__zoom::backdrop {
+    background: rgb(19 18 16 / 0.92);
+  }
+
+  .deck__zoom form {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0;
+  }
+
+  .deck__zoom-close {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--fg-3);
+    font-family: var(--mono);
+    font-size: var(--deck-meta);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color 200ms var(--ease);
+  }
+
+  .deck__zoom-close:hover,
+  .deck__zoom-close:focus-visible {
+    color: var(--fg);
+  }
+
+  .deck__zoom img {
+    display: block;
+    inline-size: auto;
+    block-size: auto;
+    max-inline-size: calc(100vw - 70px);
+    max-block-size: calc(100svh - 110px);
+    border: 1px solid var(--line);
+  }
+
+  /* The page behind the overlay stays where it is, or the deck's own scroll would
+     turn the slides underneath the figure. */
+  :global(html.is-zoomed) {
+    overflow: hidden;
   }
 
   /* A measured row: a label, its figure, and the share it takes of the track. */
@@ -958,6 +1047,8 @@ const splitMetric = (value: string) => {
         slide.classList.toggle('is-active', i === index);
         slide.classList.toggle('is-past', i < index);
         slide.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+        // A slide off the stage still holds its buttons; keep them out of the tab order.
+        slide.toggleAttribute('inert', i !== index);
       });
       tabs.forEach((tab, i) => tab.classList.toggle('is-active', i === index));
       if (now) now.textContent = String(index + 1).padStart(2, '0');
@@ -983,6 +1074,38 @@ const splitMetric = (value: string) => {
 
     tabs.forEach((tab, index) => tab.addEventListener('click', () => jump(index)));
 
+    // One overlay per section: the figure that was clicked lends it its source, so a
+    // deck with ten photographs still holds one element.
+    const zoom = deck.querySelector<HTMLDialogElement>('[data-zoom-dialog]');
+    const zoomImage = zoom?.querySelector<HTMLImageElement>('[data-zoom-image]');
+    if (zoom && zoomImage) {
+      deck.querySelectorAll<HTMLButtonElement>('[data-zoom]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const source = button.querySelector('img');
+          if (!source) return;
+          zoomImage.src = source.currentSrc || source.src;
+          zoomImage.alt = source.alt;
+          document.documentElement.classList.add('is-zoomed');
+          zoom.showModal();
+        });
+      });
+
+      // A click outside the frame closes it; a click on the frame's own padding does not.
+      zoom.addEventListener('click', (event) => {
+        const frame = zoom.getBoundingClientRect();
+        const outside =
+          event.clientX < frame.left ||
+          event.clientX > frame.right ||
+          event.clientY < frame.top ||
+          event.clientY > frame.bottom;
+        if (outside) zoom.close();
+      });
+
+      zoom.addEventListener('close', () => {
+        document.documentElement.classList.remove('is-zoomed');
+      });
+    }
+
     let trigger: ScrollTrigger | null = null;
     let reveal: IntersectionObserver | null = null;
 
@@ -992,7 +1115,12 @@ const splitMetric = (value: string) => {
       reveal?.disconnect();
       reveal = null;
       deck.classList.remove('is-live', 'is-revealed');
-      slides.forEach((slide) => slide.classList.add('is-active'));
+      // Stacked, every slide is on the page, so none of them is hidden or held back.
+      slides.forEach((slide) => {
+        slide.classList.add('is-active');
+        slide.removeAttribute('aria-hidden');
+        slide.removeAttribute('inert');
+      });
     };
 
     const start = () => {
