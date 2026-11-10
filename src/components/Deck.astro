@@ -510,8 +510,13 @@ const splitMetric = (value: string) => {
     border-color: var(--accent);
   }
 
-  .deck__zoom {
+  /* The element keeps the UA rule that hides a closed dialog: display is set only
+     while it is open, or the enlarged figure sits in the page flow. */
+  .deck__zoom[open] {
     display: grid;
+  }
+
+  .deck__zoom {
     gap: 8px;
     max-inline-size: calc(100vw - 48px);
     max-block-size: calc(100svh - 48px);
