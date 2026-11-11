@@ -56,14 +56,15 @@ export const artifacts: Artifact[] = [
 ];
 
 // The order here is the order the grid draws them in. They sit beside the artifacts rather than under them, because a
-// reader who came for one demonstration still learns what the center is going to be.
+// reader who came for one demonstration still learns what the center is going to be. Each names the work it stands for,
+// which is what the devlogs carry rather than a description of what a video is.
 export const planned: PlannedSurface[] = [
   {
     title: 'Terminal proof',
-    summary: 'A run recorded as it was typed, replayable from the first byte.',
+    summary: 'A Cortex-M4 running the engine and printing its record under QEMU.',
   },
   {
     title: 'Hardware edge',
-    summary: 'A board on the bench, filmed while it answers.',
+    summary: 'An ESP32-S3 keeping its records in its own flash, read back after a reset.',
   },
 ];
