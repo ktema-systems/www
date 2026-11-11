@@ -5,7 +5,7 @@ import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
 import Deck from '../components/Deck.astro';
-import { companyCta, productMenu, site, type NavItem } from '../config';
+import { demoCta, productMenu, site, type NavItem } from '../config';
 
 // The homepage owns its sections and its strip. The order, labels, and anchors below
 // drive both the page and the header, so they cannot drift.
@@ -225,7 +225,7 @@ const assertNever = (value: never): never => {
   title={`${site.name}: ${site.tagline}`}
   description={site.description}
   nav={companyNav}
-  cta={companyCta}
+  cta={demoCta}
 >
     <Hero
       eyebrow=""
@@ -236,8 +236,8 @@ const assertNever = (value: never): never => {
       fieldReveal="scroll"
       depth
     >
-    <a class="btn btn--accent" href={companyCta.href} slot="actions" data-hero-cta>
-      {companyCta.label}
+    <a class="btn btn--accent" href={demoCta.href} slot="actions" data-hero-cta>
+      {demoCta.label}
     </a>
   </Hero>
 

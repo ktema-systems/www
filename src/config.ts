@@ -67,6 +67,10 @@ export const defaultNav: readonly NavItem[] = [
 
 export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 
+// The demo center is where the surfaces run, so the homepage's call to action opens it. The bar carries the same one:
+// its copy is only shown once the hero's has passed under it, so the two are one button that moves.
+export const demoCta: NavItem = { label: 'Open the demo center', href: 'https://demo.ktema.systems/' };
+
 export const papers = [
   {
     title: 'Schema–Segment Composition Computing System',
