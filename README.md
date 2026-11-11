@@ -112,9 +112,20 @@ and it names each one by address rather than importing it, so an application is
 deployed on its own schedule and the center never builds it.
 
 ```
+npm run dev:demo     # astro dev --root demo
+./run-demo.sh        # the center beside a local cockpit, started and stopped together
 npm run build:demo   # astro build --root demo, into demo-dist/
 ./deploy-demo.sh     # upload demo-dist to the ktema-demo project
 ```
+
+`run-demo.sh` exists because a center built against the published address shows
+the published cockpit even on this host. It starts the cockpit's own preview
+server over `dist-demo` in the sibling `kletos` checkout (`DELTA_DIR` names
+another), points the center at that address, and stops the preview when the
+center exits. `DELTA_URL` names a cockpit this host is not serving and starts no
+preview, which is the shape of a check against the deployment; `DEMO_REBUILD=1`
+rebuilds the cockpit first. Astro serves one dev server per project, so a site
+dev server already running is replaced rather than left to block the run.
 
 The artifacts are one entry each in `demo/src/data/artifacts.ts`: an id, a title,
 a kind, a summary and an address. A kind is a component under `demo/src/kinds`
