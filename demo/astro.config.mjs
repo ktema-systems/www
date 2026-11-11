@@ -4,4 +4,7 @@ import { defineConfig } from 'astro/config';
 
 export default defineConfig({
   outDir: '../demo-dist',
+  // The toolbar is a development overlay, so it sits over the bottom of every page and over the embedded application in
+  // particular. What is being looked at is the page, so it is off.
+  devToolbar: { enabled: false },
 });

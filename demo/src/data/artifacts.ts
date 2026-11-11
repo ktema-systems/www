@@ -19,7 +19,7 @@ export interface Artifact {
   source: string;
   /** What the surface is, where the artifact says so: read-only, recorded, simulated. */
   status?: string;
-  /** The still a video or a live surface shows before it loads. */
+  /** The still a reader sees before opening it. */
   poster?: string;
 }
 
@@ -34,7 +34,8 @@ export const artifacts: Artifact[] = [
     kind: 'live',
     status: 'read-only',
     summary:
-      'A cockpit over one space: a record, the intents declared from it, and the machines, people and constraints around them. The demonstration draws the record the build shipped with and reaches no server.',
+      'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, and every record in it is mock data.',
     source: DELTA,
+    poster: '/delta-run.jpg',
   },
 ];

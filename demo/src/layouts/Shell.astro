@@ -14,6 +14,10 @@ interface Props {
 }
 
 const { title, artifact, full = false } = Astro.props;
+
+// The bar hides its section name on a narrow screen, and which name that is depends on the page: a home page repeats the
+// eyebrow under it, and an artifact page would lose where the reader is. So the page says which of the two it is.
+const page = [artifact ? 'artifact' : 'home', full ? 'full' : ''].filter(Boolean).join(' ');
 ---
 
 <!doctype html>
@@ -25,14 +29,24 @@ const { title, artifact, full = false } = Astro.props;
     <meta name="description" content={artifact?.summary ?? 'The surfaces Ktema Systems builds, in one place.'} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <body class={full ? 'full' : ''}>
+  <body class={page}>
     <header class="bar">
-      <a class="bar__home" href="/">Ktema Systems</a>
-      <span class="bar__sep" aria-hidden="true"></span>
-      <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
-      {artifact?.status ? <span class="bar__status">{artifact.status}</span> : null}
-      <span class="bar__spacer"></span>
-      {artifact ? <a class="bar__back" href="/">All demos</a> : <a class="bar__back" href="https://ktema.systems">ktema.systems</a>}
+      <div class="bar__inner">
+        <a class="bar__home" href="/">Ktema Systems</a>
+        <span class="bar__sep" aria-hidden="true"></span>
+        <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
+        {artifact?.status ? <span class="tag">{artifact.status}</span> : null}
+        <span class="bar__spacer"></span>
+        {
+          artifact ? (
+            <a class="bar__back" href="/">All demos</a>
+          ) : (
+            <a class="bar__back" href="https://ktema.systems">
+              ktema.systems <span aria-hidden="true">&#8599;</span>
+            </a>
+          )
+        }
+      </div>
     </header>
     <main class={full ? 'main main--full' : 'main'}>
       <slot />

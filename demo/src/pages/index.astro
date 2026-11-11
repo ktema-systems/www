@@ -2,6 +2,10 @@
 import { artifacts } from '../data/artifacts';
 import Shell from '../layouts/Shell.astro';
 
+// The first artifact is the page's figure; the rest are a list. One demonstration is a picture and a way in, and a
+// second is a row of cards under it, which is all the center needs until there are enough to be a catalogue.
+const [lead, ...rest] = artifacts;
+
 const KIND_LABEL: Record<string, string> = {
   live: 'live',
   video: 'recording',
@@ -10,26 +14,55 @@ const KIND_LABEL: Record<string, string> = {
 ---
 
 <Shell title="Demo Center">
-  <section class="intro">
-    <h1>Ktema Systems Demo Center</h1>
-    <p>
-      The surfaces this stack builds, one entry each. Some are applications a reader drives, some are recorded runs of
-      hardware, and some are documents. Each opens on its own page and on its own deployment.
+  <section class="hero">
+    <p class="eyebrow">Demo center</p>
+    <h1>Every system, running.</h1>
+    <p class="lede">
+      Delta is the first surface here: the cockpit for a working fleet, with ten scenes from a factory cell to a rescue
+      over an island. Boards, recordings and hardware runs follow in the same place.
     </p>
   </section>
 
-  <ul class="grid">
-    {
-      artifacts.map((artifact) => (
-        <li class="card">
-          <a class="card__open" href={`/${artifact.id}`}>
-            <span class="card__kind">{KIND_LABEL[artifact.kind] ?? artifact.kind}</span>
-            <span class="card__title">{artifact.title}</span>
-            {artifact.status ? <span class="card__status">{artifact.status}</span> : null}
-          </a>
-          <p class="card__summary">{artifact.summary}</p>
-        </li>
-      ))
-    }
-  </ul>
+  {
+    lead && (
+      <a class="feature" href={`/${lead.id}`}>
+        {lead.poster && (
+          <img
+            class="feature__still"
+            src={lead.poster}
+            alt="Delta's cockpit over Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers and boats in the middle, the island and its shoreline on the right, and the timeline below."
+            width="1842"
+            height="1047"
+            loading="eager"
+            decoding="async"
+          />
+        )}
+        <span class="feature__body">
+          <span class="feature__meta">
+            <span>{KIND_LABEL[lead.kind] ?? lead.kind}</span>
+            {lead.status && <span class="tag">{lead.status}</span>}
+          </span>
+          <span class="feature__title">{lead.title}</span>
+          <span class="feature__summary">{lead.summary}</span>
+          <span class="feature__open">Open the demonstration</span>
+        </span>
+      </a>
+    )
+  }
+
+  {
+    rest.length > 0 && (
+      <ul class="grid">
+        {rest.map((artifact) => (
+          <li>
+            <a class="card" href={`/${artifact.id}`}>
+              <span class="card__kind">{KIND_LABEL[artifact.kind] ?? artifact.kind}</span>
+              <span class="card__title">{artifact.title}</span>
+              <span class="card__summary">{artifact.summary}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
 </Shell>
