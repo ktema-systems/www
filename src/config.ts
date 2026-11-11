@@ -45,7 +45,7 @@ export const delta = {
 
 export type NavLink = { label: string; href: string; note?: string };
 
-export type NavItem = { label: string; href: string; items?: readonly NavLink[] };
+export type NavItem = { label: string; href: string; items?: readonly NavLink[]; external?: boolean };
 
 // The products the strip's Products item opens. Every product has a page of its
 // own, so the menu is the way between them.
@@ -68,8 +68,13 @@ export const defaultNav: readonly NavItem[] = [
 export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 
 // The demo center is where the surfaces run, so the homepage's call to action opens it. The bar carries the same one:
-// its copy is only shown once the hero's has passed under it, so the two are one button that moves.
-export const demoCta: NavItem = { label: 'Open the demo center', href: 'https://demo.ktema.systems/' };
+// its copy is only shown once the hero's has passed under it, so the two are one button that moves. It opens in its
+// own tab, because a reader who came to read the page should come back to it.
+export const demoCta: NavItem = {
+  label: 'Open the demo center',
+  href: 'https://demo.ktema.systems/',
+  external: true,
+};
 
 export const papers = [
   {
