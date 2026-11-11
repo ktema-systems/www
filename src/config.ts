@@ -71,7 +71,7 @@ export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 // its copy is only shown once the hero's has passed under it, so the two are one button that moves. It opens in its
 // own tab, because a reader who came to read the page should come back to it.
 export const demoCta: NavItem = {
-  label: 'Open the demo center',
+  label: 'Demo Center',
   href: 'https://demo.ktema.systems/',
   external: true,
 };
