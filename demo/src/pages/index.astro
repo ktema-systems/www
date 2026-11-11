@@ -1,5 +1,5 @@
 ---
-import { artifacts, planned } from '../data/artifacts';
+import { artifacts, planned, type Artifact } from '../data/artifacts';
 import Shell from '../layouts/Shell.astro';
 
 // The first artifact is the page's figure and takes two columns of the grid; everything else fills in around it. One
@@ -7,9 +7,9 @@ import Shell from '../layouts/Shell.astro';
 // center is until there are enough of either to be a catalogue.
 const [lead, ...rest] = artifacts;
 
-// What the center holds, said once. It stands over the heading rather than in the bar, because the bar already carries
-// the section's name and a second label there says nothing a reader did not just read.
-const counts = `${artifacts.length} open · ${planned.length} in build`;
+// A deployed application is opened at its own address. It owns the viewport, its own header and its own back button, so a
+// frame around it is a second header and a second scrollbar; the center sends the reader there instead of drawing it.
+const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.source : `/${artifact.id}`);
 ---
 
 <Shell title="Demo Center">
@@ -24,7 +24,7 @@ const counts = `${artifacts.length} open · ${planned.length} in build`;
     {
       lead && (
         <li>
-          <a class="tile tile--opens" href={`/${lead.id}`} style={`--wash: url('${lead.poster}')`}>
+          <a class="tile tile--opens" href={hrefOf(lead)} style={`--wash: url('${lead.poster}')`}>
             <span class="tile__wash" aria-hidden="true" />
             {lead.poster && (
               <span class="tile__screen">
@@ -60,7 +60,7 @@ const counts = `${artifacts.length} open · ${planned.length} in build`;
     {
       rest.map((artifact) => (
         <li>
-          <a class="tile tile--opens" href={`/${artifact.id}`}>
+          <a class="tile tile--opens" href={hrefOf(artifact)}>
             <span class="tile__body">
               <span class="badges">
                 {artifact.kind === 'live' && <span class="badge badge--live">live</span>}

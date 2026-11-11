@@ -124,10 +124,8 @@ function deploy() {
     fail('the center did not build');
   }
 
-  // A build that exits zero without a home page or the artifact page would publish a shell with nothing in it.
-  for (const need of ['index.html', 'delta/index.html']) {
-    if (!existsSync(join(ROOT, 'demo-dist', need))) fail(`demo-dist/${need} is missing`);
-  }
+  // A build that exits zero without a home page would publish a shell with nothing in it.
+  if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
 
   say(`uploading demo-dist to Cloudflare Pages (${project})`);
   const uploaded = exec(

@@ -1,25 +1,21 @@
 ---
 // The center's own chrome: who is showing this, where a reader is, and how to leave.
 //
-// It stands above the artifact and never inside it. A live artifact is a whole application with the viewport to itself,
-// so the bar is the only thing the center draws on a live page, and the application fills what is left.
+// It stands above the artifact and never inside it. The center draws this bar and the page below it; nothing else takes
+// the viewport, because an application is opened at its own address rather than framed here.
 import '../styles.css';
 import type { Artifact } from '../data/artifacts';
 
 interface Props {
   title: string;
   artifact?: Artifact;
-  /** Whether the page below the bar owns the viewport, which is what a live artifact needs. */
-  full?: boolean;
 }
 
-const { title, artifact, full = false } = Astro.props;
+const { title, artifact } = Astro.props;
 
 // The bar hides its section name on a narrow screen, and which name that is depends on the page: a home page repeats the
 // eyebrow under it, and an artifact page would lose where the reader is. So the page says which of the two it is.
-// The brand names the company, which is one label up from this site's own address. A relative path cannot leave a host,
-// so `../` from here returns to this site; the parent is named with the scheme taken from the page instead.
-const page = [artifact ? 'artifact' : 'home', full ? 'full' : ''].filter(Boolean).join(' ');
+const page = artifact ? 'artifact' : 'home';
 ---
 
 <!doctype html>
@@ -43,7 +39,7 @@ const page = [artifact ? 'artifact' : 'home', full ? 'full' : ''].filter(Boolean
         <a class="bar__back" href="/" aria-current={artifact ? undefined : 'page'}>Home</a>
       </div>
     </header>
-    <main class={full ? 'main main--full' : 'main'}>
+    <main class="main">
       <slot />
     </main>
   </body>

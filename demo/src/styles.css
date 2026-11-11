@@ -522,59 +522,6 @@ h1 {
   mask-image: radial-gradient(ellipse 64% 84% at 50% 0%, #000 6%, transparent 84%);
 }
 
-/* ── the live page ────────────────────────────────────────────────────── */
-
-/* A live demonstration owns the rest of the viewport, and the page does not scroll around it. */
-body.full {
-  overflow: hidden;
-}
-
-/* The note is a line of prose and the frame takes what is left, so the note is measured rather than assumed: a phone
-   wraps it, and a fixed strip would draw it over the application. */
-.main--full {
-  display: flex;
-  flex-direction: column;
-  max-width: none;
-  margin: 0;
-  padding: 0;
-  height: calc(100vh - var(--bar));
-}
-
-/* A live page has no page measure to align to, because the application owns the width, so the bar spans the window and
-   stands over the note at the bottom edge rather than centred in the middle of nothing. */
-body.full .bar__inner {
-  max-width: none;
-}
-
-.live {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-.live iframe {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  background: var(--bg);
-}
-
-.live__note {
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 8px max(var(--gutter), env(safe-area-inset-left, 0px));
-  border-top: 1px solid var(--line);
-  color: var(--fg-3);
-  font-family: var(--mono);
-  font-size: 10.5px;
-  line-height: 1.55;
-  letter-spacing: 0.08em;
-}
-
-.live__note a {
-  color: var(--accent);
-}
-
 .artifact__title {
   margin: 0 0 24px;
   font-size: clamp(1.7rem, 1.2rem + 2vw, 2.4rem);

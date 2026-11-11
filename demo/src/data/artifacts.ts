@@ -7,6 +7,7 @@
 // A surface that is not built yet is a separate list rather than an entry with an empty address, because an entry with
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
+/** `live` is a deployed application the reader is sent to; the center draws the other two itself. */
 export type ArtifactKind = 'live' | 'video' | 'document';
 
 export interface Artifact {

@@ -134,9 +134,9 @@ the same on any host npm runs on.
 The artifacts are one entry each in `demo/src/data/artifacts.ts`: an id, a title,
 a kind, a summary and an address. A kind is a component under `demo/src/kinds`
 and a line in the map `demo/src/pages/[id].astro` reads, so a new sort of surface
-is one component rather than a change to the page. `live` embeds an application
-in an iframe, `video` plays footage, and `document` points at prose that lives
-where it is written.
+is one component rather than a change to the page. `live` sends a reader to a
+deployed application at its own address, `video` plays footage, and `document`
+points at prose that lives where it is written.
 
 `.github/workflows/deploy-center.yml` builds on every pull request and deploys on
 every push to `main`, using the same two secrets as the site above.
