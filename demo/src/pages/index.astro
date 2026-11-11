@@ -6,15 +6,18 @@ import Shell from '../layouts/Shell.astro';
 // demonstration is a still and a way in, and the surfaces that are not built yet stand beside it, which is what the
 // center is until there are enough of either to be a catalogue.
 const [lead, ...rest] = artifacts;
+
+// What the center holds, said once. It stands over the heading rather than in the bar, because the bar already carries
+// the section's name and a second label there says nothing a reader did not just read.
+const counts = `${artifacts.length} open · ${planned.length} in build`;
 ---
 
 <Shell title="Demo Center">
   <section class="hero">
-    <p class="eyebrow">Demo center</p>
+    <p class="eyebrow">{counts}</p>
     <h1>Every system, running.</h1>
     <p class="lede">
-      The surfaces this stack builds, demonstrated in one place: applications running in the page, footage playing,
-      documents open, a board answering from the bench.
+      What this stack produces, in one place: an application you can drive, footage that plays, a document to read.
     </p>
   </section>
 

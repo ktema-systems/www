@@ -66,10 +66,10 @@
   --accent: oklch(0.65 0.095 255);
   --accent-2: oklch(0.74 0.075 255);
 
-  /* Light, not text. The glow never carries a word, so it is free to sit above the contrast the accent is pinned to. */
-  --glow: oklch(0.62 0.16 258);
-  --glow-2: oklch(0.72 0.13 205);
-  --ok: oklch(0.78 0.15 155);
+  /* Light, not text. The glow carries no word, so it may sit above the contrast the accent is pinned to, and it is the
+     accent's own hue at the accent's own chroma: the light on this page is the light the site already uses. */
+  --glow: oklch(0.6 0.095 255);
+  --ok: oklch(0.76 0.12 155);
 
   --text: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -114,39 +114,8 @@ h1 {
   font-size: clamp(2.5rem, 1rem + 4.6vw, 4.6rem);
 }
 
-/* ── the surface behind everything ────────────────────────────────────── */
-
-/* Two layers, both fixed: a grid that gives the page a floor, and a light that comes from behind the masthead. The grid
-   is masked away from the centre so it never competes with the type. */
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.backdrop::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
-  background-size: 64px 64px;
-  background-position: 50% 0;
-  mask-image: radial-gradient(ellipse 90% 62% at 50% 0%, #000 8%, transparent 78%);
-}
-
-.backdrop::after {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 660px;
-  background:
-    radial-gradient(44% 100% at 50% 0%, color-mix(in oklab, var(--glow) 26%, transparent), transparent 72%),
-    radial-gradient(24% 76% at 71% 0%, color-mix(in oklab, var(--glow-2) 15%, transparent), transparent 74%);
-}
+/* The ground is the site's own: one warm near-black, and the accent as the only colour on it. Nothing is drawn behind the
+   page, because the site draws nothing behind its own and the surfaces here are the figure. */
 
 /* ── the bar ──────────────────────────────────────────────────────────── */
 
@@ -179,7 +148,7 @@ h1 {
     border-bottom-color: transparent;
   }
   to {
-    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    background: color-mix(in srgb, var(--bg-2) 65%, transparent);
     border-bottom-color: var(--line);
   }
 }
@@ -231,23 +200,17 @@ h1 {
   background: var(--line-2);
 }
 
-.bar__count {
-  flex: 0 0 auto;
-  color: var(--fg-3);
-  white-space: nowrap;
-}
-
-.bar__count b {
-  font-weight: 500;
-  color: var(--fg-2);
-}
-
 .bar__spacer {
   flex: 1;
 }
 
 .bar__back {
   color: var(--accent);
+}
+
+/* The way home is the way back, so on the home page it is where the reader already is. */
+.bar__back[aria-current] {
+  color: var(--fg-3);
 }
 
 .tag {
@@ -264,8 +227,6 @@ h1 {
 /* ── the page ─────────────────────────────────────────────────────────── */
 
 .main {
-  position: relative;
-  z-index: 1;
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
@@ -295,8 +256,8 @@ h1 {
   content: '';
   width: 6px;
   height: 6px;
-  background: var(--glow-2);
-  box-shadow: 0 0 12px color-mix(in oklab, var(--glow-2) 70%, transparent);
+  background: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 h1 {
@@ -678,7 +639,6 @@ body.full .bar__inner {
 
   body.home .bar__sep,
   body.home .bar__title,
-  body.home .bar__count,
   .bar__inner .tag {
     display: none;
   }

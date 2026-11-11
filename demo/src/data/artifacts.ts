@@ -46,7 +46,7 @@ export const artifacts: Artifact[] = [
     status: 'read-only',
     data: 'mock data',
     summary:
-      'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, and every record in it is mock data.',
+      'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang.',
     source: DELTA,
     poster: '/delta-run.jpg',
     posterAlt:
