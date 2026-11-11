@@ -1,0 +1,17 @@
+---
+// A page of prose: a design note, a briefing, or a paper's summary. The center does not render a document's body, it
+// points at where the document lives, so the writing keeps one home.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+---
+
+<article class="document">
+  <h1>{artifact.title}</h1>
+  <p>{artifact.summary}</p>
+  <p><a class="document__open" href={artifact.source}>Read it</a></p>
+</article>

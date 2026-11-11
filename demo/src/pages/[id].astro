@@ -1,0 +1,25 @@
+---
+// One page per artifact, rendered by its kind.
+//
+// The map is the seam a new kind arrives through: a component under `src/kinds` and one line here. The page itself knows
+// nothing about what an artifact is, which is why an FPGA board and a cockpit are the same entry to it.
+import { artifacts, type Artifact } from '../data/artifacts';
+import Shell from '../layouts/Shell.astro';
+import Live from '../kinds/Live.astro';
+import Video from '../kinds/Video.astro';
+import Document from '../kinds/Document.astro';
+
+export function getStaticPaths() {
+  return artifacts.map((artifact) => ({ params: { id: artifact.id }, props: { artifact } }));
+}
+
+const { artifact } = Astro.props as { artifact: Artifact };
+const KINDS = { live: Live, video: Video, document: Document };
+const Body = KINDS[artifact.kind];
+const owns = artifact.kind === 'live';
+---
+
+<Shell title={artifact.title} artifact={artifact} full={owns}>
+  {owns ? null : <h1 class="artifact__title">{artifact.title}</h1>}
+  <Body artifact={artifact} />
+</Shell>

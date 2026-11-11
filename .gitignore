@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+# The demonstration center builds beside the site and publishes to its own project.
+demo-dist/
 
 # Generated types, from `astro sync`
 .*
@@ -11,6 +13,9 @@ dist/
 # shape of the configuration stays documented.
 !.env.example
 !.gitignore
+# The workflows are source. Without this the two rules above hide them, and a new one is added with `-f` or not at all.
+!.github/
+!.github/**
 
 # Logs
 *.log

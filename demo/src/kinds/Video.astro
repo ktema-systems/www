@@ -1,0 +1,16 @@
+---
+// A recorded run. Footage is the right medium where the subject is hardware: a robot, a board, a machine that a page
+// cannot show.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+---
+
+<figure class="video">
+  <video controls playsinline preload="metadata" poster={artifact.poster} src={artifact.source}></video>
+  <figcaption>{artifact.summary}</figcaption>
+</figure>

@@ -1,0 +1,35 @@
+---
+import { artifacts } from '../data/artifacts';
+import Shell from '../layouts/Shell.astro';
+
+const KIND_LABEL: Record<string, string> = {
+  live: 'live',
+  video: 'recording',
+  document: 'document',
+};
+---
+
+<Shell title="Demo Center">
+  <section class="intro">
+    <h1>Ktema Systems Demo Center</h1>
+    <p>
+      The surfaces this stack builds, one entry each. Some are applications a reader drives, some are recorded runs of
+      hardware, and some are documents. Each opens on its own page and on its own deployment.
+    </p>
+  </section>
+
+  <ul class="grid">
+    {
+      artifacts.map((artifact) => (
+        <li class="card">
+          <a class="card__open" href={`/${artifact.id}`}>
+            <span class="card__kind">{KIND_LABEL[artifact.kind] ?? artifact.kind}</span>
+            <span class="card__title">{artifact.title}</span>
+            {artifact.status ? <span class="card__status">{artifact.status}</span> : null}
+          </a>
+          <p class="card__summary">{artifact.summary}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Shell>

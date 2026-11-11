@@ -1,0 +1,41 @@
+---
+// The center's own chrome: who is showing this, where a reader is, and how to leave.
+//
+// It stands above the artifact and never inside it. A live artifact is a whole application with the viewport to itself,
+// so the bar is the only thing the center draws on a live page, and the application fills what is left.
+import '../styles.css';
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  title: string;
+  artifact?: Artifact;
+  /** Whether the page below the bar owns the viewport, which is what a live artifact needs. */
+  full?: boolean;
+}
+
+const { title, artifact, full = false } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{artifact ? `${artifact.title} | Ktema Systems Demo Center` : 'Ktema Systems Demo Center'}</title>
+    <meta name="description" content={artifact?.summary ?? 'The surfaces Ktema Systems builds, in one place.'} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class={full ? 'full' : ''}>
+    <header class="bar">
+      <a class="bar__home" href="/">Ktema Systems</a>
+      <span class="bar__sep" aria-hidden="true"></span>
+      <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
+      {artifact?.status ? <span class="bar__status">{artifact.status}</span> : null}
+      <span class="bar__spacer"></span>
+      {artifact ? <a class="bar__back" href="/">All demos</a> : <a class="bar__back" href="https://ktema.systems">ktema.systems</a>}
+    </header>
+    <main class={full ? 'main main--full' : 'main'}>
+      <slot />
+    </main>
+  </body>
+</html>

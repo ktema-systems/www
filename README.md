@@ -104,6 +104,28 @@ npx wrangler@4 login
 ./deploy.sh
 ```
 
+## The demonstration center
+
+`demo.ktema.systems` is a second site in this repository, built from its own root
+and published to its own Pages project. It shows the surfaces this stack builds,
+and it names each one by address rather than importing it, so an application is
+deployed on its own schedule and the center never builds it.
+
+```
+npm run build:demo   # astro build --root demo, into demo-dist/
+./deploy-demo.sh     # upload demo-dist to the ktema-demo project
+```
+
+The artifacts are one entry each in `demo/src/data/artifacts.ts`: an id, a title,
+a kind, a summary and an address. A kind is a component under `demo/src/kinds`
+and a line in the map `demo/src/pages/[id].astro` reads, so a new sort of surface
+is one component rather than a change to the page. `live` embeds an application
+in an iframe, `video` plays footage, and `document` points at prose that lives
+where it is written.
+
+`.github/workflows/deploy-center.yml` builds on every pull request and deploys on
+every push to `main`, using the same two secrets as the site above.
+
 ## Not yet set
 
 `astro.config.mjs` leaves `site` unset, because the production domain is not

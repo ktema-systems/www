@@ -10,6 +10,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "dev:demo": "astro dev --root demo",
+    "build:demo": "astro build --root demo",
+    "preview:demo": "astro preview --root demo",
     "astro": "astro"
   },
   "dependencies": {

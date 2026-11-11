@@ -1,0 +1,25 @@
+---
+// A live artifact is a whole application. It is embedded rather than rebuilt here, because the center must not know how
+// the thing it shows is made: each surface deploys on its own, and a broken one takes only its own page down.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+---
+
+<div class="live">
+  <iframe
+    src={artifact.source}
+    title={artifact.title}
+    allow="fullscreen"
+    allowfullscreen
+    loading="eager"
+    referrerpolicy="no-referrer"
+  ></iframe>
+</div>
+<p class="live__note">
+  The surface above is the deployed application, not a recording. <a href={artifact.source} target="_blank" rel="noreferrer">Open it on its own</a>.
+</p>
