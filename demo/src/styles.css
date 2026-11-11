@@ -220,7 +220,11 @@ body.full {
   overflow: hidden;
 }
 
+/* The note is a line of prose and the frame takes what is left, so the note is measured rather than assumed: a phone
+   wraps it, and a fixed strip would draw it over the application. */
 .main--full {
+  display: flex;
+  flex-direction: column;
   max-width: none;
   margin: 0;
   padding: 0;
@@ -351,7 +355,8 @@ body.full .bar__inner {
 /* ── the kinds ────────────────────────────────────────────────────────── */
 
 .live {
-  height: calc(100% - 34px);
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .live iframe {
@@ -363,16 +368,14 @@ body.full .bar__inner {
 }
 
 .live__note {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  height: 34px;
+  flex: 0 0 auto;
   margin: 0;
-  padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding: 8px max(var(--gutter), env(safe-area-inset-left, 0px));
   border-top: 1px solid var(--line);
   color: var(--fg-3);
   font-family: var(--mono);
   font-size: 10.5px;
+  line-height: 1.55;
   letter-spacing: 0.08em;
 }
 
