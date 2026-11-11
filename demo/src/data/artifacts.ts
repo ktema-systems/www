@@ -65,6 +65,7 @@ export const planned: PlannedSurface[] = [
   },
   {
     title: 'Hardware edge',
-    summary: 'An ESP32-S3 keeping its records in its own flash, read back after a reset.',
+    summary:
+      'An ESP32-S3 keeping its records in its own flash, read back after a reset. Still to run on the board: a power cut mid-write, and a full region retiring its oldest segment.',
   },
 ];
