@@ -4,11 +4,11 @@
 // It stands above the artifact and never inside it. A live artifact is a whole application with the viewport to itself,
 // so the bar is the only thing the center draws on a live page, and the application fills what is left.
 import '../styles.css';
-import type { Artifact } from '../data/artifacts';
+import { artifacts, planned } from '../data/artifacts';
 
 interface Props {
   title: string;
-  artifact?: Artifact;
+  artifact?: import('../data/artifacts').Artifact;
   /** Whether the page below the bar owns the viewport, which is what a live artifact needs. */
   full?: boolean;
 }
@@ -18,6 +18,9 @@ const { title, artifact, full = false } = Astro.props;
 // The bar hides its section name on a narrow screen, and which name that is depends on the page: a home page repeats the
 // eyebrow under it, and an artifact page would lose where the reader is. So the page says which of the two it is.
 const page = [artifact ? 'artifact' : 'home', full ? 'full' : ''].filter(Boolean).join(' ');
+
+// What the center holds, which is the only status this page can honestly put beside its name.
+const counts = `${artifacts.length} open · ${planned.length} in build`;
 ---
 
 <!doctype html>
@@ -30,12 +33,13 @@ const page = [artifact ? 'artifact' : 'home', full ? 'full' : ''].filter(Boolean
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body class={page}>
+    <div class="backdrop" aria-hidden="true"></div>
     <header class="bar">
       <div class="bar__inner">
         <a class="bar__home" href="/">Ktema Systems</a>
         <span class="bar__sep" aria-hidden="true"></span>
         <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
-        {artifact?.status ? <span class="tag">{artifact.status}</span> : null}
+        {artifact?.status ? <span class="tag">{artifact.status}</span> : <span class="bar__count">{counts}</span>}
         <span class="bar__spacer"></span>
         {
           artifact ? (

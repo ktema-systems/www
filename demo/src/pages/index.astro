@@ -1,16 +1,11 @@
 ---
-import { artifacts } from '../data/artifacts';
+import { artifacts, planned } from '../data/artifacts';
 import Shell from '../layouts/Shell.astro';
 
-// The first artifact is the page's figure; the rest are a list. One demonstration is a picture and a way in, and a
-// second is a row of cards under it, which is all the center needs until there are enough to be a catalogue.
+// The first artifact is the page's figure and takes two columns of the grid; everything else fills in around it. One
+// demonstration is a still and a way in, and the surfaces that are not built yet stand beside it, which is what the
+// center is until there are enough of either to be a catalogue.
 const [lead, ...rest] = artifacts;
-
-const KIND_LABEL: Record<string, string> = {
-  live: 'live',
-  video: 'recording',
-  document: 'document',
-};
 ---
 
 <Shell title="Demo Center">
@@ -23,46 +18,81 @@ const KIND_LABEL: Record<string, string> = {
     </p>
   </section>
 
-  {
-    lead && (
-      <a class="feature" href={`/${lead.id}`}>
-        {lead.poster && (
-          <img
-            class="feature__still"
-            src={lead.poster}
-            alt="Delta's cockpit over Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers and boats in the middle, the island and its shoreline on the right, and the timeline below."
-            width="1842"
-            height="1047"
-            loading="eager"
-            decoding="async"
-          />
-        )}
-        <span class="feature__body">
-          <span class="feature__meta">
-            <span>{KIND_LABEL[lead.kind] ?? lead.kind}</span>
-            {lead.status && <span class="tag">{lead.status}</span>}
-          </span>
-          <span class="feature__title">{lead.title}</span>
-          <span class="feature__summary">{lead.summary}</span>
-          <span class="feature__open">Open the demonstration</span>
-        </span>
-      </a>
-    )
-  }
+  <ul class="bento">
+    {
+      lead && (
+        <li>
+          <a class="tile tile--opens" href={`/${lead.id}`} style={`--wash: url('${lead.poster}')`}>
+            <span class="tile__wash" aria-hidden="true" />
+            {lead.poster && (
+              <span class="tile__screen">
+                <img
+                  src={lead.poster}
+                  alt={lead.posterAlt ?? ''}
+                  width="1842"
+                  height="1047"
+                  loading="eager"
+                  decoding="async"
+                />
+              </span>
+            )}
+            <span class="tile__body">
+              <span class="badges">
+                {lead.kind === 'live' && <span class="badge badge--live">live</span>}
+                {lead.status && <span class="badge">{lead.status}</span>}
+                {lead.data && <span class="badge">{lead.data}</span>}
+              </span>
+              <span class="tile__title">{lead.title}</span>
+              <span class="tile__summary">{lead.summary}</span>
+              <span class="tile__cta">
+                Open the demonstration <span class="tile__arrow" aria-hidden="true">
+                  &#8594;
+                </span>
+              </span>
+            </span>
+          </a>
+        </li>
+      )
+    }
 
-  {
-    rest.length > 0 && (
-      <ul class="grid">
-        {rest.map((artifact) => (
-          <li>
-            <a class="card" href={`/${artifact.id}`}>
-              <span class="card__kind">{KIND_LABEL[artifact.kind] ?? artifact.kind}</span>
-              <span class="card__title">{artifact.title}</span>
-              <span class="card__summary">{artifact.summary}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    )
-  }
+    {
+      rest.map((artifact) => (
+        <li>
+          <a class="tile tile--opens" href={`/${artifact.id}`}>
+            <span class="tile__body">
+              <span class="badges">
+                {artifact.kind === 'live' && <span class="badge badge--live">live</span>}
+                {artifact.status && <span class="badge">{artifact.status}</span>}
+                {artifact.data && <span class="badge">{artifact.data}</span>}
+              </span>
+              <span class="tile__title">{artifact.title}</span>
+              <span class="tile__summary">{artifact.summary}</span>
+              <span class="tile__cta">
+                Open <span class="tile__arrow" aria-hidden="true">
+                  &#8594;
+                </span>
+              </span>
+            </span>
+          </a>
+        </li>
+      ))
+    }
+
+    {
+      planned.map((surface) => (
+        <li>
+          <div class="tile tile--planned">
+            <span class="tile__screen tile__screen--empty" aria-hidden="true" />
+            <div class="tile__body">
+              <span class="badges">
+                <span class="badge badge--planned">in build</span>
+              </span>
+              <span class="tile__title">{surface.title}</span>
+              <span class="tile__summary">{surface.summary}</span>
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
 </Shell>

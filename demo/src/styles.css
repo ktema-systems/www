@@ -1,5 +1,6 @@
-/* The center is chrome. Everything worth looking at is the demonstration inside it, so this file is the same palette
-   and the same two typefaces as the company's site, and very little else. */
+/* The center is the console the demonstrations are shown on. It keeps the company's ground, its measure and its
+   hairline geometry, and adds the two things a demonstration needs to read as running rather than archived: a surface
+   with depth behind it, and a still that is a way in. */
 
 @font-face {
   font-family: 'Archivo';
@@ -65,12 +66,19 @@
   --accent: oklch(0.65 0.095 255);
   --accent-2: oklch(0.74 0.075 255);
 
+  /* Light, not text. The glow never carries a word, so it is free to sit above the contrast the accent is pinned to. */
+  --glow: oklch(0.62 0.16 258);
+  --glow-2: oklch(0.72 0.13 205);
+  --ok: oklch(0.78 0.15 155);
+
   --text: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --page: 1120px;
   --gutter: 40px;
   --bar: 56px;
+  --radius: 2px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {
@@ -97,31 +105,47 @@ h2 {
   font-family: var(--text);
   font-stretch: 115%;
   font-weight: 600;
-  letter-spacing: -0.006em;
-  line-height: 1.08;
+  letter-spacing: -0.026em;
+  line-height: 1;
   text-wrap: balance;
 }
 
 h1 {
-  font-size: clamp(2.1rem, 1.2rem + 3.4vw, 3.9rem);
+  font-size: clamp(2.5rem, 1rem + 4.6vw, 4.6rem);
 }
 
-.eyebrow {
-  margin: 0 0 14px;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
+/* ── the surface behind everything ────────────────────────────────────── */
+
+/* Two layers, both fixed: a grid that gives the page a floor, and a light that comes from behind the masthead. The grid
+   is masked away from the centre so it never competes with the type. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.lede {
-  margin: 20px 0 0;
-  max-width: 54ch;
-  font-size: 19px;
-  line-height: 1.55;
-  color: var(--fg-2);
-  text-wrap: pretty;
+.backdrop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: 50% 0;
+  mask-image: radial-gradient(ellipse 90% 62% at 50% 0%, #000 8%, transparent 78%);
+}
+
+.backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 660px;
+  background:
+    radial-gradient(44% 100% at 50% 0%, color-mix(in oklab, var(--glow) 26%, transparent), transparent 72%),
+    radial-gradient(24% 76% at 71% 0%, color-mix(in oklab, var(--glow-2) 15%, transparent), transparent 74%);
 }
 
 /* ── the bar ──────────────────────────────────────────────────────────── */
@@ -131,9 +155,33 @@ h1 {
   top: 0;
   z-index: 10;
   height: var(--bar);
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  backdrop-filter: blur(14px) saturate(120%);
+  transition:
+    background 260ms var(--ease),
+    border-color 260ms var(--ease);
+}
+
+/* A page whose scripts never run, and a browser without a scroll timeline, is drawn with the bar already settled: the
+   glass is the resting state and the top of the page is the exception. */
+@supports (animation-timeline: scroll()) {
+  .bar {
+    animation: bar-settle linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 96px;
+  }
+}
+
+@keyframes bar-settle {
+  from {
+    background: transparent;
+    border-bottom-color: transparent;
+  }
+  to {
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
+    border-bottom-color: var(--line);
+  }
 }
 
 /* The bar carries the page's own measure, so its first word stands over the first word below it. */
@@ -156,6 +204,11 @@ h1 {
   color: var(--fg-2);
 }
 
+.bar__home:hover,
+.bar__back:hover {
+  color: var(--fg);
+}
+
 /* A bar item is a label rather than a line of prose: it stays on one row and the title gives up its width first. */
 .bar__home,
 .bar__sep,
@@ -172,19 +225,21 @@ h1 {
   color: var(--fg);
 }
 
-.bar__home:hover,
-.bar__back:hover {
-  color: var(--fg);
-}
-
 .bar__sep {
   width: 1px;
   height: 14px;
   background: var(--line-2);
 }
 
-.bar__title {
-  color: var(--fg);
+.bar__count {
+  flex: 0 0 auto;
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+
+.bar__count b {
+  font-weight: 500;
+  color: var(--fg-2);
 }
 
 .bar__spacer {
@@ -199,7 +254,7 @@ h1 {
   flex: 0 0 auto;
   padding: 2px 7px;
   border: 1px solid var(--line-2);
-  border-radius: 2px;
+  border-radius: var(--radius);
   color: var(--fg-3);
   font-size: 10px;
   letter-spacing: 0.1em;
@@ -209,11 +264,304 @@ h1 {
 /* ── the page ─────────────────────────────────────────────────────────── */
 
 .main {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
-  padding: clamp(48px, 7vw, 96px) max(var(--gutter), env(safe-area-inset-left, 0px)) 96px;
+  padding: clamp(56px, 8vw, 108px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
 }
+
+/* ── the hero ─────────────────────────────────────────────────────────── */
+
+.hero {
+  max-width: 900px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 20px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+/* A mark rather than a bullet: the eyebrow is a channel label on the console. */
+.eyebrow::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--glow-2);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--glow-2) 70%, transparent);
+}
+
+h1 {
+  max-width: 22ch;
+}
+
+.lede {
+  margin: 24px 0 0;
+  max-width: 58ch;
+  font-size: 18.5px;
+  line-height: 1.58;
+  color: var(--fg-2);
+  text-wrap: pretty;
+}
+
+/* ── the deck: the grid the surfaces stand on ─────────────────────────── */
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  margin: clamp(44px, 6vw, 72px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bento > li {
+  grid-column: span 4;
+}
+
+/* The demonstration the page leads with takes two columns of the grid and two rows, so the planned surfaces stand
+   beside it rather than under it. */
+.bento > li:first-child {
+  grid-column: span 8;
+  grid-row: span 2;
+}
+
+/* ── a tile ───────────────────────────────────────────────────────────── */
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--panel) 42%, transparent);
+  backdrop-filter: blur(16px) saturate(130%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* A tile that opens lifts, catches the light on its edge, and moves its own arrow. The three happen together so the
+   tile reads as one object rather than a picture that brightens. */
+.tile--opens {
+  transition:
+    transform 260ms var(--ease),
+    border-color 260ms var(--ease),
+    box-shadow 260ms var(--ease),
+    background 260ms var(--ease);
+}
+
+.tile--opens:hover,
+.tile--opens:focus-visible {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 62%, transparent);
+  background: color-mix(in srgb, var(--panel) 58%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 26px 60px -34px var(--glow);
+  outline: none;
+}
+
+/* The cockpit stands faintly behind the tile it belongs to, so the card is lit by the thing it opens. */
+.tile__wash {
+  position: absolute;
+  inset: 0;
+  background-image: var(--wash);
+  background-size: cover;
+  background-position: 50% 0;
+  opacity: 0.18;
+  filter: blur(24px) saturate(140%);
+  transform: scale(1.12);
+  pointer-events: none;
+}
+
+/* ── the still ────────────────────────────────────────────────────────── */
+
+.tile__screen {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-2);
+}
+
+.tile__screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+  transform: scale(1.001);
+  transition: transform 520ms var(--ease);
+}
+
+.tile--opens:hover .tile__screen img {
+  transform: scale(1.025);
+}
+
+/* ── what the tile says ───────────────────────────────────────────────── */
+
+.tile__body {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 24px 24px;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 8px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  color: var(--fg-3);
+  white-space: nowrap;
+}
+
+/* The dot says the surface is the running application rather than a recording. It does not say the data is live, which
+   is why `read-only` and `mock data` stand beside it. */
+.badge--live {
+  border-color: color-mix(in srgb, var(--ok) 36%, transparent);
+  color: var(--ok);
+}
+
+.badge--live::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent);
+  animation: pulse 2600ms var(--ease) infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent);
+  }
+}
+
+.tile__title {
+  font-family: var(--text);
+  font-stretch: 115%;
+  font-weight: 600;
+  font-size: clamp(1.35rem, 1.05rem + 1vw, 1.8rem);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+
+.tile__summary {
+  max-width: 62ch;
+  color: var(--fg-2);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.tile__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+.tile__arrow {
+  display: inline-block;
+  transition: transform 260ms var(--ease);
+}
+
+.tile--opens:hover .tile__arrow,
+.tile--opens:focus-visible .tile__arrow {
+  transform: translateX(5px);
+}
+
+/* ── a surface that is not built ──────────────────────────────────────── */
+
+/* A planned tile is drawn, not linked: there is nothing behind it, and a card that looks like the others but does not
+   open is the one thing this grid must not do. */
+.tile--planned {
+  background: color-mix(in srgb, var(--panel) 22%, transparent);
+  border-style: dashed;
+  border-color: var(--line);
+  color: var(--fg-3);
+  opacity: 0.52;
+}
+
+.tile--planned .tile__body {
+  flex: 0 0 auto;
+}
+
+.tile--planned .tile__body {
+  justify-content: flex-start;
+  gap: 10px;
+  padding: 20px 22px 22px;
+}
+
+.tile--planned .tile__title {
+  font-size: 1.05rem;
+  color: var(--fg-2);
+}
+
+.tile--planned .tile__summary {
+  color: var(--fg-3);
+  font-size: 13px;
+}
+
+.badge--planned {
+  align-self: flex-start;
+  border-style: dashed;
+}
+
+/* A bay with nothing in it yet is drawn as a fine grid fading out, which is a screen that has no signal rather than a
+   card whose content failed to arrive. */
+/* A bay with nothing in it yet is drawn as a fine grid fading out, which is a screen that has no signal rather than a
+   card whose content failed to arrive. It takes whatever height the row has left over, so the reserved room is the bay
+   itself rather than a gap under the words. */
+.tile__screen--empty {
+  flex: 1 1 auto;
+  min-height: 104px;
+  aspect-ratio: auto;
+  border-bottom: 1px dashed var(--line);
+  background-image:
+    repeating-linear-gradient(to right, rgba(255, 255, 255, 0.075) 0 1px, transparent 1px 10px),
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.075) 0 1px, transparent 1px 10px);
+  background-position: 50% 0;
+  mask-image: radial-gradient(ellipse 64% 84% at 50% 0%, #000 6%, transparent 84%);
+}
+
+/* ── the live page ────────────────────────────────────────────────────── */
 
 /* A live demonstration owns the rest of the viewport, and the page does not scroll around it. */
 body.full {
@@ -236,123 +584,6 @@ body.full {
 body.full .bar__inner {
   max-width: none;
 }
-
-/* The demonstration the page leads with: a still, and the whole figure is the way in. */
-.feature {
-  display: block;
-  margin-top: clamp(36px, 5vw, 60px);
-  border: 1px solid var(--line-2);
-  background: var(--bg-2);
-  transition: border-color 180ms ease;
-}
-
-.feature:hover {
-  border-color: var(--accent);
-}
-
-.feature__still {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid var(--line);
-}
-
-.feature__body {
-  display: block;
-  padding: 22px 26px 26px;
-}
-
-.feature__meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.feature__title {
-  display: block;
-  margin-top: 10px;
-  font-family: var(--text);
-  font-stretch: 115%;
-  font-weight: 600;
-  font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
-  line-height: 1.15;
-}
-
-.feature__summary {
-  display: block;
-  margin-top: 10px;
-  max-width: 68ch;
-  color: var(--fg-2);
-  font-size: 15.5px;
-}
-
-.feature__open {
-  display: inline-block;
-  margin-top: 18px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.feature:hover .feature__open {
-  color: var(--accent-2);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 18px;
-  margin: 22px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* The card is the link: every part of the square is the way in. */
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  height: 100%;
-  padding: 20px;
-  border: 1px solid var(--line);
-  background: var(--bg-2);
-  transition: border-color 180ms ease;
-}
-
-.card:hover {
-  border-color: var(--accent);
-}
-
-.card__kind {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-
-.card__title {
-  font-family: var(--text);
-  font-stretch: 115%;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 1.2;
-}
-
-.card__summary {
-  margin: 0;
-  color: var(--fg-2);
-  font-size: 14px;
-}
-
-/* ── the kinds ────────────────────────────────────────────────────────── */
 
 .live {
   flex: 1 1 auto;
@@ -414,7 +645,23 @@ body.full .bar__inner {
   color: var(--accent);
 }
 
-/* ── a narrow screen ─────────────────────────────────────────────────── */
+/* ── a phone ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bento > li,
+  .bento > li:first-child {
+    grid-column: span 2;
+    grid-row: auto;
+  }
+
+  .tile__screen:not(.tile__screen--empty) {
+    aspect-ratio: 2 / 1;
+  }
+}
 
 @media (max-width: 620px) {
   :root {
@@ -422,7 +669,7 @@ body.full .bar__inner {
   }
 
   /* Two labels fit on a phone: where the reader is, and the way out. A home page repeats its own name above the
-     heading, so the section name is the first thing to go. */
+     heading, so the section name is the first thing to go, and a count is the second. */
   .bar__inner {
     gap: 10px;
     font-size: 10.5px;
@@ -431,23 +678,48 @@ body.full .bar__inner {
 
   body.home .bar__sep,
   body.home .bar__title,
+  body.home .bar__count,
   .bar__inner .tag {
     display: none;
   }
 
-  .feature {
-    margin-top: 32px;
+  .main {
+    padding-top: 44px;
   }
 
-  .feature__body {
-    padding: 18px 18px 22px;
+  .lede {
+    font-size: 16.5px;
   }
 
-  .feature__title {
-    font-size: 1.45rem;
+  .bento {
+    gap: 12px;
   }
 
-  .feature__summary {
-    font-size: 14.5px;
+  .tile__body {
+    padding: 18px;
+  }
+
+  .tile__screen:not(.tile__screen--empty) {
+    aspect-ratio: 16 / 10;
+  }
+}
+
+/* A person who asked their machine to stop moving things has already said what they think of a pulsing dot. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .tile--opens:hover,
+  .tile--opens:focus-visible {
+    transform: none;
+  }
+
+  .tile--opens:hover .tile__screen img {
+    transform: none;
   }
 }
