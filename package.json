@@ -13,6 +13,8 @@
     "dev:demo": "astro dev --root demo",
     "build:demo": "astro build --root demo",
     "preview:demo": "astro preview --root demo",
+    "demo": "node tools/demo.mjs run",
+    "demo:deploy": "node tools/demo.mjs deploy",
     "astro": "astro"
   },
   "dependencies": {

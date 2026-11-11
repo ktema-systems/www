@@ -94,7 +94,7 @@ The center builds with its own root (`astro build --root demo`), so it shares th
 |---|---|
 | skene | `roomOf` honours `host().static`, and `project.ts` reads a declared channel as a name on a shipped board |
 | kletos (delta) | `src/demo/main.tsx`, the `DELTA_DEMO` switch in `vite.config.ts`, `build:demo`, `functions/media`, and `--demo-deploy` in `run.sh` |
-| ktema_www | `demo/` as its own Astro root, the artifact data file, the kinds, `deploy-demo.sh`, and `.github/workflows/deploy-center.yml` |
+| ktema_www | `demo/` as its own Astro root, the artifact data file, the kinds, `tools/demo.mjs`, and `.github/workflows/deploy-center.yml` |
 
 ## Open decisions
 
