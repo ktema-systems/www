@@ -140,7 +140,7 @@ export const artifacts: Artifact[] = [
     title: 'Headless runs',
     kind: 'runs',
     summary:
-      'Some of what the engine does has no screen. These are its own runs, recorded as they executed: a device and the host agreeing byte for byte, a power cut at every byte, and a C surface on two architectures.',
+      'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
     source: RUNS[0].href,
     recordings: RUNS,
   },
