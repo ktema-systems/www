@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Re-record the demo center's terminal proofs: one cast per proof, one still per cast, and
-# an optional upload. The casts are not kept; the still and the URL are, so this script is
-# what makes a proof reproducible.
+# Re-record the demo center's runs: one cast per run, one still and one video per cast, and
+# an optional upload. The casts are not kept; the still, the video and the URL are, so this
+# script is what makes a run reproducible.
 #
 # Usage: demo/tools/record/record.sh [--upload] [name ...]
 #
@@ -15,6 +15,11 @@ here=$(cd "$(dirname "$0")" && pwd)
 repo=$(git -C "$here" rev-parse --show-toplevel)
 ktema=${KTEMA_DIR:-$repo/../ktema}
 export KTEMA_DIR="$ktema"
+
+if ! command -v ffmpeg >/dev/null 2>&1; then
+    echo "need ffmpeg to render the still and the video" >&2
+    exit 1
+fi
 
 upload=${UPLOAD:-0}
 selected=()
@@ -71,17 +76,13 @@ while IFS='|' read -r name command title; do
     ( cd "$cwd" && asciinema rec --window-size 120x30 -c "$command" --idle-time-limit 1 --overwrite "$cast" )
 
     still="$repo/demo/public/proofs/$name.png"
-    preview="$repo/demo/public/proofs/$name.gif"
+    video="$repo/demo/public/proofs/$name.mp4"
+    preview="$castdir/$name.gif"
     agg --select 100% --no-loop --font-size 18 "$cast" "$cast.still.gif" >/dev/null 2>&1
     agg --font-size 14 --fps-cap 8 "$cast" "$preview" >/dev/null 2>&1
-    if command -v sips >/dev/null 2>&1; then
-        sips -s format png "$cast.still.gif" --out "$still" >/dev/null
-    elif command -v ffmpeg >/dev/null 2>&1; then
-        ffmpeg -loglevel error -y -i "$cast.still.gif" -frames:v 1 "$still"
-    else
-        echo "need sips or ffmpeg to turn the cast into a still" >&2
-        exit 1
-    fi
+    ffmpeg -loglevel error -y -i "$preview" -movflags +faststart -pix_fmt yuv420p \
+        -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -crf 18 "$video"
+    ffmpeg -loglevel error -y -i "$cast.still.gif" -frames:v 1 "$still"
 
     if [ "$upload" = 1 ]; then
         url=$(asciinema upload "$cast" --title "$title" --visibility unlisted 2>&1 \

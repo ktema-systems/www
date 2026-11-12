@@ -23,15 +23,17 @@ demo/tools/record/record.sh smoke capi-arm  # a few
 ```
 
 Each run records a cast at `120x30`, renders the last frame to
-`demo/public/proofs/<name>.png`, and the animation to `demo/public/proofs/<name>.gif`.
-The cast itself is left in a temporary directory. The terminal geometry is fixed because
-the still's shape is the card's shape, and the animation is the run page's medium.
+`demo/public/proofs/<name>.png`, and the recording to `demo/public/proofs/<name>.mp4`
+(through a GIF intermediate). The cast itself is left in a temporary directory. The
+terminal geometry is fixed because the still's shape is the card's shape, and the video
+is the run page's medium, with the browser's own play, pause and scrub controls.
 
 The engine checkout is `../ktema` by default. `KTEMA_DIR` points at another one.
 
-The still is the cast's last frame at `--font-size 18`, converted with `sips` on macOS or
-`ffmpeg` elsewhere. A proof whose session should end on a summary has to print it last,
-because that is the frame the card shows.
+The still is the cast's last frame at `--font-size 18`. The video is the cast rendered to
+GIF at `--font-size 14`, then encoded to H.264; `ffmpeg` does both conversions, so it is a
+requirement. A run whose session should end on a summary has to print it last, because
+that is the frame the card shows.
 
 ## Publish a new recording
 

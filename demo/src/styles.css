@@ -649,7 +649,7 @@ h1 {
   margin: 0 0 32px;
 }
 
-.run__figure img {
+.run__figure video {
   display: block;
   width: 100%;
   border: 1px solid var(--line-2);

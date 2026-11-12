@@ -25,7 +25,16 @@ const crumbs = [
   <p class="run__lede">{run.detail}</p>
 
   <figure class="run__figure">
-    <img src={run.gif} alt={run.posterAlt} />
+    <video
+      src={run.video}
+      poster={run.poster}
+      controls
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+    ></video>
     <figcaption>{run.posterAlt}</figcaption>
   </figure>
 

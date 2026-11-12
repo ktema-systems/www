@@ -10,7 +10,7 @@
 /** `live` is a deployed application the reader is sent to; the center draws the other three itself. */
 export type ArtifactKind = 'live' | 'video' | 'document' | 'runs';
 
-/** A recorded run of the engine: a page of its own, a still, and the animation a tile plays while it is held. */
+/** A recorded run of the engine: a page of its own, a still, and the video its page plays with native controls. */
 export interface Recording {
   /** The run's address: `/runs/<id>`. */
   id: string;
@@ -24,7 +24,8 @@ export interface Recording {
   href: string;
   poster: string;
   posterAlt: string;
-  gif: string;
+  /** The recording as a video, so a reader can pause it, resume it, and scrub through the run. */
+  video: string;
 }
 
 export interface Artifact {
@@ -68,7 +69,7 @@ const RUNS: Recording[] = [
     poster: '/proofs/device.png',
     posterAlt:
       'A terminal replaying the device-tier check: the scenario runs on a RISC-V board, the host writes the same volume, and both report the digest 0x299bd5d0e1821fab.',
-    gif: '/proofs/device.gif',
+    video: '/proofs/device.mp4',
   },
   {
     id: 'region',
@@ -81,7 +82,7 @@ const RUNS: Recording[] = [
     poster: '/proofs/region.png',
     posterAlt:
       'A terminal replaying the power-cut sweep: the cuts and the runs after them, ending with the volume converging on 0x299bd5d0e1821fab.',
-    gif: '/proofs/region.gif',
+    video: '/proofs/region.mp4',
   },
   {
     id: 'smoke',
@@ -93,7 +94,7 @@ const RUNS: Recording[] = [
     poster: '/proofs/smoke.png',
     posterAlt:
       'A terminal replaying the thirteen-step scenario: writes at two clocks, six window queries, a listing and a flush, ending on the digest 0x299bd5d0e1821fab.',
-    gif: '/proofs/smoke.gif',
+    video: '/proofs/smoke.mp4',
   },
   {
     id: 'capi-arm',
@@ -106,7 +107,7 @@ const RUNS: Recording[] = [
     poster: '/proofs/capi-arm.png',
     posterAlt:
       'A terminal replaying the C surface on a Cortex-M4 and on a RISC-V core: both report the same fifteen measurements, ending with PASS: C surface round trip.',
-    gif: '/proofs/capi-arm.gif',
+    video: '/proofs/capi-arm.mp4',
   },
   {
     id: 'faults',
@@ -119,7 +120,7 @@ const RUNS: Recording[] = [
     poster: '/proofs/faults.png',
     posterAlt:
       'A terminal replaying the fault check: three runs that each report what the run believed and what the medium holds.',
-    gif: '/proofs/faults.gif',
+    video: '/proofs/faults.mp4',
   },
 ];
 
