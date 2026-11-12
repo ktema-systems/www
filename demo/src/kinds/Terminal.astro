@@ -18,7 +18,10 @@ const more = artifact.recordings ?? [];
     )}
     <span class="terminal__play">Play the recording</span>
   </a>
-  <figcaption>{artifact.summary}</figcaption>
+  <figcaption>
+    {artifact.summary}
+    <a class="terminal__open" href={artifact.source}>Play the recording</a>
+  </figcaption>
 </figure>
 
 {

@@ -69,8 +69,8 @@ export const artifacts: Artifact[] = [
     status: 'recorded',
     summary:
       'The engine outside a browser. A RISC-V device tier and the host write the same volume byte for byte, a power cut at every byte of the log recovers, and the C surface runs on a Cortex-M4.',
-    source: 'https://asciinema.org/a/hHFP3JtpfHOq5B59',
-    poster: 'https://asciinema.org/a/hHFP3JtpfHOq5B59.png',
+    source: 'https://asciinema.org/a/8UfhlLz8SXaISjrS',
+    poster: '/proofs/device.png',
     posterAlt:
       'A terminal replaying the device-tier check: the scenario runs on a RISC-V board, the host writes the same volume, and both report the digest 0x299bd5d0e1821fab.',
     recordings: [
@@ -78,23 +78,23 @@ export const artifacts: Artifact[] = [
         label: 'A power cut at every byte',
         detail:
           'The log is cut at each byte, every run opens it, and none finds a record that was not there.',
-        href: 'https://asciinema.org/a/Xl2xHlTCZESS1dMy',
+        href: 'https://asciinema.org/a/tdsX5GReAen6H0ua',
       },
       {
         label: 'A record round trip',
         detail: 'Thirteen steps, eight records, one digest: the same run the device tier converges on.',
-        href: 'https://asciinema.org/a/k8B3QIaUWfnm36BH',
+        href: 'https://asciinema.org/a/mysRyRmijvsN4OKB',
       },
       {
         label: 'The C surface on a Cortex-M4',
         detail: 'The test body linked from C, 6,672 bytes of a 65,536-byte arena at peak.',
-        href: 'https://asciinema.org/a/6PPKR4qVCa55UCHt',
+        href: 'https://asciinema.org/a/Xg7XgDqP27scB999',
       },
       {
         label: 'Three refusals',
         detail:
           'A medium that refuses a write, a worn medium, and a channel that holds a write past the end of the run.',
-        href: 'https://asciinema.org/a/ngG0AIfvC4oDosGW',
+        href: 'https://asciinema.org/a/8QtqYOV6IhY6CIXY',
       },
     ],
   },

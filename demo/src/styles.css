@@ -586,20 +586,26 @@ h1 {
   background: #000;
 }
 
+/* The still keeps a screen's shape whatever the recording's terminal geometry was, so a run and a video read as the
+   same kind of panel. */
 .terminal__still img {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
 }
 
+/* The still is the way in, so the invitation appears over it on hover instead of sitting on a line of output. */
 .terminal__play {
   position: absolute;
-  left: 16px;
-  bottom: 16px;
-  padding: 6px 10px;
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transition: opacity 240ms var(--ease);
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.14em;
@@ -607,11 +613,27 @@ h1 {
   color: var(--fg);
 }
 
+.terminal__still:hover .terminal__play,
+.terminal__still:focus-visible .terminal__play {
+  opacity: 1;
+}
+
 .terminal figcaption {
   margin-top: 14px;
   max-width: 68ch;
   color: var(--fg-2);
   font-size: 15px;
+}
+
+.terminal__open {
+  display: block;
+  width: fit-content;
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-2);
 }
 
 .terminal__more {
