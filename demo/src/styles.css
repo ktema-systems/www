@@ -452,8 +452,8 @@ h1 {
 }
 
 /* The product a surface belongs to, under what the surface is. */
-.tile__product {
-  align-self: flex-start;
+.tile__product,
+.product-tag {
   padding: 2px 7px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
@@ -462,6 +462,10 @@ h1 {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fg-3);
+}
+
+.tile__product {
+  align-self: flex-start;
 }
 
 .tile__summary {
@@ -555,8 +559,15 @@ h1 {
   mask-repeat: no-repeat;
 }
 
+.page__head {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
 .artifact__title {
-  margin: 0 0 24px;
+  margin: 0;
   font-size: clamp(1.7rem, 1.2rem + 2vw, 2.4rem);
 }
 
@@ -647,7 +658,7 @@ h1 {
 /* ── one run's page ──────────────────────────────────────────────────── */
 
 .run__title {
-  margin: 0 0 18px;
+  margin: 0;
   font-size: clamp(1.7rem, 1.2rem + 2vw, 2.4rem);
 }
 

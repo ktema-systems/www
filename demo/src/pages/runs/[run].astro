@@ -13,6 +13,8 @@ export function getStaticPaths() {
 
 const { run } = Astro.props as { run: Recording };
 
+const product = artifacts.find((artifact) => artifact.kind === 'runs')?.product ?? 'Ktema';
+
 const crumbs = [
   { label: 'Demo Center', href: '/' },
   { label: 'Headless runs', href: '/runs' },
@@ -21,7 +23,10 @@ const crumbs = [
 ---
 
 <Shell title={run.label} description={run.detail} crumbs={crumbs}>
-  <h1 class="run__title">{run.label}</h1>
+  <header class="page__head">
+    <h1 class="run__title">{run.label}</h1>
+    <span class="product-tag">{product}</span>
+  </header>
   <p class="run__lede">{run.detail}</p>
 
   <figure class="run__figure">

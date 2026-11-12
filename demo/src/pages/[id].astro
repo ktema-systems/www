@@ -31,6 +31,9 @@ if (!Body) throw new Error(`the center draws no page for a ${artifact.kind} arti
   description={artifact.summary}
   crumbs={[{ label: 'Demo Center', href: '/' }, { label: artifact.title }]}
 >
-  <h1 class="artifact__title">{artifact.title}</h1>
+  <header class="page__head">
+    <h1 class="artifact__title">{artifact.title}</h1>
+    <span class="product-tag">{artifact.product}</span>
+  </header>
   <Body artifact={artifact} />
 </Shell>
