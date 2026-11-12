@@ -211,7 +211,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
     The host rows are the engine's reference path, opened without record maps. That is the device's path: it reads
     the medium in bytes, keeps no block cache, and builds no index, so a box query walks the log. A tenth of the
     addresses at a hundred thousand records reads 9.5 times the volume, which is where its time comes from. The
-    cached path builds the map and the index, at 394 to 406 bytes a record, and this benchmark does not use it.
+    section below prices the other path.
   </p>
   <p>
     The append log and the database are at their best on a host, with an operating system, a filesystem and a warm
@@ -222,6 +222,22 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
     The append figure has the widest spread of the four. Repeated runs at a hundred thousand records put it between
     12 and 18 µs for both the engine and the database, while the other three stayed within a tenth of their value.
     Each row is one median of one run.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>The path this page does not measure</h2>
+  <p>
+    A volume opens two ways. The reference path builds nothing and answers by reading the log, which is what every
+    number above measures. The cached path builds the record maps, at 394 to 406 bytes a record on a 32-bit target,
+    and carries the structural index at about 354 kB, so a read is served from memory rather than from the medium. A
+    host, or a part with memory to spare, can take that path. A part with 64 kB cannot, and that is the reason this
+    page measures the reference path: it is the one that runs in both places.
+  </p>
+  <p>
+    Both paths hold the same record in the same format, so the choice does not change what the volume is. It changes
+    where the cost lands, on the medium or in the memory. What stays the same either way is the bytes each record
+    takes, the 4 GiB a volume can address, and the record being written where the event happened.
   </p>
 </section>
 
