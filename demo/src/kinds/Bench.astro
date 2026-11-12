@@ -88,7 +88,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
   />
   <Chart
     title="One record by address"
-    caption="One record fetched by its own address."
+    caption="One record fetched by its own address. The log holds the whole address map in memory, so its lookup is constant; the engine builds no map, because the path that runs without an operating system has nowhere to keep one, so it finds the record by reading the log. That read grows from 5.7 kB at a thousand records to 646 kB at a million, and the line follows the bytes. The flat line here and the rising line in the memory chart are one trade seen from two sides."
     unit="µs"
     scale="log"
     decimals={2}
@@ -175,7 +175,9 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
       </tr>
       <tr>
         <td>One record by address, at 100k</td>
-        <td>{ktema100k.point_read_us.toFixed(2)} µs</td>
+        <td>
+          {ktema100k.point_read_us.toFixed(2)} µs, reading {(kb(ktema100k.point_read_bytes ?? 0)).toFixed(0)} kB
+        </td>
         <td>{log100k.point_read_us.toFixed(2)} µs</td>
         <td>{sqlite100k.point_read_us.toFixed(2)} µs</td>
       </tr>
