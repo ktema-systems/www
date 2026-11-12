@@ -22,9 +22,13 @@ export interface Row {
   open_us: number;
   /** Time to fetch one record by its address. */
   point_read_us: number;
+  /** Bytes the channel read from the medium to fetch that record. The engine reports this; the peers do not. */
+  point_read_bytes?: number;
   /** Time to enumerate the addresses in a contiguous tenth of the range. */
   range_us: number;
   range_answers: number;
+  /** Bytes the channel read to answer that range. */
+  range_bytes?: number;
   /** Time to append one record once the volume is built. */
   write_us: number;
 }
@@ -42,10 +46,10 @@ export const engines: Engine[] = [
     name: 'Ktema',
     color: 'var(--accent)',
     rows: [
-      { records: 1_000, bytes_per_record: 482, volume_bytes: 496_776, open_us: 16.625, point_read_us: 1.083, range_us: 127.417, range_answers: 101, write_us: 4.584 },
-      { records: 10_000, bytes_per_record: 483, volume_bytes: 4_942_075, open_us: 67.875, point_read_us: 1.584, range_us: 2_573.0, range_answers: 1_001, write_us: 5.625 },
-      { records: 100_000, bytes_per_record: 484, volume_bytes: 49_495_101, open_us: 181.5, point_read_us: 4.75, range_us: 123_679.25, range_answers: 10_008, write_us: 17.666 },
-      { records: 1_000_000, bytes_per_record: 485, volume_bytes: 495_890_153, open_us: 1_130.792, point_read_us: 71.542, range_us: 20_233_510.625, range_answers: 98_968, write_us: 222.5 },
+      { records: 1_000, bytes_per_record: 482, volume_bytes: 496_776, open_us: 16.625, point_read_us: 1.083, point_read_bytes: 5_799, range_us: 127.417, range_answers: 101, range_bytes: 751_735, write_us: 4.584 },
+      { records: 10_000, bytes_per_record: 483, volume_bytes: 4_942_075, open_us: 67.875, point_read_us: 1.584, point_read_bytes: 16_537, range_us: 2_573.0, range_answers: 1_001, range_bytes: 15_324_827, write_us: 5.625 },
+      { records: 100_000, bytes_per_record: 484, volume_bytes: 49_495_101, open_us: 181.5, point_read_us: 4.75, point_read_bytes: 65_942, range_us: 123_679.25, range_answers: 10_008, range_bytes: 470_931_292, write_us: 17.666 },
+      { records: 1_000_000, bytes_per_record: 485, volume_bytes: 495_890_153, open_us: 1_130.792, point_read_us: 71.542, point_read_bytes: 661_296, range_us: 20_233_510.625, range_answers: 98_968, range_bytes: 42_720_268_547, write_us: 222.5 },
     ],
   },
   {

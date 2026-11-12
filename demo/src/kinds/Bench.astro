@@ -24,6 +24,7 @@ const sqlite100k = at('sqlite', 100_000);
 const ktema1m = at('ktema', 1_000_000);
 const log1m = at('log', 1_000_000);
 const sqlite1m = at('sqlite', 1_000_000);
+const ktemaRows = engines[0]!.rows;
 const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 ---
 
@@ -75,6 +76,58 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
         name: 'SQLite',
         color: 'rgb(122, 121, 119)',
         points: indexMemory.sqlite.map((point) => ({ label: label(point.records), value: mib(point.bytes) })),
+      },
+    ]}
+  />
+  <Chart
+    title="Write one record"
+    caption="Appending one record once the volume is built."
+    unit="µs"
+    scale="log"
+    decimals={2}
+    series={seriesOf((row) => row.write_us)}
+  />
+  <Chart
+    title="Open"
+    caption="Making the volume answerable. The log rebuilds its address map here; the engine reads its segment trailers."
+    unit="µs"
+    scale="log"
+    decimals={1}
+    series={seriesOf((row) => row.open_us)}
+  />
+  <Chart
+    title="One record by address"
+    caption="One record fetched by its own address."
+    unit="µs"
+    scale="log"
+    decimals={2}
+    series={seriesOf((row) => row.point_read_us)}
+  />
+  <Chart
+    title="A tenth of the records by address"
+    caption="A contiguous tenth of the addresses, enumerated rather than counted: about 100 records at a thousand and about 100,000 at a million."
+    unit="µs"
+    scale="log"
+    decimals={0}
+    series={seriesOf((row) => row.range_us)}
+  />
+  <Chart
+    title="Bytes read from the medium to answer"
+    wide={true}
+    caption="The engine's channel counts the bytes it reads, which is what the times above follow: one point read costs 64 kB at a hundred thousand records and 646 kB at a million, and a tenth costs nine times the whole volume at a hundred thousand and eighty-six times at a million. The other two report no byte count, so this chart carries one engine."
+    unit="MB"
+    scale="log"
+    decimals={2}
+    series={[
+      {
+        name: 'Point read',
+        color: 'var(--accent)',
+        points: ktemaRows.map((row) => ({ label: label(row.records), value: mib(row.point_read_bytes ?? 0) })),
+      },
+      {
+        name: 'A tenth, enumerated',
+        color: 'var(--fg-2)',
+        points: ktemaRows.map((row) => ({ label: label(row.records), value: mib(row.range_bytes ?? 0) })),
       },
     ]}
   />
