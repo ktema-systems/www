@@ -1,126 +1,176 @@
 ---
-// The measurement page: one chart per number the benchmark run records. The numbers are committed data, not measured
-// on every build, so the page is a reading of a run rather than a benchmark of its own.
+// The measurement page: one workload measured three ways. What is compared is the shape each
+// engine gives the same record, because that is what a buyer chooses between.
 import Chart from '../components/Chart.astro';
-import { volumes, source } from '../data/bench';
+import { engines, indexMemory, ceiling, source, type Row } from '../data/bench';
 
-const label = (n: number) => (n >= 1000 ? `${n / 1000}k` : String(n));
+const label = (n: number) => (n >= 1_000_000 ? `${n / 1_000_000}M` : n >= 1000 ? `${n / 1000}k` : String(n));
 const mib = (bytes: number) => bytes / (1024 * 1024);
-const millis = (microseconds: number) => microseconds / 1000;
-const answers = volumes.map((v) => v.query_answers.toLocaleString('en-US')).join(', ');
+const kb = (bytes: number) => bytes / 1024;
+
+const seriesOf = (pick: (row: Row) => number) =>
+  engines.map((engine) => ({
+    name: engine.name,
+    color: engine.color,
+    points: engine.rows.map((row) => ({ label: label(row.records), value: pick(row) })),
+  }));
+
+const at = (id: string, records: number) =>
+  engines.find((engine) => engine.id === id)!.rows.find((row) => row.records === records)!;
+
+const ktema100k = at('ktema', 100_000);
+const log100k = at('log', 100_000);
+const sqlite100k = at('sqlite', 100_000);
+const ktema1m = at('ktema', 1_000_000);
+const log1m = at('log', 1_000_000);
+const sqlite1m = at('sqlite', 1_000_000);
+const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 ---
 
 <p class="bench__lede">
-  The engine measured on one host at 1,000, 10,000 and 100,000 records. Each volume is built once; every number is the
-  median of {source.samples} samples. These are the format's own costs, not a comparison against a database; the note
-  below says which workload each is the right tool for.
+  One record, three stores, on one machine. The record is three 60-byte addresses, an origin, a media type and a
+  payload of about 55 bytes, which is what the engine's own bench writes. Each row below measures the same content,
+  so the differences are the formats.
 </p>
 
 <div class="bench__grid">
   <Chart
-    title="Bytes written per record"
-    caption="The format's per-record write cost is flat across two orders of magnitude."
+    title="Bytes on the medium, per record"
+    caption="Constant in record count for all three, which is the point: the cost of a format is a property of the format. The engine's record carries three addresses, so it is the largest of the three and stays that way."
     unit="bytes"
     kind="bar"
     decimals={0}
-    series={[
-      { name: 'per record', points: volumes.map((v) => ({ label: label(v.records), value: v.write_medium_bytes })) },
-    ]}
+    series={seriesOf((row) => row.bytes_per_record)}
   />
   <Chart
     title="Volume size"
-    caption="The log grows linearly with the records, as a log does."
+    caption="Linear for all three, as a log is. At a million records the engine's volume is 473 MB, the append log's 245 MB and the database's 279 MB."
     unit="MB"
+    scale="log"
     decimals={1}
-    series={[
-      { name: 'volume', points: volumes.map((v) => ({ label: label(v.records), value: mib(v.volume_bytes) })) },
-    ]}
+    series={seriesOf((row) => mib(row.volume_bytes))}
   />
   <Chart
-    title="Open"
-    caption="The engine over the log as it stands. The growth is hydration, not an index rebuild."
-    unit="µs"
-    decimals={1}
-    series={[{ name: 'open', points: volumes.map((v) => ({ label: label(v.records), value: v.open_us })) }]}
-  />
-  <Chart
-    title="Point read"
-    caption="One framing read, which is what a replay pays per record."
-    unit="µs"
-    decimals={2}
-    series={[
-      {
-        name: 'point read',
-        points: volumes.map((v) => ({ label: label(v.records), value: v.point_read_us })),
-      },
-    ]}
-  />
-  <Chart
-    title="Box query"
-    caption={`A box over a tenth of an axis, answering ${answers} records. This is the scan path; the structural index is not enabled in this build.`}
-    unit="ms"
+    title="Memory to answer by address"
+    wide={true}
+    caption={`The index a volume has to hold. The bare log builds one map entry per record, so it passes the engine's fixed index around five thousand records and is 64 MB at a million. The engine's index is a constant array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB on a 32-bit target. A database keeps its index on disk instead, which is why it has no row here.`}
+    unit="MB"
     scale="log"
     decimals={2}
     series={[
-      { name: 'query', points: volumes.map((v) => ({ label: label(v.records), value: millis(v.query_us) })) },
+      {
+        name: 'Ktema',
+        color: 'var(--accent)',
+        points: indexMemory.log.map((point) => ({
+          label: label(point.records),
+          value: kb(indexMemory.engine_bytes) / 1024,
+        })),
+      },
+      {
+        name: 'Append log',
+        color: 'var(--fg-2)',
+        points: indexMemory.log.map((point) => ({ label: label(point.records), value: mib(point.bytes) })),
+      },
     ]}
   />
 </div>
 
 <section class="bench__fit">
-  <h2>Where this engine fits</h2>
-  <p>
-    Ktema is a record engine for an append-only, addressable history, not a general-purpose database. The format's
-    per-record write cost is flat, and the structural index is constant in record count. Mount and hydration are
-    linear: opening a volume walks the log and the host build keeps the record maps it hydrates. The total memory is
-    therefore not constant, and this page does not claim it is. What stays constant is the index, not the engine's
-    whole working set.
-  </p>
+  <h2>What the three are</h2>
   <table>
     <thead>
-      <tr><th></th><th>Ktema</th><th>A relational database</th></tr>
+      <tr><th></th><th>Ktema</th><th>Append log</th><th>SQLite</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td>Purpose</td>
-        <td>An addressable history of what happened</td>
+        <td>What it is</td>
+        <td>An addressable history, written where the event happened</td>
+        <td>A record of what happened, and nothing else</td>
         <td>Rows a program queries and changes</td>
       </tr>
       <tr>
-        <td>Write</td>
-        <td>Flat per record: 482 to 484 bytes</td>
-        <td>Row plus index maintenance</td>
-      </tr>
-      <tr>
-        <td>Index</td>
-        <td>Constant in record count, linear in distinct axis values</td>
-        <td>Grows with rows</td>
-      </tr>
-      <tr>
-        <td>Mount</td>
-        <td>Linear in the log, because the record maps hydrate</td>
-        <td>Fast, because the index is already on disk</td>
-      </tr>
-      <tr>
-        <td>Host</td>
-        <td>A service, or no OS at all on the device tier</td>
+        <td>Host it needs</td>
+        <td>None on the device tier; an OS on the host tier</td>
+        <td>An OS and a filesystem</td>
         <td>An OS and a filesystem</td>
       </tr>
       <tr>
-        <td>Query</td>
-        <td>Addressed reads and bounded boxes</td>
-        <td>SQL, joins, ad-hoc predicates</td>
+        <td>How an address is found</td>
+        <td>Computed from the record itself</td>
+        <td>A map entry per record, rebuilt at every mount</td>
+        <td>An index on disk, walked at each read</td>
+      </tr>
+      <tr>
+        <td>Bytes per record, at 1M</td>
+        <td>{ktema1m.bytes_per_record}</td>
+        <td>{log1m.bytes_per_record}</td>
+        <td>{sqlite1m.bytes_per_record}</td>
+      </tr>
+      <tr>
+        <td>Memory to answer by address, at 1M</td>
+        <td>{kb(indexMemory.engine_bytes).toFixed(0)} kB, fixed</td>
+        <td>{mib(logMap1m).toFixed(0)} MB, one entry per record</td>
+        <td>On disk, bounded by the page cache</td>
+      </tr>
+      <tr>
+        <td>Append one record, at 100k</td>
+        <td>{ktema100k.write_us.toFixed(1)} µs</td>
+        <td>{log100k.write_us.toFixed(1)} µs</td>
+        <td>{sqlite100k.write_us.toFixed(1)} µs</td>
+      </tr>
+      <tr>
+        <td>Open, at 100k</td>
+        <td>{(ktema100k.open_us / 1000).toFixed(2)} ms</td>
+        <td>{(log100k.open_us / 1000).toFixed(2)} ms</td>
+        <td>{(sqlite100k.open_us / 1000).toFixed(2)} ms</td>
+      </tr>
+      <tr>
+        <td>One record by address, at 100k</td>
+        <td>{ktema100k.point_read_us.toFixed(2)} µs</td>
+        <td>{log100k.point_read_us.toFixed(2)} µs</td>
+        <td>{sqlite100k.point_read_us.toFixed(2)} µs</td>
+      </tr>
+      <tr>
+        <td>A tenth, by address, at 100k</td>
+        <td>{(ktema100k.range_us / 1000).toFixed(0)} ms</td>
+        <td>{(log100k.range_us / 1000).toFixed(2)} ms</td>
+        <td>{(sqlite100k.range_us / 1000).toFixed(2)} ms</td>
+      </tr>
+      <tr>
+        <td>Where it stops</td>
+        <td>A volume of 4 GiB, about {ceiling.records.toLocaleString('en-US')} records</td>
+        <td>When the address map no longer fits the memory it has</td>
+        <td>Where its filesystem does not exist</td>
       </tr>
       <tr>
         <td>Right tool when</td>
-        <td>The history is the product and the host is constrained</td>
-        <td>The data is mutable and the questions are open</td>
+        <td>The host has no operating system and the history is the product</td>
+        <td>The only question is what happened, on a host of a few kilobytes</td>
+        <td>The data changes and the questions are not known in advance</td>
       </tr>
     </tbody>
   </table>
 </section>
 
+<section class="bench__fit">
+  <h2>Reading the times</h2>
+  <p>
+    The host rows are the engine's reference path through its region channel, which reads the medium in bytes and
+    keeps no block cache. A point read there costs 66 kB of medium at a hundred thousand records, so it pays for the
+    bytes it touches, where a mapped file pays nothing. On a device the same read is bounded by a 128 kB segment, and
+    the host bench keeps one open segment for the whole volume, so its times follow the volume rather than the device.
+    These rows are the host path and this page does not present them as the device's.
+  </p>
+  <p>
+    The append log and the database are at their best on a host, with an operating system, a filesystem and a warm
+    page cache. Neither of them runs on a part with no operating system, and the log's address map stops fitting long
+    before the volumes it is meant to serve. The engine's case is that tier, and the two properties that hold there
+    are the ones drawn above: a fixed index, and a record written where the event happened.
+  </p>
+</section>
+
 <p class="bench__source">
-  {source.command} · commit {source.commit} · {source.recorded} · median of {source.samples} samples. The host's seconds
-  and the medium's bytes answer different questions; each chart carries one unit.
+  {source.engine} and {source.peers} · {source.host} · {source.recorded} · median of {source.samples} samples ·
+  SQLite {source.sqlite}. The append log here is a fixed-width frame per record plus an address map, which is what an
+  integrator writes without a database. A single volume stops at 4 GiB because the format's offsets are 32 bits.
 </p>

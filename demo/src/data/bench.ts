@@ -1,17 +1,23 @@
 // One workload, measured three ways on one host.
 //
-// The record is the same in all three: three 60-byte addresses (fact, intent, hint), a 5-byte
+// The record is identical in all three: three 60-byte addresses (fact, intent, hint), a 5-byte
 // origin, a 10-byte media type, and a payload of about 55 bytes. Each engine stores that
-// content in its own shape, so what the charts compare is the shape rather than the workload.
+// content in its own shape, so what the charts compare is the shape, not the workload.
 //
 // The engine's row comes from `benches/run.sh` in the ktema checkout, which owns the format.
 // The two baselines come from `tools/bench/run.sh` here, which is the reproduction command
-// this comparison is obliged to ship. Both were run on the same machine on the same day.
+// this comparison is obliged to ship. All rows are one run on one machine on one day.
+//
+// A single volume stops at 4 GiB, because the format's offsets are 32 bits. At 484 bytes a
+// record that is about 8.9M records, so 10M is not a volume this engine can hold: the ladder
+// ends at a million and the ceiling is stated rather than drawn.
 
 export interface Row {
   records: number;
   /** Bytes the medium charges for one record. */
   bytes_per_record: number;
+  /** Bytes the volume occupies. */
+  volume_bytes: number;
   /** Time to make the volume answerable. */
   open_us: number;
   /** Time to fetch one record by its address. */
@@ -36,9 +42,10 @@ export const engines: Engine[] = [
     name: 'Ktema',
     color: 'var(--accent)',
     rows: [
-      { records: 1_000, bytes_per_record: 482, open_us: 16.708, point_read_us: 1.209, range_us: 132.125, range_answers: 101, write_us: 4.792 },
-      { records: 10_000, bytes_per_record: 483, open_us: 68.625, point_read_us: 1.667, range_us: 2_585.958, range_answers: 1_001, write_us: 5.75 },
-      { records: 100_000, bytes_per_record: 484, open_us: 187.459, point_read_us: 5.0, range_us: 120_178.417, range_answers: 10_008, write_us: 12.25 },
+      { records: 1_000, bytes_per_record: 482, volume_bytes: 496_776, open_us: 16.625, point_read_us: 1.083, range_us: 127.417, range_answers: 101, write_us: 4.584 },
+      { records: 10_000, bytes_per_record: 483, volume_bytes: 4_942_075, open_us: 67.875, point_read_us: 1.584, range_us: 2_573.0, range_answers: 1_001, write_us: 5.625 },
+      { records: 100_000, bytes_per_record: 484, volume_bytes: 49_495_101, open_us: 181.5, point_read_us: 4.75, range_us: 123_679.25, range_answers: 10_008, write_us: 17.666 },
+      { records: 1_000_000, bytes_per_record: 485, volume_bytes: 495_890_153, open_us: 1_130.792, point_read_us: 71.542, range_us: 20_233_510.625, range_answers: 98_968, write_us: 222.5 },
     ],
   },
   {
@@ -46,9 +53,10 @@ export const engines: Engine[] = [
     name: 'Append log',
     color: 'var(--fg-2)',
     rows: [
-      { records: 1_000, bytes_per_record: 254, open_us: 47.542, point_read_us: 0.042, range_us: 4.375, range_answers: 100, write_us: 1.792 },
-      { records: 10_000, bytes_per_record: 255, open_us: 494.5, point_read_us: 0.042, range_us: 40.375, range_answers: 1_000, write_us: 1.708 },
-      { records: 100_000, bytes_per_record: 256, open_us: 7_514.583, point_read_us: 0.042, range_us: 522.667, range_answers: 10_000, write_us: 1.625 },
+      { records: 1_000, bytes_per_record: 254, volume_bytes: 253_890, open_us: 48.167, point_read_us: 0.042, range_us: 4.25, range_answers: 100, write_us: 1.75 },
+      { records: 10_000, bytes_per_record: 255, volume_bytes: 2_548_890, open_us: 483.042, point_read_us: 0.042, range_us: 41.167, range_answers: 1_000, write_us: 1.75 },
+      { records: 100_000, bytes_per_record: 256, volume_bytes: 25_588_890, open_us: 7_589.875, point_read_us: 0.042, range_us: 531.833, range_answers: 10_000, write_us: 1.583 },
+      { records: 1_000_000, bytes_per_record: 257, volume_bytes: 256_888_890, open_us: 117_276.25, point_read_us: 0.042, range_us: 5_451.708, range_answers: 100_000, write_us: 2.917 },
     ],
   },
   {
@@ -56,29 +64,45 @@ export const engines: Engine[] = [
     name: 'SQLite',
     color: 'rgb(122, 121, 119)',
     rows: [
-      { records: 1_000, bytes_per_record: 303, open_us: 251.667, point_read_us: 2.417, range_us: 7.958, range_answers: 100, write_us: 10.667 },
-      { records: 10_000, bytes_per_record: 294, open_us: 251.417, point_read_us: 2.5, range_us: 59.542, range_answers: 1_000, write_us: 11.583 },
-      { records: 100_000, bytes_per_record: 293, open_us: 253.75, point_read_us: 2.542, range_us: 555.958, range_answers: 10_000, write_us: 12.375 },
+      { records: 1_000, bytes_per_record: 303, volume_bytes: 303_104, open_us: 257.917, point_read_us: 2.417, range_us: 7.375, range_answers: 100, write_us: 13.708 },
+      { records: 10_000, bytes_per_record: 294, volume_bytes: 2_936_832, open_us: 224.292, point_read_us: 2.5, range_us: 56.583, range_answers: 1_000, write_us: 14.083 },
+      { records: 100_000, bytes_per_record: 293, volume_bytes: 29_270_016, open_us: 228.333, point_read_us: 2.625, range_us: 554.417, range_answers: 10_000, write_us: 18.792 },
+      { records: 1_000_000, bytes_per_record: 293, volume_bytes: 292_589_568, open_us: 219.208, point_read_us: 2.625, range_us: 12_084.792, range_answers: 100_000, write_us: 10.333 },
     ],
   },
 ];
 
-/** The address map the bare log builds at open, which is the cost a device pays for a lookup. */
-export const logMap: { records: number; bytes: number }[] = [
-  { records: 1_000, bytes: 65_536 },
-  { records: 10_000, bytes: 524_288 },
-  { records: 100_000, bytes: 4_194_304 },
-];
+/**
+ * The address index a volume has to hold to answer by address.
+ *
+ * The bare log builds one map entry per record, and the bytes are what it allocated. The
+ * engine's structural index is a fixed array of alphabet-sized levels, about 354 kB on a
+ * 32-bit target, and its size does not follow the record count.
+ */
+export const indexMemory = {
+  engine_bytes: 354 * 1024,
+  log: [
+    { records: 1_000, bytes: 65_536 },
+    { records: 10_000, bytes: 524_288 },
+    { records: 100_000, bytes: 4_194_304 },
+    { records: 1_000_000, bytes: 67_108_864 },
+  ],
+  /** Measured at 5M, beyond the drawn ladder, for the projection the text states. */
+  log_at_five_million: 268_435_456,
+} as const;
 
-/** Bytes of address map per record, which is the rate the projection at scale is drawn from. */
-export const logMapBytesPerRecord = 41.9;
+/** The volume ceiling the format imposes, and what it costs at this record size. */
+export const ceiling = {
+  bytes: 4_294_967_295,
+  records: Math.floor(4_294_967_295 / 484),
+} as const;
 
 /** What produced the numbers, so a reader can reproduce them rather than trust them. */
 export const source = {
-  host: 'Apple M1 Max, macOS 15.7.1',
+  host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
   recorded: '2026-11-12',
   samples: 51,
-  engine: 'ktema/benches/run.sh 1000 10000 100000',
+  engine: 'ktema/benches/run.sh 1000 10000 100000 1000000',
   peers: 'demo/tools/bench/run.sh',
   sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
 } as const;

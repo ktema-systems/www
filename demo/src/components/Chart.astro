@@ -19,6 +19,8 @@ interface Props {
   decimals?: number;
   series: Series[];
   height?: number;
+  /** Span every column of the grid the chart sits in. */
+  wide?: boolean;
 }
 
 const {
@@ -30,6 +32,7 @@ const {
   decimals = 1,
   series,
   height = 240,
+  wide = false,
 } = Astro.props;
 
 const W = 720;
@@ -86,7 +89,7 @@ const colors = ['var(--accent)', 'var(--fg-2)', 'var(--accent-2)'];
 const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
 ---
 
-<figure class="chart">
+<figure class={wide ? 'chart chart--wide' : 'chart'}>
   <figcaption class="chart__head">
     <span class="chart__title">{title}</span>
     {caption && <span class="chart__caption">{caption}</span>}

@@ -755,6 +755,11 @@ h1 {
   margin-top: clamp(28px, 4vw, 44px);
 }
 
+/* The index chart carries the comparison the page exists for, so it gets the full width. */
+.bench__grid > .chart--wide {
+  grid-column: 1 / -1;
+}
+
 .bench__source {
   max-width: 72ch;
   margin: 24px 0 0;
