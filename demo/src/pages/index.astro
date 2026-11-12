@@ -40,9 +40,7 @@ const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.sour
             )}
             <span class="tile__body">
               <span class="badges">
-                {lead.kind === 'live' && <span class="badge badge--live">live</span>}
-                {lead.status && <span class="badge">{lead.status}</span>}
-                {lead.data && <span class="badge">{lead.data}</span>}
+                <span class="badge badge--live">live</span>
               </span>
               <span class="tile__title">{lead.title}</span>
               <span class="tile__summary">{lead.summary}</span>
@@ -63,9 +61,7 @@ const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.sour
           <a class="tile tile--opens" href={hrefOf(artifact)}>
             <span class="tile__body">
               <span class="badges">
-                {artifact.kind === 'live' && <span class="badge badge--live">live</span>}
-                {artifact.status && <span class="badge">{artifact.status}</span>}
-                {artifact.data && <span class="badge">{artifact.data}</span>}
+                <span class="badge badge--live">live</span>
               </span>
               <span class="tile__title">{artifact.title}</span>
               <span class="tile__summary">{artifact.summary}</span>
@@ -87,7 +83,7 @@ const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.sour
             <span class="tile__screen tile__screen--empty" aria-hidden="true" />
             <div class="tile__body">
               <span class="badges">
-                <span class="badge badge--planned">in build</span>
+                <span class="badge badge--planned">coming soon</span>
               </span>
               <span class="tile__title">{surface.title}</span>
               <span class="tile__summary">{surface.summary}</span>

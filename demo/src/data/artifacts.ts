@@ -24,12 +24,8 @@ export interface Artifact {
   kind: ArtifactKind;
   /** What a reader learns before opening it, in one or two sentences. */
   summary: string;
-  /** A live application's address, a video's file, or a document's page. */
+  /** A live application's address, a video's file, a document's page, or a recording's replay. */
   source: string;
-  /** What the surface is, where the artifact says so: read-only, recorded, simulated. */
-  status?: string;
-  /** Where the records in it came from, when that is not a real system. */
-  data?: string;
   /** The still a reader sees before opening it. */
   poster?: string;
   /** What the still shows, for a reader who cannot see it. */
@@ -53,10 +49,8 @@ export const artifacts: Artifact[] = [
     id: 'delta',
     title: 'Delta',
     kind: 'live',
-    status: 'read-only',
-    data: 'mock data',
     summary:
-      'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang.',
+      'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, on mock data.',
     source: DELTA,
     poster: '/delta-run.jpg',
     posterAlt:
@@ -66,7 +60,6 @@ export const artifacts: Artifact[] = [
     id: 'terminal',
     title: 'Terminal proof',
     kind: 'terminal',
-    status: 'recorded',
     summary:
       'The engine outside a browser. A RISC-V device tier and the host write the same volume byte for byte, a power cut at every byte of the log recovers, and the C surface runs on a Cortex-M4.',
     source: 'https://asciinema.org/a/8UfhlLz8SXaISjrS',

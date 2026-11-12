@@ -229,18 +229,6 @@ h1 {
   color: var(--accent);
 }
 
-.tag {
-  flex: 0 0 auto;
-  padding: 2px 7px;
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius);
-  color: var(--fg-3);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
 
 /* ── the page ─────────────────────────────────────────────────────────── */
 
@@ -523,21 +511,27 @@ h1 {
   border-style: dashed;
 }
 
-/* A bay with nothing in it yet is drawn as a fine grid fading out, which is a screen that has no signal rather than a
-   card whose content failed to arrive. */
-/* A bay with nothing in it yet is drawn as a fine grid fading out, which is a screen that has no signal rather than a
-   card whose content failed to arrive. It takes whatever height the row has left over, so the reserved room is the bay
-   itself rather than a gap under the words. */
+/* A bay with nothing in it yet is drawn with the mark's own construction, faint, the way the homepage field draws it.
+   It takes whatever height the row has left over, so the reserved room is the bay itself rather than a gap under the
+   words. */
 .tile__screen--empty {
+  position: relative;
   flex: 1 1 auto;
-  min-height: 104px;
+  min-height: 132px;
   aspect-ratio: auto;
   border-bottom: 1px dashed var(--line);
-  background-image:
-    repeating-linear-gradient(to right, rgba(255, 255, 255, 0.075) 0 1px, transparent 1px 10px),
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.075) 0 1px, transparent 1px 10px);
-  background-position: 50% 0;
-  mask-image: radial-gradient(ellipse 64% 84% at 50% 0%, #000 6%, transparent 84%);
+}
+
+.tile__screen--empty::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--accent);
+  opacity: 0.22;
+  mask-image: url('/logo.svg');
+  mask-position: center;
+  mask-size: min(40%, 132px);
+  mask-repeat: no-repeat;
 }
 
 .artifact__title {
@@ -721,8 +715,7 @@ h1 {
   }
 
   body.home .bar__sep,
-  body.home .bar__title,
-  .bar__inner .tag {
+  body.home .bar__title {
     display: none;
   }
 
