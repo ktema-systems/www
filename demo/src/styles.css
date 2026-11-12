@@ -312,24 +312,15 @@ h1 {
 
 /* ── the deck: the grid the surfaces stand on ─────────────────────────── */
 
+/* The grid sizes itself from the container, so a catalogue grows by adding items rather than by editing columns. */
 .bento {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  align-items: start;
   gap: 16px;
   margin: clamp(44px, 6vw, 72px) 0 0;
   padding: 0;
   list-style: none;
-}
-
-.bento > li {
-  grid-column: span 4;
-}
-
-/* The demonstration the page leads with takes two columns of the grid and two rows, so the planned surfaces stand
-   beside it rather than under it. */
-.bento > li:first-child {
-  grid-column: span 8;
-  grid-row: span 2;
 }
 
 /* ── a tile ───────────────────────────────────────────────────────────── */
@@ -445,32 +436,6 @@ h1 {
   white-space: nowrap;
 }
 
-/* The dot says the surface is the running application rather than a recording. It does not say the data is live, which
-   is why `read-only` and `mock data` stand beside it. */
-.badge--live {
-  border-color: color-mix(in srgb, var(--ok) 36%, transparent);
-  color: var(--ok);
-}
-
-.badge--live::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--ok);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent);
-  animation: pulse 2600ms var(--ease) infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent);
-  }
-  70%,
-  100% {
-    box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent);
-  }
-}
 
 .tile__title {
   font-family: var(--text);
@@ -748,16 +713,6 @@ h1 {
 /* ── a phone ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 960px) {
-  .bento {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .bento > li,
-  .bento > li:first-child {
-    grid-column: span 2;
-    grid-row: auto;
-  }
-
   .tile__screen:not(.tile__screen--empty) {
     aspect-ratio: 2 / 1;
   }

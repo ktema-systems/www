@@ -63,11 +63,6 @@ const planned = !href;
         </span>
       )}
       <span class="tile__body">
-        {badge && (
-          <span class="badges">
-            <span class:list={['badge', badge === 'live' && 'badge--live']}>{badge}</span>
-          </span>
-        )}
         <span class="tile__title">{title}</span>
         <span class="tile__summary">{summary}</span>
         {cta && (
