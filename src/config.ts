@@ -70,7 +70,7 @@ export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 // The demo center is where the surfaces run, so the homepage's call to action opens it. The bar carries the same one:
 // its copy is only shown once the hero's has passed under it, so the two are one button that moves.
 export const demoCta: NavItem = {
-  label: 'Open the demo center',
+  label: 'Demo Center', // Don't change this
   href: 'https://demo.ktema.systems/',
 };
 
