@@ -195,14 +195,15 @@ h1 {
 }
 
 .bar__brand:hover,
-.bar__back:hover {
+.bar__crumb:hover,
+.bar__crumb:focus-visible {
   color: var(--accent);
 }
 
 /* A bar item is a label rather than a line of prose: it stays on one row and the title gives up its width first. */
 .bar__brand,
 .bar__sep,
-.bar__back,
+.bar__crumb,
 .bar__cta {
   flex: 0 0 auto;
   white-space: nowrap;
@@ -216,6 +217,11 @@ h1 {
   color: var(--fg-3);
 }
 
+/* The page a reader is on is the one word in the bar that carries the accent. */
+.bar__title--current {
+  color: var(--accent);
+}
+
 .bar__sep {
   width: 1px;
   height: 16px;
@@ -226,8 +232,8 @@ h1 {
   flex: 1;
 }
 
-.bar__back {
-  color: var(--accent);
+.bar__crumb {
+  color: var(--fg-3);
 }
 
 /* The one thing the bar asks of a reader, on every page: a demo can be requested by mail. It is the accent's own edge,
@@ -693,6 +699,7 @@ h1 {
   }
 
   .bar__sep,
+  .bar__crumb,
   .bar__title {
     display: none;
   }

@@ -31,9 +31,18 @@ const { title, artifact } = Astro.props;
           <span class="bar__name">Ktema Systems</span>
         </a>
         <span class="bar__sep" aria-hidden="true"></span>
-        <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
+        {
+            artifact ? (
+                <>
+                    <a class="bar__crumb" href="/">Demo Center</a>
+                    <span class="bar__sep" aria-hidden="true" />
+                    <span class="bar__title bar__title--current">{artifact.title}</span>
+                </>
+            ) : (
+                <span class="bar__title">Demo Center</span>
+            )
+        }
         <span class="bar__spacer"></span>
-        {artifact ? <a class="bar__back" href="/">Home</a> : null}
         <a class="bar__cta" href="mailto:demo@ktema.systems">Enquiry Demo</a>
       </div>
     </header>
