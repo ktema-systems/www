@@ -6,6 +6,7 @@
 interface Props {
   href?: string;
   title: string;
+  product?: string;
   summary: string;
   poster?: string;
   posterAlt?: string;
@@ -18,6 +19,7 @@ interface Props {
 const {
   href,
   title,
+  product,
   summary,
   poster,
   posterAlt,
@@ -41,6 +43,7 @@ const planned = !href;
           </span>
         )}
         <span class="tile__title">{title}</span>
+        {product && <span class="tile__product">{product}</span>}
         <span class="tile__summary">{summary}</span>
       </div>
     </div>
@@ -64,6 +67,7 @@ const planned = !href;
       )}
       <span class="tile__body">
         <span class="tile__title">{title}</span>
+        {product && <span class="tile__product">{product}</span>}
         <span class="tile__summary">{summary}</span>
         {cta && (
           <span class="tile__cta">

@@ -451,6 +451,19 @@ h1 {
   letter-spacing: -0.02em;
 }
 
+/* The product a surface belongs to, under what the surface is. */
+.tile__product {
+  align-self: flex-start;
+  padding: 2px 7px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
 .tile__summary {
   max-width: 62ch;
   color: var(--fg-2);

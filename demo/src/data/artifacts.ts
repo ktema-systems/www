@@ -31,7 +31,10 @@ export interface Recording {
 export interface Artifact {
   /** What the address names: `/runs` is this artifact's page. */
   id: string;
+  /** What the surface is, rather than which product it belongs to. */
   title: string;
+  /** The product it belongs to, drawn as a small tag: Delta or Ktema. */
+  product: string;
   kind: ArtifactKind;
   /** What a reader learns before opening it, in one or two sentences. */
   summary: string;
@@ -48,6 +51,7 @@ export interface Artifact {
 /** A surface the center will carry and does not yet. */
 export interface PlannedSurface {
   title: string;
+  product: string;
   summary: string;
 }
 
@@ -127,7 +131,8 @@ const RUNS: Recording[] = [
 export const artifacts: Artifact[] = [
   {
     id: 'delta',
-    title: 'Delta',
+    title: 'Fleet operations',
+    product: 'Delta',
     kind: 'live',
     summary:
       'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, on mock data.',
@@ -139,6 +144,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'runs',
     title: 'Headless runs',
+    product: 'Ktema',
     kind: 'runs',
     summary:
       'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
@@ -148,6 +154,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'bench',
     title: 'Measurements',
+    product: 'Ktema',
     kind: 'bench',
     summary:
       'The engine measured at 1,000, 10,000 and 100,000 records: the write cost per record, the log size, the open, the point read, and a box query.',
@@ -161,6 +168,7 @@ export const artifacts: Artifact[] = [
 export const planned: PlannedSurface[] = [
   {
     title: 'Hardware edge',
+    product: 'Ktema',
     summary:
       'An ESP32-S3 keeping its records in its own flash, read back after a reset. Still to run on the board: a power cut mid-write, and a full region retiring its oldest segment.',
   },
