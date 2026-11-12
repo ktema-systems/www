@@ -699,8 +699,12 @@ h1 {
   }
 
   .bar__sep,
-  .bar__crumb,
   .bar__title {
+    display: none;
+  }
+
+  /* On a subpage the crumb and the button have to share the row, so the mark stands for the brand there. */
+  .bar__inner:has(.bar__crumb) .bar__name {
     display: none;
   }
 
