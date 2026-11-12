@@ -40,6 +40,7 @@ Needs a C compiler and `libsqlite3`. Writes `result/peers.json`. The ladder is 1
 | `point_read_us` | one record by its address |
 | `range_us` | the addresses in a contiguous tenth, enumerated rather than counted |
 | `map_bytes` | bytes of address map the log allocated, which is its cost per record |
+| `cache_bytes` | bytes of page cache the database held after the range query, which is how it answers by address without a map |
 
 The range query enumerates addresses rather than counting them, because that is what the engine
 returns. A count would let a database answer from its index alone and would measure a smaller

@@ -53,7 +53,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
   <Chart
     title="Memory to answer by address"
     wide={true}
-    caption={`The index a volume has to hold. The bare log builds one map entry per record, so it passes the engine's fixed index around five thousand records and is 64 MB at a million. The engine's index is a constant array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB on a 32-bit target. A database keeps its index on disk instead, which is why it has no row here.`}
+    caption={`The index each engine has to hold. The bare log builds one map entry per record. The engine's index is a constant array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB on a 32-bit target. A database keeps its index in a file, so the memory it holds is the page cache that file is read through: it follows the records until it reaches the size the cache was configured with, then stops at ${mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB.`}
     unit="MB"
     scale="log"
     decimals={2}
@@ -70,6 +70,11 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
         name: 'Append log',
         color: 'var(--fg-2)',
         points: indexMemory.log.map((point) => ({ label: label(point.records), value: mib(point.bytes) })),
+      },
+      {
+        name: 'SQLite',
+        color: 'rgb(122, 121, 119)',
+        points: indexMemory.sqlite.map((point) => ({ label: label(point.records), value: mib(point.bytes) })),
       },
     ]}
   />
@@ -110,7 +115,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
         <td>Memory to answer by address, at 1M</td>
         <td>{kb(indexMemory.engine_bytes).toFixed(0)} kB, fixed</td>
         <td>{mib(logMap1m).toFixed(0)} MB, one entry per record</td>
-        <td>On disk, bounded by the page cache</td>
+        <td>{mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB, at its configured cache</td>
       </tr>
       <tr>
         <td>Append one record, at 100k</td>

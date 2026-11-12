@@ -328,6 +328,7 @@ typedef struct {
     unsigned long long range_answers;
     double write_us;
     unsigned long long write_bytes;
+    unsigned long long cache_bytes;
 } DbResult;
 
 // A statement that binds an index into one of the three address columns. The key is a stack
@@ -455,6 +456,14 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
     free(found);
     sqlite3_finalize(range);
 
+    // The index is a file, so the memory to answer is the page cache the index is read through. It is taken here,
+    // after the range query, because that is the read that fills it.
+    int cache_used = 0;
+    int cache_high = 0;
+    if (sqlite3_db_status(db, SQLITE_DBSTATUS_CACHE_USED, &cache_used, &cache_high, 0) != SQLITE_OK)
+        fail("cache status");
+    out->cache_bytes = (unsigned long long)cache_used;
+
     sqlite3_stmt *write = NULL;
     if (sqlite3_prepare_v2(db, "INSERT INTO records VALUES(?1,?2,?3,?4,?5,?6)", -1, &write, NULL) !=
         SQLITE_OK)
@@ -532,10 +541,10 @@ int main(int argc, char **argv) {
         printf(
             "    { \"records\": %llu, \"volume_bytes\": %llu, \"open_us\": %.3f, "
             "\"point_read_us\": %.3f, \"range_us\": %.3f, \"range_answers\": %llu, "
-            "\"write_us\": %.3f, \"write_bytes\": %llu }%s\n",
+            "\"write_us\": %.3f, \"write_bytes\": %llu, \"cache_bytes\": %llu }%s\n",
             dbs[r].records, dbs[r].volume_bytes, dbs[r].open_us, dbs[r].point_read_us,
             dbs[r].range_us, dbs[r].range_answers, dbs[r].write_us, dbs[r].write_bytes,
-            r + 1 < RUNG_COUNT ? "," : "");
+            dbs[r].cache_bytes, r + 1 < RUNG_COUNT ? "," : "");
     }
     printf("  ]\n}\n");
     return 0;

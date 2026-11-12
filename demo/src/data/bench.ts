@@ -73,11 +73,13 @@ export const engines: Engine[] = [
 ];
 
 /**
- * The address index a volume has to hold to answer by address.
+ * The index a volume has to hold to answer by address.
  *
  * The bare log builds one map entry per record, and the bytes are what it allocated. The
  * engine's structural index is a fixed array of alphabet-sized levels, about 354 kB on a
- * 32-bit target, and its size does not follow the record count.
+ * 32-bit target, and its size does not follow the record count. A database keeps its index in
+ * a file, so the memory it holds is the page cache that file is read through, taken after the
+ * range query; it grows to the size the cache was configured with and stops there.
  */
 export const indexMemory = {
   engine_bytes: 354 * 1024,
@@ -86,6 +88,12 @@ export const indexMemory = {
     { records: 10_000, bytes: 524_288 },
     { records: 100_000, bytes: 4_194_304 },
     { records: 1_000_000, bytes: 67_108_864 },
+  ],
+  sqlite: [
+    { records: 1_000, bytes: 53_504 },
+    { records: 10_000, bytes: 336_384 },
+    { records: 100_000, bytes: 3_143_424 },
+    { records: 1_000_000, bytes: 8_753_152 },
   ],
   /** Measured at 5M, beyond the drawn ladder, for the projection the text states. */
   log_at_five_million: 268_435_456,
