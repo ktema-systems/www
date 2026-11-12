@@ -7,7 +7,7 @@ import ProofDeck from '../components/ProofDeck.astro';
 import DeviceRun from '../components/DeviceRun.astro';
 import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
-import { demoCta, product, productMenu, type NavItem } from '../config';
+import { demoCta, hasDemo, product, productMenu, type NavItem } from '../config';
 
 // The engine's page: what it is, what it measures, and how it ships. The market
 // case and the comparison against other stores stay in the pitch.
@@ -36,7 +36,11 @@ const productNav: readonly NavItem[] = [
     lede="Ktema is a multi-dimensional query engine for products and services that have to answer for what they did. It answers across several axes in a service, beside the database you already run, or on hardware that cannot run one, with nothing between the engine and the part, no storage work at boot, and no index to maintain."
     body="A software agent, a robot, a drive, or a medical monitor asks which readings moved together before the failure, or what happened in the last seconds. Ktema answers from the record it keeps, with or without a server, a network, or a cloud round trip."
   >
-    <a class="btn btn--accent" href={demoCta.href} slot="actions">{demoCta.label}</a>
+    {hasDemo(product.name) && (
+      <a class="btn btn--accent" href={demoCta.href} slot="actions">
+        {demoCta.label}
+      </a>
+    )}
     <AddressFigure slot="figure" />
   </Hero>
 

@@ -1,6 +1,7 @@
 // The company's own site: the root is Ktema Systems, and the engine has its own
 // page under it. Everything that names the entity, its products, or its links is
 // read from here, so the two pages cannot drift apart.
+import { artifacts } from '../demo/src/data/artifacts';
 export const site = {
   name: 'Ktema Systems',
   // The masthead carries the whole name while the bar has room for it and the short
@@ -73,6 +74,12 @@ export const demoCta: NavItem = {
   label: 'Demo Center', // Don't change this
   href: 'https://demo.ktema.systems/',
 };
+
+// A product page offers the way into the center only while the center carries something for that product. The list is
+// read from the center's own artifacts rather than restated here, so adding a demo is what makes the button appear.
+const demoProducts = new Set(artifacts.map((artifact) => artifact.product));
+
+export const hasDemo = (productName: string) => demoProducts.has(productName);
 
 export const papers = [
   {

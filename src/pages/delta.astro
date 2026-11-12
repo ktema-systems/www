@@ -5,7 +5,7 @@ import Deck from '../components/Deck.astro';
 import DeltaDeck from '../components/DeltaDeck.astro';
 import DeltaShot from '../components/DeltaShot.astro';
 import Section from '../components/Section.astro';
-import { delta, demoCta, productMenu, site, type NavItem } from '../config';
+import { delta, demoCta, hasDemo, productMenu, site, type NavItem } from '../config';
 
 // Delta's page: the platform, the cases it runs, the seat it gives the operator,
 // and the loop. The island run comes first because it shows the whole platform at
@@ -35,7 +35,11 @@ const deltaNav: readonly NavItem[] = [
     lede="A cockpit where operators see and command robots, drones, codebases, agents, and the people who run them in one unified space. It can run over any backend; on the Ktema stack, every interaction and campaign is recorded and replayable."
     body="What the machine does is the sum of the intents that enter the loop."
   >
-    <a class="btn btn--accent" href={demoCta.href} slot="actions">{demoCta.label}</a>
+    {hasDemo(delta.name) && (
+      <a class="btn btn--accent" href={demoCta.href} slot="actions">
+        {demoCta.label}
+      </a>
+    )}
   </Hero>
 
   <Deck

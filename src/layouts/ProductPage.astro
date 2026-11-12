@@ -4,7 +4,7 @@ import Hero from '../components/Hero.astro';
 import ProductFigure from '../components/ProductFigure.astro';
 import Section from '../components/Section.astro';
 import Contact from '../components/Contact.astro';
-import { demoCta, productMenu } from '../config';
+import { demoCta, hasDemo, productMenu } from '../config';
 
 // The shell every product page but Delta and Ktema uses: a hero, the blocks the
 // product states about itself, and one way in. The shell is shared so the six pages
@@ -59,6 +59,9 @@ const nav = [
   ...blocks.map((block) => ({ label: block.label, href: `#${block.id}` })),
   { label: 'Contact', href: '#contact' },
 ];
+
+// The center has nothing for a product it carries no demo for, so the page offers no way into it.
+const offersDemo = hasDemo(name);
 ---
 
 <Base
@@ -72,7 +75,7 @@ const nav = [
 >
   <Hero title={title} subline={subline} lede={lede} body={body}>
     {figure && <ProductFigure slot="figure" kind={figure} />}
-    <a class="btn btn--accent" href={demoCta.href} slot="actions">{demoCta.label}</a>
+    {offersDemo && <a class="btn btn--accent" href={demoCta.href} slot="actions">{demoCta.label}</a>}
     {note && <p class="hero-note" slot="actions">{note}</p>}
   </Hero>
 
