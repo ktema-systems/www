@@ -1,6 +1,7 @@
 ---
-// A recorded run. The recording is hosted where it can be replayed, so the center points at it rather than storing the
-// cast: the still is the way in, and the recordings beside it are the rest of the same proof.
+// The recorded proofs. Each is a terminal run kept where it can be replayed, so the page lays them out as one gallery:
+// a still of the run, what it proves, and the way to play it. The tile is the center's own, which is what lets a
+// recording stand beside an application without a second visual language.
 import type { Artifact } from '../data/artifacts';
 
 interface Props {
@@ -8,34 +9,31 @@ interface Props {
 }
 
 const { artifact } = Astro.props;
-const more = artifact.recordings ?? [];
+const proofs = artifact.recordings ?? [];
 ---
 
-<figure class="terminal">
-  <a class="terminal__still" href={artifact.source}>
-    {artifact.poster && (
-      <img src={artifact.poster} alt={artifact.posterAlt ?? ''} loading="eager" decoding="async" />
-    )}
-    <span class="terminal__play">Play the recording</span>
-  </a>
-  <figcaption>
-    {artifact.summary}
-    <a class="terminal__open" href={artifact.source}>Play the recording</a>
-  </figcaption>
-</figure>
+<p class="terminal__lede">{artifact.summary}</p>
 
-{
-  more.length > 0 && (
-    <section class="terminal__more">
-      <h2>Also recorded</h2>
-      <ul>
-        {more.map((recording) => (
-          <li>
-            <a href={recording.href}>{recording.label}</a>
-            <span>{recording.detail}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  )
-}
+<ul class="proofs">
+  {
+    proofs.map((proof) => (
+      <li>
+        <a class="tile tile--opens tile--proof" href={proof.href} style={`--wash: url('${proof.poster}')`}>
+          <span class="tile__wash" aria-hidden="true" />
+          <span class="tile__screen">
+            <img src={proof.poster} alt={proof.posterAlt} loading="lazy" decoding="async" />
+          </span>
+          <span class="tile__body">
+            <span class="tile__title">{proof.label}</span>
+            <span class="tile__summary">{proof.detail}</span>
+            <span class="tile__cta">
+              Play the recording <span class="tile__arrow" aria-hidden="true">
+                &#8594;
+              </span>
+            </span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>

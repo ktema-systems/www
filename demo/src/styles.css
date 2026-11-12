@@ -236,7 +236,7 @@ h1 {
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
-  padding: clamp(56px, 8vw, 108px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
+  padding: clamp(56px, 8vw, 0px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
 }
 
 /* ── the hero ─────────────────────────────────────────────────────────── */
@@ -565,110 +565,62 @@ h1 {
   color: var(--accent);
 }
 
-/* ── a recorded run ───────────────────────────────────────────────────── */
+/* ── recorded runs ───────────────────────────────────────────────────── */
 
-.terminal {
-  margin: 0;
-}
-
-.terminal__still {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  border-radius: var(--radius);
-  background: #000;
-}
-
-/* The still keeps a screen's shape whatever the recording's terminal geometry was, so a run and a video read as the
-   same kind of panel. */
-.terminal__still img {
-  display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 16 / 9;
-  object-fit: contain;
-}
-
-/* The still is the way in, so the invitation appears over it on hover instead of sitting on a line of output. */
-.terminal__play {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
-  opacity: 0;
-  transition: opacity 240ms var(--ease);
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg);
-}
-
-.terminal__still:hover .terminal__play,
-.terminal__still:focus-visible .terminal__play {
-  opacity: 1;
-}
-
-.terminal figcaption {
-  margin-top: 14px;
+.terminal__lede {
   max-width: 68ch;
+  margin: 0;
   color: var(--fg-2);
   font-size: 15px;
 }
 
-.terminal__open {
-  display: block;
-  width: fit-content;
-  margin-top: 10px;
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent-2);
-}
-
-.terminal__more {
-  margin-top: 36px;
-}
-
-.terminal__more h2 {
-  margin: 0 0 16px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-3);
-}
-
-.terminal__more ul {
+/* The proofs are the center's own tile, so a recording stands beside an application without a second visual language.
+   Each still is the run itself, and the same still, blurred, lights the card behind it. */
+.proofs {
   display: grid;
-  gap: 14px;
-  margin: 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: clamp(28px, 4vw, 44px) 0 0;
   padding: 0;
   list-style: none;
 }
 
-.terminal__more li {
-  display: grid;
-  gap: 4px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
+/* The terminal's own ground behind the still, so the bars a contained screenshot leaves are not a second colour. */
+.tile--proof .tile__screen {
+  background: #1e2030;
 }
 
-.terminal__more a {
-  color: var(--accent);
-  font-size: 15px;
+/* A terminal still is mostly dark, so the same still lights the card only when the wash is lifted past the tile's
+   default. This is the light Delta's card gets from its cockpit. */
+.tile--proof .tile__wash {
+  opacity: 0.4;
+  filter: blur(30px) saturate(150%);
 }
 
-.terminal__more span {
-  max-width: 68ch;
-  color: var(--fg-3);
-  font-size: 14px;
+.tile--proof .tile__screen img {
+  object-fit: contain;
+}
+
+.tile--proof .tile__title {
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.tile--proof .tile__summary {
+  font-size: 13.5px;
   line-height: 1.55;
+}
+
+@media (max-width: 900px) {
+  .proofs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .proofs {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── a phone ──────────────────────────────────────────────────────────── */
