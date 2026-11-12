@@ -92,7 +92,9 @@ const lines = (text: string) => text.split('\n').map((line) => line.trim());
        page's, not the bar's: it grows with the window and stops before the copy
        drifts away from the top of the screen. It is measured to sit just under the
        large mark at the top, so the mark, not an empty band, holds that space. */
-    padding-top: calc(var(--masthead-h) + var(--brand-lift-top) + clamp(110px, 4.4vh, 56px));
+    padding-top: calc(
+      var(--masthead-h) + var(--brand-lift-top) + var(--masthead-pad-top) + clamp(110px, 9vh, 170px)
+    );
     padding-bottom: clamp(36px, 5vh, 36px);
   }
 

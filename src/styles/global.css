@@ -209,6 +209,10 @@
      and the hero can size itself against what the lockup will be on load. */
   --brand-lift-top: calc(var(--brand-top) - var(--brand-settled));
   --brand-lift: calc(var(--brand-lift-top) * (1 - var(--masthead-progress)));
+  /* The room the page keeps above the lockup at the top of the page. It leaves with the lockup, so the settled bar
+     keeps the drawn height the rest of the page is measured against, and the hero adds it back on load. */
+  --masthead-pad-top: 28px;
+  --masthead-pad: calc(var(--masthead-pad-top) * (1 - var(--masthead-progress)));
   /* Named because the room the masthead leaves below the lockup is measured against
      the headline's leading. */
   --headline-size: clamp(1.9rem, 1.2rem + 2.2vw, 3rem);
@@ -452,11 +456,11 @@ svg {
      off the copy below for longer. The safe-area band is part of the box, so the
      surface reaches over the notch, while the negative margin hands back only the
      drawn bar and leaves the page below that band. */
-  padding-top: calc(var(--brand-lift) + var(--safe-top));
+  padding-top: calc(var(--brand-lift) + var(--masthead-pad) + var(--safe-top));
   position: sticky;
   top: 0;
   z-index: 10;
-  margin-bottom: calc(-1 * (var(--masthead-h) + 1px + var(--brand-lift)));
+  margin-bottom: calc(-1 * (var(--masthead-h) + 1px + var(--brand-lift) + var(--masthead-pad)));
   /* At the top of the page the bar is part of the page: it has no surface and no
      rule, and the saturation is scaled with the ramp rather than left at its full
      value, which would tint the page under a bar that is meant to be invisible.
