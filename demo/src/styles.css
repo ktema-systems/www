@@ -76,7 +76,7 @@
 
   --page: 1120px;
   --gutter: 40px;
-  --bar: 56px;
+  --bar: 60px;
   --radius: 2px;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -163,23 +163,44 @@ h1 {
   height: 100%;
   margin-inline: auto;
   padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px)) max(var(--gutter), env(safe-area-inset-right, 0px));
-  font-family: var(--mono);
-  font-size: 11.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  /* The bar is the company's masthead, so it is set in the same face and the same case as the one it belongs to. The
+     mono is kept for the badges, which are data rather than navigation. */
+  font-family: var(--text);
+  font-size: 15px;
+  letter-spacing: 0;
 }
 
-.bar__home {
-  color: var(--fg-2);
-}
-
-.bar__home:hover,
-.bar__back:hover {
+/* The lockup is the site's: the mark, then the name in the display cut. */
+.bar__brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
   color: var(--fg);
+  white-space: nowrap;
+}
+
+.bar__mark {
+  width: 20px;
+  height: 20px;
+  background-color: currentColor;
+  mask: url('/logo.svg') center / contain no-repeat;
+}
+
+.bar__name {
+  font-stretch: 115%;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: 15.5px;
+}
+
+.bar__brand:hover,
+.bar__back:hover {
+  color: var(--accent);
 }
 
 /* A bar item is a label rather than a line of prose: it stays on one row and the title gives up its width first. */
-.bar__home,
+.bar__brand,
 .bar__sep,
 .bar__back {
   flex: 0 0 auto;
@@ -191,12 +212,12 @@ h1 {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: var(--fg);
+  color: var(--fg-3);
 }
 
 .bar__sep {
   width: 1px;
-  height: 14px;
+  height: 16px;
   background: var(--line-2);
 }
 
@@ -208,19 +229,16 @@ h1 {
   color: var(--accent);
 }
 
-/* The way home is the way back, so on the home page it is where the reader already is. */
-.bar__back[aria-current] {
-  color: var(--fg-3);
-}
-
 .tag {
   flex: 0 0 auto;
   padding: 2px 7px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
   color: var(--fg-3);
+  font-family: var(--mono);
   font-size: 10px;
   letter-spacing: 0.1em;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -553,6 +571,90 @@ h1 {
   color: var(--accent);
 }
 
+/* ── a recorded run ───────────────────────────────────────────────────── */
+
+.terminal {
+  margin: 0;
+}
+
+.terminal__still {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: #000;
+}
+
+.terminal__still img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.terminal__play {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 6px 10px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.55);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.terminal figcaption {
+  margin-top: 14px;
+  max-width: 68ch;
+  color: var(--fg-2);
+  font-size: 15px;
+}
+
+.terminal__more {
+  margin-top: 36px;
+}
+
+.terminal__more h2 {
+  margin: 0 0 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.terminal__more ul {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.terminal__more li {
+  display: grid;
+  gap: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.terminal__more a {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+.terminal__more span {
+  max-width: 68ch;
+  color: var(--fg-3);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
 /* ── a phone ──────────────────────────────────────────────────────────── */
 
 @media (max-width: 960px) {
@@ -576,12 +678,24 @@ h1 {
     --gutter: 22px;
   }
 
-  /* Two labels fit on a phone: where the reader is, and the way out. A home page repeats its own name above the
-     heading, so the section name is the first thing to go, and a count is the second. */
+  /* Two labels fit on a phone: the lockup, and the way home. A home page repeats its own name under the bar, so the
+     section name is the first thing to go. */
   .bar__inner {
     gap: 10px;
-    font-size: 10.5px;
-    letter-spacing: 0.1em;
+    font-size: 14px;
+  }
+
+  .bar__brand {
+    gap: 8px;
+  }
+
+  .bar__mark {
+    width: 18px;
+    height: 18px;
+  }
+
+  .bar__name {
+    font-size: 14.5px;
   }
 
   body.home .bar__sep,

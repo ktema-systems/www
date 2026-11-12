@@ -236,13 +236,7 @@ const assertNever = (value: never): never => {
       fieldReveal="scroll"
       depth
     >
-    <a
-      class="btn btn--accent"
-      href={demoCta.href}
-      slot="actions"
-      data-hero-cta
-      {...(demoCta.external ? { target: '_blank', rel: 'noopener' } : {})}
-    >
+    <a class="btn btn--accent" href={demoCta.href} slot="actions" data-hero-cta>
       {demoCta.label}
     </a>
   </Hero>

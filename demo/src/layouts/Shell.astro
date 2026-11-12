@@ -30,13 +30,15 @@ const page = artifact ? 'artifact' : 'home';
   <body class={page}>
     <header class="bar">
       <div class="bar__inner">
-        {/* The subdomain dropped: `//` is the parent host, and the scheme is whatever this page was served over. */}
-        <a class="bar__home" href="//ktema.systems">Ktema Systems</a>
+        <a class="bar__brand" href="/">
+          <span class="bar__mark" aria-hidden="true"></span>
+          <span class="bar__name">Ktema Systems</span>
+        </a>
         <span class="bar__sep" aria-hidden="true"></span>
         <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
         {artifact?.status ? <span class="tag">{artifact.status}</span> : null}
         <span class="bar__spacer"></span>
-        <a class="bar__back" href="/" aria-current={artifact ? undefined : 'page'}>Home</a>
+        <a class="bar__back" href="https://ktema.systems/">Home</a>
       </div>
     </header>
     <main class="main">

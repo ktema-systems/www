@@ -1,0 +1,38 @@
+---
+// A recorded run. The recording is hosted where it can be replayed, so the center points at it rather than storing the
+// cast: the still is the way in, and the recordings beside it are the rest of the same proof.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+const more = artifact.recordings ?? [];
+---
+
+<figure class="terminal">
+  <a class="terminal__still" href={artifact.source}>
+    {artifact.poster && (
+      <img src={artifact.poster} alt={artifact.posterAlt ?? ''} loading="eager" decoding="async" />
+    )}
+    <span class="terminal__play">Play the recording</span>
+  </a>
+  <figcaption>{artifact.summary}</figcaption>
+</figure>
+
+{
+  more.length > 0 && (
+    <section class="terminal__more">
+      <h2>Also recorded</h2>
+      <ul>
+        {more.map((recording) => (
+          <li>
+            <a href={recording.href}>{recording.label}</a>
+            <span>{recording.detail}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}

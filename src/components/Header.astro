@@ -63,13 +63,7 @@ const sheetItems = items.filter((item) => !item.items);
       }
     </nav>
     <span class="masthead__cta">
-      <a
-        class="btn btn--accent"
-        href={cta.href}
-        {...(cta.external ? { target: '_blank', rel: 'noopener' } : {})}
-      >
-        {cta.label}
-      </a>
+      <a class="btn btn--accent" href={cta.href}>{cta.label}</a>
     </span>
     <button
       class="masthead__toggle"

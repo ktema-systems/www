@@ -1,0 +1,23 @@
+<svg viewBox="24 46.8 352 306.4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+  <g transform="rotate(30 200 200)">
+    <!-- Outer hexagon: regular, circumradius 170 -->
+    <polygon points="200,30 347.22,115 347.22,285 200,370 52.78,285 52.78,115"/>
+    <!-- Inner diamond -->
+    <polygon points="200,130 270,200 200,270 130,200"/>
+    <!-- Connection lines -->
+    <line x1="200"    y1="30"  x2="200"    y2="130"/>
+    <line x1="200"    y1="370" x2="200"    y2="270"/>
+    <line x1="52.78"  y1="115" x2="130"    y2="200"/>
+    <line x1="347.22" y1="115" x2="270"    y2="200"/>
+    <line x1="52.78"  y1="285" x2="130"    y2="200"/>
+    <line x1="347.22" y1="285" x2="270"    y2="200"/>
+    <line x1="52.78"  y1="115" x2="200"    y2="130"/>
+    <line x1="347.22" y1="115" x2="200"    y2="130"/>
+    <line x1="52.78"  y1="285" x2="200"    y2="270"/>
+    <line x1="347.22" y1="285" x2="200"    y2="270"/>
+    <line x1="200"    y1="30"  x2="130"    y2="200"/>
+    <line x1="200"    y1="30"  x2="270"    y2="200"/>
+    <line x1="200"    y1="370" x2="130"    y2="200"/>
+    <line x1="200"    y1="370" x2="270"    y2="200"/>
+  </g>
+</svg>
