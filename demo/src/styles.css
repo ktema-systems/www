@@ -511,26 +511,27 @@ h1 {
   border-style: dashed;
 }
 
-/* A bay with nothing in it yet is drawn with the mark's own construction, faint, the way the homepage field draws it.
-   It takes whatever height the row has left over, so the reserved room is the bay itself rather than a gap under the
-   words. */
+/* A bay with nothing in it yet carries the mark's construction as a backdrop, scaled past the edges the way the
+   homepage field is, rather than a logo placed on it. It takes whatever height the row has left over, so the reserved
+   room is the bay itself rather than a gap under the words. */
 .tile__screen--empty {
   position: relative;
   flex: 1 1 auto;
   min-height: 132px;
   aspect-ratio: auto;
+  overflow: hidden;
   border-bottom: 1px dashed var(--line);
 }
 
 .tile__screen--empty::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -18%;
   background-color: var(--accent);
-  opacity: 0.22;
+  opacity: 0.16;
   mask-image: url('/logo.svg');
   mask-position: center;
-  mask-size: min(40%, 132px);
+  mask-size: cover;
   mask-repeat: no-repeat;
 }
 
