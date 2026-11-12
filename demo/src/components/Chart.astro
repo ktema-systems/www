@@ -90,6 +90,18 @@ const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
   <figcaption class="chart__head">
     <span class="chart__title">{title}</span>
     {caption && <span class="chart__caption">{caption}</span>}
+    {
+      series.length > 1 && (
+        <ul class="chart__legend">
+          {series.map((s, i) => (
+            <li class="chart__legend-item">
+              <span class="chart__swatch" style={`background:${colorOf(s, i)}`} />
+              {s.name}
+            </li>
+          ))}
+        </ul>
+      )
+    }
   </figcaption>
   <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title}. ${caption ?? ''}`}>
     <text class="chart__unit" x={m.left} y={12}>{unit}</text>

@@ -846,6 +846,32 @@ h1 {
   line-height: 1.55;
 }
 
+.chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 3px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--fg-3);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.chart__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart__swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
 .chart svg {
   display: block;
   width: 100%;
