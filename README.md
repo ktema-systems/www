@@ -82,38 +82,15 @@ Three figures are computed at build time rather than transcribed:
 - `Competition.astro` places its points on a base-10 scale from the published
   byte figures.
 
-## Deploy
-
-The site is on Cloudflare Pages as `ktema-www`, served at
-`https://ktema-www.pages.dev`.
-
-`.github/workflows/deploy-cf-pages.yml` builds on every pull request and deploys
-on every push to `main`. It needs two repository secrets on
-`ktema-systems/www` before the first run:
-
-| Secret | |
-|---|---|
-| `CF_PAGES_DEPLOY` | a Cloudflare API token with the Account / Cloudflare Pages / Edit permission |
-| `CF_ACCOUNT_ID` | the Cloudflare account ID |
-
-For a local deploy, log Wrangler in once and run the script, which builds the
-site and uploads the output:
-
-```
-npx wrangler@4 login
-./deploy.sh
-```
-
 ## The demonstration center
 
-`demo.ktema.systems` is a second site in this repository, built from its own root
-and published to its own Pages project. It shows the surfaces this stack builds,
-and it names each one by address rather than importing it, so an application is
-deployed on its own schedule and the center never builds it.
+The center is a second site in this repository, built from its own root and served at
+its own address. It shows the surfaces this stack builds, and it names each one by
+address rather than importing it, so an application is deployed on its own schedule and
+the center never builds it.
 
 ```
 npm run demo         # the center beside a local cockpit, started and stopped together
-npm run demo:deploy  # build the center and upload it to the ktema-demo project
 npm run dev:demo     # astro dev --root demo, alone, on the published cockpit's address
 npm run build:demo   # astro build --root demo, into demo-dist/
 ```
@@ -138,8 +115,9 @@ is one component rather than a change to the page. `live` sends a reader to a
 deployed application at its own address, `video` plays footage, and `document`
 points at prose that lives where it is written.
 
-`.github/workflows/deploy-center.yml` builds on every pull request and deploys on
-every push to `main`, using the same two secrets as the site above.
+A product page offers the way into the center only while the center carries a demo
+for that product. That list is read from the same artifact entries, so adding a
+demo is what makes the button appear and removing the last one takes it away.
 
 ## Not yet set
 
