@@ -115,9 +115,8 @@ is one component rather than a change to the page. `live` sends a reader to a
 deployed application at its own address, `video` plays footage, and `document`
 points at prose that lives where it is written.
 
-A product page offers the way into the center only while the center carries a demo
-for that product. That list is read from the same artifact entries, so adding a
-demo is what makes the button appear and removing the last one takes it away.
+A product page carries no way into the center: the bar does, and the body describes the product
+rather than the demonstration.
 
 ## Not yet set
 
