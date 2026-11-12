@@ -1,0 +1,108 @@
+---
+// The device tier: what ran on a board, and what is still modelled on a host.
+//
+// Every figure on this page comes from the two board runs recorded on 2026-10-24. The build has no board attached, so
+// the page quotes the run rather than repeating it, and it says which cases the run does not cover.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+---
+
+<p class="run__lede">{artifact.summary}</p>
+
+<figure class="run__figure">
+  <img src="/board.jpg" alt="An ESP32-S3 mounted on the LiteWing airframe, its status LED lit and the USB bridge connected." />
+  <figcaption>
+    The part the run was made on: an ESP32-S3 mounted on the LiteWing airframe, read with esptool at the bench rather
+    than from a datasheet. Only the application and the partition table were written, so the shipped bootloader starts
+    it.
+  </figcaption>
+</figure>
+
+<section class="bench__fit">
+  <h2>What the board reported</h2>
+  <table>
+    <thead>
+      <tr><th></th><th>Over the RAM medium</th><th>Over the flash region</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Heap peak</td>
+        <td>2,384 B</td>
+        <td>1,648 B</td>
+      </tr>
+      <tr>
+        <td>Arena</td>
+        <td>65,552 B</td>
+        <td>65,552 B</td>
+      </tr>
+      <tr>
+        <td>Medium</td>
+        <td>The engine's own map in RAM</td>
+        <td>A 2 MiB partition at 0x130000</td>
+      </tr>
+      <tr>
+        <td>Records</td>
+        <td>Two written and walked back in one boot</td>
+        <td>Three from three earlier boots, each reached by its coordinate after a reset</td>
+      </tr>
+      <tr>
+        <td>Application</td>
+        <td>356,576 B in a 1 MiB slot</td>
+        <td>447,968 B</td>
+      </tr>
+      <tr>
+        <td>Bootloader</td>
+        <td>Untouched</td>
+        <td>Untouched</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The flash run peaks lower than the RAM run because the region channel holds no map in memory. That is the same
+    trade the host measurements show from the other side: the path that keeps nothing per record is the path that
+    answers by reading the log.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>The surface the firmware links</h2>
+  <p>
+    A part like this has a flash region, a write, and an erase. It has no key-value medium, so the C surface takes
+    that shape rather than a layout: the region as a slice the engine can read, and two callbacks for the writes and
+    the erases that the driver owns.
+  </p>
+  <p>
+    The region channel sits above it and carries the log, the segment index, the forward-only write rule, and the
+    recovery of a torn tail. The firmware writes no format and keeps no index of its own, which is why the same
+    application runs unchanged here and on the host.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>What the board does not cover yet</h2>
+  <p>
+    Two cases are modelled against a slice and have not run on a part: a power cut in the middle of a write, and a
+    region that has filled and retired its oldest segment. Until both run on the board, the durability claim covers
+    the reopen that the run above performs, and does not cover those two.
+  </p>
+</section>
+
+<dl class="run__meta">
+  <div>
+    <dt>Firmware</dt>
+    <dd><code>{artifact.source}</code>, ESP-IDF</dd>
+  </div>
+  <div>
+    <dt>Entry point</dt>
+    <dd><code>ktema_open_over_storage</code>, ABI 6</dd>
+  </div>
+  <div>
+    <dt>Recorded</dt>
+    <dd>2026-10-24</dd>
+  </div>
+</dl>

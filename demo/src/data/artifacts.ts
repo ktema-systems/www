@@ -7,8 +7,8 @@
 // A surface that is not built yet is a separate list rather than an entry with an empty address, because an entry with
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
-/** `live` is a deployed application the reader is sent to; the center draws the other three itself. */
-export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench';
+/** `live` is a deployed application the reader is sent to; the center draws the other four itself. */
+export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device';
 
 /** A recorded run of the engine: a page of its own, a still, and the video its page plays with native controls. */
 export interface Recording {
@@ -38,7 +38,7 @@ export interface Artifact {
   kind: ArtifactKind;
   /** What a reader learns before opening it, in one or two sentences. */
   summary: string;
-  /** A live application's address, a video's file, a document's page, or the first run of a set. */
+  /** A live application's address, a video's file, a document's page, a run inside a set, or the source a device run names. */
   source: string;
   /** The still a reader sees before opening it. */
   poster?: string;
@@ -160,16 +160,22 @@ export const artifacts: Artifact[] = [
       'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
     source: '/bench',
   },
+  {
+    id: 'device',
+    title: 'The engine on a microcontroller',
+    product: 'Ktema',
+    kind: 'device',
+    summary:
+      'The engine linked into an ESP32-S3 firmware, keeping its records in the part of its flash it was given and reading them back after a reset. No operating system, no filesystem, no database.',
+    source: 'firmware/litewing',
+    poster: '/board.jpg',
+    posterAlt:
+      'An ESP32-S3 mounted on the LiteWing airframe on the bench, the part that holds the engine and its records.',
+  },
 ];
 
 // The order here is the order the grid draws them in. They sit beside the artifacts rather than under them, because a
 // reader who came for one demonstration still learns what the center is going to be. Each names the work it stands for,
-// which is what the devlogs carry rather than a description of what a video is.
-export const planned: PlannedSurface[] = [
-  {
-    title: 'Hardware edge',
-    product: 'Ktema',
-    summary:
-      'An ESP32-S3 keeping its records in its own flash, read back after a reset. Still to run on the board: a power cut mid-write, and a full region retiring its oldest segment.',
-  },
-];
+// which is what the devlogs carry rather than a description of what a video is. The list is empty while everything the
+// center can show without a part attached is shown, and a planned surface is a tile with a badge instead of an address.
+export const planned: PlannedSurface[] = [];
