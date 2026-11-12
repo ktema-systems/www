@@ -157,7 +157,7 @@ export const artifacts: Artifact[] = [
     product: 'Ktema',
     kind: 'bench',
     summary:
-      'The engine measured at 1,000, 10,000 and 100,000 records: the write cost per record, the log size, the open, the point read, and a box query.',
+      'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
     source: '/bench',
   },
 ];
