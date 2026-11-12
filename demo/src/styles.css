@@ -783,6 +783,14 @@ h1 {
   font-size: 1.1rem;
 }
 
+/* The formal part is one document, so the rules between its sections belong to the headings rather than to a wrapper
+   per section. */
+.bench__fit > h2:not(:first-child) {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+}
+
 .bench__fit p {
   margin: 0 0 22px;
   color: var(--fg-2);

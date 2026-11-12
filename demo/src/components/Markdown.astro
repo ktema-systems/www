@@ -1,0 +1,28 @@
+---
+// A document rendered from Markdown, with the numbers injected from the data that owns them.
+//
+// The formal part of a page is prose, and prose is written and edited as Markdown. Its figures are measurements, and a
+// measurement written into prose is a second copy that can drift. So the document carries `{{name}}` where a value
+// goes and the caller hands the values in, which keeps one source for every number and one source for every sentence.
+import { createSatteriMarkdownProcessor } from '@astrojs/markdown-satteri';
+
+interface Props {
+  /** The document, as Markdown, with `{{name}}` where a value belongs. */
+  source: string;
+  values?: Record<string, string>;
+}
+
+const { source, values = {} } = Astro.props;
+
+// A missing value is a document that would publish a placeholder, so the build stops instead.
+const filled = source.replace(/\{\{\s*([a-zA-Z0-9_-]+)\s*\}\}/g, (_match, name: string) => {
+  const value = values[name];
+  if (value === undefined) throw new Error(`the document asks for a value it was not given: ${name}`);
+  return value;
+});
+
+const processor = await createSatteriMarkdownProcessor({});
+const { code } = await processor.render(filled);
+---
+
+<Fragment set:html={code} />

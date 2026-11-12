@@ -1,7 +1,12 @@
 ---
 // The measurement page: one workload measured three ways. What is compared is the shape each
 // engine gives the same record, because that is what a buyer chooses between.
+//
+// The charts are drawn from the data. The document under them is Markdown, and it carries no figure of its own: every
+// number arrives from `data/bench.ts` through the values below, so a re-run cannot leave the prose quoting an old one.
 import Chart from '../components/Chart.astro';
+import Markdown from '../components/Markdown.astro';
+import formal from '../content/bench.md?raw';
 import { engines, indexMemory, ceiling, source, type Row } from '../data/bench';
 
 const label = (n: number) => (n >= 1_000_000 ? `${n / 1_000_000}M` : n >= 1000 ? `${n / 1000}k` : String(n));
@@ -26,6 +31,33 @@ const log1m = at('log', 1_000_000);
 const sqlite1m = at('sqlite', 1_000_000);
 const ktemaRows = engines[0]!.rows;
 const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
+const sqliteCache = indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes;
+
+// How many times the volume the engine reads to answer a tenth of it, which is what its time follows.
+const tenthMultiple = (ktema100k.range_bytes ?? 0) / ktema100k.volume_bytes;
+
+const values: Record<string, string> = {
+  bytes_ktema: String(ktema1m.bytes_per_record),
+  bytes_log: String(log1m.bytes_per_record),
+  bytes_sqlite: String(sqlite1m.bytes_per_record),
+  index_ktema: `${kb(indexMemory.engine_bytes).toFixed(0)} kB, optional; not built in this run`,
+  index_log: `${mib(logMap1m).toFixed(0)} MB, one entry per record`,
+  index_sqlite: `${mib(sqliteCache).toFixed(1)} MB, page cache`,
+  append_ktema: `${ktema100k.write_us.toFixed(1)} µs`,
+  append_log: `${log100k.write_us.toFixed(1)} µs`,
+  append_sqlite: `${sqlite100k.write_us.toFixed(1)} µs`,
+  open_ktema: `${(ktema100k.open_us / 1000).toFixed(2)} ms`,
+  open_log: `${(log100k.open_us / 1000).toFixed(2)} ms`,
+  open_sqlite: `${(sqlite100k.open_us / 1000).toFixed(2)} ms`,
+  point_ktema: `${ktema100k.point_read_us.toFixed(2)} µs, reading ${kb(ktema100k.point_read_bytes ?? 0).toFixed(0)} kB`,
+  point_log: `${log100k.point_read_us.toFixed(2)} µs`,
+  point_sqlite: `${sqlite100k.point_read_us.toFixed(2)} µs`,
+  tenth_ktema: `${(ktema100k.range_us / 1000).toFixed(0)} ms, reading ${tenthMultiple.toFixed(1)} times the volume`,
+  tenth_log: `${(log100k.range_us / 1000).toFixed(2)} ms`,
+  tenth_sqlite: `${(sqlite100k.range_us / 1000).toFixed(2)} ms`,
+  ceiling_records: ceiling.records.toLocaleString('en-US'),
+  volume_multiple: tenthMultiple.toFixed(1),
+};
 ---
 
 <p class="bench__lede">
@@ -37,7 +69,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 <div class="bench__grid">
   <Chart
     title="Memory to answer by address"
-    caption={`The index each engine has to hold. The bare log builds one map entry per record, and at five million records that map is ${mib(indexMemory.log_at_five_million).toFixed(0)} MB. The engine's line is its optional structural index, a fixed array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB that this benchmark does not build: the run opens without record maps, so it answers a box query by walking the log. A database keeps its index in a file, so the memory it holds is the page cache that file is read through, which follows the records until it reaches about ${mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(0)} MB, the size the cache was configured with.`}
+    caption={`The index each engine has to hold. The bare log builds one map entry per record, and at five million records that map is ${mib(indexMemory.log_at_five_million).toFixed(0)} MB. The engine's line is its optional structural index, a fixed array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB that this benchmark does not build: the run opens without record maps, so it answers a box query by walking the log. A database keeps its index in a file, so the memory it holds is the page cache that file is read through, which follows the records until it reaches about ${mib(sqliteCache).toFixed(0)} MB, the size the cache was configured with.`}
     unit="MB"
     scale="log"
     decimals={2}
@@ -125,120 +157,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 </div>
 
 <section class="bench__fit">
-  <h2>What the three are</h2>
-  <table>
-    <thead>
-      <tr><th></th><th>Ktema</th><th>Append log</th><th>SQLite</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>What it is</td>
-        <td>An addressable history, written where the event happened</td>
-        <td>A record of what happened, and nothing else</td>
-        <td>Rows a program queries and changes</td>
-      </tr>
-      <tr>
-        <td>Host it needs</td>
-        <td>None on the device tier; an OS on the host tier</td>
-        <td>An OS and a filesystem</td>
-        <td>An OS and a filesystem</td>
-      </tr>
-      <tr>
-        <td>How an address is found</td>
-        <td>Computed from the record itself</td>
-        <td>A map entry per record, rebuilt at every mount</td>
-        <td>An index on disk, walked at each read</td>
-      </tr>
-      <tr>
-        <td>Bytes per record, at 1M</td>
-        <td>{ktema1m.bytes_per_record}</td>
-        <td>{log1m.bytes_per_record}</td>
-        <td>{sqlite1m.bytes_per_record}</td>
-      </tr>
-      <tr>
-        <td>Index the volume holds, at 1M</td>
-        <td>{kb(indexMemory.engine_bytes).toFixed(0)} kB, optional; not built in this run</td>
-        <td>{mib(logMap1m).toFixed(0)} MB, one entry per record</td>
-        <td>{mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB, page cache</td>
-      </tr>
-      <tr>
-        <td>Append one record, at 100k</td>
-        <td>{ktema100k.write_us.toFixed(1)} µs</td>
-        <td>{log100k.write_us.toFixed(1)} µs</td>
-        <td>{sqlite100k.write_us.toFixed(1)} µs</td>
-      </tr>
-      <tr>
-        <td>Open, at 100k</td>
-        <td>{(ktema100k.open_us / 1000).toFixed(2)} ms</td>
-        <td>{(log100k.open_us / 1000).toFixed(2)} ms</td>
-        <td>{(sqlite100k.open_us / 1000).toFixed(2)} ms</td>
-      </tr>
-      <tr>
-        <td>One record by address, at 100k</td>
-        <td>
-          {ktema100k.point_read_us.toFixed(2)} µs, reading {(kb(ktema100k.point_read_bytes ?? 0)).toFixed(0)} kB
-        </td>
-        <td>{log100k.point_read_us.toFixed(2)} µs</td>
-        <td>{sqlite100k.point_read_us.toFixed(2)} µs</td>
-      </tr>
-      <tr>
-        <td>A tenth, by address, at 100k</td>
-        <td>
-          {(ktema100k.range_us / 1000).toFixed(0)} ms, reading {((ktema100k.range_bytes ?? 0) / ktema100k.volume_bytes).toFixed(1)} times the volume
-        </td>
-        <td>{(log100k.range_us / 1000).toFixed(2)} ms</td>
-        <td>{(sqlite100k.range_us / 1000).toFixed(2)} ms</td>
-      </tr>
-      <tr>
-        <td>Where it stops</td>
-        <td>A volume of 4 GiB, about {ceiling.records.toLocaleString('en-US')} records</td>
-        <td>When the address map no longer fits the memory it has</td>
-        <td>Where its filesystem does not exist</td>
-      </tr>
-      <tr>
-        <td>Right tool when</td>
-        <td>The host has no operating system and the history is the product</td>
-        <td>The only question is what happened, on a host of a few kilobytes</td>
-        <td>The data changes and the questions are not known in advance</td>
-      </tr>
-    </tbody>
-  </table>
-</section>
-
-<section class="bench__fit">
-  <h2>Reading the times</h2>
-  <p>
-    The host rows are the engine's reference path, opened without record maps. That is the device's path: it reads
-    the medium in bytes, keeps no block cache, and builds no index, so a box query walks the log. A tenth of the
-    addresses at a hundred thousand records reads 9.5 times the volume, which is where its time comes from. The
-    section below prices the other path.
-  </p>
-  <p>
-    The append log and the database are at their best on a host, with an operating system, a filesystem and a warm
-    page cache. Neither of them runs on a part with no operating system, and the log's address map stops fitting long
-    before the volumes it is meant to serve. The engine's case is that tier.
-  </p>
-  <p>
-    The append figure has the widest spread of the four. Repeated runs at a hundred thousand records put it between
-    12 and 18 µs for both the engine and the database, while the other three stayed within a tenth of their value.
-    Each row is one median of one run.
-  </p>
-</section>
-
-<section class="bench__fit">
-  <h2>The path this page does not measure</h2>
-  <p>
-    A volume opens two ways. The reference path builds nothing and answers by reading the log, which is what every
-    number above measures. The cached path builds the record maps, at 394 to 406 bytes a record on a 32-bit target,
-    and carries the structural index at about 354 kB, so a read is served from memory rather than from the medium. A
-    host, or a part with memory to spare, can take that path. A part with 64 kB cannot, and that is the reason this
-    page measures the reference path: it is the one that runs in both places.
-  </p>
-  <p>
-    Both paths hold the same record in the same format, so the choice does not change what the volume is. It changes
-    where the cost lands, on the medium or in the memory. What stays the same either way is the bytes each record
-    takes, the 4 GiB a volume can address, and the record being written where the event happened.
-  </p>
+  <Markdown source={formal} values={values} />
 </section>
 
 <p class="bench__source">

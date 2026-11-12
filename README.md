@@ -118,6 +118,10 @@ points at prose that lives where it is written.
 A product page carries no way into the center: the bar does, and the body describes the product
 rather than the demonstration.
 
+The formal part of a page is Markdown under `demo/src/content/`, rendered by `demo/src/components/Markdown.astro`.
+The document carries `{{name}}` where a figure goes and the caller hands the values in, so the prose and the numbers
+keep one source each and a re-run cannot leave a sentence quoting an older one.
+
 ## Not yet set
 
 `astro.config.mjs` leaves `site` unset, because the production domain is not
