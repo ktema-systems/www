@@ -12,7 +12,8 @@ const answers = volumes.map((v) => v.query_answers.toLocaleString('en-US')).join
 
 <p class="bench__lede">
   The engine measured on one host at 1,000, 10,000 and 100,000 records. Each volume is built once; every number is the
-  median of {source.samples} samples.
+  median of {source.samples} samples. These are the format's own costs, not a comparison against a database; the note
+  below says which workload each is the right tool for.
 </p>
 
 <div class="bench__grid">
@@ -37,7 +38,7 @@ const answers = volumes.map((v) => v.query_answers.toLocaleString('en-US')).join
   />
   <Chart
     title="Open"
-    caption="The channel and the engine over the log as it stands. There is no index to rebuild."
+    caption="The engine over the log as it stands. The growth is hydration, not an index rebuild."
     unit="µs"
     decimals={1}
     series={[{ name: 'open', points: volumes.map((v) => ({ label: label(v.records), value: v.open_us })) }]}
@@ -65,6 +66,59 @@ const answers = volumes.map((v) => v.query_answers.toLocaleString('en-US')).join
     ]}
   />
 </div>
+
+<section class="bench__fit">
+  <h2>Where this engine fits</h2>
+  <p>
+    Ktema is a record engine for an append-only, addressable history, not a general-purpose database. The format's
+    per-record write cost is flat, and the structural index is constant in record count. Mount and hydration are
+    linear: opening a volume walks the log and the host build keeps the record maps it hydrates. The total memory is
+    therefore not constant, and this page does not claim it is. What stays constant is the index, not the engine's
+    whole working set.
+  </p>
+  <table>
+    <thead>
+      <tr><th></th><th>Ktema</th><th>A relational database</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Purpose</td>
+        <td>An addressable history of what happened</td>
+        <td>Rows a program queries and changes</td>
+      </tr>
+      <tr>
+        <td>Write</td>
+        <td>Flat per record: 482 to 484 bytes</td>
+        <td>Row plus index maintenance</td>
+      </tr>
+      <tr>
+        <td>Index</td>
+        <td>Constant in record count, linear in distinct axis values</td>
+        <td>Grows with rows</td>
+      </tr>
+      <tr>
+        <td>Mount</td>
+        <td>Linear in the log, because the record maps hydrate</td>
+        <td>Fast, because the index is already on disk</td>
+      </tr>
+      <tr>
+        <td>Host</td>
+        <td>A service, or no OS at all on the device tier</td>
+        <td>An OS and a filesystem</td>
+      </tr>
+      <tr>
+        <td>Query</td>
+        <td>Addressed reads and bounded boxes</td>
+        <td>SQL, joins, ad-hoc predicates</td>
+      </tr>
+      <tr>
+        <td>Right tool when</td>
+        <td>The history is the product and the host is constrained</td>
+        <td>The data is mutable and the questions are open</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
 
 <p class="bench__source">
   {source.command} · commit {source.commit} · {source.recorded} · median of {source.samples} samples. The host's seconds
