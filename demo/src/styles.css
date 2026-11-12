@@ -202,7 +202,8 @@ h1 {
 /* A bar item is a label rather than a line of prose: it stays on one row and the title gives up its width first. */
 .bar__brand,
 .bar__sep,
-.bar__back {
+.bar__back,
+.bar__cta {
   flex: 0 0 auto;
   white-space: nowrap;
 }
@@ -227,6 +228,30 @@ h1 {
 
 .bar__back {
   color: var(--accent);
+}
+
+/* The one thing the bar asks of a reader, on every page: a demo can be requested by mail. It is the accent's own edge,
+   filled only when it is reached. */
+.bar__cta {
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition:
+    background 240ms var(--ease),
+    border-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.bar__cta:hover,
+.bar__cta:focus-visible {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--fg);
 }
 
 
@@ -667,8 +692,8 @@ h1 {
     font-size: 14.5px;
   }
 
-  body.home .bar__sep,
-  body.home .bar__title {
+  .bar__sep,
+  .bar__title {
     display: none;
   }
 

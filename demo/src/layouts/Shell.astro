@@ -12,10 +12,6 @@ interface Props {
 }
 
 const { title, artifact } = Astro.props;
-
-// The bar hides its section name on a narrow screen, and which name that is depends on the page: a home page repeats the
-// eyebrow under it, and an artifact page would lose where the reader is. So the page says which of the two it is.
-const page = artifact ? 'artifact' : 'home';
 ---
 
 <!doctype html>
@@ -27,7 +23,7 @@ const page = artifact ? 'artifact' : 'home';
     <meta name="description" content={artifact?.summary ?? 'The surfaces Ktema Systems builds, in one place.'} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
-  <body class={page}>
+  <body>
     <header class="bar">
       <div class="bar__inner">
         <a class="bar__brand" href="/">
@@ -37,7 +33,8 @@ const page = artifact ? 'artifact' : 'home';
         <span class="bar__sep" aria-hidden="true"></span>
         <span class="bar__title">{artifact ? artifact.title : 'Demo Center'}</span>
         <span class="bar__spacer"></span>
-        <a class="bar__back" href="https://ktema.systems/">Home</a>
+        {artifact ? <a class="bar__back" href="/">Home</a> : null}
+        <a class="bar__cta" href="mailto:demo@ktema.systems">Enquiry Demo</a>
       </div>
     </header>
     <main class="main">
