@@ -455,13 +455,13 @@ h1 {
 .tile__product,
 .product-tag {
   padding: 2px 7px;
-  border: 1px solid var(--line-2);
+  border: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
   border-radius: var(--radius);
   font-family: var(--mono);
   font-size: 9.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--fg-3);
+  color: var(--accent);
 }
 
 .tile__product {
