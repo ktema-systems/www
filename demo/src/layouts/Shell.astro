@@ -17,9 +17,6 @@ interface Props {
 }
 
 const { title, description, crumbs = [{ label: 'Demo Center' }] } = Astro.props;
-
-// The last crumb is where the reader is; every earlier one is a way back.
-const isSubpage = crumbs.length > 1;
 ---
 
 <!doctype html>
@@ -47,7 +44,7 @@ const isSubpage = crumbs.length > 1;
                   {crumb.label}
                 </a>
               ) : (
-                <span class:list={['bar__title', isSubpage && 'bar__title--current']}>{crumb.label}</span>
+                <span class="bar__title bar__title--current">{crumb.label}</span>
               )}
             </>
           ))
