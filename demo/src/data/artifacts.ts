@@ -76,12 +76,13 @@ const PROOFS: Recording[] = [
       'A terminal replaying the thirteen-step scenario: writes at two clocks, six window queries, a listing and a flush, ending on the digest 0x299bd5d0e1821fab.',
   },
   {
-    label: 'The C surface on a Cortex-M4',
-    detail: 'The test body linked from C, 6,672 bytes of a 65,536-byte arena at peak.',
-    href: 'https://asciinema.org/a/Xg7XgDqP27scB999',
+    label: 'One test body, two architectures',
+    detail:
+      'The same C test body linked from C and run under QEMU on a Cortex-M4 and a RISC-V core, with the same fifteen measurements on both.',
+    href: 'https://asciinema.org/a/qKmoAREJtuVC2hej',
     poster: '/proofs/capi-arm.png',
     posterAlt:
-      'A terminal replaying the Cortex-M4 check: the same C test body under QEMU, ending with PASS: C surface round trip.',
+      'A terminal replaying the C surface on a Cortex-M4 and on a RISC-V core: both report the same fifteen measurements, ending with PASS: C surface round trip.',
   },
   {
     label: 'Three refusals',
