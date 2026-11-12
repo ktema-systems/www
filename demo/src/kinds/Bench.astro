@@ -1,0 +1,72 @@
+---
+// The measurement page: one chart per number the benchmark run records. The numbers are committed data, not measured
+// on every build, so the page is a reading of a run rather than a benchmark of its own.
+import Chart from '../components/Chart.astro';
+import { volumes, source } from '../data/bench';
+
+const label = (n: number) => (n >= 1000 ? `${n / 1000}k` : String(n));
+const mib = (bytes: number) => bytes / (1024 * 1024);
+const millis = (microseconds: number) => microseconds / 1000;
+const answers = volumes.map((v) => v.query_answers.toLocaleString('en-US')).join(', ');
+---
+
+<p class="bench__lede">
+  The engine measured on one host at 1,000, 10,000 and 100,000 records. Each volume is built once; every number is the
+  median of {source.samples} samples.
+</p>
+
+<div class="bench__grid">
+  <Chart
+    title="Bytes written per record"
+    caption="The format's per-record write cost is flat across two orders of magnitude."
+    unit="bytes"
+    kind="bar"
+    decimals={0}
+    series={[
+      { name: 'per record', points: volumes.map((v) => ({ label: label(v.records), value: v.write_medium_bytes })) },
+    ]}
+  />
+  <Chart
+    title="Volume size"
+    caption="The log grows linearly with the records, as a log does."
+    unit="MB"
+    decimals={1}
+    series={[
+      { name: 'volume', points: volumes.map((v) => ({ label: label(v.records), value: mib(v.volume_bytes) })) },
+    ]}
+  />
+  <Chart
+    title="Open"
+    caption="The channel and the engine over the log as it stands. There is no index to rebuild."
+    unit="µs"
+    decimals={1}
+    series={[{ name: 'open', points: volumes.map((v) => ({ label: label(v.records), value: v.open_us })) }]}
+  />
+  <Chart
+    title="Point read"
+    caption="One framing read, which is what a replay pays per record."
+    unit="µs"
+    decimals={2}
+    series={[
+      {
+        name: 'point read',
+        points: volumes.map((v) => ({ label: label(v.records), value: v.point_read_us })),
+      },
+    ]}
+  />
+  <Chart
+    title="Box query"
+    caption={`A box over a tenth of an axis, answering ${answers} records. This is the scan path; the structural index is not enabled in this build.`}
+    unit="ms"
+    scale="log"
+    decimals={2}
+    series={[
+      { name: 'query', points: volumes.map((v) => ({ label: label(v.records), value: millis(v.query_us) })) },
+    ]}
+  />
+</div>
+
+<p class="bench__source">
+  {source.command} · commit {source.commit} · {source.recorded} · median of {source.samples} samples. The host's seconds
+  and the medium's bytes answer different questions; each chart carries one unit.
+</p>

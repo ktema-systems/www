@@ -8,7 +8,7 @@
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
 /** `live` is a deployed application the reader is sent to; the center draws the other three itself. */
-export type ArtifactKind = 'live' | 'video' | 'document' | 'runs';
+export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench';
 
 /** A recorded run of the engine: a page of its own, a still, and the video its page plays with native controls. */
 export interface Recording {
@@ -144,6 +144,14 @@ export const artifacts: Artifact[] = [
       'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
     source: RUNS[0].href,
     recordings: RUNS,
+  },
+  {
+    id: 'bench',
+    title: 'Measurements',
+    kind: 'bench',
+    summary:
+      'The engine measured at 1,000, 10,000 and 100,000 records: the write cost per record, the log size, the open, the point read, and a box query.',
+    source: '/bench',
   },
 ];
 
