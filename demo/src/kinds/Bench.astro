@@ -36,24 +36,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 
 <div class="bench__grid">
   <Chart
-    title="Bytes on the medium, per record"
-    caption="Constant in record count for all three, which is the point: the cost of a format is a property of the format. The engine's record carries three addresses, so it is the largest of the three and stays that way."
-    unit="bytes"
-    kind="bar"
-    decimals={0}
-    series={seriesOf((row) => row.bytes_per_record)}
-  />
-  <Chart
-    title="Volume size"
-    caption="Linear for all three, as a log is. At a million records the engine's volume is 473 MB, the append log's 245 MB and the database's 279 MB."
-    unit="MB"
-    scale="log"
-    decimals={1}
-    series={seriesOf((row) => mib(row.volume_bytes))}
-  />
-  <Chart
     title="Memory to answer by address"
-    wide={true}
     caption={`The index each engine has to hold. The bare log builds one map entry per record. The engine's index is a constant array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB on a 32-bit target. A database keeps its index in a file, so the memory it holds is the page cache that file is read through: it follows the records until it reaches the size the cache was configured with, then stops at ${mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB.`}
     unit="MB"
     scale="log"
@@ -78,6 +61,14 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
         points: indexMemory.sqlite.map((point) => ({ label: label(point.records), value: mib(point.bytes) })),
       },
     ]}
+  />
+  <Chart
+    title="Volume size"
+    caption="Linear for all three, as a log is. At a million records the engine's volume is 473 MB, the append log's 245 MB and the database's 279 MB."
+    unit="MB"
+    scale="log"
+    decimals={1}
+    series={seriesOf((row) => mib(row.volume_bytes))}
   />
   <Chart
     title="Write one record"
