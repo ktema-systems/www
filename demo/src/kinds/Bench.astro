@@ -30,20 +30,20 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 
 <p class="bench__lede">
   One record, three stores, on one machine. The record is three 60-byte addresses, an origin, a media type and a
-  payload of about 55 bytes, which is what the engine's own bench writes. Each row below measures the same content,
+  payload of about 55 bytes, which is what the engine's own bench writes. Each chart below measures the same content,
   so the differences are the formats.
 </p>
 
 <div class="bench__grid">
   <Chart
     title="Memory to answer by address"
-    caption={`The index each engine has to hold. The bare log builds one map entry per record. The engine's index is a constant array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB on a 32-bit target. A database keeps its index in a file, so the memory it holds is the page cache that file is read through: it follows the records until it reaches the size the cache was configured with, then stops at ${mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB.`}
+    caption={`The index each engine has to hold. The bare log builds one map entry per record, and at five million records that map is ${mib(indexMemory.log_at_five_million).toFixed(0)} MB. The engine's line is its optional structural index, a fixed array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB that this benchmark does not build: the run opens without record maps, so it answers a box query by walking the log. A database keeps its index in a file, so the memory it holds is the page cache that file is read through, which follows the records until it reaches about ${mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(0)} MB, the size the cache was configured with.`}
     unit="MB"
     scale="log"
     decimals={2}
     series={[
       {
-        name: 'Ktema',
+        name: 'Ktema, optional index',
         color: 'var(--accent)',
         points: indexMemory.log.map((point) => ({
           label: label(point.records),
@@ -96,7 +96,7 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
   />
   <Chart
     title="A tenth of the records by address"
-    caption="A contiguous tenth of the addresses, enumerated rather than counted: about 100 records at a thousand and about 100,000 at a million."
+    caption="A contiguous tenth of the addresses, enumerated rather than counted: about 100 records at a thousand and about 100,000 at a million. The engine's path carries no index, so it walks the log."
     unit="µs"
     scale="log"
     decimals={0}
@@ -156,10 +156,10 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
         <td>{sqlite1m.bytes_per_record}</td>
       </tr>
       <tr>
-        <td>Memory to answer by address, at 1M</td>
-        <td>{kb(indexMemory.engine_bytes).toFixed(0)} kB, fixed</td>
+        <td>Index the volume holds, at 1M</td>
+        <td>{kb(indexMemory.engine_bytes).toFixed(0)} kB, optional; not built in this run</td>
         <td>{mib(logMap1m).toFixed(0)} MB, one entry per record</td>
-        <td>{mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB, at its configured cache</td>
+        <td>{mib(indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes).toFixed(1)} MB, page cache</td>
       </tr>
       <tr>
         <td>Append one record, at 100k</td>
@@ -181,7 +181,9 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
       </tr>
       <tr>
         <td>A tenth, by address, at 100k</td>
-        <td>{(ktema100k.range_us / 1000).toFixed(0)} ms</td>
+        <td>
+          {(ktema100k.range_us / 1000).toFixed(0)} ms, reading {((ktema100k.range_bytes ?? 0) / ktema100k.volume_bytes).toFixed(1)} times the volume
+        </td>
         <td>{(log100k.range_us / 1000).toFixed(2)} ms</td>
         <td>{(sqlite100k.range_us / 1000).toFixed(2)} ms</td>
       </tr>
@@ -204,17 +206,20 @@ const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 <section class="bench__fit">
   <h2>Reading the times</h2>
   <p>
-    The host rows are the engine's reference path through its region channel, which reads the medium in bytes and
-    keeps no block cache. A point read there costs 66 kB of medium at a hundred thousand records, so it pays for the
-    bytes it touches, where a mapped file pays nothing. On a device the same read is bounded by a 128 kB segment, and
-    the host bench keeps one open segment for the whole volume, so its times follow the volume rather than the device.
-    These rows are the host path and this page does not present them as the device's.
+    The host rows are the engine's reference path, opened without record maps. That is the device's path: it reads
+    the medium in bytes, keeps no block cache, and builds no index, so a box query walks the log. A tenth of the
+    addresses at a hundred thousand records reads 9.5 times the volume, which is where its time comes from. The
+    cached path builds the map and the index, at 394 to 406 bytes a record, and this benchmark does not use it.
   </p>
   <p>
     The append log and the database are at their best on a host, with an operating system, a filesystem and a warm
     page cache. Neither of them runs on a part with no operating system, and the log's address map stops fitting long
-    before the volumes it is meant to serve. The engine's case is that tier, and the two properties that hold there
-    are the ones drawn above: a fixed index, and a record written where the event happened.
+    before the volumes it is meant to serve. The engine's case is that tier.
+  </p>
+  <p>
+    The append figure has the widest spread of the four. Repeated runs at a hundred thousand records put it between
+    12 and 18 µs for both the engine and the database, while the other three stayed within a tenth of their value.
+    Each row is one median of one run.
   </p>
 </section>
 
