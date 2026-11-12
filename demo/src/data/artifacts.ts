@@ -8,31 +8,39 @@
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
 /** `live` is a deployed application the reader is sent to; the center draws the other three itself. */
-export type ArtifactKind = 'live' | 'video' | 'document' | 'terminal';
+export type ArtifactKind = 'live' | 'video' | 'document' | 'runs';
 
-/** A recorded run, hosted as a replay rather than stored here: a label, what it proves, its address, and its still. */
+/** A recorded run of the engine: a page of its own, a still, and the animation a tile plays while it is held. */
 export interface Recording {
+  /** The run's address: `/runs/<id>`. */
+  id: string;
   label: string;
   detail: string;
+  /** The prose its page carries. Paragraphs are separated by a blank line. */
+  body: string;
+  /** The command that produced the recording. */
+  command: string;
+  /** Where the recording can be replayed. */
   href: string;
   poster: string;
   posterAlt: string;
+  gif: string;
 }
 
 export interface Artifact {
-  /** What the address names: `/delta` is this artifact's page. */
+  /** What the address names: `/runs` is this artifact's page. */
   id: string;
   title: string;
   kind: ArtifactKind;
   /** What a reader learns before opening it, in one or two sentences. */
   summary: string;
-  /** A live application's address, a video's file, a document's page, or a recording's replay. */
+  /** A live application's address, a video's file, a document's page, or the first run of a set. */
   source: string;
   /** The still a reader sees before opening it. */
   poster?: string;
   /** What the still shows, for a reader who cannot see it. */
   posterAlt?: string;
-  /** For a `terminal` artifact: the recordings it lists beside the one it leads with. */
+  /** For a `runs` artifact: the runs it lists. */
   recordings?: Recording[];
 }
 
@@ -46,52 +54,72 @@ export interface PlannedSurface {
 // what a build points at when the artifact moves; the default is where it is published.
 const DELTA = import.meta.env.PUBLIC_DELTA_URL ?? 'https://delta.demo.ktema.systems/';
 
-// The recorded proofs, in the order the page lays them out. Each still is rendered from its cast, so a card shows the
-// run it opens rather than a generic picture of a terminal.
-const PROOFS: Recording[] = [
+// The recorded runs, in the order the page lays them out. Each still and animation is rendered from the cast, so a
+// card shows the run it opens rather than a generic picture of a terminal.
+const RUNS: Recording[] = [
   {
+    id: 'device',
     label: 'The device and the host agree',
     detail:
       'A RISC-V device tier and the host write the same volume, byte for byte: 0x299bd5d0e1821fab on both.',
+    body: 'The same scenario runs twice: once on a RISC-V device tier over a byte region at 0x80062000, and once on the host over a region of the same kind. The two regions are compared byte for byte, and both runs converge on the digest 0x299bd5d0e1821fab.\n\nThe check then cuts the last append at the point a power loss would leave it, reads the volume again, and confirms the run after that converges on the same volume. There is no host process in the device path and no database under either.',
+    command: 'verify/device/check.sh',
     href: 'https://asciinema.org/a/8UfhlLz8SXaISjrS',
     poster: '/proofs/device.png',
     posterAlt:
       'A terminal replaying the device-tier check: the scenario runs on a RISC-V board, the host writes the same volume, and both report the digest 0x299bd5d0e1821fab.',
+    gif: '/proofs/device.gif',
   },
   {
+    id: 'region',
     label: 'A power cut at every byte',
     detail:
       'The log is cut at each byte of its last record and every sixty-fourth byte after it. Every run opens, and none finds a record that was not there.',
+    body: 'The region medium is the byte region a device holds at a fixed address, kept in a file. The check writes a volume, cuts the log at every byte of the last record and at every sixty-fourth byte of the rest, and opens what is left. It then changes every byte of the region header and every 128th byte of the log, which is the hazard a cut does not produce.\n\nEvery run opens, and none finds a record that was not there. The header refuses the eight bytes of magic and the four of version, checks the segment size, and does not read the rest. This is the durability claim as a sweep rather than a case someone reasoned about.',
+    command: 'verify/region/check.sh',
     href: 'https://asciinema.org/a/tdsX5GReAen6H0ua',
     poster: '/proofs/region.png',
     posterAlt:
       'A terminal replaying the power-cut sweep: the cuts and the runs after them, ending with the volume converging on 0x299bd5d0e1821fab.',
+    gif: '/proofs/region.gif',
   },
   {
+    id: 'smoke',
     label: 'A record round trip',
     detail: 'Thirteen steps, eight records, one digest: the same run the device tier converges on.',
+    body: 'Thirteen steps over a volume: writes at two clocks, six window queries over the time axis, a listing and a flush. Each step states what it expects, and the run reports each one as it happens.\n\nThe run ends on the digest 0x299bd5d0e1821fab, the same digest the device tier and the host converge on. The scenario is a text file, so the demonstration and the check read the same source.',
+    command: 'target/debug/ktema-sim verify/scenarios/smoke.txt target/demo/smoke --reset',
     href: 'https://asciinema.org/a/mysRyRmijvsN4OKB',
     poster: '/proofs/smoke.png',
     posterAlt:
       'A terminal replaying the thirteen-step scenario: writes at two clocks, six window queries, a listing and a flush, ending on the digest 0x299bd5d0e1821fab.',
+    gif: '/proofs/smoke.gif',
   },
   {
+    id: 'capi-arm',
     label: 'One test body, two architectures',
     detail:
       'The same C test body linked from C and run under QEMU on a Cortex-M4 and a RISC-V core, with the same fifteen measurements on both.',
+    body: 'The C test body is shared: verify/capi/test.c is 2,182 lines, and only the platform hooks and the linker script differ. The session links it for a Cortex-M4 and for a RISC-V core, runs both under QEMU, and compares the measurement lines.\n\nBoth report the same fifteen measurements, from the read path per record to the peak footprint inside a 65,536-byte arena. That is what architecture neutrality is worth once it is run rather than asserted.',
+    command: 'demo/tools/record/proof-capi-arch.sh',
     href: 'https://asciinema.org/a/qKmoAREJtuVC2hej',
     poster: '/proofs/capi-arm.png',
     posterAlt:
       'A terminal replaying the C surface on a Cortex-M4 and on a RISC-V core: both report the same fifteen measurements, ending with PASS: C surface round trip.',
+    gif: '/proofs/capi-arm.gif',
   },
   {
+    id: 'faults',
     label: 'Three refusals',
     detail:
       'A medium that refuses a write, a worn medium, and a channel that holds a write past the end of the run.',
+    body: 'Three runs that leave the medium in a state a restart has to read: a medium that refuses a write and then stops, a medium that refuses from a point onwards, and a channel that holds a write past the end of the run.\n\nWhat the check reads is the medium rather than the report. A second run opens the same volume and counts, which is what a restart after a power loss does, and every medium left behind opens cleanly.',
+    command: 'verify/faults/check.sh',
     href: 'https://asciinema.org/a/8QtqYOV6IhY6CIXY',
     poster: '/proofs/faults.png',
     posterAlt:
       'A terminal replaying the fault check: three runs that each report what the run believed and what the medium holds.',
+    gif: '/proofs/faults.gif',
   },
 ];
 
@@ -108,13 +136,13 @@ export const artifacts: Artifact[] = [
       "Delta's cockpit over Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers and boats in the middle, the island and its shoreline on the right, and the timeline below.",
   },
   {
-    id: 'terminal',
-    title: 'Terminal proof',
-    kind: 'terminal',
+    id: 'runs',
+    title: 'Headless runs',
+    kind: 'runs',
     summary:
-      'The engine outside a browser. A RISC-V device tier and the host write the same volume byte for byte, a power cut at every byte of the log recovers, and the C surface runs on a Cortex-M4.',
-    source: PROOFS[0].href,
-    recordings: PROOFS,
+      'Some of what the engine does has no screen. These are its own runs, recorded as they executed: a device and the host agreeing byte for byte, a power cut at every byte, and a C surface on two architectures.',
+    source: RUNS[0].href,
+    recordings: RUNS,
   },
 ];
 

@@ -393,18 +393,24 @@ h1 {
 }
 
 .tile__screen img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: 50% 0;
+}
+
+.tile__still {
   transform: scale(1.001);
   transition: transform 520ms var(--ease);
 }
 
-.tile--opens:hover .tile__screen img {
+.tile--opens:hover .tile__still {
   transform: scale(1.025);
 }
+
 
 /* ── what the tile says ───────────────────────────────────────────────── */
 
@@ -599,16 +605,16 @@ h1 {
 
 /* ── recorded runs ───────────────────────────────────────────────────── */
 
-.terminal__lede {
+.runs__lede {
   max-width: 68ch;
   margin: 0;
   color: var(--fg-2);
   font-size: 15px;
 }
 
-/* The proofs are the center's own tile, so a recording stands beside an application without a second visual language.
+/* The runs are the center's own tile, so a recording stands beside an application without a second visual language.
    Each still is the run itself, and the same still, blurred, lights the card behind it. */
-.proofs {
+.runs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
@@ -644,15 +650,99 @@ h1 {
 }
 
 @media (max-width: 900px) {
-  .proofs {
+  .runs {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 620px) {
-  .proofs {
+  .runs {
     grid-template-columns: 1fr;
   }
+}
+
+/* ── one run's page ──────────────────────────────────────────────────── */
+
+.run__title {
+  margin: 0 0 18px;
+  font-size: clamp(1.7rem, 1.2rem + 2vw, 2.4rem);
+}
+
+.run__lede {
+  max-width: 68ch;
+  margin: 0 0 28px;
+  color: var(--fg-2);
+  font-size: 16px;
+}
+
+.run__figure {
+  margin: 0 0 32px;
+}
+
+.run__figure img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: #1e2030;
+}
+
+.run__figure figcaption {
+  max-width: 68ch;
+  margin-top: 12px;
+  color: var(--fg-3);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+.run__body {
+  max-width: 68ch;
+}
+
+.run__body p {
+  margin: 0 0 16px;
+  color: var(--fg-2);
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+.run__meta {
+  display: grid;
+  gap: 12px;
+  max-width: 68ch;
+  margin: 36px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.run__meta div {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
+}
+
+.run__meta dt {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+.run__meta dd {
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 14px;
+}
+
+.run__meta code {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--fg);
+}
+
+.run__meta a {
+  color: var(--accent);
 }
 
 /* ── a phone ──────────────────────────────────────────────────────────── */
@@ -703,8 +793,13 @@ h1 {
     display: none;
   }
 
-  /* On a subpage the crumb and the button have to share the row, so the mark stands for the brand there. */
+  /* On a subpage the crumb and the button have to share the row, so the mark stands for the brand there, and only
+     the way back to the center survives. */
   .bar__inner:has(.bar__crumb) .bar__name {
+    display: none;
+  }
+
+  .bar__crumb:not(.bar__crumb--root) {
     display: none;
   }
 
@@ -744,7 +839,7 @@ h1 {
     transform: none;
   }
 
-  .tile--opens:hover .tile__screen img {
+  .tile--opens:hover .tile__still {
     transform: none;
   }
 }

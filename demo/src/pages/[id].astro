@@ -8,7 +8,7 @@ import { artifacts, type Artifact } from '../data/artifacts';
 import Shell from '../layouts/Shell.astro';
 import Video from '../kinds/Video.astro';
 import Document from '../kinds/Document.astro';
-import Terminal from '../kinds/Terminal.astro';
+import Runs from '../kinds/Runs.astro';
 
 export function getStaticPaths() {
   return artifacts
@@ -18,14 +18,18 @@ export function getStaticPaths() {
 
 const { artifact } = Astro.props as { artifact: Artifact };
 
-const BODIES = { video: Video, document: Document, terminal: Terminal };
+const BODIES = { video: Video, document: Document, runs: Runs };
 const Body = BODIES[artifact.kind as keyof typeof BODIES];
 
 // A kind with no body here would render nothing at all, so the build stops instead of publishing an empty page.
 if (!Body) throw new Error(`the center draws no page for a ${artifact.kind} artifact`);
 ---
 
-<Shell title={artifact.title} artifact={artifact}>
+<Shell
+  title={artifact.title}
+  description={artifact.summary}
+  crumbs={[{ label: 'Demo Center', href: '/' }, { label: artifact.title }]}
+>
   <h1 class="artifact__title">{artifact.title}</h1>
   <Body artifact={artifact} />
 </Shell>

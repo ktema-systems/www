@@ -1,0 +1,46 @@
+---
+// One run's page: what it does, the recording itself, and how it is reproduced.
+//
+// The page is the run's own, so the gallery can grow a list without the index growing a card for every one. Its fields
+// are the ones a written entry needs, which is what makes a later blog able to use the same data.
+import { artifacts, type Recording } from '../../data/artifacts';
+import Shell from '../../layouts/Shell.astro';
+
+export function getStaticPaths() {
+  const runs = artifacts.find((artifact) => artifact.kind === 'runs')?.recordings ?? [];
+  return runs.map((run) => ({ params: { run: run.id }, props: { run } }));
+}
+
+const { run } = Astro.props as { run: Recording };
+
+const crumbs = [
+  { label: 'Demo Center', href: '/' },
+  { label: 'Headless runs', href: '/runs' },
+  { label: run.label },
+];
+---
+
+<Shell title={run.label} description={run.detail} crumbs={crumbs}>
+  <h1 class="run__title">{run.label}</h1>
+  <p class="run__lede">{run.detail}</p>
+
+  <figure class="run__figure">
+    <img src={run.gif} alt={run.posterAlt} />
+    <figcaption>{run.posterAlt}</figcaption>
+  </figure>
+
+  <div class="run__body">
+    {run.body.split('\n\n').map((paragraph) => <p>{paragraph}</p>)}
+  </div>
+
+  <dl class="run__meta">
+    <div>
+      <dt>Run</dt>
+      <dd><code>{run.command}</code></dd>
+    </div>
+    <div>
+      <dt>Recording</dt>
+      <dd><a href={run.href}>Open it on asciinema</a></dd>
+    </div>
+  </dl>
+</Shell>

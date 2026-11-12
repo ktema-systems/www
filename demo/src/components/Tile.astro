@@ -1,0 +1,83 @@
+---
+// One surface in the center's grid: a deployed application, a recorded run, or a bay that is not built yet.
+//
+// A tile is a link when it has somewhere to go and a drawing when it does not, which is the one distinction a reader
+// must be able to trust. A tile shows a still; a recording's animation is the run page's, not the thumbnail's.
+interface Props {
+  href?: string;
+  title: string;
+  summary: string;
+  poster?: string;
+  posterAlt?: string;
+  badge?: string;
+  cta?: string;
+  variant?: 'default' | 'proof';
+  eager?: boolean;
+}
+
+const {
+  href,
+  title,
+  summary,
+  poster,
+  posterAlt,
+  badge,
+  cta = 'Open',
+  variant = 'default',
+  eager = false,
+} = Astro.props;
+
+const planned = !href;
+---
+
+{
+  planned ? (
+    <div class:list={['tile', 'tile--planned', variant !== 'default' && `tile--${variant}`]}>
+      <span class="tile__screen tile__screen--empty" aria-hidden="true" />
+      <div class="tile__body">
+        {badge && (
+          <span class="badges">
+            <span class="badge badge--planned">{badge}</span>
+          </span>
+        )}
+        <span class="tile__title">{title}</span>
+        <span class="tile__summary">{summary}</span>
+      </div>
+    </div>
+  ) : (
+    <a
+      class:list={['tile', 'tile--opens', variant !== 'default' && `tile--${variant}`]}
+      href={href}
+      style={poster ? `--wash: url('${poster}')` : undefined}
+    >
+      {poster && <span class="tile__wash" aria-hidden="true" />}
+      {poster && (
+        <span class="tile__screen">
+          <img
+            class="tile__still"
+            src={poster}
+            alt={posterAlt ?? ''}
+            loading={eager ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+        </span>
+      )}
+      <span class="tile__body">
+        {badge && (
+          <span class="badges">
+            <span class:list={['badge', badge === 'live' && 'badge--live']}>{badge}</span>
+          </span>
+        )}
+        <span class="tile__title">{title}</span>
+        <span class="tile__summary">{summary}</span>
+        {cta && (
+          <span class="tile__cta">
+            {cta} <span class="tile__arrow" aria-hidden="true">
+              &#8594;
+            </span>
+          </span>
+        )}
+      </span>
+    </a>
+  )
+}

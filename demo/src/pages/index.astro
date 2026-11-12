@@ -1,6 +1,7 @@
 ---
-import { artifacts, planned, type Artifact } from '../data/artifacts';
+import { artifacts, planned } from '../data/artifacts';
 import Shell from '../layouts/Shell.astro';
+import Tile from '../components/Tile.astro';
 
 // The first artifact is the page's figure and takes two columns of the grid; everything else fills in around it. One
 // demonstration is a still and a way in, and the surfaces that are not built yet stand beside it, which is what the
@@ -9,14 +10,16 @@ const [lead, ...rest] = artifacts;
 
 // A deployed application is opened at its own address. It owns the viewport, its own header and its own back button, so a
 // frame around it is a second header and a second scrollbar; the center sends the reader there instead of drawing it.
-const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.source : `/${artifact.id}`);
+const hrefOf = (artifact: (typeof artifacts)[number]) =>
+  artifact.kind === 'live' ? artifact.source : `/${artifact.id}`;
 ---
 
 <Shell title="Demo Center">
   <section class="hero">
     <h1>Explore the stack.</h1>
     <p class="lede">
-      A unified space for demos across the stack. From terminal executions and hardware runs to interactive applications.
+      A unified space for demos across the stack: interactive applications, the engine's own runs, and hardware on the
+      bench.
     </p>
   </section>
 
@@ -24,33 +27,17 @@ const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.sour
     {
       lead && (
         <li>
-          <a class="tile tile--opens" href={hrefOf(lead)} style={`--wash: url('${lead.poster}')`}>
-            <span class="tile__wash" aria-hidden="true" />
-            {lead.poster && (
-              <span class="tile__screen">
-                <img
-                  src={lead.poster}
-                  alt={lead.posterAlt ?? ''}
-                  width="1842"
-                  height="1047"
-                  loading="eager"
-                  decoding="async"
-                />
-              </span>
-            )}
-            <span class="tile__body">
-              <span class="badges">
-                <span class="badge badge--live">live</span>
-              </span>
-              <span class="tile__title">{lead.title}</span>
-              <span class="tile__summary">{lead.summary}</span>
-              <span class="tile__cta">
-                Open the demonstration <span class="tile__arrow" aria-hidden="true">
-                  &#8594;
-                </span>
-              </span>
-            </span>
-          </a>
+          <Tile
+            href={hrefOf(lead)}
+            title={lead.title}
+            summary={lead.summary}
+            poster={lead.poster}
+            posterAlt={lead.posterAlt}
+            gif={lead.gif}
+            badge="live"
+            cta="Open the demonstration"
+            eager
+          />
         </li>
       )
     }
@@ -58,20 +45,15 @@ const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.sour
     {
       rest.map((artifact) => (
         <li>
-          <a class="tile tile--opens" href={hrefOf(artifact)}>
-            <span class="tile__body">
-              <span class="badges">
-                <span class="badge badge--live">live</span>
-              </span>
-              <span class="tile__title">{artifact.title}</span>
-              <span class="tile__summary">{artifact.summary}</span>
-              <span class="tile__cta">
-                Open <span class="tile__arrow" aria-hidden="true">
-                  &#8594;
-                </span>
-              </span>
-            </span>
-          </a>
+          <Tile
+            href={hrefOf(artifact)}
+            title={artifact.title}
+            summary={artifact.summary}
+            poster={artifact.poster}
+            posterAlt={artifact.posterAlt}
+            badge="live"
+            cta="Open"
+          />
         </li>
       ))
     }
@@ -79,16 +61,7 @@ const hrefOf = (artifact: Artifact) => (artifact.kind === 'live' ? artifact.sour
     {
       planned.map((surface) => (
         <li>
-          <div class="tile tile--planned">
-            <span class="tile__screen tile__screen--empty" aria-hidden="true" />
-            <div class="tile__body">
-              <span class="badges">
-                <span class="badge badge--planned">coming soon</span>
-              </span>
-              <span class="tile__title">{surface.title}</span>
-              <span class="tile__summary">{surface.summary}</span>
-            </div>
-          </div>
+          <Tile title={surface.title} summary={surface.summary} badge="coming soon" />
         </li>
       ))
     }

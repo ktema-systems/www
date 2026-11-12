@@ -70,12 +70,14 @@ while IFS='|' read -r name command title; do
     echo "recording $name"
     ( cd "$cwd" && asciinema rec --window-size 120x30 -c "$command" --idle-time-limit 1 --overwrite "$cast" )
 
-    agg --select 100% --no-loop --font-size 18 "$cast" "$cast.gif"
     still="$repo/demo/public/proofs/$name.png"
+    preview="$repo/demo/public/proofs/$name.gif"
+    agg --select 100% --no-loop --font-size 18 "$cast" "$cast.still.gif" >/dev/null 2>&1
+    agg --font-size 14 --fps-cap 8 "$cast" "$preview" >/dev/null 2>&1
     if command -v sips >/dev/null 2>&1; then
-        sips -s format png "$cast.gif" --out "$still" >/dev/null
+        sips -s format png "$cast.still.gif" --out "$still" >/dev/null
     elif command -v ffmpeg >/dev/null 2>&1; then
-        ffmpeg -loglevel error -y -i "$cast.gif" -frames:v 1 "$still"
+        ffmpeg -loglevel error -y -i "$cast.still.gif" -frames:v 1 "$still"
     else
         echo "need sips or ffmpeg to turn the cast into a still" >&2
         exit 1

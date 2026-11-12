@@ -1,0 +1,33 @@
+---
+// The recorded runs. There is no interface to show here: each run is the engine's own output, kept where it can be
+// replayed. The gallery is the center's tile, and each tile opens the run's page.
+import type { Artifact } from '../data/artifacts';
+import Tile from '../components/Tile.astro';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+const runs = artifact.recordings ?? [];
+---
+
+<p class="runs__lede">{artifact.summary}</p>
+
+<ul class="runs">
+  {
+    runs.map((run) => (
+      <li>
+        <Tile
+          href={`/runs/${run.id}`}
+          title={run.label}
+          summary={run.detail}
+          poster={run.poster}
+          posterAlt={run.posterAlt}
+          cta="Open the run"
+          variant="proof"
+        />
+      </li>
+    ))
+  }
+</ul>

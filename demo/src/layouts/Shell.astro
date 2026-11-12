@@ -4,14 +4,22 @@
 // It stands above the artifact and never inside it. The center draws this bar and the page below it; nothing else takes
 // the viewport, because an application is opened at its own address rather than framed here.
 import '../styles.css';
-import type { Artifact } from '../data/artifacts';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
 
 interface Props {
   title: string;
-  artifact?: Artifact;
+  description?: string;
+  crumbs?: Crumb[];
 }
 
-const { title, artifact } = Astro.props;
+const { title, description, crumbs = [{ label: 'Demo Center' }] } = Astro.props;
+
+// The last crumb is where the reader is; every earlier one is a way back.
+const isSubpage = crumbs.length > 1;
 ---
 
 <!doctype html>
@@ -19,8 +27,8 @@ const { title, artifact } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{artifact ? `${artifact.title} | Ktema Systems Demo Center` : 'Ktema Systems Demo Center'}</title>
-    <meta name="description" content={artifact?.summary ?? 'The surfaces Ktema Systems builds, in one place.'} />
+    <title>{title === 'Demo Center' ? 'Ktema Systems Demo Center' : `${title} | Ktema Systems Demo Center`}</title>
+    <meta name="description" content={description ?? 'The surfaces Ktema Systems builds, in one place.'} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
@@ -30,17 +38,19 @@ const { title, artifact } = Astro.props;
           <span class="bar__mark" aria-hidden="true"></span>
           <span class="bar__name">Ktema Systems</span>
         </a>
-        <span class="bar__sep" aria-hidden="true"></span>
         {
-            artifact ? (
-                <>
-                    <a class="bar__crumb" href="/">Demo Center</a>
-                    <span class="bar__sep" aria-hidden="true" />
-                    <span class="bar__title bar__title--current">{artifact.title}</span>
-                </>
-            ) : (
-                <span class="bar__title">Demo Center</span>
-            )
+          crumbs.map((crumb, index) => (
+            <>
+              <span class="bar__sep" aria-hidden="true" />
+              {crumb.href ? (
+                <a class:list={['bar__crumb', index === 0 && 'bar__crumb--root']} href={crumb.href}>
+                  {crumb.label}
+                </a>
+              ) : (
+                <span class:list={['bar__title', isSubpage && 'bar__title--current']}>{crumb.label}</span>
+              )}
+            </>
+          ))
         }
         <span class="bar__spacer"></span>
         <a class="bar__cta" href="mailto:demo@ktema.systems">Enquiry Demo</a>

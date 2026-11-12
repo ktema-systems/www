@@ -23,8 +23,9 @@ demo/tools/record/record.sh smoke capi-arm  # a few
 ```
 
 Each run records a cast at `120x30`, renders the last frame to
-`demo/public/proofs/<name>.png`, and leaves the cast in a temporary directory. The
-terminal geometry is fixed because the still's shape is the card's shape.
+`demo/public/proofs/<name>.png`, and the animation to `demo/public/proofs/<name>.gif`.
+The cast itself is left in a temporary directory. The terminal geometry is fixed because
+the still's shape is the card's shape, and the animation is the run page's medium.
 
 The engine checkout is `../ktema` by default. `KTEMA_DIR` points at another one.
 
