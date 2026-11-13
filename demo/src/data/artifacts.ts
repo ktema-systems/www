@@ -8,7 +8,7 @@
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
 /** `live` is a deployed application the reader is sent to; the center draws the other four itself. */
-export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device' | 'board';
+export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device';
 
 /** A recorded run of the engine: a page of its own, a still, and the video its page plays with native controls. */
 export interface Recording {
@@ -178,18 +178,6 @@ export const artifacts: Artifact[] = [
     posterAlt:
       'The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its records.',
   },
-  {
-    id: 'fabric',
-    title: 'The address in gates',
-    products: ['Tagma'],
-    kind: 'board',
-    summary:
-      'The coordinate values a volume carries, accepted by a decoder on an ECP5 that did not write them: 10,240 values off the medium, one sum on the host and the same sum on the die, and a value at the edge of the alphabet that makes the check fail. A statement about the format the engine uses, not a measurement of the engine.',
-    source: 'verify/fpga/check.sh',
-    poster: '/board-ecp5.jpg',
-    posterAlt:
-      'The iCESugar-Pro v1.3 module seated in its carrier board, lit and connected.',
-  },
 ];
 
 // The order here is the order the grid draws them in. They sit beside the artifacts rather than under them, because a
@@ -205,10 +193,10 @@ export const planned: PlannedSurface[] = [
       'Two ESP32-S3 modules with nothing passing between them, each handed the same fields. The address is computed from the fields, so the two arrive at the same coordinate without a conversation, and each board prints the one it reached.',
   },
   {
-    title: 'The address in gates',
+    title: 'The record, answered on the part',
     products: ['Ktema'],
     summary:
-      'The tagma stack\'s addressing as RTL on an iCESugar-Pro: a decoder and a datapath in fabric that produce the coordinate over its valid states, instead of arithmetic on a core. Synthesis returns the cell count, which is where a stack becomes a part.',
+      'A volume the engine wrote, its coordinate values read off the medium, and a decoder on an ECP5 recomputing them while the terminal prints the same sum. One value moved outside the alphabet turns the verdict. The recording shows the console and the board in one take.',
   },
   {
     title: 'A robot that answers for its walk',

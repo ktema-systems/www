@@ -162,6 +162,33 @@ const values: Record<string, string> = {
 
 <section class="bench__fit">
   <h2>What a read costs the medium</h2>
+  <Chart
+    title="Reads a question costs the medium"
+    caption="The same record, read at 64 records and at 512. Neither count moves, which is the contract's claim: the point read does not follow the volume, and the listing reads no record. The listing's zero counts byte reads; the directory walk is not a call this counter sees."
+    unit="reads"
+    kind="bar"
+    decimals={0}
+    series={[
+      {
+        name: `${reads.rows[0].records} records`,
+        color: 'var(--fg-3)',
+        points: [
+          { label: 'Framing', value: reads.rows[0].framing },
+          { label: 'Fact', value: reads.rows[0].fact },
+          { label: 'Listing', value: reads.rows[0].listing },
+        ],
+      },
+      {
+        name: `${reads.rows[1].records} records`,
+        color: 'var(--accent)',
+        points: [
+          { label: 'Framing', value: reads.rows[1].framing },
+          { label: 'Fact', value: reads.rows[1].fact },
+          { label: 'Listing', value: reads.rows[1].listing },
+        ],
+      },
+    ]}
+  />
   <p>
     The engine counts the reads it asks the medium for, which is the unit its own read contract uses: a point read does
     not grow with the volume, and a prefix read does not read a record. The same record is read at
