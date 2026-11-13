@@ -3,7 +3,7 @@
 | | Ktema | Append log | SQLite |
 |---|---|---|---|
 | What it is | An addressable history, written where the event happened | A record of what happened, and nothing else | Rows a program queries and changes |
-| Host it needs | None on the device tier; an OS on the host tier | An OS and a filesystem | An OS and a filesystem |
+| Host it needs | A part; the OS is optional | An OS and a filesystem | An OS and a filesystem |
 | How an address is found | Computed from the record itself | A map entry per record, rebuilt at every mount | An index on disk, walked at each read |
 | Bytes per record, at 1M | {{bytes_ktema}} | {{bytes_log}} | {{bytes_sqlite}} |
 | Index the volume holds, at 1M | {{index_ktema}} | {{index_log}} | {{index_sqlite}} |
