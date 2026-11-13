@@ -75,6 +75,7 @@ digraph DOTGraph {
     2. Create a branch with the format `{issue-number}-{subject-alphabets-with-one-or-two-dashes}` excepting when create docs files: keep current branch for md, qmd, ...
 - The pull request title format must be: `PR: {category}: {message}`. (Include `#{issue}` after the category only in PR branches; omit it in the main branch.)
 - Do not test by pushing to GitHub.
+- Do not touch if something looks manually modified.
 
 ### Commit Message Format
 

@@ -267,7 +267,7 @@ h1 {
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
-  padding: clamp(88px, 10vh, 04px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
+  padding: clamp(52px, 0vh, 144px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
 }
 
 /* ── the hero ─────────────────────────────────────────────────────────── */
