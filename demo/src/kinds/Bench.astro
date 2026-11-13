@@ -7,7 +7,7 @@
 import Chart from '../components/Chart.astro';
 import Markdown from '../components/Markdown.astro';
 import formal from '../content/bench.md?raw';
-import { engines, indexMemory, ceiling, source, type Row } from '../data/bench';
+import { engines, indexMemory, ceiling, source, reads, type Row } from '../data/bench';
 
 const label = (n: number) => (n >= 1_000_000 ? `${n / 1_000_000}M` : n >= 1000 ? `${n / 1000}k` : String(n));
 const mib = (bytes: number) => bytes / (1024 * 1024);
@@ -158,6 +158,35 @@ const values: Record<string, string> = {
 
 <section class="bench__fit">
   <Markdown source={formal} values={values} />
+</section>
+
+<section class="bench__fit">
+  <h2>What a read costs the medium</h2>
+  <p>
+    The engine counts the reads it asks the medium for, which is the unit its own read contract uses: a point read does
+    not grow with the volume, and a prefix read does not read a record. The same record is read at
+    {reads.rows[0].records} and at {reads.rows[1].records} records.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Records</th><th>Framing read</th><th>Fact read</th><th>Listing</th></tr>
+    </thead>
+    <tbody>
+      {reads.rows.map((row) => (
+        <tr>
+          <td>{row.records}</td>
+          <td>{row.framing} read</td>
+          <td>{row.fact} reads</td>
+          <td>{row.listing} byte reads</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p>
+    An eightfold volume changes neither count. The listing issues no byte read at all, which is the contract's "does not
+    read a record"; the directory walk itself is not a call this counter sees, so the zero is a statement about records
+    and not a claim that a listing is free.
+  </p>
 </section>
 
 <p class="bench__source">

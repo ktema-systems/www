@@ -1,8 +1,12 @@
 ---
-// A board that checked something the engine claimed, and the table it reported.
+// A board that checked something the format claims, and the table it reported.
 //
 // The page is the record of one run: a still of the part, what the pins said, and the cases the run does not cover. It
 // quotes the run rather than repeating it, because the build has no board attached.
+//
+// The numbers are split on purpose. The agreement and the refusal are about the medium; the block count, the logic and
+// the rate are the realisation's cost on the part. Neither is a measurement of the engine, and the page says so rather
+// than letting a reader take a flip-flop count for an engine figure.
 import type { Artifact } from '../data/artifacts';
 
 interface Props {
@@ -24,7 +28,7 @@ const { artifact } = Astro.props;
 </figure>
 
 <section class="bench__fit">
-  <h2>What the board reported</h2>
+  <h2>What was checked</h2>
   <p>
     A volume of 11,172 records was written by the engine. The first 512 of them were read back off the medium, which is
     10,240 coordinate values, and supplied to the part as a ROM. The part decoded each value and accumulated the three
@@ -32,11 +36,11 @@ const { artifact } = Astro.props;
   </p>
   <table>
     <thead>
-      <tr><th></th><th>Value</th></tr>
+      <tr><th>A property of the medium</th><th>Value</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td>Coordinate values checked</td>
+        <td>Coordinate values read off the medium</td>
         <td>10,240, from 512 records</td>
       </tr>
       <tr>
@@ -55,6 +59,39 @@ const { artifact } = Astro.props;
         <td>One value changed to 11,172, the first value outside it</td>
         <td>Sum mismatch, one value refused</td>
       </tr>
+    </tbody>
+  </table>
+  <p>
+    The last row is what makes the pass worth reading. One value at index 5,000 was changed and both the sum and the
+    refusal count responded, so a pass is a comparison that ran rather than an indicator that can only show one value.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>What it establishes, and for whom</h2>
+  <p>
+    The addresses on the medium are coordinates, and a decoder that did not write them says so. This is a statement
+    about the format the engine uses, not a measurement of the engine: nothing here reports what the engine costs, how
+    large its working set is, or how many reads an operation takes. Those are the engine's own numbers and they belong
+    to the measurements page.
+  </p>
+  <p>
+    There is no table in the path on either side. The host reads the keys off the medium, and the part recomputes each
+    coordinate from its value. A hash table cannot make this statement, because the statement is that no table exists.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>The realisation's cost</h2>
+  <p>
+    These are the part's numbers, not the engine's, and they are here because a decoder that is not cheap to realise is
+    not a decoder anyone would put beside a core.
+  </p>
+  <table>
+    <thead>
+      <tr><th>The realisation on this part</th><th>Value</th></tr>
+    </thead>
+    <tbody>
       <tr>
         <td>Block RAM</td>
         <td>9 of 56 blocks, 16 percent</td>
@@ -70,31 +107,9 @@ const { artifact } = Astro.props;
     </tbody>
   </table>
   <p>
-    The last row is not a claim about speed. It says the image was built at a rate the part holds. Where the decode
-    stops matching is measured by the separate image that sweeps the valid range, which is built at 100, 120, 125 and
-    140 MHz.
+    The rate is what the tool closed on this image, not a claim about speed. Where the decode stops matching is measured
+    by the separate image that sweeps the valid range, which is built at 100, 120, 125 and 140 MHz.
   </p>
-</section>
-
-<section class="bench__fit">
-  <h2>What the run establishes</h2>
-  <p>
-    The addresses on the medium are coordinates, and a circuit that did not compute them says so. There is no table in
-    the path on either side: the host reads the keys off the medium, and the part recomputes each coordinate from its
-    value. A hash table cannot make this statement, because the statement is that no table exists.
-  </p>
-  <p>
-    The negative control is what makes the pass worth reading. One value at index 5,000 was changed to 11,172, and both
-    the sum and the refusal count responded. An indicator that can only show one value proves nothing.
-  </p>
-  <pre class="sr-only">--- values: the coordinate values of 512 records ---
-records 512, values 10240, invalid 0, checksum 00002BFC
---- place and route: the volume image at 40 MHz ---
-bitstream: out/tagma_volume_verify_top_40mhz.bit
---- program and read the verdict ---
-pin_match   = 1
-pin_invalid = 0
-PASS: the die reproduced 00002BFC over the volume's values</pre>
 </section>
 
 <section class="bench__fit">
@@ -104,10 +119,14 @@ PASS: the die reproduced 00002BFC over the volume's values</pre>
     built by the flow from the host's values, so what is established is the fit between the medium and the circuit, not
     a decoder reading a live medium.
   </p>
-  <p>
-    No rate is claimed for the engine. The image reads one value per clock and reports a verdict, and the software
-    reference is faster on both latency and a full sweep, as the measurements page records.
-  </p>
+  <pre class="sr-only">--- values: the coordinate values of 512 records ---
+records 512, values 10240, invalid 0, checksum 00002BFC
+--- place and route: the volume image at 40 MHz ---
+bitstream: out/tagma_volume_verify_top_40mhz.bit
+--- program and read the verdict ---
+pin_match   = 1
+pin_invalid = 0
+PASS: the die reproduced 00002BFC over the volume's values</pre>
 </section>
 
 <dl class="run__meta">

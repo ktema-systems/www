@@ -181,10 +181,10 @@ export const artifacts: Artifact[] = [
   {
     id: 'fabric',
     title: 'The address in gates',
-    products: ['Ktema', 'Tagma'],
+    products: ['Tagma'],
     kind: 'board',
     summary:
-      'The coordinate values a volume carries, decoded on an ECP5 by a circuit that did not write them: 10,240 values off the medium, one sum on the host and the same sum on the die. A value at the edge of the alphabet makes the check fail.',
+      'The coordinate values a volume carries, accepted by a decoder on an ECP5 that did not write them: 10,240 values off the medium, one sum on the host and the same sum on the die, and a value at the edge of the alphabet that makes the check fail. A statement about the format the engine uses, not a measurement of the engine.',
     source: 'verify/fpga/check.sh',
     poster: '/board-ecp5.jpg',
     posterAlt:

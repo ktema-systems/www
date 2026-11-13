@@ -111,6 +111,19 @@ export const ceiling = {
   records: Math.floor(4_294_967_295 / 496),
 } as const;
 
+/**
+ * What one operation costs the medium, counted in the reads the engine asked it for. The probe reads the same record at
+ * two volume sizes, so a cost that follows the volume shows up as a difference rather than as a trend nobody checks.
+ */
+export const reads = {
+  probe: 'verify/reads/check.sh',
+  recorded: '2026-11-13',
+  rows: [
+    { records: 64, framing: 1, fact: 3, listing: 0 },
+    { records: 512, framing: 1, fact: 3, listing: 0 },
+  ],
+} as const;
+
 /** What produced the numbers, so a reader can reproduce them rather than trust them. */
 export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
