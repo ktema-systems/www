@@ -793,6 +793,10 @@ h1 {
   position: absolute;
   width: 1px;
   height: 1px;
+  /* A table ignores width and lays out at its content's minimum, so the cap is explicit. */
+  max-width: 1px;
+  max-height: 1px;
+  table-layout: fixed;
   padding: 0;
   margin: -1px;
   overflow: hidden;
@@ -820,6 +824,16 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   font-size: 16px;
+}
+
+/* Four columns of prose have a minimum width of about 393px, so below the width where that
+   stops fitting the table becomes its own scroll frame rather than losing a column. */
+@media (max-width: 460px) {
+  .bench__fit table {
+    display: block;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
 }
 
 .bench__fit th,

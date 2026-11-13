@@ -172,7 +172,7 @@ export const artifacts: Artifact[] = [
     products: ['Ktema'],
     kind: 'device',
     summary:
-      'One node of a system: an ESP32-S3 with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. A deployment is a field of these nodes, and the same build runs on every host above them.',
+      'The smallest host in the claim: an ESP32-S3 with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. The same build runs on every host above it, and a deployment can be a field of these nodes.',
     source: 'firmware/litewing',
     poster: '/board.jpg',
     posterAlt:
