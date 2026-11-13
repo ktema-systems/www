@@ -107,7 +107,7 @@ const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
       )
     }
   </figcaption>
-  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${title}. ${caption ?? ''}`}>
+  <svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true">
     <text class="chart__unit" x={m.left} y={12}>{unit}</text>
 
     {
@@ -179,4 +179,26 @@ const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
         ))
     }
   </svg>
+
+  <table class="sr-only">
+    <caption>{title} ({unit})</caption>
+    <thead>
+      <tr>
+        <td></td>
+        {series.map((s) => (
+          <th scope="col">{s.name}</th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {series[0]?.points.map((point, i) => (
+        <tr>
+          <th scope="row">{point.label}</th>
+          {series.map((s) => (
+            <td>{s.points[i]?.value.toLocaleString('en-US', { maximumFractionDigits: 3 })}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
 </figure>
