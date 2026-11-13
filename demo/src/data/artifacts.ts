@@ -150,6 +150,9 @@ export const artifacts: Artifact[] = [
       'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
     source: RUNS[0].href,
     recordings: RUNS,
+    poster: '/proofs/device.png',
+    posterAlt:
+      'A terminal replaying the device-tier check: the scenario runs on a RISC-V board, the host writes the same volume, and both report the same digest.',
   },
   {
     id: 'bench',
@@ -159,18 +162,21 @@ export const artifacts: Artifact[] = [
     summary:
       'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
     source: '/bench',
+    poster: '/bench-thumb.png',
+    posterAlt:
+      "The memory chart: the append log's address map rises past the engine's fixed index and reaches 64 MB at a million records, while the engine's line stays flat.",
   },
   {
     id: 'device',
-    title: 'The floor: a bare microcontroller',
+    title: 'One node, any scale',
     products: ['Ktema'],
     kind: 'device',
     summary:
-      'The smallest host the engine runs on: a part with no operating system, no filesystem, 8 MB of flash and 64 kB of working memory, where a record written before the reset is read back after it. Every host above it runs the same build.',
+      'One node of a system: an ESP32-S3 with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. A deployment is a field of these nodes, and the same build runs on every host above them.',
     source: 'firmware/litewing',
     poster: '/board.jpg',
     posterAlt:
-      'An ESP32-S3 mounted on the LiteWing airframe on the bench, the part that holds the engine and its records.',
+      'The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its records.',
   },
 ];
 

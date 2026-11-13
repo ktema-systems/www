@@ -316,16 +316,11 @@ h1 {
    item that carries a thumbnail takes a wider bay, which is the emphasis the cockpit had when the grid was fixed. */
 .bento {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
   gap: 16px;
   margin: clamp(44px, 6vw, 72px) 0 0;
   padding: 0;
   list-style: none;
-}
-
-.bento > li.is-featured {
-  grid-column: span 2;
-  grid-row: span 2;
 }
 
 /* ── a tile ───────────────────────────────────────────────────────────── */
@@ -992,11 +987,6 @@ h1 {
 
   .bar__crumb:not(.bar__crumb--root) {
     display: none;
-  }
-
-  .bento > li.is-featured {
-    grid-column: auto;
-    grid-row: auto;
   }
 
   .main {

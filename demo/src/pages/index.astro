@@ -26,7 +26,7 @@ const hrefOf = (artifact: (typeof artifacts)[number]) =>
   <ul class="bento">
     {
       lead && (
-        <li class:list={[lead.poster && 'is-featured']}>
+        <li>
           <Tile
             href={hrefOf(lead)}
             title={lead.title}
@@ -43,7 +43,7 @@ const hrefOf = (artifact: (typeof artifacts)[number]) =>
 
     {
       rest.map((artifact) => (
-        <li class:list={[artifact.poster && 'is-featured']}>
+        <li>
           <Tile
             href={hrefOf(artifact)}
             title={artifact.title}

@@ -15,11 +15,10 @@ const { artifact } = Astro.props;
 <p class="run__lede">{artifact.summary}</p>
 
 <figure class="run__figure">
-  <img src="/board.jpg" alt="An ESP32-S3 mounted on the LiteWing airframe, its status LED lit and the USB bridge connected." />
+  <img src="/board.jpg" alt="The ESP32-S3 module on its board, lit and connected." />
   <figcaption>
-    The part the run was made on: an ESP32-S3 mounted on the LiteWing airframe, read with esptool at the bench rather
-    than from a datasheet. Only the application and the partition table were written, so the shipped bootloader starts
-    it.
+    The part the run was made on: an ESP32-S3 with 8 MB of flash and 64 kB of working memory, running from the board's
+    own flash. Only the application and the partition table were written, so the shipped bootloader starts it.
   </figcaption>
 </figure>
 
