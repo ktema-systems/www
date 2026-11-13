@@ -15,6 +15,12 @@ npm run build    # static output in dist/
 npm run preview  # serve the built output
 ```
 
+`./run.sh` serves the whole site locally in one step: the homepage, the demo center,
+and the cockpit from a sibling `kletos` checkout, on ports 4321, 4322 and 5276. A
+cockpit that is not built is built on the first run, and `--rebuild` rebuilds one that
+is. `DELTA_URL` points the center at a cockpit this host does not serve, and Ctrl-C
+stops the servers the run started. `BLOG_PORT` (4323) is held for the blog stack.
+
 ## Layout
 
 | | |
