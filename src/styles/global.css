@@ -1070,6 +1070,13 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   margin-top: 28px;
 }
 
+/* The head is a promise and what follows is the evidence for it, so the turn from the
+   lede to a figure, a table, or a grid takes more room than one paragraph taking the
+   next. */
+.section__head + * {
+  margin-top: clamp(36px, 3.4vw, 48px);
+}
+
 .section__head > * + * {
   margin-top: 16px;
 }

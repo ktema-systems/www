@@ -5,17 +5,18 @@ import Layers from '../components/Layers.astro';
 import Reach from '../components/Reach.astro';
 import Section from '../components/Section.astro';
 import Deck from '../components/Deck.astro';
-import { demoCta, productMenu, site, type NavItem } from '../config';
+import { demoCta, papers, productMenu, site, type NavItem } from '../config';
 
 // The homepage owns its sections and its strip. The order, labels, and anchors below
 // drive both the page and the header, so they cannot drift.
 
 const homeSections = [
   { key: 'stack', label: 'Stack', id: 'products' },
+  { key: 'cases', label: 'Incidents', id: 'cases' },
+  { key: 'accountability', label: 'What changes', id: 'accountability' },
+  { key: 'engine', label: 'Proof', id: 'engine' },
   { key: 'operations', label: 'Operations', id: 'delta' },
-  { key: 'accountability', label: 'Accountability', id: 'accountability' },
-  { key: 'engine', label: 'Engine', id: 'engine' },
-  { key: 'cases', label: 'Cases', id: 'cases' },
+  { key: 'open', label: 'Open', id: 'open' },
   { key: 'fit', label: 'Fit', id: 'partners' },
   { key: 'contact', label: 'Contact', id: 'contact' },
 ] as const;
@@ -85,32 +86,32 @@ const operationsPanels = [
 
 const accountabilityPanels = [
   {
-    kicker: 'The intent',
-    title: 'The intent is the boundary',
-    body: 'A person states the work and the constraints once. The gate that binds an agent to them sits above the machines, not inside them. A call an agent originates is denied by default.',
+    kicker: 'The limit',
+    title: 'The limit is written before the work starts',
+    body: 'A person states the work and its bounds once. A call outside them is refused by the system while it runs, instead of by a review afterwards.',
   },
   {
     kicker: 'The chain',
-    title: 'The act and the record are one chain',
-    body: 'What was asked, who claimed it, what was done, and what it produced stay one chain. Nothing is joined from separate logs after the fact.',
+    title: 'The ask and the act are one record',
+    body: 'What was asked, who claimed it, what was done, and what came back stay together. Nothing is joined from separate logs when the question arrives.',
   },
   {
     kicker: 'The replay',
-    title: 'The run replays from the record',
-    body: 'Every act carries an address anyone can recompute. The run replays from the record itself, on any target, years later.',
+    title: 'The run can be re-entered years later',
+    body: 'Every act carries an address anyone can recompute, so the run replays on another target from the record alone.',
   },
 ];
 
 const enginePanels = [
   {
-    kicker: 'The Validation',
+    kicker: 'The part',
     metrics: [
+      { value: '8', unit: 'MB' },
       { value: '512', unit: 'KB' },
-      { value: '45', unit: 'g' },
       { value: '1,648', unit: 'B' },
     ],
-    title: 'The engine on a 45-gram airframe',
-    body: 'An ESP32-S3 module with 8 MB of flash and 512 KB of RAM. The engine executes multi-axis queries and maintains its record within a 1,648-byte footprint.',
+    title: 'The engine on an 8 MB microcontroller',
+    body: 'An ESP32-S3 module with 8 MB of flash and 512 KB of RAM. The engine answers multi-axis questions and keeps its record within 1,648 bytes, so a product that ships this part can answer for itself.',
     note: 'The initial boot prepares the volume; all subsequent boots operate within this peak.',
     image: {
       src: '/esp32s3-board.jpg',
@@ -122,17 +123,17 @@ const enginePanels = [
   {
     kicker: 'The hard end',
     title: '64 KB of SRAM, and no operating system',
-    body: 'On the RISC-V reference part, 256 KB of flash and 64 KB of SRAM, the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash. Its heap peaks at 2,163 B, and no resident index grows with the record count.',
+    body: 'On the RISC-V reference part, with 256 KB of flash and 64 KB of SRAM, the engine and its storage take 32,812 B of static SRAM and 123,782 B of flash, and its heap peaks at 2,163 B. A database needs an operating system and a heap; this answers without either.',
   },
   {
     kicker: 'The comparison',
     title: 'What the same question costs elsewhere',
-    body: 'A general database needs an operating system and 100 KB or more of heap. An embedded key-value store keeps one axis and a RAM index. The engine resolves across axes with no resident index.',
+    body: 'A general database needs an operating system and 100 KB or more of heap. An embedded key-value store keeps one axis and a RAM index. The engine answers across axes with no resident index, so the memory a product reserves does not grow with its history.',
   },
   {
     kicker: 'Alongside the database',
-    title: 'Keep the database. Send it fewer questions',
-    body: 'A multi-axis question costs an index per axis. The engine resolves it from the record. Your database keeps transactions.',
+    title: 'Keep the database. Send it fewer questions.',
+    body: 'A multi-axis question costs an index per axis. The engine answers it from the record, and the database keeps transactions.',
   },
 ];
 
@@ -164,8 +165,9 @@ const caseSlides = [
     stamp: '03:14',
     title: 'The dose was held.',
     rows: [
-      { label: 'The question', text: 'How did the dose and the response move together over the last 24 hours, and was the alarm justified?' },
-      { label: 'What the record must hold', text: 'Three weeks of readings on the pump itself, the earlier occlusion they match, and the entry that held the next dose.', rule: true },
+      { label: 'What happened', text: 'A dose was held. Weeks later, someone has to say why.' },
+      { label: 'Today', text: 'Three logs in three places: the readings, the alarm, the model decision.' },
+      { label: 'The record', text: 'The readings, the earlier occlusion they match, and the entry that held the dose, in one record on the pump.', rule: true },
     ],
   },
   {
@@ -173,8 +175,9 @@ const caseSlides = [
     stamp: '14:22',
     title: 'The line stopped.',
     rows: [
-      { label: 'The question', text: 'Which decision led to the failure, and who authorized it?' },
-      { label: 'What the record must hold', text: 'The ask, who took it, what was produced, and who approved it.', rule: true },
+      { label: 'What happened', text: 'A line stopped, and the shift wants to know which decision did it.' },
+      { label: 'Today', text: 'The cell log, the robot trace, and the approval, joined by hand.' },
+      { label: 'The record', text: 'The ask, who took it, what was produced, and who approved it, in one chain.', rule: true },
     ],
   },
   {
@@ -182,8 +185,9 @@ const caseSlides = [
     stamp: '09:41',
     title: 'The link dropped.',
     rows: [
-      { label: 'The question', text: 'What did the sensors see before it, and was the operator warned?' },
-      { label: 'What the record must hold', text: 'The readings on the airframe, ordered by time, with the last acknowledged command.', rule: true },
+      { label: 'What happened', text: 'A link dropped, and someone asks what the aircraft saw before it.' },
+      { label: 'Today', text: 'The flight log ends where the radio ended.' },
+      { label: 'The record', text: 'The readings ordered by time, with the last acknowledged command, kept on the aircraft.', rule: true },
     ],
   },
   {
@@ -191,8 +195,9 @@ const caseSlides = [
     stamp: '21:07',
     title: 'The system intervened.',
     rows: [
-      { label: 'The question', text: 'Which sensor and which model agreed before the intervention, and which did not?' },
-      { label: 'What the record must hold', text: "Both readings, the model's output, and the rule that allowed the action.", rule: true },
+      { label: 'What happened', text: 'The system braked on its own, and the question is which sensors agreed.' },
+      { label: 'Today', text: 'Two vendor logs and one model server, with no shared clock.' },
+      { label: 'The record', text: 'Both readings, the model output, and the rule that allowed the action.', rule: true },
     ],
   },
   {
@@ -200,8 +205,9 @@ const caseSlides = [
     stamp: '08:12',
     title: 'The hand-off failed.',
     rows: [
-      { label: 'The question', text: 'Which agent claimed the work, which tool did it call, and what did it hand on?' },
-      { label: 'What the record must hold', text: 'The intent, the claim, the tool call, and the record the next agent received.', rule: true },
+      { label: 'What happened', text: 'Work moved between agents, and stopped moving.' },
+      { label: 'Today', text: 'Each agent kept its own log, and nothing ties the hand-off.' },
+      { label: 'The record', text: 'The intent, the claim, the tool call, and the record the next agent received.', rule: true },
     ],
   },
   {
@@ -209,8 +215,9 @@ const caseSlides = [
     stamp: '11:48',
     title: 'The agent responded.',
     rows: [
-      { label: 'The question', text: 'Which model responded, at what cost, and on whose authority?' },
-      { label: 'What the record must hold', text: 'The model, the price, and the authority, in one record beside the result.', rule: true },
+      { label: 'What happened', text: 'An agent answered a customer, and the answer cost money.' },
+      { label: 'Today', text: 'The platform billing, the model log, and no record of who allowed it.' },
+      { label: 'The record', text: 'The model, the price, and the authority, in one record beside the result.', rule: true },
     ],
   },
 ];
@@ -232,7 +239,7 @@ const assertNever = (value: never): never => {
       title="Replayable Agentic Computing"
       subline="Every autonomous act, accountable."
       lede="AI agent books shipment. Drone turns back. Insulin pump holds dose. Robot stops line. Later, someone asks why. System answers from record: what was asked, what it did, and what limited it."
-      body="We turn intent into verified work, bind the act and the record together, and let the operator ask and prove the decision from the inside. One open format, from a chip with no operating system to a hyperscale data center, and your infrastructure stays as it is."
+      body="The answer is usually assembled afterwards, from an agent log, a device trace, and rows in a database that were never written to agree. We keep the ask, the act, and the limit in one record at the machine that made it, so the answer is already there when the question arrives."
       fieldReveal="scroll"
       depth
     >
@@ -245,8 +252,8 @@ const assertNever = (value: never): never => {
     <div class="wrap">
       <Reach
         caption={{
-          lead: 'One space and format, from chip to orbit.',
-          body: 'Each agent, service, or machine keeps its own record. A record from one is read at the same coordinate by another, with no translator between them. The record is the trail from the past to this moment, and the longer it runs, the smaller the space of what happens next. Connect through your own infrastructure, or through our mission control.',
+          lead: 'The same record, from a part to orbit.',
+          body: 'An agent, a service, or a machine keeps its own record, and another reads it at the same address with no translator between them. One format, so a fleet, a cell, and a product line answer the same way. Connect through your own infrastructure, or through our mission control.',
         }}
       />
     </div>
@@ -256,13 +263,52 @@ const assertNever = (value: never): never => {
     switch (section.key) {
       case 'stack':
         return <Layers id={section.id} eyebrow={section.label} />;
+      case 'open':
+        return (
+          <Section
+            id={section.id}
+            label={section.label}
+            title="A published format, and the engineering that runs it."
+            lede="The format and the research are published through the SSCCS Initiative, which the work shares an origin with. A record is evidence only if someone other than its author can check it, so the format has to be public. The engines, the kernels, and the layers above them are separate engineering, and a deployment licenses them."
+          >
+            <dl class="spec open">
+              <dt>The format</dt>
+              <dd>
+                Published under Apache 2.0, so a second implementation can recompute an address from the fields and
+                check a record it did not write.
+              </dd>
+              <dt>The research</dt>
+              <dd>
+                Four preprints on the format and the addressing, from February to September 2026.
+                <ul class="papers">
+                  {papers.map((paper) => (
+                    <li>
+                      <span class="papers__when">{paper.when}</span>
+                      <a href={paper.href}>{paper.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+              <dt>The initiative</dt>
+              <dd>
+                The <a href="https://ssccs.org">SSCCS Initiative</a> publishes the format and carries it as the neutral
+                source for the compliance frameworks. It is a non-profit and open source foundation.
+              </dd>
+              <dt>The engineering</dt>
+              <dd>
+                The engines, the device kernels, and the layers above them are built here, outside the published
+                material, and a deployment licenses them.
+              </dd>
+            </dl>
+          </Section>
+        );
       case 'operations':
         return (
           <Deck
             id={section.id}
             eyebrow={section.label}
-            title="One space for the work."
-            lede="Delta is the cockpit, Kletos is the operating system for the agent workflow, and Krisis is the terms the work stays inside."
+            title="The run, seen from where it happens."
+            lede="Delta is the cockpit: the machines, their records, the bounds around them, and the timeline, in one space."
             slides={operationsPanels}
             labels={['Run', 'Cell', 'Span', 'Seat', 'Chain', 'Terms', 'Campaign']}
             footnote="The campaign data in these views is simulated. Delta is planned to be open source."
@@ -273,10 +319,10 @@ const assertNever = (value: never): never => {
           <Deck
             id={section.id}
             eyebrow={section.label}
-            title="Inside the intent, on the record."
-            lede="Accountable execution for an autonomous system: the intent bounds the work, the act stays on the record, and the run replays."
+            title="The answer stops being reconstruction."
+            lede="Three things change: the limit is written first, the ask stays with the act, and the run can be re-entered."
             slides={accountabilityPanels}
-            labels={['Intent', 'Chain', 'Replay']}
+            labels={['Limit', 'Chain', 'Replay']}
           />
         );
       case 'engine':
@@ -284,10 +330,10 @@ const assertNever = (value: never): never => {
           <Deck
             id={section.id}
             eyebrow={section.label}
-            title="One engine, from a data center to the smallest part."
-            lede="The range runs from a server to the smallest part a product ships. The engine has validated at this absolute limit."
+            title="The same build answers in a data center and on a 256 KB part."
+            lede="The measurements that bound it, from a part with no operating system to the comparison with a database."
             slides={enginePanels}
-            labels={['Validation', 'Hard end', 'Compare', 'Alongside']}
+            labels={['Part', 'Hard end', 'Compare', 'Alongside']}
           />
         );
       case 'cases':
@@ -295,8 +341,8 @@ const assertNever = (value: never): never => {
           <Deck
             id={section.id}
             eyebrow={section.label}
-            title="One record, every agent."
-            lede="A pump, a robot, a drone, a vehicle, a workflow, a software agent. The same record holds what was asked, what was done, and what bounded it."
+            title="Everything is asked afterwards."
+            lede="An incident is settled by what was kept. Six of them, and what the answer takes."
             slides={caseSlides}
           />
         );
@@ -305,8 +351,8 @@ const assertNever = (value: never): never => {
           <Deck
             id={section.id}
             eyebrow={section.label}
-            title="Where the record stands on its own."
-            lede="The question combines several axes. It has to be settled where the record was made, inside the memory the system has."
+            title="Where this pays for itself."
+            lede="The question spans several axes, and the answer has to exist where the record was made."
             slides={fitPanels}
             labels={['Everyday', 'Critical', 'Boundary']}
           />
@@ -371,6 +417,44 @@ const assertNever = (value: never): never => {
   /* The deck has no gap under it, and the link that closes the turn needs one. */
   .hl-close {
     padding-block: clamp(20px, 3vh, 32px) clamp(40px, 6vh, 80px);
+  }
+
+  /* The open block reads as a licence sheet: what anyone may use, what is published,
+     and what is licensed. The links are the evidence, so they carry the accent. */
+  .open a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+
+  .open a:hover,
+  .open a:focus-visible {
+    border-bottom-color: var(--accent);
+  }
+
+  .papers {
+    display: grid;
+    gap: 7px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .papers li {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .papers__when {
+    flex: 0 0 auto;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-3);
   }
 
 </style>

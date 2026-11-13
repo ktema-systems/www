@@ -1,6 +1,9 @@
 ---
-import Deck from './Deck.astro';
+import Section from './Section.astro';
 
+// The stack as the reader meets it first: the six names, what each one does in a
+// phrase, and the page where it is explained. The depth stays on the product pages,
+// so this band is an index rather than a second telling of the same six parts.
 interface Props {
   id?: string;
   eyebrow?: string;
@@ -8,57 +11,133 @@ interface Props {
 
 const { id = 'products', eyebrow = 'Stack' } = Astro.props;
 
-// The stack as a deck: one part per panel, and only what that part is worth to the
-// system. The six names sit in the footer, so the progress is also the menu into the
-// stack, and a reader who wants Ktema alone can go straight to it.
 const parts = [
   {
-    label: 'Ktema',
-    kicker: 'Ktema · the record',
-    title: 'The record engine, with no index to maintain',
-    body: 'Intent, act, and outcome in one record, kept beside the database you already run.',
+    name: 'Ktema',
+    role: 'Record',
+    href: '/ktema',
+    body: 'The engine that answers a question from its own record, with no index to maintain.',
   },
   {
-    label: 'Kletos',
-    kicker: 'Kletos · the execution',
-    title: 'An intent becomes work, and the work becomes a fact',
-    body: 'The operating system for a full-stack agent workflow: the chain from the ask to the act, in one record.',
+    name: 'Kletos',
+    role: 'Execution',
+    href: '/kletos',
+    body: 'An ask becomes verified work, and the work becomes a fact on the record.',
   },
   {
-    label: 'Krisis',
-    kicker: 'Krisis · the authority',
-    title: 'The rules the work runs inside',
-    body: 'Smart contracts and governance: who moved this agent, with what authority, and on which terms.',
+    name: 'Krisis',
+    role: 'Judgment',
+    href: '/krisis',
+    body: 'The rules the work runs inside: which model, at what cost, on whose authority.',
   },
   {
-    label: 'Delta',
-    kicker: 'Delta · the cockpit',
-    title: 'The cockpit where a run is seen and changed',
-    body: 'Software agents, robots, drones, and the people who run them, orchestrated from inside the run.',
+    name: 'Delta',
+    role: 'Operation',
+    href: '/delta',
+    body: 'The cockpit where a run is seen, and the intent changed from where it is read.',
   },
   {
-    label: 'Telos',
-    kicker: 'Telos · the transport',
-    title: 'A step to another place is an address',
-    body: 'Live state moves between agents, people, and spaces.',
+    name: 'Telos',
+    role: 'Transport',
+    href: '/telos',
+    body: 'Live state moved between agents, people, and spaces by address.',
   },
   {
-    label: 'Kleis',
-    kicker: 'Kleis · the seal',
-    title: 'It decides who enters',
-    body: 'The key a holder presents, the seal that makes a copy open nothing, and the proof that the holder was in control.',
+    name: 'Kleis',
+    role: 'Authorization',
+    href: '/kleis',
+    body: 'The key a holder presents, and the proof that the holder was in control.',
   },
 ];
-
-const panels = parts.map(({ kicker, title, body }) => ({ kicker, title, body }));
-const labels = parts.map((part) => part.label);
 ---
 
-<Deck
+<Section
   id={id}
-  eyebrow={eyebrow}
-  title="Spatiotemporal Record. Accountable Execution. Portable Control. Verifiable Seal."
-  lede="Ktema Systems is the whole stack, and each part stands on its own: one record, from a bare-metal part to a service, for execution that can be trusted and checked."
-  slides={panels}
-  labels={labels}
-/>
+  label={eyebrow}
+  title="Six parts, one record format."
+  lede="Each part stands on its own, and together they carry one record from the ask to the proven act."
+>
+  <ul class="stack">
+    {
+      parts.map((part) => (
+        <li>
+          <a class="stack__part" href={part.href}>
+            <span class="stack__role">{part.role}</span>
+            <span class="stack__name">{part.name}</span>
+            <span class="stack__body">{part.body}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  /* Six parts on one screen: the grid is the index, and a part is one click from the
+     page that explains it. */
+  .stack {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    padding: 0;
+    list-style: none;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .stack li {
+    display: flex;
+  }
+
+  .stack__part {
+    display: grid;
+    gap: 6px;
+    width: 100%;
+    padding: 22px 22px 24px;
+    background: var(--bg);
+    text-decoration: none;
+    transition: background 220ms var(--ease);
+  }
+
+  .stack__part:hover,
+  .stack__part:focus-visible {
+    background: var(--bg-2);
+  }
+
+  .stack__role {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .stack__name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    font-stretch: 112%;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+
+  .stack__body {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--fg-2);
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 900px) {
+    .stack {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .stack {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
