@@ -267,7 +267,7 @@ h1 {
   width: 100%;
   max-width: var(--page);
   margin-inline: auto;
-  padding: clamp(88px, 10vh, 144px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
+  padding: clamp(88px, 10vh, 04px) max(var(--gutter), env(safe-area-inset-left, 0px)) 104px;
 }
 
 /* ── the hero ─────────────────────────────────────────────────────────── */
@@ -457,6 +457,24 @@ h1 {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+/* The title and the flags share one row, so the card spends its height on the words
+   rather than on a stack of one-line rows. */
+.tile__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tile__head .tile__title {
+  min-width: 0;
+  max-width: 76%;
+}
+
+.tile__head .tags {
+  margin-top: 3px;
 }
 
 .tags {

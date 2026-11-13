@@ -193,10 +193,10 @@ export const planned: PlannedSurface[] = [
       'Two ESP32-S3 modules with nothing passing between them, each handed the same fields. The address is computed from the fields, so the two arrive at the same coordinate without a conversation, and each board prints the one it reached.',
   },
   {
-    title: 'The engine in programmable logic',
+    title: 'The address in gates',
     products: ['Ktema'],
     summary:
-      'The RISC-V build the device tier already runs, on an iCESugar-Pro, in fabric rather than on a fixed part. A soft core, the record on the board\'s own memory, and the same binary the reference device runs.',
+      'The tagma stack\'s addressing as RTL on an iCESugar-Pro: the 16-bit coordinate over 11,172 valid states, produced by a decoder and a datapath in fabric rather than by arithmetic on a core. Synthesis returns the cell count, which is where a stack becomes a part.',
   },
   {
     title: 'A robot that answers for its walk',

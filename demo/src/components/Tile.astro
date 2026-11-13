@@ -42,14 +42,16 @@ const planned = !href;
             <span class="badge badge--planned">{badge}</span>
           </span>
         )}
-        <span class="tile__title">{title}</span>
-        {products.length > 0 && (
-          <span class="tags">
-            {products.map((name) => (
-              <span class="product-tag">{name}</span>
-            ))}
-          </span>
-        )}
+        <span class="tile__head">
+          <span class="tile__title">{title}</span>
+          {products.length > 0 && (
+            <span class="tags">
+              {products.map((name) => (
+                <span class="product-tag">{name}</span>
+              ))}
+            </span>
+          )}
+        </span>
         <span class="tile__summary">{summary}</span>
       </div>
     </div>
@@ -72,14 +74,16 @@ const planned = !href;
         </span>
       )}
       <span class="tile__body">
-        <span class="tile__title">{title}</span>
-        {products.length > 0 && (
-          <span class="tags">
-            {products.map((name) => (
-              <span class="product-tag">{name}</span>
-            ))}
-          </span>
-        )}
+        <span class="tile__head">
+          <span class="tile__title">{title}</span>
+          {products.length > 0 && (
+            <span class="tags">
+              {products.map((name) => (
+                <span class="product-tag">{name}</span>
+              ))}
+            </span>
+          )}
+        </span>
         <span class="tile__summary">{summary}</span>
         {cta && (
           <span class="tile__cta">
