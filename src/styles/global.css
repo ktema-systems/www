@@ -577,8 +577,8 @@ svg {
     --masthead-pad-top: 0px;
     /* The name is always the whole one. Where the row would otherwise overflow, the
        lockup steps down instead of taking a shorter name. */
-    --brand-settled: clamp(18px, 5.4vw, 22px);
-    --brand-top: clamp(21px, 6.6vw, 26px);
+    --brand-settled: clamp(16px, 3vw, 22px);
+    --brand-top: clamp(18px, 3.6vw, 26px);
   }
 
   :root.is-at-top .masthead.is-open:not(.is-menu) {
@@ -1672,6 +1672,13 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
 @media (max-width: 560px) {
   .masthead__cta {
     display: none;
+  }
+
+  /* With the call closed, the toggle is what closes the row, so it takes the edge.
+     Without this it sits against the brand, which is where the room it did not need
+     went. */
+  .masthead__toggle {
+    margin-left: auto;
   }
 }
 

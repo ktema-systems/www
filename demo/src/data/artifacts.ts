@@ -196,7 +196,7 @@ export const planned: PlannedSurface[] = [
     title: 'The address in gates',
     products: ['Ktema'],
     summary:
-      'The tagma stack\'s addressing as RTL on an iCESugar-Pro: the 16-bit coordinate over 11,172 valid states, produced by a decoder and a datapath in fabric rather than by arithmetic on a core. Synthesis returns the cell count, which is where a stack becomes a part.',
+      'The tagma stack\'s addressing as RTL on an iCESugar-Pro: a decoder and a datapath in fabric that produce the coordinate over its valid states, instead of arithmetic on a core. Synthesis returns the cell count, which is where a stack becomes a part.',
   },
   {
     title: 'A robot that answers for its walk',
