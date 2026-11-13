@@ -69,6 +69,26 @@ const { artifact } = Astro.props;
 </section>
 
 <section class="bench__fit">
+  <h2>What the board printed</h2>
+  <p>
+    The table above is the board's own console output, recorded as it ran. The first run kept its records in the
+    engine's RAM medium; the second kept them in the flash partition and read them back after each reset.
+  </p>
+  <pre class="console">arena 65552 bytes, minimum heap 65536
+write id=각뗇옻긘궃맀땎냇룦렏뱪톀눨썤벙뽙똕솠펑탶
+facts=2
+heap used=1168 peak=2384
+ktema: ok</pre>
+  <pre class="console">partition ktema at 0x130000, 2097152 bytes
+fact 가멑힏컵느귳볙꼟쎦킛휞곳빉뭭꿉늭왣큚굣벆 ... uptime=72ms
+fact 가빃왇톣샚핵점텯빈섕따냘눈뤔취핫줴줁렰랷 ... uptime=224ms
+fact 가웸뎝궷펏꺣퉆녈푕폏햏읷둁놘힔쐷뚮컥켱캊 ... uptime=85ms
+kept from earlier boots: 3
+wrote 가강챀덎쉎뻔헹뷢찋릈좯쀳꾘쓎됑런늷뎮믵묡
+heap used=0 peak=1648</pre>
+</section>
+
+<section class="bench__fit">
   <h2>The surface the firmware links</h2>
   <p>
     A part like this has a flash region, a write, and an erase. It has no key-value medium, so the C surface takes

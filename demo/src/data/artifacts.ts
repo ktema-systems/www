@@ -150,9 +150,9 @@ export const artifacts: Artifact[] = [
       'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
     source: RUNS[0].href,
     recordings: RUNS,
-    poster: '/proofs/device.png',
+    poster: '/proofs/device-tile.png',
     posterAlt:
-      'A terminal replaying the device-tier check: the scenario runs on a RISC-V board, the host writes the same volume, and both report the same digest.',
+      "A terminal still from the device check: the device converged on 0x299bd5d0e1821fab and the host tier wrote the same volume, under a footprint of 1136 live bytes and a 3504-byte peak.",
   },
   {
     id: 'bench',

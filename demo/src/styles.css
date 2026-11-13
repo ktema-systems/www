@@ -815,6 +815,20 @@ h1 {
   font-size: 13.5px;
 }
 
+/* A run's own output, kept as the terminal printed it. */
+.console {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+  color: var(--fg-2);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
 .bench__fit th,
 .bench__fit td {
   padding: 10px 12px;
