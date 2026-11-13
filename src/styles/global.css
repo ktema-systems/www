@@ -242,6 +242,12 @@ html {
   overflow-anchor: none;
 }
 
+/* A deck's cue covers several screens in one move; an eased scroll over that distance
+   reads as a lost gesture, and on a phone it is the move most likely to be dropped. */
+html.is-deck-skipping {
+  scroll-behavior: auto !important;
+}
+
 body {
   margin: 0;
   background: var(--bg);

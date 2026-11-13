@@ -754,6 +754,10 @@ const splitMetric = (value: string) => {
      lands on the next section, so a reader who has seen enough does not scroll through
      six screens to say so. */
   .deck__cue {
+    position: relative;
+    z-index: 2;
+    /* A tap resolves at once instead of waiting on a double-tap zoom guess. */
+    touch-action: manipulation;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -977,11 +981,16 @@ const splitMetric = (value: string) => {
 
     .deck__tabs {
       gap: 4px 12px;
+      /* The labels are the first thing to give up room on a phone: the foot keeps the
+         count, the rail and the way out of the deck. */
+      display: none;
     }
 
-    /* The cue is a hint for a pointer; a phone reaches the deck by scrolling anyway. */
+    /* The panels are a long scroll on a phone, so the cue is the one control the foot
+       has to keep. */
     .deck__cue {
-      display: none;
+      display: inline-flex;
+      flex: 0 0 auto;
     }
 
     .slide__figure img {
@@ -1031,6 +1040,49 @@ const splitMetric = (value: string) => {
   import { resetAll, rollAll } from '../scripts/count-up';
 
   gsap.registerPlugin(ScrollTrigger);
+
+  // One press leaves the deck for the section that follows it. The listener is on the
+  // document rather than on each cue, so a deck that fails to build its trigger keeps a
+  // live button, and the root drops smooth scrolling for the single write: a scroll
+  // started mid-gesture, or one the stage's own scroller is holding, is otherwise
+  // swallowed. The second write lands a frame later and is a no-op when the first stuck.
+  const skipDeck = (deck: HTMLElement) => {
+    const deckTop = deck.getBoundingClientRect().top + window.scrollY;
+    const bottom = deckTop + deck.offsetHeight;
+    // The next section may carry a margin, so its own top is the better line; a sibling
+    // without a box is skipped, because a script between the two reads as the page top.
+    let top = bottom;
+    for (let node = deck.nextElementSibling; node; node = node.nextElementSibling) {
+      if (!node.getClientRects().length) continue;
+      top = Math.max(bottom, node.getBoundingClientRect().top + window.scrollY);
+      break;
+    }
+    const root = document.documentElement;
+    root.classList.add('is-deck-skipping');
+    window.scrollTo(0, top);
+    const release = () => root.classList.remove('is-deck-skipping');
+    let tries = 0;
+    const settle = () => {
+      if (Math.abs(window.scrollY - top) > 1 && tries++ < 3) {
+        window.scrollTo(0, top);
+        window.requestAnimationFrame(settle);
+        return;
+      }
+      release();
+    };
+    window.requestAnimationFrame(settle);
+    // A hidden tab withholds the frame above; the class must not outlive the move.
+    window.setTimeout(release, 400);
+  };
+
+  document.addEventListener('click', (event) => {
+    const target = event.target as Element | null;
+    if (!target?.closest || !target.closest('[data-deck-skip]')) return;
+    const deck = target.closest<HTMLElement>('[data-deck]');
+    if (!deck) return;
+    event.preventDefault();
+    skipDeck(deck);
+  });
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   const coarse = window.matchMedia('(pointer: coarse)');
@@ -1110,17 +1162,7 @@ const splitMetric = (value: string) => {
 
     tabs.forEach((tab, index) => tab.addEventListener('click', () => jump(index)));
 
-    // One press leaves the deck. The panels are a scroll a reader may not want, and the
-    // next section is where the argument continues.
-    const skip = deck.querySelector<HTMLButtonElement>('[data-deck-skip]');
-    skip?.addEventListener('click', () => {
-      const motion = reduce.matches ? 'auto' : 'smooth';
-      const next = deck.nextElementSibling as HTMLElement | null;
-      const top = next
-        ? next.getBoundingClientRect().top + window.scrollY
-        : deck.getBoundingClientRect().top + window.scrollY + deck.offsetHeight;
-      window.scrollTo({ top, behavior: motion });
-    });
+
 
     // One overlay per section: the figure that was clicked lends it its source, so a
     // deck with ten photographs still holds one element.
