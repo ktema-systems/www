@@ -945,10 +945,9 @@ const payload = {
     letter-spacing: 0.12em;
   }
 
-  .reach.is-forked .reach__sphere {
-    opacity: 0.08;
-  }
-
+  /* The shells step back with the split in the render loop, which ramps with the scroll.
+     A second rule here would dim the whole layer the moment the class turned on, and the
+     field would blink out instead of forking. */
   .reach__volume {
     stroke: none;
   }
@@ -1804,9 +1803,19 @@ const payload = {
     );
 
     // The turn runs while the figure is on screen, and rests while a reader holds it.
+    // Measuring a label's room forces layout, and the turn rewrites a few hundred SVG
+    // attributes; together they are enough to make a phone stutter through a long scroll.
+    // So the measure is rate-limited and the turn runs slower where the pointer is coarse,
+    // and neither runs while the tab is in the background.
+    const coarse = window.matchMedia('(pointer: coarse)');
+    let lastMeasure = 0;
+    let lastRender = 0;
+    const measureSoon = (now: number) => {
+      if (now - lastMeasure < 120) return;
+      lastMeasure = now;
+      measureRoom();
+    };
     const step = (now: number) => {
-      const delta = Math.min(0.05, (now - lastFrame) / 1000);
-      lastFrame = now;
       const approach = Math.min(1, Math.max(0, window.scrollY / approachEnd));
       const startScale = openScale();
       const scale = startScale - (startScale - restScale()) * approach;
@@ -1814,7 +1823,7 @@ const payload = {
         lastScale = scale;
         svg.style.setProperty('--reach-scale', scale.toFixed(3));
         svg.style.setProperty('--reach-hosts', approach.toFixed(3));
-        measureRoom();
+        measureSoon(now);
       }
       // The sphere moves from the right edge to the centre as it shrinks, so the frame
       // lands centred whichever width the window has.
@@ -1829,12 +1838,18 @@ const payload = {
       if (Math.abs(shift - lastShift) > 0.5) {
         lastShift = shift;
         svg.style.setProperty('--reach-shift', `${shift.toFixed(1)}px`);
-        measureRoom();
+        measureSoon(now);
       }
 
-      if (visible && !dragging && !reduce.matches && now > resumeAt) {
-        yaw += delta * 0.11;
-        render();
+      const every = coarse.matches ? 66 : 0;
+      if (visible && !document.hidden && !dragging && !reduce.matches && now > resumeAt) {
+        if (now - lastRender >= every) {
+          yaw += Math.min(0.2, (now - lastRender) / 1000) * 0.11;
+          lastRender = now;
+          render();
+        }
+      } else {
+        lastRender = now;
       }
       requestAnimationFrame(step);
     };

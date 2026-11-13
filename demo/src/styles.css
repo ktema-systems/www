@@ -480,6 +480,7 @@ h1 {
 .tags {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 6px;
   align-self: flex-start;
 }

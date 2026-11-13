@@ -241,7 +241,10 @@ const splitMetric = (value: string) => {
           )
         }
         <div class="deck__rail"><span class="deck__bar" data-slide-bar /></div>
-        <p class="deck__cue">Scroll</p>
+        <button type="button" class="deck__cue" data-deck-skip aria-label="Skip to the next section">
+          Skip
+          <span class="deck__cue-arrow" aria-hidden="true">&#8595;</span>
+        </button>
       </div>
 
       {footnote && <p class="deck__note">{footnote}</p>}
@@ -747,9 +750,37 @@ const splitMetric = (value: string) => {
     transform-origin: left center;
   }
 
+  /* The cue is the way out of a deck: one press leaves the remaining panels behind and
+     lands on the next section, so a reader who has seen enough does not scroll through
+     six screens to say so. */
   .deck__cue {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    letter-spacing: inherit;
     text-transform: uppercase;
+    color: inherit;
+    cursor: pointer;
+    transition: color 200ms var(--ease);
+  }
+
+  .deck__cue:hover,
+  .deck__cue:focus-visible {
+    color: var(--accent);
+  }
+
+  .deck__cue-arrow {
+    transition: transform 200ms var(--ease);
+  }
+
+  .deck__cue:hover .deck__cue-arrow,
+  .deck__cue:focus-visible .deck__cue-arrow {
+    transform: translateY(2px);
   }
 
   .deck__note {
@@ -1078,6 +1109,18 @@ const splitMetric = (value: string) => {
     };
 
     tabs.forEach((tab, index) => tab.addEventListener('click', () => jump(index)));
+
+    // One press leaves the deck. The panels are a scroll a reader may not want, and the
+    // next section is where the argument continues.
+    const skip = deck.querySelector<HTMLButtonElement>('[data-deck-skip]');
+    skip?.addEventListener('click', () => {
+      const motion = reduce.matches ? 'auto' : 'smooth';
+      const next = deck.nextElementSibling as HTMLElement | null;
+      const top = next
+        ? next.getBoundingClientRect().top + window.scrollY
+        : deck.getBoundingClientRect().top + window.scrollY + deck.offsetHeight;
+      window.scrollTo({ top, behavior: motion });
+    });
 
     // One overlay per section: the figure that was clicked lends it its source, so a
     // deck with ten photographs still holds one element.
