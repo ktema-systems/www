@@ -469,7 +469,7 @@ h1 {
 .tile__summary {
   max-width: 62ch;
   color: var(--fg-2);
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.6;
 }
 
@@ -525,7 +525,7 @@ h1 {
 
 .tile--planned .tile__summary {
   color: var(--fg-3);
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .badge--planned {
@@ -583,7 +583,7 @@ h1 {
 .video figcaption {
   margin-top: 14px;
   color: var(--fg-2);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .document p {
@@ -601,7 +601,7 @@ h1 {
   max-width: 68ch;
   margin: 0;
   color: var(--fg-2);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* The runs are the center's own tile, so a recording stands beside an application without a second visual language.
@@ -637,7 +637,7 @@ h1 {
 }
 
 .tile--proof .tile__summary {
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.55;
 }
 
@@ -684,7 +684,7 @@ h1 {
   max-width: 68ch;
   margin-top: 12px;
   color: var(--fg-3);
-  font-size: 13.5px;
+  font-size: 16px;
   line-height: 1.55;
 }
 
@@ -702,7 +702,7 @@ h1 {
 .run__body p {
   margin: 0 0 16px;
   color: var(--fg-2);
-  font-size: 15.5px;
+  font-size: 16px;
   line-height: 1.7;
 }
 
@@ -732,7 +732,7 @@ h1 {
 .run__meta dd {
   margin: 0;
   color: var(--fg-2);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .run__meta code {
@@ -751,7 +751,7 @@ h1 {
   max-width: 68ch;
   margin: 0;
   color: var(--fg-2);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .bench__grid {
@@ -812,14 +812,14 @@ h1 {
 .bench__fit p {
   margin: 0 0 22px;
   color: var(--fg-2);
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.7;
 }
 
 .bench__fit table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13.5px;
+  font-size: 16px;
 }
 
 .bench__fit th,
@@ -873,7 +873,7 @@ h1 {
 
 .chart__caption {
   color: var(--fg-3);
-  font-size: 12.5px;
+  font-size: 16px;
   line-height: 1.55;
 }
 
