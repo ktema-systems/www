@@ -6,7 +6,7 @@
 interface Props {
   href?: string;
   title: string;
-  product?: string;
+  products?: string[];
   summary: string;
   poster?: string;
   posterAlt?: string;
@@ -19,7 +19,7 @@ interface Props {
 const {
   href,
   title,
-  product,
+  products = [],
   summary,
   poster,
   posterAlt,
@@ -43,7 +43,13 @@ const planned = !href;
           </span>
         )}
         <span class="tile__title">{title}</span>
-        {product && <span class="tile__product">{product}</span>}
+        {products.length > 0 && (
+          <span class="tags">
+            {products.map((name) => (
+              <span class="product-tag">{name}</span>
+            ))}
+          </span>
+        )}
         <span class="tile__summary">{summary}</span>
       </div>
     </div>
@@ -67,7 +73,13 @@ const planned = !href;
       )}
       <span class="tile__body">
         <span class="tile__title">{title}</span>
-        {product && <span class="tile__product">{product}</span>}
+        {products.length > 0 && (
+          <span class="tags">
+            {products.map((name) => (
+              <span class="product-tag">{name}</span>
+            ))}
+          </span>
+        )}
         <span class="tile__summary">{summary}</span>
         {cta && (
           <span class="tile__cta">

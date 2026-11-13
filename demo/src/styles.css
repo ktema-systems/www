@@ -464,7 +464,10 @@ h1 {
   color: var(--accent);
 }
 
-.tile__product {
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   align-self: flex-start;
 }
 

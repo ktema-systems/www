@@ -33,8 +33,8 @@ export interface Artifact {
   id: string;
   /** What the surface is, rather than which product it belongs to. */
   title: string;
-  /** The product it belongs to, drawn as a small tag: Delta or Ktema. */
-  product: string;
+  /** What the surface belongs to, drawn as small tags. A cockpit runs over every stack, so it can carry more than one. */
+  products: string[];
   kind: ArtifactKind;
   /** What a reader learns before opening it, in one or two sentences. */
   summary: string;
@@ -51,7 +51,7 @@ export interface Artifact {
 /** A surface the center will carry and does not yet. */
 export interface PlannedSurface {
   title: string;
-  product: string;
+  products: string[];
   summary: string;
 }
 
@@ -132,7 +132,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'delta',
     title: 'Fleet operations',
-    product: 'Delta',
+    products: ['All stacks', 'Delta'],
     kind: 'live',
     summary:
       'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, on mock data.',
@@ -144,7 +144,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'runs',
     title: 'Headless runs',
-    product: 'Ktema',
+    products: ['Ktema'],
     kind: 'runs',
     summary:
       'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
@@ -154,7 +154,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'bench',
     title: 'Measurements',
-    product: 'Ktema',
+    products: ['Ktema'],
     kind: 'bench',
     summary:
       'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
@@ -162,11 +162,11 @@ export const artifacts: Artifact[] = [
   },
   {
     id: 'device',
-    title: 'The engine on a microcontroller',
-    product: 'Ktema',
+    title: 'The floor: a bare microcontroller',
+    products: ['Ktema'],
     kind: 'device',
     summary:
-      'The engine linked into an ESP32-S3 firmware, keeping its records in the part of its flash it was given and reading them back after a reset. No operating system, no filesystem, no database.',
+      'The smallest host the engine runs on: a part with no operating system, no filesystem, 8 MB of flash and 64 kB of working memory, where a record written before the reset is read back after it. Every host above it runs the same build.',
     source: 'firmware/litewing',
     poster: '/board.jpg',
     posterAlt:

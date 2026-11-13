@@ -30,7 +30,7 @@ const hrefOf = (artifact: (typeof artifacts)[number]) =>
           <Tile
             href={hrefOf(lead)}
             title={lead.title}
-            product={lead.product}
+            products={lead.products}
             summary={lead.summary}
             poster={lead.poster}
             posterAlt={lead.posterAlt}
@@ -47,7 +47,7 @@ const hrefOf = (artifact: (typeof artifacts)[number]) =>
           <Tile
             href={hrefOf(artifact)}
             title={artifact.title}
-            product={artifact.product}
+            products={artifact.products}
             summary={artifact.summary}
             poster={artifact.poster}
             posterAlt={artifact.posterAlt}
@@ -60,7 +60,7 @@ const hrefOf = (artifact: (typeof artifacts)[number]) =>
     {
       planned.map((surface) => (
         <li>
-          <Tile title={surface.title} product={surface.product} summary={surface.summary} badge="coming soon" />
+          <Tile title={surface.title} products={surface.products} summary={surface.summary} badge="coming soon" />
         </li>
       ))
     }

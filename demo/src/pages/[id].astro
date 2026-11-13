@@ -34,7 +34,11 @@ if (!Body) throw new Error(`the center draws no page for a ${artifact.kind} arti
 >
   <header class="page__head">
     <h1 class="artifact__title">{artifact.title}</h1>
-    <span class="product-tag">{artifact.product}</span>
+    <span class="tags">
+      {artifact.products.map((name) => (
+        <span class="product-tag">{name}</span>
+      ))}
+    </span>
   </header>
   <Body artifact={artifact} />
 </Shell>
