@@ -14,7 +14,7 @@ const { artifact } = Astro.props;
 
 <p class="run__lede">{artifact.summary}</p>
 
-<figure class="run__figure">
+<figure class="run__figure device__figure">
   <img src="/board.jpg" alt="The ESP32-S3 module on its board, lit and connected." />
   <figcaption>
     The part the run was made on: an ESP32-S3 with 8 MB of flash and 64 kB of working memory, running from the board's
@@ -75,7 +75,7 @@ const { artifact } = Astro.props;
     first run kept its records in the engine's RAM medium; the second kept them in the flash partition and read them
     back after each reset.
   </p>
-  <figure class="run__figure">
+  <figure class="run__figure device__figure">
     <img
       src="/proofs/board-console.png"
       alt="Two console blocks. The first reports an arena of 65552 bytes, two facts and a heap peak of 2384 bytes. The second reports a 2 MiB partition at 0x130000, three records kept from earlier boots, and a heap peak of 1648 bytes."

@@ -688,6 +688,13 @@ h1 {
   line-height: 1.55;
 }
 
+/* The board's caption is prose under a photograph, so it is set at the size the page's opening paragraph is. */
+.device__figure figcaption {
+  color: var(--fg-2);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
 .run__body {
   max-width: 68ch;
 }
@@ -865,7 +872,6 @@ h1 {
 }
 
 .chart__caption {
-  max-width: 62ch;
   color: var(--fg-3);
   font-size: 12.5px;
   line-height: 1.55;
