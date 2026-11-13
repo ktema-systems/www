@@ -3,9 +3,6 @@
 // read from here, so the two pages cannot drift apart.
 export const site = {
   name: 'Ktema Systems',
-  // The masthead carries the whole name while the bar has room for it and the short
-  // one below that, because the name, the strip and the call to action share one row.
-  short: 'Ktema',
   legalName: 'Ktema Systems',
   // The company does not exist yet, so wherever the entity is named as if it did
   // it carries this qualifier. The preprints use the same one on the affiliation

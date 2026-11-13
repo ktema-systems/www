@@ -180,8 +180,7 @@ const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
     }
   </svg>
 
-  <table class="sr-only">
-    <caption>{title} ({unit})</caption>
+  <table class="sr-only" aria-label={`${title} (${unit})`}>
     <thead>
       <tr>
         <td></td>

@@ -533,8 +533,7 @@ h1 {
   border-style: dashed;
 }
 
-/* A bay with nothing in it yet carries the mark's construction as a backdrop, scaled past the edges the way the
-   homepage field is, rather than a logo placed on it. It takes whatever height the row has left over, so the reserved
+/* A bay with nothing in it yet takes whatever height the row has left over, so the reserved
    room is the bay itself rather than a gap under the words. */
 .tile__screen--empty {
   position: relative;
@@ -545,15 +544,17 @@ h1 {
   border-bottom: 1px dashed var(--line);
 }
 
+/* The bay carries the mark's construction as a backdrop. The whole form is drawn rather
+   than a crop of it, so it reads as the brand at a glance, and it stays behind the words. */
 .tile__screen--empty::before {
   content: '';
   position: absolute;
-  inset: -18%;
+  inset: 0;
   background-color: var(--accent);
-  opacity: 0.16;
+  opacity: 0.2;
   mask-image: url('/logo.svg');
   mask-position: center;
-  mask-size: cover;
+  mask-size: contain;
   mask-repeat: no-repeat;
 }
 
@@ -717,7 +718,7 @@ h1 {
 
 .run__meta div {
   display: grid;
-  grid-template-columns: 90px 1fr;
+  grid-template-columns: 90px minmax(0, 1fr);
   gap: 12px;
 }
 
@@ -733,6 +734,7 @@ h1 {
   margin: 0;
   color: var(--fg-2);
   font-size: 16px;
+  overflow-wrap: anywhere;
 }
 
 .run__meta code {
@@ -756,7 +758,7 @@ h1 {
 
 .bench__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
   gap: 16px;
   margin-top: clamp(28px, 4vw, 44px);
 }
@@ -793,9 +795,9 @@ h1 {
   position: absolute;
   width: 1px;
   height: 1px;
-  /* A table ignores width and lays out at its content's minimum, so the cap is explicit. */
-  max-width: 1px;
-  max-height: 1px;
+  /* A table ignores width and lays out at its content's minimum, and a caption widens it
+     again, so the box is contained rather than merely sized. */
+  contain: size;
   table-layout: fixed;
   padding: 0;
   margin: -1px;
@@ -974,24 +976,25 @@ h1 {
     --gutter: 22px;
   }
 
-  /* Two labels fit on a phone: the lockup, and the way home. A home page repeats its own name under the bar, so the
-     section name is the first thing to go. */
+  /* A home page repeats its own name under the bar, so the section name is the first thing to go. The
+     lockup itself keeps the whole name. */
   .bar__inner {
-    gap: 10px;
-    font-size: 14px;
+    gap: 6px;
+    font-size: 13px;
   }
 
   .bar__brand {
-    gap: 8px;
+    gap: 7px;
   }
 
   .bar__mark {
-    width: 18px;
-    height: 18px;
+    width: 17px;
+    height: 17px;
   }
 
+  /* The name keeps its whole form here; the row is what gives way. */
   .bar__name {
-    font-size: 14.5px;
+    font-size: 13px;
   }
 
   .bar__sep,
@@ -999,10 +1002,14 @@ h1 {
     display: none;
   }
 
-  /* On a subpage the crumb and the button have to share the row, so the mark stands for the brand there, and only
-     the way back to the center survives. */
-  .bar__inner:has(.bar__crumb) .bar__name {
-    display: none;
+  .bar__crumb {
+    font-size: 12px;
+  }
+
+  .bar__cta {
+    padding: 5px 8px;
+    font-size: 9px;
+    letter-spacing: 0.06em;
   }
 
   .bar__crumb:not(.bar__crumb--root) {
@@ -1027,6 +1034,34 @@ h1 {
 
   .tile__screen:not(.tile__screen--empty) {
     aspect-ratio: 16 / 10;
+  }
+}
+
+/* Below the width where the whole name, the way back and the request cannot share one row, the trail takes a second
+   row. The name is the one thing the bar does not shorten, so the row count is what changes. */
+@media (max-width: 380px) {
+  .bar:has(.bar__crumb) {
+    height: auto;
+  }
+
+  .bar__inner:has(.bar__crumb) {
+    height: auto;
+    flex-wrap: wrap;
+    padding-block: 7px;
+    row-gap: 3px;
+  }
+
+  .bar__spacer {
+    display: none;
+  }
+
+  .bar__cta {
+    margin-left: auto;
+  }
+
+  .bar__crumb {
+    order: 3;
+    flex: 1 0 100%;
   }
 }
 

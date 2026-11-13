@@ -575,6 +575,10 @@ svg {
      height, so the pad leaves with the wide layout. */
   :root {
     --masthead-pad-top: 0px;
+    /* The name is always the whole one. Where the row would otherwise overflow, the
+       lockup steps down instead of taking a shorter name. */
+    --brand-settled: clamp(18px, 5.4vw, 22px);
+    --brand-top: clamp(21px, 6.6vw, 26px);
   }
 
   :root.is-at-top .masthead.is-open:not(.is-menu) {
@@ -661,12 +665,6 @@ svg {
 .masthead.is-menu .brand__mark {
   transform: rotate(30deg) scale(1.06);
   background-color: var(--accent);
-}
-
-/* The short name, for the widths where the whole one, the strip and the call to
-   action cannot share one row. Which of the two is drawn is set below 720px. */
-.brand__short {
-  display: none;
 }
 
 /* The strip is replaced by a sheet below 900px, and this is the control that opens
@@ -1668,29 +1666,21 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   }
 }
 
-/* The narrowest rows cannot hold the brand, the call to action and the toggle at
-   the full size, so the button steps down instead of leaving the row. */
-@media (max-width: 380px) {
-  .masthead__cta .btn {
-    padding: 7px 11px;
-    font-size: 12.5px;
+/* Below this width the row cannot hold the whole name, the call to action and the
+   toggle together. Every page carries its own call to action further down, so the
+   bar keeps the name whole and closes the box instead of shortening the name. */
+@media (max-width: 560px) {
+  .masthead__cta {
+    display: none;
   }
 }
 
 @media (max-width: 720px) {
-  /* Below 900px the row is the brand and the call to action and nothing else, and
-     the wide cut makes the name wide enough that the page would scroll sideways at
-     the narrowest widths. */
+  /* Below 900px the row is the brand and the call to action and nothing else. The
+     lockup steps down rather than the name being shortened, so the bar keeps one
+     form of the name at every width. */
   .masthead__inner {
     gap: 14px;
-  }
-
-  .brand__name {
-    display: none;
-  }
-
-  .brand__short {
-    display: inline;
   }
 
   .metrics {

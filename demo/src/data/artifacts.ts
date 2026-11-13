@@ -182,6 +182,26 @@ export const artifacts: Artifact[] = [
 
 // The order here is the order the grid draws them in. They sit beside the artifacts rather than under them, because a
 // reader who came for one demonstration still learns what the center is going to be. Each names the work it stands for,
-// which is what the devlogs carry rather than a description of what a video is. The list is empty while everything the
-// center can show without a part attached is shown, and a planned surface is a tile with a badge instead of an address.
-export const planned: PlannedSurface[] = [];
+// which is what the devlogs carry rather than a description of what a video is. A planned surface is a tile with a badge
+// instead of an address, and each one is a part that is on the bench, so the bay states what the part will show rather
+// than what a page might say.
+export const planned: PlannedSurface[] = [
+  {
+    title: 'Two nodes, one address',
+    products: ['Ktema'],
+    summary:
+      'Two ESP32-S3 modules with nothing passing between them, each handed the same fields. The address is computed from the fields, so the two arrive at the same coordinate without a conversation, and each board prints the one it reached.',
+  },
+  {
+    title: 'The engine in programmable logic',
+    products: ['Ktema'],
+    summary:
+      'The RISC-V build the device tier already runs, on an iCESugar-Pro, in fabric rather than on a fixed part. A soft core, the record on the board\'s own memory, and the same binary the reference device runs.',
+  },
+  {
+    title: 'A robot that answers for its walk',
+    products: ['All stacks', 'Delta'],
+    summary:
+      'A SpiderPi Pro, a Raspberry Pi 5 with eight gigabytes, as the room a device answers in. The bridge the runtime calls already passes the device check; the three sensor calls, the Pi\'s own run and the reach from a phone are what this bay waits on.',
+  },
+];
