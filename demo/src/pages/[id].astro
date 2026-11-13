@@ -11,6 +11,7 @@ import Document from '../kinds/Document.astro';
 import Runs from '../kinds/Runs.astro';
 import Bench from '../kinds/Bench.astro';
 import Device from '../kinds/Device.astro';
+import Board from '../kinds/Board.astro';
 
 export function getStaticPaths() {
   return artifacts
@@ -20,7 +21,7 @@ export function getStaticPaths() {
 
 const { artifact } = Astro.props as { artifact: Artifact };
 
-const BODIES = { video: Video, document: Document, runs: Runs, bench: Bench, device: Device };
+const BODIES = { video: Video, document: Document, runs: Runs, bench: Bench, device: Device, board: Board };
 const Body = BODIES[artifact.kind as keyof typeof BODIES];
 
 // A kind with no body here would render nothing at all, so the build stops instead of publishing an empty page.

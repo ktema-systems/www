@@ -1,0 +1,126 @@
+---
+// A board that checked something the engine claimed, and the table it reported.
+//
+// The page is the record of one run: a still of the part, what the pins said, and the cases the run does not cover. It
+// quotes the run rather than repeating it, because the build has no board attached.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+---
+
+<p class="run__lede">{artifact.summary}</p>
+
+<figure class="run__figure device__figure">
+  <img src="/board-ecp5.jpg" alt="The iCESugar-Pro v1.3 module seated in its carrier board, lit and connected." />
+  <figcaption>
+    The part the run was made on: an ECP5 LFE5U-25F on an iCESugar-Pro v1.3 module. The on-board iCELink carries three
+    ECP5 balls to the host as GPIOs, so the verdict is read over the programming cable and no external wiring is
+    involved. The carrier's two USB-C ports reach no FPGA.
+  </figcaption>
+</figure>
+
+<section class="bench__fit">
+  <h2>What the board reported</h2>
+  <p>
+    A volume of 11,172 records was written by the engine. The first 512 of them were read back off the medium, which is
+    10,240 coordinate values, and supplied to the part as a ROM. The part decoded each value and accumulated the three
+    axes; the host computed the same sum by division while the die computes it with a reciprocal multiply.
+  </p>
+  <table>
+    <thead>
+      <tr><th></th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Coordinate values checked</td>
+        <td>10,240, from 512 records</td>
+      </tr>
+      <tr>
+        <td>Host sum, by division</td>
+        <td><code>00002BFC</code></td>
+      </tr>
+      <tr>
+        <td>Die sum, by reciprocal multiply</td>
+        <td><code>00002BFC</code></td>
+      </tr>
+      <tr>
+        <td>Values outside the 11,172-coordinate alphabet</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>One value changed to 11,172, the first value outside it</td>
+        <td>Sum mismatch, one value refused</td>
+      </tr>
+      <tr>
+        <td>Block RAM</td>
+        <td>9 of 56 blocks, 16 percent</td>
+      </tr>
+      <tr>
+        <td>Logic</td>
+        <td>219 flip-flops, 448 combinational</td>
+      </tr>
+      <tr>
+        <td>Timing at a 40 MHz constraint</td>
+        <td>76.99 MHz</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The last row is not a claim about speed. It says the image was built at a rate the part holds. Where the decode
+    stops matching is measured by the separate image that sweeps the valid range, which is built at 100, 120, 125 and
+    140 MHz.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>What the run establishes</h2>
+  <p>
+    The addresses on the medium are coordinates, and a circuit that did not compute them says so. There is no table in
+    the path on either side: the host reads the keys off the medium, and the part recomputes each coordinate from its
+    value. A hash table cannot make this statement, because the statement is that no table exists.
+  </p>
+  <p>
+    The negative control is what makes the pass worth reading. One value at index 5,000 was changed to 11,172, and both
+    the sum and the refusal count responded. An indicator that can only show one value proves nothing.
+  </p>
+  <pre class="sr-only">--- values: the coordinate values of 512 records ---
+records 512, values 10240, invalid 0, checksum 00002BFC
+--- place and route: the volume image at 40 MHz ---
+bitstream: out/tagma_volume_verify_top_40mhz.bit
+--- program and read the verdict ---
+pin_match   = 1
+pin_invalid = 0
+PASS: the die reproduced 00002BFC over the volume's values</pre>
+</section>
+
+<section class="bench__fit">
+  <h2>What the run does not cover</h2>
+  <p>
+    512 of the 11,172 records are checked, because a ROM holding all 223,440 values does not fit the part. The ROM is
+    built by the flow from the host's values, so what is established is the fit between the medium and the circuit, not
+    a decoder reading a live medium.
+  </p>
+  <p>
+    No rate is claimed for the engine. The image reads one value per clock and reports a verdict, and the software
+    reference is faster on both latency and a full sweep, as the measurements page records.
+  </p>
+</section>
+
+<dl class="run__meta">
+  <div>
+    <dt>Check</dt>
+    <dd><code>{artifact.source}</code>, in the engine checkout</dd>
+  </div>
+  <div>
+    <dt>Image</dt>
+    <dd><code>DESIGN=volume</code>, syntagma hardware flow</dd>
+  </div>
+  <div>
+    <dt>Recorded</dt>
+    <dd>2026-11-13</dd>
+  </div>
+</dl>

@@ -8,7 +8,7 @@
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
 /** `live` is a deployed application the reader is sent to; the center draws the other four itself. */
-export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device';
+export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device' | 'board';
 
 /** A recorded run of the engine: a page of its own, a still, and the video its page plays with native controls. */
 export interface Recording {
@@ -177,6 +177,18 @@ export const artifacts: Artifact[] = [
     poster: '/board.jpg',
     posterAlt:
       'The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its records.',
+  },
+  {
+    id: 'fabric',
+    title: 'The address in gates',
+    products: ['Ktema', 'Tagma'],
+    kind: 'board',
+    summary:
+      'The coordinate values a volume carries, decoded on an ECP5 by a circuit that did not write them: 10,240 values off the medium, one sum on the host and the same sum on the die. A value at the edge of the alphabet makes the check fail.',
+    source: 'verify/fpga/check.sh',
+    poster: '/board-ecp5.jpg',
+    posterAlt:
+      'The iCESugar-Pro v1.3 module seated in its carrier board, lit and connected.',
   },
 ];
 
