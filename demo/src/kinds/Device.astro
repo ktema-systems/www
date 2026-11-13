@@ -71,21 +71,31 @@ const { artifact } = Astro.props;
 <section class="bench__fit">
   <h2>What the board printed</h2>
   <p>
-    The table above is the board's own console output, recorded as it ran, with a coordinate abbreviated where the log
-    abbreviates it. The first run kept its records in the engine's RAM medium; the second kept them in the flash
-    partition and read them back after each reset.
+    The table above is the board's own console output, with each coordinate written in the engine's ASCII form. The
+    first run kept its records in the engine's RAM medium; the second kept them in the flash partition and read them
+    back after each reset.
   </p>
-  <pre class="console">arena 65552 bytes, minimum heap 65536
-write id=각뗇옻긘궃맀땎냇룦렏뱪톀눨썤벙뽙똕솠펑탶
+  <figure class="run__figure">
+    <img
+      src="/proofs/board-console.png"
+      alt="Two console blocks. The first reports an arena of 65552 bytes, two facts and a heap peak of 2384 bytes. The second reports a 2 MiB partition at 0x130000, three records kept from earlier boots, and a heap peak of 1648 bytes."
+    />
+    <figcaption>
+      The two runs as recorded. A coordinate is sixty characters: twenty axes of three, in the engine's own alphabet.
+    </figcaption>
+  </figure>
+  <pre class="sr-only">arena 65552 bytes, minimum heap 65536
+write id=0011xj56j0ew0ar2ps1u60xz2jq2dr38q7eo17s4mc3a13tl1zp49s7td7au
 facts=2
 heap used=1168 peak=2384
-ktema: ok</pre>
-  <pre class="console">partition ktema at 0x130000, 2097152 bytes
-fact 가멑힏컵느귳볙꼟쎦킛휞곳빉뭭꿉늭왣큚굣벆 ... uptime=72ms
-fact 가빃왇톣샚핵점텯빈섕따냘눈뤔취핫줴줁렰랷 ... uptime=224ms
-fact 가웸뎝궷펏꺣퉆녈푕폏햏읷둁놘힔쐷뚮컥켱캊 ... uptime=85ms
+ktema: ok
+
+partition ktema at 0x130000, 2097152 bytes
+fact 0002tt8lr6vp1ao0dv3bt0m74o678b8im06r3m131p0qx1bh57n76i09v39i uptime=72ms
+fact 0003lv56v7fn44a86t5jk7e73m045x1tc0yg16w2l06p486j5ro5q92eo2bb uptime=224ms
+fact 0005bs1i50c77tb0ir7k611k7yt7v387j5fb1mp13s8lw4s723y6w56y96tm uptime=85ms
 kept from earlier boots: 3
-wrote 가강챀덎쉎뻔헹뷢찋릈좯쀳꾘쓎됑런늷뎮믵묡
+wrote 00000l6dc1fy4em3pw8ah3j66bv2o85nz3zn0pk4we1ld2cw1br1im35h2zl
 heap used=0 peak=1648</pre>
 </section>
 
