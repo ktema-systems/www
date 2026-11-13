@@ -69,6 +69,7 @@ const values: Record<string, string> = {
 <div class="bench__grid">
   <Chart
     title="Memory to answer by address"
+    wide={true}
     caption={`The index each engine has to hold. The bare log builds one map entry per record, and at five million records that map is ${mib(indexMemory.log_at_five_million).toFixed(0)} MB. The engine's line is its optional structural index, a fixed array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB that this benchmark does not build: the run opens without record maps, so it answers a box query by walking the log. A database keeps its index in a file, so the memory it holds is the page cache that file is read through, which follows the records until it reaches about ${mib(sqliteCache).toFixed(0)} MB, the size the cache was configured with.`}
     unit="MB"
     scale="log"
@@ -136,7 +137,6 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Bytes read from the medium to answer"
-    wide={true}
     caption="The engine's channel counts the bytes it reads, which is what the times above follow: one point read costs 64 kB at a hundred thousand records and 646 kB at a million, and a tenth costs nine times the whole volume at a hundred thousand and eighty-six times at a million. The other two report no byte count, so this chart carries one engine."
     unit="MB"
     scale="log"
