@@ -499,7 +499,9 @@ svg {
 
 .masthead::after {
   inset: var(--safe-top) 0 auto;
-  height: clamp(84px, 8.35vw, 120px);
+  /* The fade covers the bar and the room above the lockup, so the two move together: the pad leaves as the lockup
+     settles and the gradient follows it down. */
+  height: calc(var(--brand-lift) + var(--masthead-pad) + clamp(84px, 8.35vw, 120px));
   background: linear-gradient(
     to bottom,
     var(--bg) 0%,
@@ -569,6 +571,12 @@ svg {
 /* On a phone the open state is carried for a panel that is not drawn, so the bar
    stays as it is at the top of any other page. */
 @media (max-width: 720px) {
+  /* The room above the lockup is a wide-layout measure. A phone's bar is one row and its page is already short of
+     height, so the pad leaves with the wide layout. */
+  :root {
+    --masthead-pad-top: 0px;
+  }
+
   :root.is-at-top .masthead.is-open:not(.is-menu) {
     background: none;
     backdrop-filter: none;
