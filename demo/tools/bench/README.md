@@ -28,8 +28,9 @@ differences that follow belong to the formats.
 demo/tools/bench/run.sh
 ```
 
-Needs a C compiler and `libsqlite3`. Writes `result/peers.json`. The ladder is 1k, 10k, 100k and
-1M records, and every figure is the median of 51 calls.
+Needs a C compiler and `libsqlite3`. Writes `result/peers.json`. The ladder is 1k, 10k, 100k, 1M and 5M
+records, and every figure is the median of 51 calls. The 5M rung is the largest volume the engine's own bench can
+reserve under the format's 4 GiB medium, so it is the peer side of that ceiling; the page draws to 1M.
 
 ## What each number is
 
