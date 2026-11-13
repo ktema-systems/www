@@ -47,6 +47,16 @@ The range query enumerates addresses rather than counting them, because that is 
 returns. A count would let a database answer from its index alone and would measure a smaller
 job for that peer.
 
+## The tile's still
+
+The center's Measurements tile shows the memory chart alone, so the crossing is what a reader sees before opening the
+page. It is captured from the built page at twice the pixel density, cropped to the plot, and padded to the tile's 16:9
+with the card's own colour, so the tile shows a chart rather than a card of text.
+
+```sh
+ffmpeg -i bench2x.png -vf "crop=932:330:444:1195,pad=932:524:0:97:color=0x171614" bench-thumb.png
+```
+
 ## What this does not measure
 
 A device. Both baselines need an operating system and a filesystem, so this is a host
