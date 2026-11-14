@@ -28,7 +28,7 @@ export const product = {
 } as const;
 
 // Delta is the Single-Space Agentic Operations Platform, with the cockpit as the surface a
-// person commands the run from. A campaign is one run inside a project, and a
+// person reads the run from. A campaign is one run inside a project, and a
 // finished run is a package that can be replayed and compared.
 export const delta = {
   name: 'Delta',
@@ -37,7 +37,7 @@ export const delta = {
   category: 'Single-Space Agentic Operations Platform',
   tagline: 'Every agent, mobilized in one space.',
   description:
-    'Delta is the Single-Space Agentic Operations Platform where every kind of autonomous workforce is commanded in one space. It can run over any backend; on the Ktema stack it becomes the accountable mission control.',
+    'Delta is the Single-Space Agentic Operations Platform where every kind of autonomous workforce is read in one space. It can run over any backend; on the Ktema stack it becomes the accountable cockpit.',
 } as const;
 
 export type NavLink = { label: string; href: string; note?: string };
