@@ -2,11 +2,10 @@
 // A recorded run. Footage is the right medium where the subject is hardware: a robot, a board, a machine that a page
 // cannot show.
 //
-// A page that carries more than a summary adds it here: prose, the numbers as rows, and the same numbers drawn. The
-// prose keeps the document's measure; the numbers get a table of their own, because a value in a header cut would be
-// set as a column label rather than a number.
+// A page that carries more than a summary adds it here: prose and the numbers as rows. The prose keeps the document's
+// measure; the numbers get a table of their own, because a value in a header cut would be set as a column label rather
+// than a number.
 import type { Artifact } from '../data/artifacts';
-import Chart from '../components/Chart.astro';
 import Markdown from '../components/Markdown.astro';
 
 interface Props {
@@ -17,7 +16,15 @@ const { artifact } = Astro.props;
 ---
 
 <figure class="video">
-  <video controls playsinline preload="metadata" poster={artifact.poster} src={artifact.source}></video>
+  <video
+    controls
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    poster={artifact.poster}
+    src={artifact.source}></video>
   <figcaption>{artifact.summary}</figcaption>
 </figure>
 
@@ -37,22 +44,6 @@ const { artifact } = Astro.props;
       </dl>
     </section>
   )
-}
-
-{
-  artifact.charts?.map((chart) => (
-    <section class="bench__fit">
-      <Chart
-        title={chart.title}
-        caption={chart.caption}
-        unit={chart.unit}
-        kind={chart.kind}
-        height={chart.height}
-        series={chart.series}
-        wide
-      />
-    </section>
-  ))
 }
 
 <style>

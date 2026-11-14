@@ -33,15 +33,6 @@ export interface ArtifactFact {
   value: string;
 }
 
-export interface ArtifactChart {
-  title: string;
-  caption?: string;
-  unit: string;
-  kind?: 'line' | 'bar';
-  height?: number;
-  series: { name: string; points: { label: string; value: number }[] }[];
-}
-
 export interface Artifact {
   /** What the address names: `/runs` is this artifact's page. */
   id: string;
@@ -64,8 +55,6 @@ export interface Artifact {
   body?: string;
   /** The numbers the page states, in the order it states them. */
   facts?: ArtifactFact[];
-  /** The numbers drawn, where a shape says more than a column. */
-  charts?: ArtifactChart[];
 }
 
 /** A surface the center will carry and does not yet. */
@@ -169,7 +158,7 @@ export const artifacts: Artifact[] = [
     summary:
       'An hour of readings, the incident, and the audit at one address six months later, with a read whose cost does not grow with the volume. The same take hands 512 of those addresses to an ECP5: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
     source:
-      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261114-180434-v2.mp4',
+      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261114-200104.mp4',
     poster: '/proofs/fpga.jpg',
     posterAlt:
       'The iCESugar-Pro board, lit and connected, with the ECP5 under the RGB LED that carries the verdict.',
@@ -185,11 +174,7 @@ One value moved to 11,172, the first value outside the alphabet, is counted as i
 
 ## The labels
 
-Each time the host sets a stage the LED changes, and the frame names the state: blue while the station's hour and the incident are written, cyan for the audit, red or green for the verdict, yellow while the part is configured. The label is taken from the stage commands in the recording, so the board can be checked against the console at the same second.
-
-## What it does not show
-
-The board does not store a record and does not run the engine. It answers whether a set of addresses is valid and consistent, which makes it a second implementation rather than a second host. The engine on a device is a different surface, an ESP32-S3 with no operating system, and it is verified separately.`,
+Each time the host sets a stage the LED changes, and the console says which colour is on and whether it is steady or blinking. The line is drawn in that colour, so the board can be checked against the console at the same second.`,
     facts: [
       { label: 'Records written', value: '3,600 readings, one a second for an hour' },
       { label: 'Records in the volume', value: "3,601: the readings and the incident's conclusion" },
@@ -201,65 +186,18 @@ The board does not store a record and does not run the engine. It answers whethe
       { label: 'Board', value: 'iCESugar-Pro v1.3, ECP5-25F, 24,288 LUT, 56 x 16 kbit, 28 multipliers' },
       { label: 'Take', value: '183 s, one console recording with the board filmed beside it' },
     ],
-    charts: [
-      {
-        title: 'What a point read costs',
-        caption: 'The same three numbers at both sizes: the cost is flat, and nothing is listed to answer it.',
-        unit: 'reads',
-        kind: 'bar',
-        height: 220,
-        series: [
-          {
-            name: '64 records',
-            points: [
-              { label: 'framing', value: 1 },
-              { label: 'fact', value: 3 },
-              { label: 'listing', value: 0 },
-            ],
-          },
-          {
-            name: '11,172 records',
-            points: [
-              { label: 'framing', value: 1 },
-              { label: 'fact', value: 3 },
-              { label: 'listing', value: 0 },
-            ],
-          },
-        ],
-      },
-      {
-        title: 'The LED, in seconds',
-        caption: 'Five stages in one take: the hour and the incident, the audit, the refusal, the configuration, the verdict.',
-        unit: 'seconds',
-        kind: 'bar',
-        height: 220,
-        series: [
-          {
-            name: 'Held',
-            points: [
-              { label: 'blue', value: 37.7 },
-              { label: 'cyan', value: 34.6 },
-              { label: 'red', value: 7.1 },
-              { label: 'yellow', value: 71.2 },
-              { label: 'green', value: 27.2 },
-            ],
-          },
-        ],
-      },
-    ],
   },
   {
-    id: 'runs',
-    title: 'Headless runs',
+    id: 'device',
+    title: 'One node, any scale',
     products: ['Ktema'],
-    kind: 'runs',
+    kind: 'device',
     summary:
-      'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
-    source: RUNS[0].href,
-    recordings: RUNS,
-    poster: '/proofs/device-tile.png',
+      'The smallest host in the claim: an ESP32-S3 with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. The same build runs on every host above it, and a deployment can be a field of these nodes.',
+    source: 'firmware/litewing',
+    poster: '/board.jpg',
     posterAlt:
-      "A terminal still from the device check: the device converged on 0x299bd5d0e1821fab and the host tier wrote the same volume, under a footprint of 1136 live bytes and a 3504-byte peak.",
+      'The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its records.',
   },
   {
     id: 'bench',
@@ -274,16 +212,17 @@ The board does not store a record and does not run the engine. It answers whethe
       "The memory chart: the append log's address map rises past the engine's fixed index and reaches 64 MB at a million records, while the engine's line stays flat.",
   },
   {
-    id: 'device',
-    title: 'One node, any scale',
+    id: 'runs',
+    title: 'Headless runs',
     products: ['Ktema'],
-    kind: 'device',
+    kind: 'runs',
     summary:
-      'The smallest host in the claim: an ESP32-S3 with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. The same build runs on every host above it, and a deployment can be a field of these nodes.',
-    source: 'firmware/litewing',
-    poster: '/board.jpg',
+      'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
+    source: RUNS[0].href,
+    recordings: RUNS,
+    poster: '/proofs/device-tile.png',
     posterAlt:
-      'The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its records.',
+      "A terminal still from the device check: the device converged on 0x299bd5d0e1821fab and the host tier wrote the same volume, under a footprint of 1136 live bytes and a 3504-byte peak.",
   },
 ];
 
