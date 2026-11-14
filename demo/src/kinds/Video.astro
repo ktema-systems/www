@@ -1,7 +1,13 @@
 ---
 // A recorded run. Footage is the right medium where the subject is hardware: a robot, a board, a machine that a page
 // cannot show.
+//
+// A page that carries more than a summary adds it here: prose, the numbers as rows, and the same numbers drawn. The
+// prose keeps the document's measure; the numbers get a table of their own, because a value in a header cut would be
+// set as a column label rather than a number.
 import type { Artifact } from '../data/artifacts';
+import Chart from '../components/Chart.astro';
+import Markdown from '../components/Markdown.astro';
 
 interface Props {
   artifact: Artifact;
@@ -14,3 +20,91 @@ const { artifact } = Astro.props;
   <video controls playsinline preload="metadata" poster={artifact.poster} src={artifact.source}></video>
   <figcaption>{artifact.summary}</figcaption>
 </figure>
+
+{artifact.body && <section class="bench__fit"><Markdown source={artifact.body} /></section>}
+
+{
+  artifact.facts && (
+    <section class="facts">
+      <h2>The take, in numbers</h2>
+      <dl>
+        {artifact.facts.map((fact) => (
+          <>
+            <dt>{fact.label}</dt>
+            <dd>{fact.value}</dd>
+          </>
+        ))}
+      </dl>
+    </section>
+  )
+}
+
+{
+  artifact.charts?.map((chart) => (
+    <section class="bench__fit">
+      <Chart
+        title={chart.title}
+        caption={chart.caption}
+        unit={chart.unit}
+        kind={chart.kind}
+        height={chart.height}
+        series={chart.series}
+        wide
+      />
+    </section>
+  ))
+}
+
+<style>
+  .facts {
+    max-width: 78ch;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+
+  .facts h2 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+  }
+
+  .facts dl {
+    display: grid;
+    grid-template-columns: minmax(16ch, 40%) 1fr;
+    gap: 0;
+    margin: 0;
+  }
+
+  .facts dt {
+    padding: 10px 24px 10px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg-3);
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .facts dd {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--fg-2);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 640px) {
+    .facts dl {
+      grid-template-columns: 1fr;
+    }
+
+    .facts dt {
+      padding-bottom: 2px;
+      border-bottom: 0;
+    }
+
+    .facts dd {
+      padding-top: 0;
+    }
+  }
+</style>
