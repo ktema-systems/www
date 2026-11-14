@@ -149,7 +149,7 @@ export const artifacts: Artifact[] = [
     poster: '/delta-run.jpg',
     posterAlt:
       "Delta's cockpit over Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers and boats in the middle, the island and its shoreline on the right, and the timeline below.",
-  },
+  },  
   {
     id: 'fpga',
     title: 'The record, answered on the part',
@@ -186,6 +186,18 @@ Each time the host sets a stage the LED changes, and the console says which colo
       { label: 'Board', value: 'iCESugar-Pro v1.3, ECP5-25F, 24,288 LUT, 56 x 16 kbit, 28 multipliers' },
       { label: 'Take', value: '183 s, one console recording with the board filmed beside it' },
     ],
+  },    
+  {
+    id: 'bench',
+    title: 'Measurements',
+    products: ['Ktema'],
+    kind: 'bench',
+    summary:
+      'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
+    source: '/bench',
+    poster: '/bench-thumb.png',
+    posterAlt:
+      "The memory chart: the append log's address map rises past the engine's fixed index and reaches 64 MB at a million records, while the engine's line stays flat.",
   },
   {
     id: 'device',
@@ -198,18 +210,6 @@ Each time the host sets a stage the LED changes, and the console says which colo
     poster: '/board.jpg',
     posterAlt:
       'The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its records.',
-  },
-  {
-    id: 'bench',
-    title: 'Measurements',
-    products: ['Ktema'],
-    kind: 'bench',
-    summary:
-      'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
-    source: '/bench',
-    poster: '/bench-thumb.png',
-    posterAlt:
-      "The memory chart: the append log's address map rises past the engine's fixed index and reaches 64 MB at a million records, while the engine's line stays flat.",
   },
   {
     id: 'runs',
