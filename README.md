@@ -30,9 +30,9 @@ stops the servers the run started. `BLOG_PORT` (4323) is held for the blog stack
 | `src/pages/delta.astro` | Delta's page: the cockpit, the loop, and the example campaign |
 | `src/components/` | one component per section |
 | `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
-| `src/components/CaseDeck.astro` | the home's scroll-driven cases |
+| `src/components/Deck.astro` | the deck every section walks: one idea per slide on the page's own scroll |
 | `src/components/DeltaDeck.astro` | Delta's scroll-driven loop and example |
-| `src/components/CockpitDeck.astro` | Delta's scroll-driven cockpit screenshots |
+| `src/components/ProofDeck.astro` | the engine's measurements, one number at a time |
 | `src/components/Reach.astro` | the engine's reach: one sphere of coordinates and the hosts on it |
 | `src/components/AddressFigure.astro` | the lookup against the computed address, drawn as SVG |
 | `src/components/Section.astro` | the shared section frame: a sticky label and a body |
@@ -77,7 +77,7 @@ three times belongs here once, where it carries its reasoning. Numbers are quote
 exactly, in both directions. The deck's investor material, which is the amount and
 the use of funds, is left off the public pages.
 
-Three figures are computed at build time rather than transcribed:
+Two figures are computed at build time rather than transcribed:
 
 - `Reach.astro` keeps one sphere and its hosts in three dimensions and projects them
   per frame, so the turn is a rotation of the space, two hosts are joined where their
@@ -85,8 +85,6 @@ Three figures are computed at build time rather than transcribed:
 - `AddressFigure.astro` projects its points from the `(time, event, origin)`
   space with the same orthographic view the pitch figure uses, so the scatter
   stays clear of the query window and the labels at any rendered size.
-- `Competition.astro` places its points on a base-10 scale from the published
-  byte figures.
 
 ## The demonstration center
 
