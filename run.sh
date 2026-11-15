@@ -16,6 +16,7 @@
 # taken serves the next one and the web of links above it would then be wrong.
 #
 # Environment, all optional:
+#   NODE         the interpreter to run the servers with, chosen automatically when unset
 #   HOME_PORT    the homepage's port
 #   CENTER_PORT  the demo center's port
 #   DELTA_PORT   the cockpit's port
@@ -46,7 +47,8 @@ run.sh: every surface this repository publishes, on this machine.
   ./run.sh --help     this text
 
 Ports: HOME_PORT (4321), CENTER_PORT (4322), DELTA_PORT (5276), BLOG_PORT (4323).
-DELTA_DIR names another cockpit checkout, DELTA_URL a cockpit this host is not serving.
+NODE names the interpreter to run the servers with. DELTA_DIR names another cockpit
+checkout, DELTA_URL a cockpit this host is not serving.
 USAGE
 }
 
@@ -58,6 +60,46 @@ for arg in "$@"; do
     *) printf 'run: unknown argument %s\n' "$arg" >&2; usage >&2; exit 2 ;;
   esac
 done
+
+# Astro refuses to start below the Node floor this package declares, and an unchecked run
+# repeats that refusal once per surface. The interpreter is resolved here, once, and every
+# child inherits it through PATH, so the whole run agrees on one version.
+node_floor=$(sed -n 's/.*"node": *">=\([0-9][0-9.]*\)".*/\1/p' package.json | head -1)
+[ -n "$node_floor" ] || die "package.json declares no engines.node floor to check against"
+
+meets_floor() {
+  "$1" -e "
+    const floor = '$node_floor'.split('.').map(Number);
+    const have = process.versions.node.split('.').map(Number);
+    for (let i = 0; i < 3; i += 1) {
+      if (have[i] !== floor[i]) process.exit(have[i] > floor[i] ? 0 : 1);
+    }
+    process.exit(0);
+  " >/dev/null 2>&1
+}
+
+# PATH first, then where a version manager or a package manager leaves one; NODE overrides
+# both and is refused rather than silently replaced.
+node_bin=
+if [ -n "${NODE:-}" ]; then
+  [ -x "$NODE" ] || die "NODE=$NODE is not executable"
+  meets_floor "$NODE" || die "NODE=$NODE is $("$NODE" -v 2>/dev/null), below the $node_floor this package requires"
+  node_bin=$NODE
+else
+  for candidate in "$(command -v node 2>/dev/null || true)" \
+                   "$HOME"/.nvm/versions/node/*/bin/node \
+                   /opt/homebrew/bin/node /usr/local/bin/node; do
+    [ -x "$candidate" ] 2>/dev/null || continue
+    if meets_floor "$candidate"; then
+      node_bin=$candidate
+      break
+    fi
+  done
+fi
+[ -n "$node_bin" ] || die "no node at or above $node_floor was found: install one, or set NODE to its path"
+PATH=$(dirname "$node_bin"):$PATH
+export PATH
+say "node $("$node_bin" -v) at $node_bin"
 
 astro=$ROOT/node_modules/.bin/astro
 [ -x "$astro" ] || die "this package is not installed: run npm install"
