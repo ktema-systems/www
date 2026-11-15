@@ -10,6 +10,10 @@ interface Props {
   summary: string;
   poster?: string;
   posterAlt?: string;
+  /** What the surface is, said before the title: read-only, recorded, simulated. */
+  status?: string;
+  /** Where its records came from, when that is not a real system. */
+  data?: string;
   badge?: string;
   cta?: string;
   variant?: 'default' | 'proof';
@@ -23,6 +27,8 @@ const {
   summary,
   poster,
   posterAlt,
+  status,
+  data,
   badge,
   cta = 'Open',
   variant = 'default',
@@ -74,6 +80,12 @@ const planned = !href;
         </span>
       )}
       <span class="tile__body">
+        {(status || data) && (
+          <span class="badges">
+            {status && <span class="badge">{status}</span>}
+            {data && <span class="badge">{data}</span>}
+          </span>
+        )}
         <span class="tile__head">
           <span class="tile__title">{title}</span>
           {products.length > 0 && (

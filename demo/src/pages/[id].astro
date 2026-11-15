@@ -33,6 +33,14 @@ if (!Body) throw new Error(`the center draws no page for a ${artifact.kind} arti
 >
   <header class="page__head">
     <h1 class="artifact__title">{artifact.title}</h1>
+    {
+      (artifact.status || artifact.data) && (
+        <span class="badges">
+          {artifact.status && <span class="badge">{artifact.status}</span>}
+          {artifact.data && <span class="badge">{artifact.data}</span>}
+        </span>
+      )
+    }
     <span class="tags">
       {artifact.products.map((name) => (
         <span class="product-tag">{name}</span>

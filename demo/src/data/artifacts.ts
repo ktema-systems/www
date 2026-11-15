@@ -45,6 +45,10 @@ export interface Artifact {
   summary: string;
   /** A live application's address, a video's file, a document's page, a run inside a set, or the source a device run names. */
   source: string;
+  /** What the surface is, where the artifact says so: read-only, recorded, simulated. */
+  status?: string;
+  /** Where the records in it came from, when that is not a real system. */
+  data?: string;
   /** The still a reader sees before opening it. */
   poster?: string;
   /** What the still shows, for a reader who cannot see it. */
@@ -145,6 +149,8 @@ export const artifacts: Artifact[] = [
     title: 'Fleet operations',
     products: ['All stacks', 'Delta'],
     kind: 'live',
+    status: 'read-only',
+    data: 'mock data',
     summary:
       'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, on mock data.',
     source: DELTA,
