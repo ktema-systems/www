@@ -23,8 +23,8 @@ instead.
 | | |
 |---|---|
 | Bucket | `ktema-demo-media`, created for this |
-| Key | `demo/fpga-icesugarpro-audit/20261115-083500.mp4` |
-| Public URL | `https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500.mp4` |
+| Key | `demo/fpga-icesugarpro-audit/20261115-083500-v2.mp4` |
+| Public URL | `https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500-v2.mp4` |
 | Access | the bucket's r2.dev URL, enabled with `wrangler r2 bucket dev-url enable` |
 | Cache | `public, max-age=31536000, immutable` |
 
@@ -61,11 +61,13 @@ The page carries more than a summary, because a hardware demonstration cannot st
 environment on the board. Under the video it holds the prose and the take's numbers as
 rows. The prose and the table use the document measure the measurement page already sets.
 
-The board inset is half the frame, 960 by 540. The console states the LED at each stage
-change as a line of its own, drawn in that colour and at the step's weight, so a viewer
-compares the line with the board at the same second. The cost of the inset is that a
-console line wider than sixty-three columns runs under it; the summary and the table
-carry the numbers those lines state.
+The board inset is half the frame, 960 by 540, in the upper right. The console states the
+LED at each stage change as a line of its own, drawn in that colour and at the step's
+weight, so a viewer compares the line with the board at the same second. The corner is
+the upper one because the console's newest lines are at the bottom, and they are the
+ones the verdict is read from. The cost of the inset is that a console line wider than
+about sixty-six columns runs under it; the summary and the table carry the numbers
+those lines state.
 
 ## The recut
 
@@ -85,7 +87,8 @@ The board footage is the same recording as before. It is aligned on two events r
 than one: one offset puts the red light where the console names it and leaves the
 green one about two seconds late, and the ratio between the two anchors closes that
 gap. `demo/_shared/final.sh` does the cut and prints the offset and the ratio, so the
-numbers can be checked against the take.
+numbers can be checked against the take. The board sits in the upper right, which keeps
+the console's newest lines clear.
 
 The take is 173 s. The console and the captions are one recording; the footage is an
 earlier one of the same physical sequence.
@@ -94,4 +97,4 @@ earlier one of the same physical sequence.
 
 `npm run demo:deploy` builds the center and uploads `demo-dist` to the `ktema-demo`
 project. The deployment that carried this artifact is
-`https://a2e559b8.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.
+`https://6351c3fc.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.

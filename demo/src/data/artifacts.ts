@@ -158,7 +158,7 @@ export const artifacts: Artifact[] = [
     summary:
       'An hour of readings, the incident, and the audit at one address six months later, with a read whose cost does not grow with the volume. The same take hands 512 of those addresses to an ECP5: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
     source:
-      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500.mp4',
+      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500-v2.mp4',
     poster: '/proofs/fpga.jpg',
     posterAlt:
       'The iCESugar-Pro board, lit and connected, with the ECP5 under the RGB LED that carries the verdict.',
