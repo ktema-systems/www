@@ -66,7 +66,7 @@ LED at each stage change as a line of its own, drawn in that colour and at the s
 weight, so a viewer compares the line with the board at the same second. The corner is
 the upper one because the console's newest lines are at the bottom, and they are the
 ones the verdict is read from. The cost of the inset is that a console line wider than
-about sixty-six columns runs under it; the summary and the table carry the numbers
+about sixty-four columns runs under it; the summary and the table carry the numbers
 those lines state.
 
 ## The recut
