@@ -8,6 +8,7 @@ on:
     branches: ["main"]
     paths:
       - "demo/**"
+      - "lib/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"
@@ -15,6 +16,7 @@ on:
     branches: ["main"]
     paths:
       - "demo/**"
+      - "lib/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"

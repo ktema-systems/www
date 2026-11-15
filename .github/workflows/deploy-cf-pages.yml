@@ -4,7 +4,8 @@ on:
   push:
     branches: ["main"]
     paths:
-      - "src/**"
+      - "home/**"
+      - "lib/**"
       - "public/**"
       - "astro.config.mjs"
       - "tsconfig.json"
@@ -14,7 +15,8 @@ on:
   pull_request:
     branches: ["main"]
     paths:
-      - "src/**"
+      - "home/**"
+      - "lib/**"
       - "public/**"
       - "astro.config.mjs"
       - "tsconfig.json"

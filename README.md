@@ -25,24 +25,32 @@ stops the servers the run started. `BLOG_PORT` (4323) is held for the blog stack
 
 | | |
 |---|---|
-| `src/pages/index.astro` | the company home, as an ordered list of sections |
-| `src/pages/ktema.astro` | the engine's page, the same way |
-| `src/pages/delta.astro` | Delta's page: the cockpit, the loop, and the example campaign |
-| `src/components/` | one component per section |
-| `src/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
-| `src/components/Deck.astro` | the deck every section walks: one idea per slide on the page's own scroll |
-| `src/components/DeltaDeck.astro` | Delta's scroll-driven loop and example |
-| `src/components/ProofDeck.astro` | the engine's measurements, one number at a time |
-| `src/components/Reach.astro` | the engine's reach: one sphere of coordinates and the hosts on it |
-| `src/components/AddressFigure.astro` | the lookup against the computed address, drawn as SVG |
-| `src/components/Section.astro` | the shared section frame: a sticky label and a body |
-| `src/layouts/Base.astro` | the document shell and the metadata |
-| `src/styles/global.css` | the design tokens and the shared primitives |
-| `src/config.ts` | the names, the descriptions, each page's strip and call to action, and the links |
+| `home/pages/index.astro` | the company home, as an ordered list of sections |
+| `home/pages/ktema.astro` | the engine's page, the same way |
+| `home/pages/delta.astro` | Delta's page: the cockpit, the loop, and the example campaign |
+| `home/components/` | one component per section |
+| `home/components/Hero.astro` | the shared hero: the field, the copy a page passes in, and the figure it hands in |
+| `home/components/Deck.astro` | the deck every section walks: one idea per slide on the page's own scroll |
+| `home/components/DeltaDeck.astro` | Delta's scroll-driven loop and example |
+| `home/components/ProofDeck.astro` | the engine's measurements, one number at a time |
+| `home/components/Reach.astro` | the engine's reach: one sphere of coordinates and the hosts on it |
+| `home/components/AddressFigure.astro` | the lookup against the computed address, drawn as SVG |
+| `home/components/Section.astro` | the shared section frame: a sticky label and a body |
+| `home/layouts/Base.astro` | the document shell and the metadata |
+| `home/styles/global.css` | the layout tokens and the primitives only this site uses; the palette and the faces come from `lib/` |
+| `home/config.ts` | the names, the descriptions, each page's strip and call to action, and the links |
+| `lib/styles/tokens.css` | the palette, the type stacks and the measure every site here draws from |
+| `lib/styles/fonts.css` | the `@font-face` cuts both sites publish |
 | `public/` | the logo, the favicon, and `robots.txt` |
 
-Component styles are scoped by Astro. Anything two components share belongs in
-`global.css` instead.
+`home/`, `demo/` and a future `blog/` are siblings under one Astro install, and each is a
+site of its own: its own pages, its own `public/`, its own build. `astro.config.mjs` names
+`home` as the source directory, because Astro's default would claim `src/`. What the sites
+agree on lives in `lib/`, which each site's stylesheet imports ahead of its own rules, so
+the ground is one definition and a site adds only the tokens it needs.
+
+Component styles are scoped by Astro. Anything two components of one site share belongs in
+that site's `global.css`; anything two sites share belongs in `lib/`.
 
 ## Presentation
 
@@ -131,4 +139,4 @@ keep one source each and a re-run cannot leave a sentence quoting an older one.
 `astro.config.mjs` leaves `site` unset, because the production domain is not
 chosen. Setting it is what lets Astro emit absolute canonical URLs, an
 `og:image`, and a sitemap. The contact address on the page is the SSCCS
-documentation address, and belongs to `site.contact` in `src/config.ts`.
+documentation address, and belongs to `site.contact` in `home/config.ts`.

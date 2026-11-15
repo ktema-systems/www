@@ -2,83 +2,17 @@
    hairline geometry, and adds the two things a demonstration needs to read as running rather than archived: a surface
    with depth behind it, and a still that is a way in. */
 
-@font-face {
-  font-family: 'Archivo';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/archivo-400.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Archivo';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/archivo-500.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Archivo';
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url('/fonts/archivo-600.woff2') format('woff2');
-}
-
-/* The display cut is the same family at a wider stretch, which is what a heading is set in. */
-@font-face {
-  font-family: 'Archivo';
-  font-style: normal;
-  font-weight: 600;
-  font-stretch: 115%;
-  font-display: swap;
-  src: url('/fonts/archivo-600-display.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'IBM Plex Mono';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('/fonts/ibm-plex-mono-400-latin.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'IBM Plex Mono';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('/fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
-}
+@import "../../lib/styles/fonts.css";
+@import "../../lib/styles/tokens.css";
 
 :root {
-  color-scheme: dark;
-
-  --bg: rgb(19, 18, 16);
-  --bg-2: rgb(28, 27, 26);
-  --panel: rgb(38, 37, 36);
-  --fg: rgb(250, 249, 247);
-  --fg-2: rgb(190, 189, 187);
-  --fg-3: rgb(163, 162, 160);
-  --line: rgba(255, 255, 255, 0.08);
-  --line-2: rgba(255, 255, 255, 0.16);
-  --accent: oklch(0.65 0.095 255);
-  --accent-2: oklch(0.74 0.075 255);
-
   /* Light, not text. The glow carries no word, so it may sit above the contrast the accent is pinned to, and it is the
      accent's own hue at the accent's own chroma: the light on this page is the light the site already uses. */
   --glow: oklch(0.6 0.095 255);
   --ok: oklch(0.76 0.12 155);
 
-  --text: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-  --page: 1120px;
-  --gutter: 40px;
   --bar: 60px;
   --radius: 2px;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 * {

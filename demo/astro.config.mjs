@@ -7,4 +7,10 @@ export default defineConfig({
   // The toolbar is a development overlay, so it sits over the bottom of every page and over the embedded application in
   // particular. What is being looked at is the page, so it is off.
   devToolbar: { enabled: false },
+  vite: {
+    server: {
+      // The shared sheet lives one level up, outside this root, so the dev server has to be told it exists.
+      fs: { allow: ['..'] },
+    },
+  },
 });
