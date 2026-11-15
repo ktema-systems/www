@@ -158,7 +158,7 @@ export const artifacts: Artifact[] = [
     summary:
       'An hour of readings, the incident, and the audit at one address six months later, with a read whose cost does not grow with the volume. The same take hands 512 of those addresses to an ECP5: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
     source:
-      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261114-200104.mp4',
+      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500.mp4',
     poster: '/proofs/fpga.jpg',
     posterAlt:
       'The iCESugar-Pro board, lit and connected, with the ECP5 under the RGB LED that carries the verdict.',
@@ -174,7 +174,9 @@ One value moved to 11,172, the first value outside the alphabet, is counted as i
 
 ## The labels
 
-Each time the host sets a stage the LED changes, and the console says which colour is on and whether it is steady or blinking. The line is drawn in that colour, so the board can be checked against the console at the same second.`,
+Each time the host sets a stage the LED changes, and the console says which colour is on and whether it is steady or blinking. The line is drawn in that colour, so the board can be checked against the console at the same second.
+
+The console carries the commands the run issued and the output the tools printed, and the narration is a caption under it. Nothing on the terminal is prose, so what a viewer reads there is what the programs said.`,
     facts: [
       { label: 'Records written', value: '3,600 readings, one a second for an hour' },
       { label: 'Records in the volume', value: "3,601: the readings and the incident's conclusion" },
@@ -184,7 +186,7 @@ Each time the host sets a stage the LED changes, and the console says which colo
       { label: 'A point read, at 64 and at 11,172 records', value: '1 framing read, 3 fact reads, 0 listing reads' },
       { label: 'Time to configure the part', value: '61 s' },
       { label: 'Board', value: 'iCESugar-Pro v1.3, ECP5-25F, 24,288 LUT, 56 x 16 kbit, 28 multipliers' },
-      { label: 'Take', value: '183 s, one console recording with the board filmed beside it' },
+      { label: 'Take', value: '173 s: the console as recorded, the board footage timed to it, the narration as captions' },
     ],
   },    
   {

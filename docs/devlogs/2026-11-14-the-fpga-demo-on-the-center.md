@@ -16,15 +16,15 @@ footage lives, what the page claims, and what it deliberately does not.
 
 ## Where the footage lives
 
-The take is 23.9 MB, which is close enough to the 25 MiB per-file limit on Cloudflare
-Pages that the next recording would not fit, so it is not committed beside the other
-proofs. It was uploaded to R2 instead.
+The take is 29.7 MiB, which is over the 25 MiB per-file limit on Cloudflare
+Pages, so it is not committed beside the other proofs. It was uploaded to R2
+instead.
 
 | | |
 |---|---|
 | Bucket | `ktema-demo-media`, created for this |
-| Key | `demo/fpga-icesugarpro-audit/20261114-200104.mp4` |
-| Public URL | `https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261114-200104.mp4` |
+| Key | `demo/fpga-icesugarpro-audit/20261115-083500.mp4` |
+| Public URL | `https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500.mp4` |
 | Access | the bucket's r2.dev URL, enabled with `wrangler r2 bucket dev-url enable` |
 | Cache | `public, max-age=31536000, immutable` |
 
@@ -67,8 +67,31 @@ compares the line with the board at the same second. The cost of the inset is th
 console line wider than sixty-three columns runs under it; the summary and the table
 carry the numbers those lines state.
 
+## The recut
+
+The first published take read as a script being performed: the narration was spoken
+over the footage and the console printed the same sentences as prose, so the terminal
+looked like a transcript of a talk rather than a session someone ran. The take was
+recorded again with three changes.
+
+The console now carries only what a session carries: the command as it is typed, and
+what the tool printed. The programmer is no longer captured and reduced to its last
+line, so it names every 64 kB it lands, and the GPIO calls that set the stage are
+shown rather than discarded. The narration moved into a 160-pixel strip under the
+console, drawn in the terminal's own background, and the published file carries no
+audio track.
+
+The board footage is the same recording as before. It is aligned on two events rather
+than one: one offset puts the red light where the console names it and leaves the
+green one about two seconds late, and the ratio between the two anchors closes that
+gap. `demo/_shared/final.sh` does the cut and prints the offset and the ratio, so the
+numbers can be checked against the take.
+
+The take is 173 s. The console and the captions are one recording; the footage is an
+earlier one of the same physical sequence.
+
 ## Publish
 
 `npm run demo:deploy` builds the center and uploads `demo-dist` to the `ktema-demo`
 project. The deployment that carried this artifact is
-`https://20f99ac0.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.
+`https://a2e559b8.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.
