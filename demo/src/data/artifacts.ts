@@ -107,7 +107,7 @@ const RUNS: Recording[] = [
     id: 'smoke',
     label: 'A record round trip',
     detail: 'Thirteen steps, eight records, one digest: the same run the device tier converges on.',
-    body: 'Thirteen steps over a volume: writes at two clocks, six window queries over the time axis, a listing and a flush. Each step states what it expects, and the run reports each one as it happens.\n\nThe run ends on the digest 0x299bd5d0e1821fab, the same digest the device tier and the host converge on. The scenario is a text file, so the demonstration and the check read the same source.',
+    body: 'Thirteen steps over a volume: writes at two clocks, six window queries over the time axis, a listing and a flush. Each step states what it expects, and the run reports each one as it happens.\n\nThe run ends on the digest 0x299bd5d0e1821fab, the same digest the device tier and the host converge on. The scenario is a text file: the run and the device-tier check read the same source.',
     command: 'target/debug/ktema-sim verify/scenarios/smoke.txt target/demo/smoke --reset',
     href: 'https://asciinema.org/a/mysRyRmijvsN4OKB',
     poster: '/proofs/smoke.png',
@@ -173,7 +173,7 @@ export const artifacts: Artifact[] = [
     products: ['Ktema'],
     kind: 'video',
     summary:
-      'An hour of readings, the incident, and the audit at one address six months later, with a read whose cost does not grow with the volume. The same take hands 512 of those addresses to an ECP5: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
+      'An hour of readings, the incident, and the audit at one address six months later, with a read whose cost does not grow with the volume. The same run hands 512 of those addresses to an ECP5: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
     source:
       'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500-v3.mp4',
     poster: '/proofs/fpga.jpg',
@@ -181,7 +181,7 @@ export const artifacts: Artifact[] = [
       'The iCESugar-Pro board, lit and connected, with the ECP5 under the RGB LED that carries the verdict.',
     body: `## The run
 
-The console runs the engine. A valve station in a field with no network writes its line pressure once a second for an hour. At 14:02:05 the pressure falls, and the station writes what that second meant as well as what it measured: the limit it was given, the intent it acted on, and the fact the intent produced. Six months later the audit asks for that one address and gets all four records back without a search.
+A valve station in a field with no network writes its line pressure once a second for an hour. At 14:02:05 the pressure falls, and the station writes what that second meant as well as what it measured: the limit it was given, the intent it acted on, and the fact the intent produced. Six months later the audit asks for that one address and gets all four records back without a search.
 
 ## What the part does
 
@@ -191,9 +191,7 @@ One value moved to 11,172, the first value outside the alphabet, is counted as i
 
 ## The labels
 
-Each time the host sets a stage the LED changes, and the console says which colour is on and whether it is steady or blinking. The line is drawn in that colour, so the board can be checked against the console at the same second.
-
-The console carries the commands the run issued and the output the tools printed, and the narration is a caption under it, spoken on the same track. Nothing on the terminal is prose, so what a viewer reads there is what the programs said.`,
+Each stage the host sets is labelled as it happens. The LED changes colour and rhythm, and the run prints that label, so a verdict on the part can be read against the run at the same second.`,
     facts: [
       { label: 'Records written', value: '3,600 readings, one a second for an hour' },
       { label: 'Records in the volume', value: "3,601: the readings and the incident's conclusion" },
@@ -203,7 +201,6 @@ The console carries the commands the run issued and the output the tools printed
       { label: 'A point read, at 64 and at 11,172 records', value: '1 framing read, 3 fact reads, 0 listing reads' },
       { label: 'Time to configure the part', value: '61 s' },
       { label: 'Board', value: 'iCESugar-Pro v1.3, ECP5-25F, 24,288 LUT, 56 x 16 kbit, 28 multipliers' },
-      { label: 'Take', value: '173 s: the console as recorded, the board footage timed to it, the narration in sound and captions' },
     ],
   },    
   {
