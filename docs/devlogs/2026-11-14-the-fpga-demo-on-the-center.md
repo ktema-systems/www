@@ -16,15 +16,15 @@ footage lives, what the page claims, and what it deliberately does not.
 
 ## Where the footage lives
 
-The take is 29.7 MiB, which is over the 25 MiB per-file limit on Cloudflare
+The take is 30.7 MiB, which is over the 25 MiB per-file limit on Cloudflare
 Pages, so it is not committed beside the other proofs. It was uploaded to R2
 instead.
 
 | | |
 |---|---|
 | Bucket | `ktema-demo-media`, created for this |
-| Key | `demo/fpga-icesugarpro-audit/20261115-083500-v2.mp4` |
-| Public URL | `https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500-v2.mp4` |
+| Key | `demo/fpga-icesugarpro-audit/20261115-083500-v3.mp4` |
+| Public URL | `https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500-v3.mp4` |
 | Access | the bucket's r2.dev URL, enabled with `wrangler r2 bucket dev-url enable` |
 | Cache | `public, max-age=31536000, immutable` |
 
@@ -80,7 +80,7 @@ The console now carries only what a session carries: the command as it is typed,
 what the tool printed. The programmer is no longer captured and reduced to its last
 line, so it names every 64 kB it lands, and the GPIO calls that set the stage are
 shown rather than discarded. The narration moved into a 160-pixel strip under the
-console, drawn in the terminal's own background, and the published file carries no
+console, drawn in the terminal's own background, and the same lines are the take's
 audio track.
 
 The board footage is the same recording as before. It is aligned on two events rather
@@ -97,4 +97,4 @@ earlier one of the same physical sequence.
 
 `npm run demo:deploy` builds the center and uploads `demo-dist` to the `ktema-demo`
 project. The deployment that carried this artifact is
-`https://6351c3fc.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.
+`https://aac85982.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.
