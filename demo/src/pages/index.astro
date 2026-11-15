@@ -8,10 +8,9 @@ import Tile from '../components/Tile.astro';
 // center is until there are enough of either to be a catalogue.
 const [lead, ...rest] = artifacts;
 
-// A deployed application is opened at its own address. It owns the viewport, its own header and its own back button, so a
-// frame around it is a second header and a second scrollbar; the center sends the reader there instead of drawing it.
-const hrefOf = (artifact: (typeof artifacts)[number]) =>
-  artifact.kind === 'live' ? artifact.source : `/${artifact.id}`;
+// Every artifact is entered through its page, including the deployed application: the page is where a reader learns what
+// the screen is and what it is not before the application takes the viewport.
+const hrefOf = (artifact: (typeof artifacts)[number]) => `/${artifact.id}`;
 ---
 
 <Shell title="Demo Center">

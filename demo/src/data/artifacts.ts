@@ -7,7 +7,7 @@
 // A surface that is not built yet is a separate list rather than an entry with an empty address, because an entry with
 // no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
 
-/** `live` is a deployed application the reader is sent to; the center draws the other four itself. */
+/** `live` is a deployed application; the center draws a page in front of it and links out. */
 export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device';
 
 /** A recorded run of the engine: a page of its own, a still, and the video its page plays with native controls. */
@@ -53,6 +53,8 @@ export interface Artifact {
   recordings?: Recording[];
   /** The long form of a page, as Markdown, where a summary is not enough. */
   body?: string;
+  /** What a reader is looking at, in the order that answers it: the layer this is, what it is not, and what the data is. */
+  about?: string[];
   /** The numbers the page states, in the order it states them. */
   facts?: ArtifactFact[];
 }
@@ -149,7 +151,16 @@ export const artifacts: Artifact[] = [
     poster: '/delta-run.jpg',
     posterAlt:
       "Delta's cockpit over Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers and boats in the middle, the island and its shoreline on the right, and the timeline below.",
-  },  
+    about: [
+      'Delta is the operating layer of the stack: one space where a fleet, a cell, and the people running them are read together.',
+      'It reads the record. It does not keep it: the engine that keeps a record and answers from it is Ktema, and it is not part of this screen.',
+      'Execution and judgment are other layers. Kletos turns an ask into verified work, and Krisis decides what the work may do.',
+      'Transport and authorization are other layers too. Telos moves live state, and Kleis proves who was in control.',
+      'This deployment is read-only. No command reaches a machine, and nothing here writes to a fleet.',
+      'It can run over any backend. On the Ktema stack it is the accountable cockpit, reading the record the engine keeps.',
+      'Every campaign, machine, reading, and operator in this demonstration is synthetic. Delta is planned to be open source.',
+    ],
+  },
   {
     id: 'fpga',
     title: 'The record, answered on the part',

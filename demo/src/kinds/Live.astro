@@ -1,0 +1,121 @@
+---
+// A deployed application. The center draws the page in front of it, and the application
+// keeps its own header, back button and scroll, so the way in is a link to its address
+// rather than a frame around it.
+//
+// `about` is where the page says what a reader is looking at. A screen that reads as a
+// product needs the boundary stated on the page: which layer this is, which layers it is
+// not, and what the data is.
+import type { Artifact } from '../data/artifacts';
+
+interface Props {
+  artifact: Artifact;
+}
+
+const { artifact } = Astro.props;
+---
+
+<figure class="live">
+  <img src={artifact.poster} alt={artifact.posterAlt} loading="eager" decoding="async" />
+  <figcaption>{artifact.summary}</figcaption>
+</figure>
+
+<p class="live__enter">
+  <a class="live__open" href={artifact.source}>Open the demonstration</a>
+  <span class="live__where">At its own address, in this tab.</span>
+</p>
+
+{
+  artifact.about && (
+    <section class="about">
+      <h2>About this screen</h2>
+      <ul>
+        {artifact.about.map((line) => (
+          <li>{line}</li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .live {
+    margin: 0;
+  }
+
+  .live img {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--line-2);
+  }
+
+  .live figcaption {
+    margin-top: 14px;
+    color: var(--fg-2);
+    font-size: 16px;
+  }
+
+  .live__enter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 14px;
+    margin: 26px 0 0;
+  }
+
+  .live__open {
+    padding: 10px 16px;
+    border: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
+    border-radius: var(--radius);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition:
+      background 240ms var(--ease),
+      border-color 240ms var(--ease),
+      color 240ms var(--ease);
+  }
+
+  .live__open:hover,
+  .live__open:focus-visible {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--fg);
+  }
+
+  .live__where {
+    color: var(--fg-3);
+    font-size: 14px;
+  }
+
+  .about {
+    max-width: 78ch;
+    margin-top: 44px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+
+  .about h2 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+  }
+
+  .about ul {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+    padding-left: 1.15em;
+  }
+
+  .about li {
+    color: var(--fg-2);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .about li::marker {
+    color: var(--accent);
+  }
+</style>

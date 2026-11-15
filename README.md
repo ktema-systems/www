@@ -123,9 +123,11 @@ the same on any host npm runs on.
 The artifacts are one entry each in `demo/src/data/artifacts.ts`: an id, a title,
 a kind, a summary and an address. A kind is a component under `demo/src/kinds`
 and a line in the map `demo/src/pages/[id].astro` reads, so a new sort of surface
-is one component rather than a change to the page. `live` sends a reader to a
-deployed application at its own address, `video` plays footage, and `document`
-points at prose that lives where it is written.
+is one component rather than a change to the page. Every kind is entered through
+its own page. `live` draws the still and the lines that say which layer the screen
+is and which it is not, then links out to the deployed application at its own
+address rather than framing it; `video` plays footage; and `document` points at
+prose that lives where it is written.
 
 A product page carries no way into the center: the bar does, and the body describes the product
 rather than the demonstration.
