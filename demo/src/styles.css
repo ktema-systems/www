@@ -336,22 +336,6 @@ h1 {
   transform: scale(1.025);
 }
 
-/* A still that leaves the site as a picture carries this with it: the mark sits on the image, so a
-   screenshot keeps the attribution, and out of the flow, so it cannot move the copy. */
-.tile__watermark {
-  position: absolute;
-  right: 10px;
-  bottom: 8px;
-  padding: 2px 7px;
-  border-radius: var(--radius);
-  background: rgba(19, 18, 16, 0.62);
-  color: rgba(250, 249, 247, 0.8);
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  pointer-events: none;
-}
-
 
 /* ── what the tile says ───────────────────────────────────────────────── */
 
