@@ -53,6 +53,8 @@ export interface Artifact {
   poster?: string;
   /** What the still shows, for a reader who cannot see it. */
   posterAlt?: string;
+  /** The mark the still carries, for an image that will be seen away from the page. */
+  watermark?: string;
   /** For a `runs` artifact: the runs it lists. */
   recordings?: Recording[];
   /** The long form of a page, as Markdown, where a summary is not enough. */
@@ -157,6 +159,7 @@ export const artifacts: Artifact[] = [
     poster: '/delta-run.jpg',
     posterAlt:
       "Delta's cockpit over Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers and boats in the middle, the island and its shoreline on the right, and the timeline below.",
+    watermark: '© Ktema Systems',
     about: [
       'Delta is the operating layer of the stack: one space where a fleet, a cell, and the people running them are read together.',
       'It reads the record. It does not keep it: the engine that keeps a record and answers from it is Ktema, and it is not part of this screen.',

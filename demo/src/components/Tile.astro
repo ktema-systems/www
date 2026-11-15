@@ -10,6 +10,8 @@ interface Props {
   summary: string;
   poster?: string;
   posterAlt?: string;
+  /** The mark a still carries, drawn over the image rather than in the copy beside it. */
+  watermark?: string;
   badge?: string;
   cta?: string;
   variant?: 'default' | 'proof';
@@ -23,6 +25,7 @@ const {
   summary,
   poster,
   posterAlt,
+  watermark,
   badge,
   cta = 'Open',
   variant = 'default',
@@ -71,6 +74,7 @@ const planned = !href;
             loading={eager ? 'eager' : 'lazy'}
             decoding="async"
           />
+          {watermark && <span class="tile__watermark">{watermark}</span>}
         </span>
       )}
       <span class="tile__body">
