@@ -17,6 +17,39 @@ interface Props {
 }
 
 const { title, description, crumbs = [{ label: 'Demo Center' }] } = Astro.props;
+
+const pageTitle = title === 'Demo Center' ? 'Ktema Systems Demo Center' : `${title} | Ktema Systems Demo Center`;
+const pageDescription = description ?? 'The surfaces Ktema Systems builds, in one place.';
+
+// `site` is set in the center's astro.config.mjs, so its own address is known at build time.
+const origin = Astro.site!;
+const canonical = new URL(Astro.url.pathname, origin);
+const ogImage = new URL('/og.png', origin);
+
+// The company the center demonstrates for. The bar links to it and the structured data
+// names it, so it is written once.
+const company = 'https://ktema.systems/';
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': new URL('/#organization', company).href,
+      name: 'Ktema Systems',
+      url: company,
+      logo: new URL('/favicon.svg', company).href,
+    },
+    {
+      '@type': 'WebSite',
+      '@id': new URL('/#website', origin).href,
+      name: 'Ktema Systems Demo Center',
+      url: origin.href,
+      inLanguage: 'en',
+      publisher: { '@id': new URL('/#organization', company).href },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -24,14 +57,33 @@ const { title, description, crumbs = [{ label: 'Demo Center' }] } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title === 'Demo Center' ? 'Ktema Systems Demo Center' : `${title} | Ktema Systems Demo Center`}</title>
-    <meta name="description" content={description ?? 'The surfaces Ktema Systems builds, in one place.'} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#131210" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ktema Systems Demo Center" />
+    <meta property="og:locale" content="en" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Ktema Systems Demo Center: the cockpit and an FPGA board on one page." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
     <header class="bar">
       <div class="bar__inner">
-        <a class="bar__brand" href="https://ktema.systems/">
+        <a class="bar__brand" href={company}>
           <span class="bar__mark" aria-hidden="true"></span>
           <span class="bar__name">Ktema Systems</span>
         </a>

@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { type NavItem, type NavLink } from '../config';
+import { site, type NavItem, type NavLink } from '../config';
 
 interface Props {
   title: string;
@@ -33,6 +33,42 @@ const {
   current,
   openProducts,
 } = Astro.props;
+
+// `site` is set in astro.config.mjs, so the origin is known at build time and every
+// absolute address below is derived from it rather than written twice.
+const origin = Astro.site!;
+// The not-found page is served at no address of its own, so it claims none. Astro
+// hands it a trailing slash like any other route.
+const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
+const canonical = isNotFound ? undefined : new URL(Astro.url.pathname, origin);
+const ogImage = new URL('/og.png', origin);
+
+// The company is one entity across the site, so it is described once and every page
+// points at that description. `WebSite` is what a search engine reads for the name it
+// prints above a result.
+const organisationId = new URL('/#organization', origin).href;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': organisationId,
+      name: site.name,
+      url: origin.href,
+      logo: new URL('/favicon.svg', origin).href,
+      description: site.description,
+      sameAs: [site.github, site.docs],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': new URL('/#website', origin).href,
+      name: site.name,
+      url: origin.href,
+      inLanguage: 'en',
+      publisher: { '@id': organisationId },
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -42,8 +78,10 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#131210" />
     <script is:inline>
       // The masthead's settle state has to be right in the first frame, or a
@@ -57,11 +95,21 @@ const {
       root.classList.toggle('is-at-top', offset <= 0);
     </script>
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta name="twitter:card" content="summary" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}: ${site.tagline}`} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>

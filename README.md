@@ -134,9 +134,20 @@ The formal part of a page is Markdown under `demo/src/content/`, rendered by `de
 The document carries `{{name}}` where a figure goes and the caller hands the values in, so the prose and the numbers
 keep one source each and a re-run cannot leave a sentence quoting an older one.
 
-## Not yet set
+## The published addresses
 
-`astro.config.mjs` leaves `site` unset, because the production domain is not
-chosen. Setting it is what lets Astro emit absolute canonical URLs, an
-`og:image`, and a sitemap. The contact address on the page is the SSCCS
-documentation address, and belongs to `site.contact` in `home/config.ts`.
+Both sites declare `site` in their own `astro.config.mjs`: `https://ktema.systems` for
+the company site and `https://demo.ktema.systems` for the center. Every canonical link,
+`og:url`, and sitemap entry is built from it, so moving to another domain is one line in
+two configs rather than a search through the pages.
+
+Each build emits a sitemap index at `/sitemap-index.xml`, and each `robots.txt` names it.
+A page carried with `noindex` is filtered out of the sitemap, because offering a page to a
+crawler while telling that crawler to ignore it is the same mistake twice.
+
+The social card is `og.png` in each site's `public/`, 1200 by 630. It is captured from the
+built page at that viewport, so it carries the real typography rather than a second
+rendering of it: build, serve the output, and screenshot the first 1200 by 630 pixels.
+
+The contact address on the page is the SSCCS documentation address, and belongs to
+`site.contact` in `home/config.ts`.
