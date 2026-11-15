@@ -147,7 +147,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'delta',
     title: 'Fleet operations',
-    products: ['All stacks', 'Delta'],
+    products: ['Delta'],
     kind: 'live',
     status: 'read-only',
     data: 'mock data',
@@ -256,7 +256,7 @@ export const planned: PlannedSurface[] = [
   },
   {
     title: 'A robot that answers for its walk',
-    products: ['All stacks', 'Delta'],
+    products: ['Delta'],
     summary:
       'A SpiderPi Pro, a Raspberry Pi 5 with eight gigabytes, as the room a device answers in. The bridge the runtime calls already passes the device check; the three sensor calls, the Pi\'s own run and the reach from a phone are what this bay waits on.',
   },
