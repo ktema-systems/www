@@ -12,6 +12,8 @@ interface Props {
   posterAlt?: string;
   /** The word a bay carries when it has nothing behind it yet. */
   badge?: string;
+  /** The line a tile ends with, when a caller wants one. No tile here passes it: the card is the link. */
+  cta?: string;
   variant?: 'default' | 'proof';
   eager?: boolean;
 }
@@ -24,6 +26,7 @@ const {
   poster,
   posterAlt,
   badge,
+  cta,
   variant = 'default',
   eager = false,
 } = Astro.props;
@@ -84,6 +87,13 @@ const planned = !href;
           )}
         </span>
         <span class="tile__summary">{summary}</span>
+        {cta && (
+          <span class="tile__cta">
+            {cta} <span class="tile__arrow" aria-hidden="true">
+              &#8594;
+            </span>
+          </span>
+        )}
       </span>
     </a>
   )

@@ -426,6 +426,31 @@ h1 {
   line-height: 1.6;
 }
 
+/* A tile ends on its summary unless the caller asks for a line, which no tile in this grid does: the card is the link.
+   The rule stays so a surface that needs the affordance has one instead of a second style. */
+.tile__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  padding-top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+.tile__arrow {
+  display: inline-block;
+  transition: transform 260ms var(--ease);
+}
+
+.tile--opens:hover .tile__arrow,
+.tile--opens:focus-visible .tile__arrow {
+  transform: translateX(5px);
+}
+
 /* ── a surface that is not built ──────────────────────────────────────── */
 
 /* A planned tile is drawn, not linked: there is nothing behind it, and a card that looks like the others but does not
