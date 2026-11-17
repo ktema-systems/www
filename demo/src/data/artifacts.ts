@@ -145,6 +145,72 @@ const RUNS: Recording[] = [
 
 export const artifacts: Artifact[] = [
   {
+    id: 'witness',
+    title: 'Two implementations of one address',
+    products: ['Ktema'],
+    kind: 'video',
+    summary:
+      'A flight controller with no operating system writes seventy-two records into its own flash, and a die on the bench recomputes the same values from the identifiers the part printed. The two share nothing but the data, and the die refuses a set whose total is unchanged.',
+    source:
+      'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/esp32s3_fpga-litewing_icesugarpro-witness/20261117-132019.mp4',
+    poster: '/proofs/witness.jpg',
+    posterAlt:
+      'The LiteWing flight controller on the left and the iCESugar-Pro on the right, the ECP5 lit green under its RGB LED after the die agreed with the record set the drone wrote.',
+    body: `## What runs
+
+  A flight controller with no operating system writes seventy-two records into its own flash, one for each point of a layout of four axes: flight, subsystem, event, and severity. It reads every one of them back by its own address in the same boot, and answers two box queries from the record keys alone: eight records in 2.1 ms, nine in 1.9 ms.
+
+  A host then carries the identifiers the part printed, unchanged, to an ECP5 on an iCESugar-Pro. The die recomputes the value behind every line and compares it with the pack the line carries. Its answer is one pin: green when all fourteen hundred and forty lines agree, red when one does not.
+
+  The two implementations share nothing but the identifiers. The host divides, and the die multiplies by a reciprocal.
+
+  ## What the die is handed
+
+  The control is the same set of lines with two packs exchanged. Every value stays where it was, the total over the two lines is unchanged, and the decoder's answer for those two lines no longer matches. The console prints both totals and names the two lines that moved, so the identity is read rather than asserted. The die answers red. A sum over the set cannot tell those two files apart.
+
+  Then the lines the part wrote go in, and the die answers green.
+
+  ## The power cut
+
+  The drone's switch cuts the whole rail, the bridge included. When the part comes back it reads seventy-two records from the flash it was writing to, by the same addresses, and the die still holds its answer.
+
+  ## Questions the demo invites
+
+  Q. Is the engine running on the FPGA?
+
+  A. No. The die has no core. It holds the identifiers and a decoder that recomputes the value behind each one, which makes it a second implementation of the address rather than a second copy of the engine.
+
+  Q. What does the die add that a checksum does not?
+
+  A. It refuses a set whose total is unchanged. The two files differ by two exchanged packs, every line keeps its own value, and the sum over all lines is the same, so a total accepts both and the per-value comparison accepts one.
+
+  Q. Why a part with no operating system instead of a server?
+
+  A. A machine that records what happened in the field has no server under it and no network above it. The engine runs in an arena of about ten kilobytes on the part, and the record lives in the part's own flash, so the next boot reads it by the address it was written at.
+
+  Q. What survives a power cut?
+
+  A. The record. It is on the flash rather than in the process, so the boot after the cut finds every record at the address it was written at and re-deposits the same set without growing the volume.
+
+  Q. Does the drone derive the identifiers the die checks?
+
+  A. No. It prints them. The host takes that list from the console and compares the file it builds with the file the die's image was built from, so the only thing the two devices share is what the part wrote.
+
+  Q. What does a point read cost as the volume grows?
+
+  A. The address comes from the record, so a read is the depth of the address and not the size of the volume. This take does not sweep that cost; the run it belongs to reads eleven thousand records while the take stays at seventy-two.`,
+    facts: [
+      { label: 'Records written', value: '72, one per point of flight 4 x subsystem 3 x event 3 x severity 2' },
+      { label: 'Read back by address', value: '72 of 72, none holding another point' },
+      { label: 'Box answers', value: '8 of 8 in 2.1 ms, 9 of 9 in 1.9 ms' },
+      { label: 'Arena', value: 'about ten kilobytes against the 64 KB floor the engine asks for' },
+      { label: 'Lines handed to the die', value: '1,440, one value a line' },
+      { label: 'Total both files reach', value: '288, printed as 00000120 by the host' },
+      { label: 'Die', value: 'iCESugar-Pro, ECP5-25F: 166 LUT4, 133 flip-flops, 138.01 MHz against a 40 MHz constraint' },
+      { label: 'Part', value: 'LiteWing, ESP32-S3 revision v0.2, 64 KB arena, the record in its own flash' },
+    ],
+  },
+  {
     id: 'delta',
     title: 'Fleet operations',
     products: ['Delta'],
