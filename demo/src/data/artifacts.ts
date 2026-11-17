@@ -150,13 +150,17 @@ export const artifacts: Artifact[] = [
     products: ['Ktema'],
     kind: 'video',
     summary:
-      'A flight controller with no operating system writes seventy-two records into its own flash, and a die on the bench recomputes the same values from the identifiers the part printed. The two share nothing but the data, and the die refuses a set whose total is unchanged.',
+      'An engine on a part with no operating system keeps the record of what the machine did, and a second reader with nothing but the data recomputes it. The address comes from the record\u2019s own fields, so there is no index to build and the audit needs no network.',
     source:
       'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/esp32s3_fpga-litewing_icesugarpro-witness/20261117-132019.mp4',
     poster: '/proofs/witness.jpg',
     posterAlt:
       'The LiteWing flight controller on the left and the iCESugar-Pro on the right, the ECP5 lit green under its RGB LED after the die agreed with the record set the drone wrote.',
-    body: `## What runs
+    body: `## What the engine is
+
+  A machine that records what it did usually has a filesystem under it. This part has none. The firmware links one C header, hands the engine an arena, and writes its records into the part's own flash. A record's address is computed from the record's own fields, so the address is the index and there is no index structure to build, store, or keep consistent.
+
+  ## What runs
 
   The layout has four axes: flight, subsystem, event, and severity, which is seventy-two points. The part writes one record at each point into its own flash, and it reads every one of them back by its own address in the same boot. Two box queries follow, answered from the record keys alone: eight records in 2.1 ms, nine in 1.9 ms.
 
@@ -180,13 +184,25 @@ export const artifacts: Artifact[] = [
 
   A. No. The die has no core. It holds the identifiers and a decoder that recomputes the value behind each one, which makes it a second reader of the set rather than a second copy of the engine.
 
-  Q. What does the die add that a checksum does not?
+  Q. Is this another database, or a blockchain?
 
-  A. It refuses a set whose total is unchanged. The two files differ by two exchanged packs, every line keeps its own value, and the sum over all lines is the same, so a total accepts both and the per-value comparison accepts one.
+  A. Neither. A database stores and retrieves, and a blockchain needs consensus among parties that do not trust each other. This is a record layer: the address comes from the record itself, so there is no index to maintain and one machine proves its own history without asking anyone.
 
   Q. Why a part with no operating system instead of a server?
 
   A. A machine that records what happened in the field has no server under it and no network above it. The engine runs in an arena of about ten kilobytes on the part, and the record lives in the part's own flash, so the next boot reads it by the address it was written at.
+
+  Q. What does a firmware team link?
+
+  A. One C header and a static library built for the target. The header and the library are checked against each other in the artifact the engine ships, so the contract cannot drift from the implementation. Nothing else in the application changes.
+
+  Q. What does the die add that a checksum does not?
+
+  A. It refuses a set whose total is unchanged. The two files differ by two exchanged packs, every line keeps its own value, and the sum over all lines is the same, so a total accepts both and the per-value comparison accepts one.
+
+  Q. Can a second party check a record without the machine?
+
+  A. Yes. The check is the encoding: a party holding the identifiers recomputes the value behind each line with no access to the machine or to any network it was on. That is what the die does here, and it is what an audit by someone else needs.
 
   Q. What survives a power cut?
 
@@ -198,20 +214,17 @@ export const artifacts: Artifact[] = [
 
   Q. Do two machines that never talk arrive at the same address?
 
-  A. Yes. The address is a function of the record's own fields and of nothing else, so a machine given the same fields computes the same address with no channel between them. This take shows one writer and a second reader of the same set.
-
-  Q. What does a point read cost as the volume grows?
-
-  A. The address comes from the record, so the cost of a read follows the depth of the address and not the size of the volume. This take reads one volume of seventy-two records and states no cost curve; the pages that measure one are the bench and the audit before this one.`,
+  A. Yes. The address is a function of the record's own fields and of nothing else, so a machine given the same fields computes the same address with no channel between them. This take shows one writer and a second reader of the same set.`,
     facts: [
       { label: 'Records written', value: '72, one per point of flight 4 x subsystem 3 x event 3 x severity 2' },
       { label: 'Read back by address', value: '72 of 72, none holding another point' },
       { label: 'Box answers', value: '8 of 8 in 2.1 ms, 9 of 9 in 1.9 ms' },
-      { label: 'Arena', value: 'about ten kilobytes against the 64 KB floor the engine asks for' },
+      { label: 'The medium, the first write', value: '34,185 bytes for 72 records, about 475 a record' },
+      { label: 'The medium, a boot that already holds them', value: '1 write, 25 bytes' },
       { label: 'Lines handed to the die', value: '1,440, one value a line' },
       { label: 'Total both files reach', value: '288, printed as 00000120 by the host' },
-      { label: 'Die', value: 'iCESugar-Pro, ECP5-25F: 166 LUT4, 133 flip-flops, 138.01 MHz against a 40 MHz constraint' },
-      { label: 'Part', value: 'LiteWing, ESP32-S3 revision v0.2, 64 KB arena, the record in its own flash' },
+      { label: 'Part', value: 'LiteWing, ESP32-S3 revision v0.2; the arena it hands the engine is 64 KB, and the run peaks at about ten kilobytes' },
+      { label: 'Check image', value: 'iCESugar-Pro, ECP5-25F: 166 LUT4, 133 flip-flops, 138.01 MHz against a 40 MHz constraint' },
     ],
   },
   {
