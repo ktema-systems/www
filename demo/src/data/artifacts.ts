@@ -146,7 +146,7 @@ const RUNS: Recording[] = [
 export const artifacts: Artifact[] = [
   {
     id: 'witness',
-    title: 'Two implementations of one address',
+    title: 'One record set, two readers',
     products: ['Ktema'],
     kind: 'video',
     summary:
@@ -178,7 +178,7 @@ export const artifacts: Artifact[] = [
 
   Q. Is the engine running on the FPGA?
 
-  A. No. The die has no core. It holds the identifiers and a decoder that recomputes the value behind each one, which makes it a second implementation of the address rather than a second copy of the engine.
+  A. No. The die has no core. It holds the identifiers and a decoder that recomputes the value behind each one, which makes it a second reader of the set rather than a second copy of the engine.
 
   Q. What does the die add that a checksum does not?
 
@@ -195,6 +195,10 @@ export const artifacts: Artifact[] = [
   Q. Does the drone derive the identifiers the die checks?
 
   A. No. It prints them. The host takes that list from the console and compares the file it builds with the file the die's image was built from, so the only thing the two devices share is what the part wrote.
+
+  Q. Do two machines that never talk arrive at the same address?
+
+  A. Yes. The address is a function of the record's own fields and of nothing else, so a machine given the same fields computes the same address with no channel between them. This take shows one writer and a second reader of the same set.
 
   Q. What does a point read cost as the volume grows?
 
@@ -329,12 +333,6 @@ export const artifacts: Artifact[] = [
 // instead of an address, and each one is a part that is on the bench, so the bay states what the part will show rather
 // than what a page might say.
 export const planned: PlannedSurface[] = [
-  {
-    title: 'Two nodes, one address',
-    products: ['Ktema'],
-    summary:
-      'Two ESP32-S3 modules with nothing passing between them, each handed the same fields. The address is computed from the fields, so the two arrive at the same coordinate without a conversation, and each board prints the one it reached.',
-  },
   {
     title: 'A robot that answers for its walk',
     products: ['Delta'],
