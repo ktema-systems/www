@@ -158,7 +158,7 @@ export const artifacts: Artifact[] = [
       'The LiteWing flight controller on the left and the iCESugar-Pro on the right, the ECP5 lit green under its RGB LED after the die agreed with the record set the drone wrote.',
     body: `## What runs
 
-  A flight controller with no operating system writes seventy-two records into its own flash, one for each point of a layout of four axes: flight, subsystem, event, and severity. It reads every one of them back by its own address in the same boot, and answers two box queries from the record keys alone: eight records in 2.1 ms, nine in 1.9 ms.
+  The layout has four axes: flight, subsystem, event, and severity, which is seventy-two points. The part writes one record at each point into its own flash, and it reads every one of them back by its own address in the same boot. Two box queries follow, answered from the record keys alone: eight records in 2.1 ms, nine in 1.9 ms.
 
   A host then carries the identifiers the part printed, unchanged, to an ECP5 on an iCESugar-Pro. The die recomputes the value behind every line and compares it with the pack the line carries. Its answer is one pin: green when all fourteen hundred and forty lines agree, red when one does not.
 
@@ -166,7 +166,7 @@ export const artifacts: Artifact[] = [
 
   ## What the die is handed
 
-  The control is the same set of lines with two packs exchanged. Every value stays where it was, the total over the two lines is unchanged, and the decoder's answer for those two lines no longer matches. The console prints both totals and names the two lines that moved, so the identity is read rather than asserted. The die answers red. A sum over the set cannot tell those two files apart.
+  The control is the same set of lines with two packs exchanged. Every value stays where it was, the total over the set is unchanged, and the decoder's answer for those two lines no longer matches. The console prints both totals and names the two lines that moved, so the identity is read rather than asserted. The die answers red. A sum over the set cannot tell those two files apart.
 
   Then the lines the part wrote go in, and the die answers green.
 
@@ -198,7 +198,7 @@ export const artifacts: Artifact[] = [
 
   Q. What does a point read cost as the volume grows?
 
-  A. The address comes from the record, so a read is the depth of the address and not the size of the volume. This take does not sweep that cost; the run it belongs to reads eleven thousand records while the take stays at seventy-two.`,
+  A. The address comes from the record, so the cost of a read follows the depth of the address and not the size of the volume. This take reads one volume of seventy-two records and states no cost curve; the pages that measure one are the bench and the audit before this one.`,
     facts: [
       { label: 'Records written', value: '72, one per point of flight 4 x subsystem 3 x event 3 x severity 2' },
       { label: 'Read back by address', value: '72 of 72, none holding another point' },
