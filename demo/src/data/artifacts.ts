@@ -146,11 +146,11 @@ const RUNS: Recording[] = [
 export const artifacts: Artifact[] = [
   {
     id: 'witness',
-    title: 'One record set, two readers',
+    title: 'One record set, two readers, one power cut',
     products: ['Ktema'],
     kind: 'video',
     summary:
-      'An engine on a part with no operating system keeps the record of what the machine did, and a second reader with nothing but the data recomputes it. The address comes from the record\u2019s own fields, so there is no index to build and the audit needs no network.',
+      'An engine on a part with no operating system keeps the record of what the machine did, a second reader with nothing but the data recomputes it, and the set is read again after the power is cut. The address comes from the record\u2019s own fields, so there is no index to build and the audit needs no network.',
     source:
       'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/esp32s3_fpga-litewing_icesugarpro-witness/20261117-132019.mp4',
     poster: '/proofs/witness.jpg',
