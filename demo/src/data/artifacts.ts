@@ -230,7 +230,7 @@ export const artifacts: Artifact[] = [
   {
     id: 'delta',
     title: 'Fleet operations',
-    products: ['Delta'],
+    products: ['Kletos', 'Delta'],
     kind: 'live',
     summary:
       'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, on mock data.',
