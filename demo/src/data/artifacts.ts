@@ -116,17 +116,17 @@ const RUNS: Recording[] = [
     video: '/proofs/smoke.mp4',
   },
   {
-    id: 'capi-arm',
+    id: 'c-abi',
     label: 'One test body, two architectures',
     detail:
       'The same C test body linked from C and run under QEMU on a Cortex-M4 and a RISC-V core, with the same fifteen measurements on both.',
     body: 'The C test body is shared: verify/capi/test.c is 2,182 lines, and only the platform hooks and the linker script differ. The session links it for a Cortex-M4 and for a RISC-V core, runs both under QEMU, and compares the measurement lines.\n\nBoth report the same fifteen measurements, from the read path per record to the peak footprint inside a 65,536-byte arena. That is what architecture neutrality is worth once it is run rather than asserted.',
     command: 'demo/tools/record/proof-capi-arch.sh',
     href: 'https://asciinema.org/a/qKmoAREJtuVC2hej',
-    poster: '/proofs/capi-arm.png',
+    poster: '/proofs/c-abi.png',
     posterAlt:
       'A terminal replaying the C surface on a Cortex-M4 and on a RISC-V core: both report the same fifteen measurements, ending with PASS: C surface round trip.',
-    video: '/proofs/capi-arm.mp4',
+    video: '/proofs/c-abi.mp4',
   },
   {
     id: 'faults',
@@ -254,7 +254,7 @@ export const artifacts: Artifact[] = [
       products: ['Ktema'],
       kind: 'video',
       summary:
-        'What a system measured, what happened, and what an audit asks later all resolve at one address, without a search. The read costs the same at 64 records and at 3,601. The same run hands 512 of those addresses to an ECP5: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
+        'What a system measured, what happened, and what an audit asks later all resolve at one address, without a search. The read costs the same at 64 records and at 3,601. The same run hands 512 of those addresses to an FPGA: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
       source:
         'https://pub-836aff2583c345ec8edfbd9fc6083ef0.r2.dev/demo/fpga-icesugarpro-audit/20261115-083500-v3.mp4',
       poster: '/proofs/fpga.jpg',
@@ -319,7 +319,7 @@ export const artifacts: Artifact[] = [
     products: ['Ktema'],
     kind: 'device',
     summary:
-      'The smallest host in the claim: an ESP32-S3 with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. The same build runs on every host above it, and a deployment can be a field of these nodes.',
+      'The smallest host in the claim: a microcontroller with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. The same build runs on every host above it, and a deployment can be a field of these nodes.',
     source: 'firmware/litewing',
     poster: '/board.jpg',
     posterAlt:
@@ -350,6 +350,6 @@ export const planned: PlannedSurface[] = [
     title: 'A robot that answers for its walk',
     products: ['Delta'],
     summary:
-      'A SpiderPi Pro, a Raspberry Pi 5 with eight gigabytes, as the room a device answers in. The bridge the runtime calls already passes the device check; the three sensor calls, the Pi\'s own run and the reach from a phone are what this bay waits on.',
+      'A walking robot as the room a device answers in: every step, sensor reading and phone reach recorded at one address.',
   },
 ];

@@ -44,7 +44,7 @@ manifest=$(cat <<'EOF'
 device|verify/device/check.sh|Ktema: the device tier and the host write the same volume
 region|verify/region/check.sh|Ktema: a power cut at every byte, and a volume that converges
 smoke|__smoke__|Ktema: a 13-step record round trip, hashed to one digest
-capi-arm|__capi_arm__|Ktema: one C test body, a Cortex-M4 and a RISC-V core
+c-abi|__c_abi__|Ktema: one C test body, a Cortex-M4 and a RISC-V core
 faults|verify/faults/check.sh|Ktema: a refused write, a worn medium, a buffered write
 EOF
 )
@@ -62,7 +62,7 @@ while IFS='|' read -r name command title; do
             command="target/debug/ktema-sim verify/scenarios/smoke.txt target/demo/smoke --reset"
             ( cd "$ktema" && rm -rf target/demo && mkdir -p target/demo && cargo build -q -p ktema-sim )
             ;;
-        __capi_arm__)
+        __c_abi__)
             cwd=$repo
             command="demo/tools/record/proof-capi-arch.sh"
             ;;

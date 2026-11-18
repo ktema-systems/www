@@ -1,6 +1,6 @@
 # Recorded proofs
 
-The terminal proofs on `/terminal` are recordings of real runs of the engine. A cast is
+The terminal proofs on `/runs` are recordings of real runs of the engine. A cast is
 not kept in this repository: the recording lives on asciinema.org and the still is what the
 demo center commits. This directory is what makes each one reproducible.
 
@@ -11,7 +11,7 @@ demo center commits. This directory is what makes each one reproducible.
 | `device` | A RISC-V device tier and the host write the same volume, byte for byte | `verify/device/check.sh` in the engine checkout |
 | `region` | The log is cut at each byte and every run recovers; the header refuses a change | `verify/region/check.sh` |
 | `smoke` | A thirteen-step record round trip, hashed to one digest | `ktema-sim` over `verify/scenarios/smoke.txt` |
-| `capi-arm` | The same C test body on a Cortex-M4 and a RISC-V core, with the same measurements | `proof-capi-arch.sh` in this directory |
+| `c-abi` | The same C test body on a Cortex-M4 and a RISC-V core, with the same measurements | `proof-capi-arch.sh` in this directory |
 | `faults` | A refused write, a worn medium, and a buffered write past the end of a run | `verify/faults/check.sh` |
 
 ## Re-record one or all
@@ -19,7 +19,7 @@ demo center commits. This directory is what makes each one reproducible.
 ```sh
 demo/tools/record/record.sh                 # every proof
 demo/tools/record/record.sh faults          # one proof
-demo/tools/record/record.sh smoke capi-arm  # a few
+demo/tools/record/record.sh smoke c-abi     # a few
 ```
 
 Each run records a cast at `120x30`, renders the last frame to
