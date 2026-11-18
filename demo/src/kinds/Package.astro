@@ -1,0 +1,162 @@
+---
+// The package: what a team receives when it asks to try this on its own hardware.
+//
+// Nothing on this page is written here. The bundle is assembled in the engine's repository
+// by `./run.sh --release`, and `tools/package.mjs` copies it into the site and writes the
+// manifest this page reads, so the numbers, the targets and the prose are the package's own.
+//
+// The page has one job beyond listing files: saying what the artifact is not. It carries no
+// engine source, and a team that expects source should learn that here rather than after
+// downloading 4.9 MB.
+import Markdown from '../components/Markdown.astro';
+import bundle from '../data/package-bundle.json';
+
+const megabytes = (bytes: number) => `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+const host = bundle.host ?? bundle.built[bundle.built.length - 1];
+const targetOf = (name: string) =>
+  name.includes('riscv')
+    ? 'RISC-V, no operating system'
+    : name.includes('thumb')
+      ? 'Cortex-M, no operating system'
+      : name.includes('xtensa')
+        ? 'ESP32-S3, no operating system'
+        : 'This machine, with an operating system';
+
+const values: Record<string, string> = {
+  version: bundle.version,
+  abi: bundle.abi,
+  format: bundle.format,
+  entry_points: bundle.entryPoints,
+  revision: bundle.revision.replace(/\+$/, ' and a working tree'),
+  assembled: bundle.assembled,
+  host_target: host ?? 'none',
+  target_count: String(bundle.built.length),
+  absent_count: String(bundle.absent.length),
+};
+---
+
+<p class="bench__lede">
+  The engine's C surface as a static library and a header, for a firmware team that will link it and not read it. The
+  artifact implements the format specification that travels beside it; the engine's own source is not part of the
+  package.
+</p>
+
+<section class="bench__fit">
+  <h2>What this build is</h2>
+  <table>
+    <thead>
+      <tr><th></th><th></th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ABI</td><td>{values.abi}, the number a caller's header and the library must agree on</td></tr>
+      <tr><td>Format</td><td>{values.format}, the version a volume written by this library carries</td></tr>
+      <tr><td>Entry points</td><td>{values.entry_points}, plus the two critical-section hooks the caller defines</td></tr>
+      <tr><td>Assembled from</td><td>revision {values.revision}</td></tr>
+      <tr><td>Targets</td><td>{values.target_count} built, {values.absent_count} not built on the host that assembled it</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="bench__fit">
+  <h2>The artifacts</h2>
+  {
+    !bundle.served && (
+      <p>
+        The package is assembled and its address is not published yet. What follows is what is in it, measured from
+        the bundle itself; the download address arrives when the package is served from one.
+      </p>
+    )
+  }
+  <table>
+    <thead>
+      <tr><th>Target</th><th>What it is for</th>{bundle.served && <th></th>}<th>Size</th></tr>
+    </thead>
+    <tbody>
+      {
+        bundle.targets.map((tarball: { target: string; href: string | null; bytes: number }) => (
+          <tr>
+            <td><code>{tarball.target}</code></td>
+            <td>{targetOf(tarball.target)}</td>
+            {bundle.served && <td>{tarball.href ? <a href={tarball.href}>download</a> : '—'}</td>}
+            <td>{megabytes(tarball.bytes)}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  {
+    bundle.absent.length > 0 && (
+      <p>
+        Not built on the host that assembled this release, and not claimed here:{' '}
+        {bundle.absent.map((target: string, index: number) => (
+          <>
+            {index > 0 && ', '}
+            <code>{target}</code>
+          </>
+        ))}
+        . Its toolchain is not part of the Rust distribution, so it is packaged where that toolchain
+        is installed.
+      </p>
+    )
+  }
+</section>
+
+<section class="bench__fit">
+  <h2>Five minutes, on a machine that has an operating system</h2>
+  <p>
+    The archive for a hosted target holds a program that links and runs. Unpack it and build it with the compiler you
+    already have; nothing else is needed and nothing is installed.
+  </p>
+  <pre><code>tar -xzf {host}.tar.gz
+cd {host}
+cc -I include example.c lib/libktema_capi.a -o example && ./example
+echo $?        # 0 is four records written and walked</code></pre>
+  <p>
+    On a device, the same directory gives you the header and the library for your target. The medium in
+    <code>example.c</code> is a table in RAM; replace it with your own read, write, list and delete, supply
+    <code>ktma_enter_critical</code> and <code>ktma_exit_critical</code>, and link the object. The header states what the
+    engine expects of that medium, and <code>LINKING</code> in each target directory states what the link owes.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>The documents in the package</h2>
+  <table>
+    <thead>
+      <tr><th></th>{bundle.served && <th></th>}<th></th></tr>
+    </thead>
+    <tbody>
+      {
+        bundle.documents.map((document: { label: string; href: string | null; bytes: number }) => (
+          <tr>
+            <td>{document.label}</td>
+            {bundle.served && <td>{document.href ? <a href={document.href}>open</a> : '—'}</td>}
+            <td>{document.bytes < 4096 ? `${document.bytes} B` : megabytes(document.bytes)}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p>
+    <code>SHA256SUMS</code> covers every file in the package. The digests are reproducible: assembling the same
+    revision twice produces the same bytes, and the date the manifest carries is the commit's rather than the clock's.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>What the ABI number promises</h2>
+  <Markdown source={bundle.changelog} />
+</section>
+
+<section class="bench__fit">
+  <h2>What is not here</h2>
+  <ul>
+    <li>The engine's source. The package is a compiled artifact, a header, and the specification it implements.</li>
+    <li>A driver. The medium is the caller's, because the driver a device already has is the one that should be used.</li>
+    <li>A claim about another store. The package carries no benchmark and no comparison.</li>
+  </ul>
+  <p>
+    This page is generated from the package: <code>./run.sh --release</code> in the engine's repository assembles it,
+    and the site copies what it assembled.
+  </p>
+</section>

@@ -1,0 +1,65 @@
+{
+  "name": "ktema-capi-0.1.0",
+  "version": "0.1.0",
+  "abi": "7",
+  "format": "0.1",
+  "entryPoints": "32",
+  "revision": "0059678+",
+  "assembled": "2026-11-18T17:02:05+01:00",
+  "host": "aarch64-apple-darwin",
+  "served": false,
+  "built": [
+    "riscv32imac-unknown-none-elf",
+    "thumbv7em-none-eabihf",
+    "aarch64-apple-darwin"
+  ],
+  "absent": [
+    "xtensa-esp32s3-none-elf"
+  ],
+  "targets": [
+    {
+      "target": "riscv32imac-unknown-none-elf",
+      "bytes": 1764895,
+      "href": null
+    },
+    {
+      "target": "thumbv7em-none-eabihf",
+      "bytes": 1633300,
+      "href": null
+    },
+    {
+      "target": "aarch64-apple-darwin",
+      "bytes": 1736369,
+      "href": null
+    }
+  ],
+  "documents": [
+    {
+      "label": "README",
+      "bytes": 1747,
+      "href": null
+    },
+    {
+      "label": "CHANGELOG",
+      "bytes": 1742,
+      "href": null
+    },
+    {
+      "label": "The format",
+      "bytes": 12450,
+      "href": null
+    },
+    {
+      "label": "The medium contract",
+      "bytes": 5692,
+      "href": null
+    },
+    {
+      "label": "Digests",
+      "bytes": 2382,
+      "href": null
+    }
+  ],
+  "readme": "# Ktema C surface, 0.1.0\n\nThe engine that keeps state on a device that has no operating system, as a static library\nand a header. The source of the engine is not in this package; what is here is the\ncontract, an implementation of it for each target named below, and the specification the\nimplementation writes.\n\nRead `RELEASE` for what this build is and what it was built from. Read\n`targets/<target>/LINKING` before you link: it states what the library provides, the two\nhooks you supply, and what moves the ABI number.\n\n## Five minutes\n\nOn a machine with a C compiler and an operating system, the package for your host runs:\n\n```sh\ncd targets/aarch64-apple-darwin\ncc -I include example.c lib/libktema_capi.a -o example && ./example\necho $?     # 0 is four records written and walked\n```\n\nOn a device, replace the medium in `example.c` with your own read, write, list, and delete,\nsupply `ktma_enter_critical` and `ktma_exit_critical`, and link the object for your target.\nThe header states what the engine expects of that medium; `example.c` is one written out.\n\n## What is in here\n\n    RELEASE                  version, abi, format, revision, targets, digests\n    CHANGELOG.md             what each ABI number means, and when it moved\n    spec/                    the format the artifact writes, and the medium contract\n    targets/<target>/        include/ktema.h, lib/libktema_capi.a, example.c, VERSION, LINKING\n    targets/<target>.tar.gz  the same directory, archived\n    SHA256SUMS               every file above\n\n## Targets in this release\n\nBuilt:\n\n    riscv32imac-unknown-none-elf\n    thumbv7em-none-eabihf\n    aarch64-apple-darwin\n\nNot built on the host that assembled this release, and not claimed by it:\n\n    xtensa-esp32s3-none-elf\n",
+  "changelog": "# The C surface's ABI\n\n`KTMA_ABI_VERSION` numbers the C surface: the signatures, the constants, and the contract\nin `include/ktema.h`. It is not the format version. The format version says what a volume\nholds and moves independently; this says what a caller must have compiled against.\n\nThe number moves when a change would break a caller compiled against the previous header:\na removed entry point, a renamed one, a changed signature, a changed constant that a caller\nbranches on, or a changed obligation on the caller. An entry point added to a later build\nkeeps the number, so a build that adds one stays compatible with every caller that does not\nuse it.\n\nA release states its number in `RELEASE`, in each `targets/<target>/VERSION`, and in the\nartifact's file name. `ktma_abi_version()` reports it at run time and `KTMA_ABI_VERSION`\nstates it at compile time, so one comparison at startup catches a header and a library from\ndifferent builds.\n\n`crates/capi/release.sh` refuses to assemble a release whose ABI has no row below. A new\nnumber cannot ship before someone has written what it means.\n\n| ABI | Set on | What it means |\n|---|---|---|\n| 7 | 2026-11-18 | The first number a distributed artifact carries. The surface is `ktma_*` throughout, the header declares 32 entry points, and the two integrator hooks are `ktma_enter_critical` and `ktma_exit_critical`. |\n| 6 | 2026-10-03 | Set while the surface was `ktema_*`. The prefix moved to `ktma_*` on 2026-10-26 and the number did not move with it, so a caller compiled against six before that date cannot link a library built after it: every symbol it names is gone. No artifact of that era was distributed. Seven exists so that a number handed to an outside team means one thing. |\n"
+}
