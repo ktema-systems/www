@@ -13,7 +13,7 @@ export function getStaticPaths() {
 
 const { run } = Astro.props as { run: Recording };
 
-const product = artifacts.find((artifact) => artifact.kind === 'runs')?.product ?? 'Ktema';
+const product = artifacts.find((artifact) => artifact.kind === 'runs')?.products[0] ?? 'Ktema';
 
 const crumbs = [
   { label: 'Demo Center', href: '/' },
