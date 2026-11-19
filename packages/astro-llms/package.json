@@ -19,6 +19,6 @@
     "markdown"
   ],
   "scripts": {
-    "test": "node --test"
+    "test": "node --test index.test.mjs"
   }
 }

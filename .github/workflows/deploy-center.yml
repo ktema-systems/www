@@ -56,7 +56,7 @@ jobs:
         run: npm ci
 
       - name: Test the llms module
-        run: node --test packages/astro-llms
+        run: node --test packages/astro-llms/index.test.mjs
 
       - name: Check types
         run: npx astro check --root demo
