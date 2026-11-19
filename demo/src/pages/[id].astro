@@ -6,8 +6,10 @@
 // A deployed application gets a page here too, and the page does not frame it: the application owns the viewport, its
 // own header and its own back button, so the page carries the still, what the screen is, and one link out to its
 // address. A frame around an application would be a second header and a second scrollbar.
-import { artifacts, planned, type Artifact, type PlannedSurface } from '../data/artifacts';
-import { notes } from '../data/posts';
+import { type Artifact } from '../data/artifacts';
+import { getArtifacts, getNotes, getSurfaces } from '../data/source';
+import { type Surface } from '../data/surfaces';
+import { noteFor } from '../data/posts';
 import { PLATFORMS } from '../data/taxonomy';
 import Shell from '../layouts/Shell.astro';
 import Live from '../kinds/Live.astro';
@@ -21,16 +23,17 @@ import Planned from '../kinds/Planned.astro';
 
 type Entry =
   | { kind: 'artifact'; artifact: Artifact }
-  | { kind: 'planned'; surface: PlannedSurface };
+  | { kind: 'planned'; surface: Surface };
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const [artifacts, surfaces] = await Promise.all([getArtifacts(), getSurfaces()]);
   const seen = new Set<string>();
   const paths = [
     ...artifacts.map((artifact) => ({
       params: { id: artifact.id },
       props: { entry: { kind: 'artifact', artifact } as Entry },
     })),
-    ...planned.map((surface) => ({
+    ...surfaces.map((surface) => ({
       params: { id: surface.id },
       props: { entry: { kind: 'planned', surface } as Entry },
     })),
@@ -54,7 +57,7 @@ const claim = brief ? brief.claim : artifact!.claim;
 const products = brief ? brief.products : artifact!.products;
 const platforms = brief ? brief.platforms : artifact!.platforms;
 const summary = brief ? brief.summary : artifact!.summary;
-const note = artifact ? notes.find((entry) => entry.demonstration === `/${artifact!.id}`) : undefined;
+const note = artifact ? noteFor(await getNotes(), `/${artifact!.id}`) : undefined;
 
 const BODIES = { live: Live, video: Video, document: Document, runs: Runs, bench: Bench, device: Device, package: Package };
 const ArtifactBody = artifact ? BODIES[artifact.kind as keyof typeof BODIES] : null;

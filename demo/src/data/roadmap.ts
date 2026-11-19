@@ -1,83 +1,118 @@
-// The map: the parts of the work, and the demonstration that establishes each one.
+// The roadmap: the parts of the work, and the demonstration that establishes each one.
 //
 // A line is a claim the program is built to hold, not a phase. The demonstrations under it are what makes the claim
-// readable without the source, so an entry appears exactly once and a line with no entry is not a line. The check at
-// the bottom runs at build time: a demonstration the map omits, or an id the map names that does not exist, stops the
-// build rather than publishing a map that is quietly incomplete.
-import { artifacts, planned } from './artifacts';
+// readable without the source. Which line an entry belongs to is in the entry's document (`ktma.line`), so a new
+// document attaches itself; a line that names an entry the center does not carry, an entry on no line, and an entry
+// named on two lines are each reported and the roadmap carries on.
+import type { Artifact } from './artifacts';
+import type { Surface } from './surfaces';
 import type { Platform } from './taxonomy';
+import { warn } from './warn';
 
 export interface RoadmapLine {
+  /** The name a document writes in `ktma.line`. */
+  id: string;
   /** What the line claims, as the heading a reader scans. */
   title: string;
   /** The claim in one sentence, in the words the demonstrations hold it to. */
   states: string;
-  /** The addresses of the demonstrations under this line, in the order they are worth reading. */
-  demos: string[];
 }
 
 export const roadmap: RoadmapLine[] = [
   {
+    id: 'record-on-the-machine',
     title: 'The record lives on the machine',
     states:
       'A part with no operating system over it writes its record into its own flash, and the boot after it reads every record back by the address it was written at, with no host in the loop.',
-    demos: ['device', 'cold-boot', 'full-volume'],
   },
   {
+    id: 'medium-survives-the-cut',
     title: 'The medium survives the cut',
     states:
       'The rail is cut in the middle of a write and the volume opens; nothing appears at an address the writer did not put there, and a reader who never held the device answers from the bytes it left.',
-    demos: ['runs', 'medium-image'],
   },
   {
+    id: 'second-reader',
     title: 'The set is proved by a second reader',
     states:
       'A party holding only what the machine printed recomputes every value by another arithmetic, and refuses a set whose total cannot tell one file from another.',
-    demos: ['witness', 'fpga', 'reader-check', 'address-in-gates'],
   },
   {
+    id: 'cost-stays-flat',
     title: 'Cost stays flat as the volume grows',
     states:
       'The read follows the depth of the coordinate rather than the size of the volume, measured from a thousand records to a million.',
-    demos: ['bench'],
   },
   {
+    id: 'attaches-to-what-a-team-ships',
     title: 'The layer attaches to what a team ships',
     states:
       'The record layer arrives as a header and one partition. The drivers, the scheduler and the certificate of the platform stay where they are, and the layer claims none of them.',
-    demos: ['archive', 'rtos-module', 'kernel-seam'],
   },
   {
+    id: 'cockpit-over-the-record',
     title: 'The cockpit over the record',
     states:
       'A fleet, a cell and the people running them are read in one space, and every step, reading and reach resolves at one address.',
-    demos: ['delta', 'robot'],
   },
 ];
 
-/** Every entry the center carries, by address. */
-interface MapEntry {
+/** A line's demonstrations, resolved to the entries the center draws. */
+export interface PlacedLine extends Omit<RoadmapLine, 'demos'> {
+  demos: { id: string; title: string; platforms: Platform[]; poster?: string }[];
+}
+
+interface Entry {
   id: string;
   title: string;
   platforms: Platform[];
   poster?: string;
+  line?: string;
+  order: number;
 }
 
-export const entriesById = new Map<string, MapEntry>(
-  [...artifacts, ...planned].map((entry) => [
-    entry.id,
-    { id: entry.id, title: entry.title, platforms: entry.platforms, poster: 'poster' in entry ? entry.poster : undefined },
-  ]),
-);
+/**
+ * The lines, with each entry placed by the line its document names. An entry named twice keeps its first line, an
+ * entry on no line is named once, and an entry whose line does not exist is named with the line it asked for.
+ */
+export function placeLines(artifacts: Artifact[], surfaces: Surface[]): PlacedLine[] {
+  const entries: Entry[] = [
+    ...artifacts.map((artifact) => ({
+      id: artifact.id,
+      title: artifact.title,
+      platforms: artifact.platforms,
+      poster: artifact.poster,
+      line: artifact.line,
+      order: artifact.order,
+    })),
+    ...surfaces.map((surface) => ({
+      id: surface.id,
+      title: surface.title,
+      platforms: surface.platforms,
+      line: surface.line,
+      order: surface.order,
+    })),
+  ].sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
 
-const placed: string[] = [];
-for (const line of roadmap) {
-  for (const id of line.demos) {
-    if (!entriesById.has(id)) throw new Error(`the map names /${id}, which the center does not carry`);
-    if (placed.includes(id)) throw new Error(`the map places /${id} twice`);
-    placed.push(id);
+  const known = new Map(roadmap.map((line) => [line.id, line]));
+  const placed = new Map<string, Entry[]>();
+  for (const entry of entries) {
+    if (entry.line === undefined) {
+      warn(`[roadmap] /${entry.id} names no line; it stands in the grid and not on the roadmap`);
+      continue;
+    }
+    const line = known.get(entry.line);
+    if (!line) {
+      warn(`[roadmap] /${entry.id} names line "${entry.line}", which does not exist; it is not on the roadmap`);
+      continue;
+    }
+    const members = placed.get(entry.line) ?? [];
+    members.push(entry);
+    placed.set(entry.line, members);
   }
-}
-for (const id of entriesById.keys()) {
-  if (!placed.includes(id)) throw new Error(`the center carries /${id}, which the map does not place`);
+
+  return roadmap.map((line) => ({
+    ...line,
+    demos: (placed.get(line.id) ?? []).map(({ id, title, platforms, poster }) => ({ id, title, platforms, poster })),
+  }));
 }

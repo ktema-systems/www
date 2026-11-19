@@ -3,10 +3,11 @@
 // keeps its own header, back button and scroll, so the way in is a link to its address
 // rather than a frame around it.
 //
-// `about` is where the page says what a reader is looking at. A screen that reads as a
-// product needs the boundary stated on the page: which layer this is, which layers it is
+// The document's body is where the page says what a reader is looking at. A screen that reads
+// as a product needs the boundary stated on the page: which layer this is, which layers it is
 // not, and what the data is.
 import type { Artifact } from '../data/artifacts';
+import Markdown from '../components/Markdown.astro';
 
 interface Props {
   artifact: Artifact;
@@ -26,14 +27,9 @@ const { artifact } = Astro.props;
 </p>
 
 {
-  artifact.about && (
+  artifact.body && (
     <section class="about">
-      <h2>About this screen</h2>
-      <ul>
-        {artifact.about.map((line) => (
-          <li>{line}</li>
-        ))}
-      </ul>
+      <Markdown source={artifact.body} />
     </section>
   )
 }
@@ -97,25 +93,25 @@ const { artifact } = Astro.props;
     border-top: 1px solid var(--line);
   }
 
-  .about h2 {
+  .about :global(h2) {
     margin: 0 0 16px;
     font-size: 1.1rem;
   }
 
-  .about ul {
+  .about :global(ul) {
     display: grid;
     gap: 12px;
     margin: 0;
     padding-left: 1.15em;
   }
 
-  .about li {
+  .about :global(li) {
     color: var(--fg-2);
     font-size: 15px;
     line-height: 1.6;
   }
 
-  .about li::marker {
+  .about :global(li)::marker {
     color: var(--accent);
   }
 </style>

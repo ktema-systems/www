@@ -1,11 +1,12 @@
 ---
 // One note, rendered from its Markdown body.
-import { notes } from '../../data/posts';
+import { getNotes } from '../../data/source';
 import { PLATFORMS } from '../../data/taxonomy';
 import Shell from '../../layouts/Shell.astro';
 import Markdown from '../../components/Markdown.astro';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const notes = await getNotes();
   // `/notes/list` is the row view, so a note may not take that name.
   for (const note of notes) {
     if (note.id === 'list') throw new Error('a note is named list, which the row view owns');
@@ -13,7 +14,7 @@ export function getStaticPaths() {
   return notes.map((note) => ({ params: { id: note.id }, props: { note } }));
 }
 
-const { note } = Astro.props as { note: (typeof notes)[number] };
+const { note } = Astro.props as { note: Awaited<ReturnType<typeof getNotes>>[number] };
 ---
 
 <Shell
@@ -31,9 +32,13 @@ const { note } = Astro.props as { note: (typeof notes)[number] };
         <span class="product-tag">{name}</span>
       ))}
     </span>
-    <time class="note__date" datetime={note.date}>
-      {note.date}
-    </time>
+    {
+      note.date && (
+        <time class="note__date" datetime={note.date}>
+          {note.date}
+        </time>
+      )
+    }
   </header>
 
   <article class="note">

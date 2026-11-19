@@ -1,5 +1,5 @@
 ---
-import { artifacts, planned } from '../data/artifacts';
+import { getArtifacts, getSurfaces } from '../data/source';
 import Shell from '../layouts/Shell.astro';
 import Tile from '../components/Tile.astro';
 import Row from '../components/Row.astro';
@@ -8,7 +8,7 @@ import Row from '../components/Row.astro';
 // specified and not yet recorded stand under them in their own section. Every entry is drawn as a tile and as a row,
 // and the switch in the bar picks which of the two is shown, so the views cannot disagree about what the center
 // carries. A tile with a still is a recorded run; a tile with the mark is a page that states the work.
-const recorded = artifacts.map((artifact) => ({
+const recorded = (await getArtifacts()).map((artifact) => ({
   id: artifact.id,
   title: artifact.title,
   products: artifact.products,
@@ -18,7 +18,7 @@ const recorded = artifacts.map((artifact) => ({
   posterAlt: artifact.posterAlt,
 }));
 
-const further = planned.map((surface) => ({
+const further = (await getSurfaces()).map((surface) => ({
   id: surface.id,
   title: surface.title,
   products: surface.products,

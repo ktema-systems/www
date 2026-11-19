@@ -3,17 +3,20 @@
 //
 // The page is the run's own, so the gallery can grow a list without the index growing a card for every one. Its fields
 // are the ones a written entry needs, which is what makes a later blog able to use the same data.
-import { artifacts, type Recording } from '../../data/artifacts';
+import { type Recording } from '../../data/artifacts';
+import { getArtifacts } from '../../data/source';
 import Shell from '../../layouts/Shell.astro';
+import Markdown from '../../components/Markdown.astro';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  const artifacts = await getArtifacts();
   const runs = artifacts.find((artifact) => artifact.kind === 'runs')?.recordings ?? [];
   return runs.map((run) => ({ params: { run: run.id }, props: { run } }));
 }
 
 const { run } = Astro.props as { run: Recording };
 
-const product = artifacts.find((artifact) => artifact.kind === 'runs')?.products[0] ?? 'Ktema';
+const product = (await getArtifacts()).find((artifact) => artifact.kind === 'runs')?.products[0] ?? 'Ktema';
 
 const crumbs = [
   { label: 'Demo Center', href: '/' },
@@ -43,7 +46,7 @@ const crumbs = [
   </figure>
 
   <div class="run__body">
-    {run.body.split('\n\n').map((paragraph) => <p>{paragraph}</p>)}
+    <Markdown source={run.body} />
   </div>
 
   <dl class="run__meta">

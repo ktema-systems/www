@@ -1,0 +1,145 @@
+---
+title: "One node, any scale"
+description: >-
+  The smallest host in the claim: a microcontroller with no operating system, 8 MB of flash and 64
+  kB of working memory, writing a record that survives a reset. The same build runs on every host
+  above it, and a deployment can be a field of these nodes.
+ktma:
+  line: "record-on-the-machine"
+  order: 5
+  kind: "device"
+  products: ["Ktema"]
+  platforms: ["bare-metal"]
+  claim: >-
+    A part with no operating system writes a record into its own flash and reads it back by its
+    address after a reset.
+  evidence: "A device check on the part's own flash."
+  source: "firmware/litewing"
+  poster: "/board.jpg"
+  posterAlt: >-
+    The ESP32-S3 module on its board, lit and connected, the part that holds the engine and its
+    records.
+---
+
+<figure class="run__figure device__figure">
+  <img src="/board.jpg" alt="The ESP32-S3 module on its board, lit and connected." />
+  <figcaption>
+    The part the run was made on: an ESP32-S3 with 8 MB of flash and 64 kB of working memory, running from the board's
+    own flash. Only the application and the partition table were written, so the shipped bootloader starts it.
+  </figcaption>
+</figure>
+
+<section class="bench__fit">
+  <h2>What the board reported</h2>
+  <table>
+    <thead>
+      <tr><th></th><th>Over the RAM medium</th><th>Over the flash region</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Heap peak</td>
+        <td>2,384 B</td>
+        <td>1,648 B</td>
+      </tr>
+      <tr>
+        <td>Arena</td>
+        <td>65,552 B</td>
+        <td>65,552 B</td>
+      </tr>
+      <tr>
+        <td>Medium</td>
+        <td>The engine's own map in RAM</td>
+        <td>A 2 MiB partition at 0x130000</td>
+      </tr>
+      <tr>
+        <td>Records</td>
+        <td>Two written and walked back in one boot</td>
+        <td>Three from three earlier boots, each reached by its coordinate after a reset</td>
+      </tr>
+      <tr>
+        <td>Application</td>
+        <td>356,576 B in a 1 MiB slot</td>
+        <td>447,968 B</td>
+      </tr>
+      <tr>
+        <td>Bootloader</td>
+        <td>Untouched</td>
+        <td>Untouched</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The flash run peaks lower than the RAM run because the region channel holds no map in memory. That is the same
+    trade the host measurements show from the other side: the path that keeps nothing per record is the path that
+    answers by reading the log.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>What the board printed</h2>
+  <p>
+    The table above is the board's own console output, with each coordinate written in the engine's ASCII form. The
+    first run kept its records in the engine's RAM medium; the second kept them in the flash partition and read them
+    back after each reset.
+  </p>
+  <figure class="run__figure device__figure">
+    <img
+      src="/proofs/board-console.png"
+      alt="Two console blocks. The first reports an arena of 65552 bytes, two facts and a heap peak of 2384 bytes. The second reports a 2 MiB partition at 0x130000, three records kept from earlier boots, and a heap peak of 1648 bytes."
+    />
+    <figcaption>
+      The two runs as recorded. A coordinate is sixty characters: twenty axes of three, in the engine's own alphabet.
+    </figcaption>
+  </figure>
+  <pre class="sr-only">arena 65552 bytes, minimum heap 65536
+write id=0011xj56j0ew0ar2ps1u60xz2jq2dr38q7eo17s4mc3a13tl1zp49s7td7au
+facts=2
+heap used=1168 peak=2384
+ktema: ok
+<br>
+partition ktema at 0x130000, 2097152 bytes
+fact 0002tt8lr6vp1ao0dv3bt0m74o678b8im06r3m131p0qx1bh57n76i09v39i uptime=72ms
+fact 0003lv56v7fn44a86t5jk7e73m045x1tc0yg16w2l06p486j5ro5q92eo2bb uptime=224ms
+fact 0005bs1i50c77tb0ir7k611k7yt7v387j5fb1mp13s8lw4s723y6w56y96tm uptime=85ms
+kept from earlier boots: 3
+wrote 00000l6dc1fy4em3pw8ah3j66bv2o85nz3zn0pk4we1ld2cw1br1im35h2zl
+heap used=0 peak=1648</pre>
+</section>
+
+<section class="bench__fit">
+  <h2>The surface the firmware links</h2>
+  <p>
+    A part like this has a flash region, a write, and an erase. It has no key-value medium, so the C surface takes
+    that shape rather than a layout: the region as a slice the engine can read, and two callbacks for the writes and
+    the erases that the driver owns.
+  </p>
+  <p>
+    The region channel sits above it and carries the log, the segment index, the forward-only write rule, and the
+    recovery of a torn tail. The firmware writes no format and keeps no index of its own, which is why the same
+    application runs unchanged here and on the host.
+  </p>
+</section>
+
+<section class="bench__fit">
+  <h2>What the board does not cover yet</h2>
+  <p>
+    Two cases are modelled against a slice and have not run on a part: a power cut in the middle of a write, and a
+    region that has filled and retired its oldest segment. Until both run on the board, the durability claim covers
+    the reopen that the run above performs, and does not cover those two.
+  </p>
+</section>
+
+<dl class="run__meta">
+  <div>
+    <dt>Firmware</dt>
+    <dd><code>firmware/litewing</code>, ESP-IDF</dd>
+  </div>
+  <div>
+    <dt>Entry point</dt>
+    <dd><code>ktema_open_over_storage</code>, ABI 6</dd>
+  </div>
+  <div>
+    <dt>Recorded</dt>
+    <dd>2026-10-24</dd>
+  </div>
+</dl>

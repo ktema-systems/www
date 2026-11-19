@@ -1,3 +1,24 @@
+---
+title: Measurements
+description: >-
+  Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a
+  point read, and the index each one has to hold.
+ktma:
+  line: "cost-stays-flat"
+  order: 4
+  kind: bench
+  products: [Ktema]
+  platforms: [host]
+  claim: >-
+    What an open, a point read and an index cost from a thousand records to a million, in one table per store.
+  evidence: A bench run over one workload on a host.
+  source: /bench
+  poster: /bench-thumb.png
+  posterAlt: >-
+    The memory chart: the append log's address map rises past the engine's fixed index and reaches 64 MB at a million
+    records, while the engine's line stays flat.
+---
+
 ## What the three are
 
 | | Ktema | Append log | SQLite |

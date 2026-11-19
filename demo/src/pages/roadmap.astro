@@ -4,14 +4,12 @@
 // It reads from the same data the grid does, so a line cannot name a demonstration the center does not carry, and a
 // demonstration cannot be left off the map. The platforms table below the map is the vocabulary the claims rest on:
 // what each environment can establish, and therefore what a demonstration on it may claim.
-import { roadmap, entriesById } from '../data/roadmap';
+import { placeLines } from '../data/roadmap';
+import { getArtifacts, getSurfaces } from '../data/source';
 import { PLATFORMS, platformOf, type Platform } from '../data/taxonomy';
 import Shell from '../layouts/Shell.astro';
 
-const lines = roadmap.map((line) => ({
-  ...line,
-  demos: line.demos.map((id) => entriesById.get(id)!),
-}));
+const lines = placeLines(await getArtifacts(), await getSurfaces());
 
 const coverage = (Object.keys(PLATFORMS) as Platform[]).map((name) => ({
   name,

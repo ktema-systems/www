@@ -1,47 +1,21 @@
 ---
 // A demonstration that is specified and not yet recorded.
 //
-// The page is a brief: purpose, procedure, preconditions, deliverable, and the check that produces the evidence. The
-// claim sits in the page header, where it sits on a recorded demonstration too, so the two kinds of page are read and
-// compared on the same terms.
-import type { PlannedSurface } from '../data/artifacts';
+// The page is the brief, and the brief is the document: purpose, procedure, preconditions, deliverable, and the check
+// that produces the evidence. The claim sits in the page header, where it sits on a recorded demonstration too, so the
+// two kinds of page are read and compared on the same terms.
+import type { Surface } from '../data/surfaces';
+import Markdown from '../components/Markdown.astro';
 
 interface Props {
-  surface: PlannedSurface;
+  surface: Surface;
 }
 
 const { surface } = Astro.props;
 ---
 
 <article class="brief">
-  <section class="brief__section">
-    <h2>Purpose</h2>
-    <p>{surface.goal}</p>
-  </section>
-
-  <section class="brief__section">
-    <h2>Procedure</h2>
-    <ol>
-      {surface.plan.map((step) => <li>{step}</li>)}
-    </ol>
-  </section>
-
-  <section class="brief__section">
-    <h2>Preconditions</h2>
-    <ul>
-      {surface.needs.map((need) => <li>{need}</li>)}
-    </ul>
-  </section>
-
-  <section class="brief__section">
-    <h2>Deliverable</h2>
-    <p>{surface.shows}</p>
-  </section>
-
-  <section class="brief__section">
-    <h2>Verification</h2>
-    <p>{surface.evidence}</p>
-  </section>
+  <Markdown source={surface.body} />
 </article>
 
 <style>
@@ -49,18 +23,12 @@ const { surface } = Astro.props;
     max-width: 74ch;
   }
 
-  .brief__section {
-    margin-top: 36px;
+  /* The document's own headings are the brief's sections, so the rules that separate them are applied to what the
+     Markdown renderer hands back. */
+  .brief :global(h2) {
+    margin: 36px 0 14px;
     padding-top: 24px;
     border-top: 1px solid var(--line);
-  }
-
-  .brief__section:first-child {
-    margin-top: 8px;
-  }
-
-  .brief__section h2 {
-    margin: 0 0 14px;
     font-family: var(--mono);
     font-size: 10.5px;
     font-weight: 500;
@@ -69,15 +37,21 @@ const { surface } = Astro.props;
     color: var(--fg-3);
   }
 
-  .brief__section p {
+  .brief :global(h2:first-child) {
+    margin-top: 8px;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .brief :global(p) {
     margin: 0;
     color: var(--fg-2);
     font-size: 16.5px;
     line-height: 1.65;
   }
 
-  .brief__section ol,
-  .brief__section ul {
+  .brief :global(ol),
+  .brief :global(ul) {
     margin: 0;
     padding-left: 22px;
     color: var(--fg-2);
@@ -85,7 +59,7 @@ const { surface } = Astro.props;
     line-height: 1.65;
   }
 
-  .brief__section li + li {
+  .brief :global(li + li) {
     margin-top: 8px;
   }
 </style>
