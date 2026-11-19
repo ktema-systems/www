@@ -44,7 +44,7 @@ stops the servers the run started. `BLOG_PORT` (4323) is held for the blog stack
 | `public/` | the logo, the favicon, and `robots.txt` |
 
 `home/`, `demo/` and a future `blog/` are siblings under one Astro install, and each is a
-site of its own: its own pages, its own `public/`, its own build. `astro.config.mjs` names
+site of its own: its own pages, its own `public/`, its own build. The root `astro.config.ts` names
 `home` as the source directory, because Astro's default would claim `src/`. What the sites
 agree on lives in `lib/`, which each site's stylesheet imports ahead of its own rules, so
 the ground is one definition and a site adds only the tokens it needs.
@@ -138,7 +138,8 @@ keep one source each and a re-run cannot leave a sentence quoting an older one.
 
 ## The published addresses
 
-Both sites declare `site` in their own `astro.config.mjs`: `https://ktema.systems` for
+Both sites declare `site` in their own config (`astro.config.ts` at the root,
+`demo/astro.config.mjs`): `https://ktema.systems` for
 the company site and `https://demo.ktema.systems` for the center. Every canonical link,
 `og:url`, and sitemap entry is built from it, so moving to another domain is one line in
 two configs rather than a search through the pages.
@@ -146,6 +147,12 @@ two configs rather than a search through the pages.
 Each build emits a sitemap index at `/sitemap-index.xml`, and each `robots.txt` names it.
 A page carried with `noindex` is filtered out of the sitemap, because offering a page to a
 crawler while telling that crawler to ignore it is the same mistake twice.
+
+Each build also writes the whole site as one text file, at `/llms.txt` and at
+`/llms-full.txt`, so a model can read before it fetches. `tools/llms.mjs` takes the text
+from the rendered pages: chrome outside `main` is left out, the decoration inside it is
+dropped, and headings and lists keep the shape they have on the page. Both names carry the
+same file, because the two are conventions rather than a split.
 
 The social card is `og.png` in each site's `public/`, 1200 by 630. It is captured from the
 built page at that viewport, so it carries the real typography rather than a second

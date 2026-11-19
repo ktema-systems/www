@@ -34,7 +34,7 @@ const {
   openProducts,
 } = Astro.props;
 
-// `site` is set in astro.config.mjs, so the origin is known at build time and every
+// `site` is set in astro.config.ts, so the origin is known at build time and every
 // absolute address below is derived from it rather than written twice.
 const origin = Astro.site!;
 // The not-found page is served at no address of its own, so it claims none. Astro

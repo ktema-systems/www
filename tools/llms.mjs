@@ -141,11 +141,18 @@ const titleOf = (html, suffix) =>
 /**
  * @param {object} options
  * @param {string} options.title  The heading the file opens with.
- * @param {string} [options.file] The name written at the site root.
+ * @param {string[]} [options.files] The names written at the site root.
+ * @param {string[]} [options.references] Lines the file closes with, for addresses no page carries.
  * @param {string[]} [options.exclude] Path prefixes the corpus leaves out.
  * @param {string} [options.stripSuffix] A title suffix every page carries.
  */
-export function llmsFullText({ title, file = 'llms-full.txt', exclude = [], stripSuffix = '' }) {
+export function llmsFullText({
+  title,
+  files = ['llms.txt', 'llms-full.txt'],
+  references = [],
+  exclude = [],
+  stripSuffix = '',
+}) {
   let origin = '';
 
   return {
@@ -180,7 +187,7 @@ export function llmsFullText({ title, file = 'llms-full.txt', exclude = [], stri
           const heading = titleOf(html, stripSuffix);
           let body = tidy(textOf(main)).replace(
             /^(#{1,6}) /gm,
-            (mark, hashes) => `${'#'.repeat(Math.min(hashes.length + 2, 6))} `,
+            (_, hashes) => `${'#'.repeat(Math.min(hashes.length + 2, 6))} `,
           );
           const [first] = body.split('\n');
           if (first?.startsWith('#') && first.replace(/^#+\s*/, '') === heading) {
@@ -197,11 +204,16 @@ export function llmsFullText({ title, file = 'llms-full.txt', exclude = [], stri
           '> Every page this site publishes, in one file, as text. Generated at build time from the rendered pages.',
           '',
           ...blocks,
+          ...(references.length > 0 ? ['## Links', '', ...references, ''] : []),
         ].join('\n');
         const written = `${text.trimEnd()}\n`;
 
-        await writeFile(join(root, file), written);
-        logger.info(`${file}: ${blocks.length} pages, ${Buffer.byteLength(written)} bytes`);
+        // The two names are conventions rather than a split: one file carries everything, and
+        // a reader that asks for either name gets the corpus.
+        for (const name of files) {
+          await writeFile(join(root, name), written);
+        }
+        logger.info(`${files.join(', ')}: ${blocks.length} pages, ${Buffer.byteLength(written)} bytes`);
       },
     },
   };
