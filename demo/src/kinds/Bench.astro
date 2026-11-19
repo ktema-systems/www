@@ -170,7 +170,7 @@ const values: Record<string, string> = {
   <h2>What a read costs the medium</h2>
   <Chart
     title="Reads a question costs the medium"
-    caption="The same record, read at 64 records and at 512. Neither count moves, which is the contract's claim: the point read does not follow the volume, and the listing reads no record. The listing's zero counts byte reads; the directory walk is not a call this counter sees."
+    caption="The same record, read at 64 records and at 512. Neither count moves, which is the contract's claim: a point read asks the medium for the same four regions at any volume, and the listing reads no record. The bytes those regions cover follow the volume, which is the chart above."
     unit="reads"
     kind="bar"
     decimals={0}
@@ -196,9 +196,10 @@ const values: Record<string, string> = {
     ]}
   />
   <p>
-    The engine counts the reads it asks the medium for, which is the unit its own read contract uses: a point read does
-    not grow with the volume, and a prefix read does not read a record. The same record is read at
-    {reads.rows[0].records} and at {reads.rows[1].records} records.
+    The engine counts the reads it asks the medium for, which is the unit its own read contract uses. The count stays
+    at one framing read and three fact reads at any volume, and a prefix read does not read a record. The bytes behind
+    those reads do grow, which is the line in the chart above: the count is fixed and what each read costs is not. The
+    same record is read at {reads.rows[0].records} and at {reads.rows[1].records} records.
   </p>
   <table>
     <thead>
@@ -218,7 +219,8 @@ const values: Record<string, string> = {
   <p>
     An eightfold volume changes neither count. The listing issues no byte read at all, which is the contract's "does not
     read a record"; the directory walk itself is not a call this counter sees, so the zero is a statement about records
-    and not a claim that a listing is free.
+    and not a claim that a listing is free. Nor is either count a statement about bytes: the same four reads cover 5.7 kB
+    at a thousand records and 646 kB at a million.
   </p>
 </section>
 
