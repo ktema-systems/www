@@ -11,7 +11,8 @@ export default defineConfig({
   srcDir: './home',
   integrations: [
     // A page that is reachable but deliberately unlisted carries noindex, so it is kept
-    // out of the sitemap rather than offered to a crawler twice.
-    sitemap({ filter: (page) => !page.includes('/one-space') }),
+    // out of the sitemap rather than offered to a crawler twice. `llms.txt` is an index for
+    // models rather than a page, so it is left out of the sitemap too.
+    sitemap({ filter: (page) => !page.includes('/one-space') && !page.endsWith('.txt') }),
   ],
 });

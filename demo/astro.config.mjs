@@ -7,7 +7,10 @@ export default defineConfig({
   // The center is published at its own address, and it is what its canonical links and sitemap are built from.
   site: 'https://demo.ktema.systems',
   outDir: '../demo-dist',
-  integrations: [sitemap()],
+  integrations: [
+    // `llms.txt` is an index for models rather than a page, so it stays out of the sitemap.
+    sitemap({ filter: (page) => !page.endsWith('.txt') }),
+  ],
   // The toolbar is a development overlay, so it sits over the bottom of every page and over the embedded application in
   // particular. What is being looked at is the page, so it is off.
   devToolbar: { enabled: false },

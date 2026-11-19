@@ -1,0 +1,5 @@
+# llms.txt carries the paper titles as published, so it holds a non-ASCII dash and
+# apostrophe. The charset is stated here because a static host derives the type from the
+# extension and leaves the encoding to the client.
+/llms.txt
+  Content-Type: text/plain; charset=utf-8
