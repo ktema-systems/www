@@ -9,6 +9,7 @@ on:
     paths:
       - "demo/**"
       - "lib/**"
+      - "tools/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"
@@ -17,6 +18,7 @@ on:
     paths:
       - "demo/**"
       - "lib/**"
+      - "tools/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"
@@ -57,8 +59,11 @@ jobs:
       - name: Build the center
         run: npm run build:demo
 
-      - name: Assert the index
-        run: test -s demo-dist/llms.txt || { echo "demo-dist/llms.txt is missing or empty"; exit 1; }
+      - name: Assert the llms files
+        run: |
+          for file in demo-dist/llms.txt demo-dist/llms-full.txt; do
+            test -s "$file" || { echo "$file is missing or empty"; exit 1; }
+          done
 
   deploy:
     needs: check
@@ -85,9 +90,12 @@ jobs:
       - name: Build the center
         run: npm run build:demo
 
-      # The job that deploys builds its own tree, so the index is asserted here as well.
-      - name: Assert the index
-        run: test -s demo-dist/llms.txt || { echo "demo-dist/llms.txt is missing or empty"; exit 1; }
+      # The job that deploys builds its own tree, so the files are asserted here as well.
+      - name: Assert the llms files
+        run: |
+          for file in demo-dist/llms.txt demo-dist/llms-full.txt; do
+            test -s "$file" || { echo "$file is missing or empty"; exit 1; }
+          done
 
       # Pinned to the major: an unannounced breaking change in the Wrangler CLI would otherwise take the deploy down with
       # no change on this side.

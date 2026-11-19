@@ -46,6 +46,8 @@ export const GET: APIRoute = ({ site: origin }) => {
     '',
     site.description,
     '',
+    `The whole site is also available as one file: [llms-full.txt](${url('/llms-full.txt')}).`,
+    '',
     '## Products',
     '',
     ...productMenu.map((item) => `- [${item.label}](${url(item.href)}): ${productLines[item.label]}`),

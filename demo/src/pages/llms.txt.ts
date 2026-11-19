@@ -36,6 +36,8 @@ export const GET: APIRoute = ({ site }) => {
     '> The surfaces Ktema Systems builds, running: deployed applications, runs of the engine recorded in a terminal, and hardware on the bench.',
     '',
     'Every surface has a page that states what it is and what it does not claim, and the page opens the artifact itself. A surface without an address is a bay that is still being built.',
+    '',
+    `The whole center is also available as one file: [llms-full.txt](${url('/llms-full.txt')}).`,
     ...section('Surfaces', surfaces),
     ...section('Recorded runs', runs),
     ...section('Applications', applications),
