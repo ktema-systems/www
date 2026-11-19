@@ -1,4 +1,4 @@
-// An Astro integration that writes llms-full.txt: every page the build produced, as text.
+// An Astro integration that writes llms.txt: every page the build produced, as text.
 //
 // The sites carry their prose in .astro markup rather than a content collection, so the
 // corpus has to come from the rendered pages. Chrome is what sits outside <main>. Inside it
@@ -141,14 +141,14 @@ const titleOf = (html, suffix) =>
 /**
  * @param {object} options
  * @param {string} options.title  The heading the file opens with.
- * @param {string[]} [options.files] The names written at the site root.
+ * @param {string} [options.file] The name written at the site root.
  * @param {string[]} [options.references] Lines the file closes with, for addresses no page carries.
  * @param {string[]} [options.exclude] Path prefixes the corpus leaves out.
  * @param {string} [options.stripSuffix] A title suffix every page carries.
  */
-export function llmsFullText({
+export function llmsText({
   title,
-  files = ['llms.txt', 'llms-full.txt'],
+  file = 'llms.txt',
   references = [],
   exclude = [],
   stripSuffix = '',
@@ -156,7 +156,7 @@ export function llmsFullText({
   let origin = '';
 
   return {
-    name: 'llms-full-text',
+    name: 'llms-text',
     hooks: {
       'astro:config:done': ({ config }) => {
         origin = config.site ? new URL(config.site).href.replace(/\/$/, '') : '';
@@ -208,12 +208,9 @@ export function llmsFullText({
         ].join('\n');
         const written = `${text.trimEnd()}\n`;
 
-        // The two names are conventions rather than a split: one file carries everything, and
-        // a reader that asks for either name gets the corpus.
-        for (const name of files) {
-          await writeFile(join(root, name), written);
-        }
-        logger.info(`${files.join(', ')}: ${blocks.length} pages, ${Buffer.byteLength(written)} bytes`);
+        // One file, under the name the convention gives it.
+        await writeFile(join(root, file), written);
+        logger.info(`${file}: ${blocks.length} pages, ${Buffer.byteLength(written)} bytes`);
       },
     },
   };

@@ -62,11 +62,8 @@ jobs:
       - name: Build the site
         run: npm run build
 
-      - name: Assert the llms files
-        run: |
-          for file in dist/llms.txt dist/llms-full.txt; do
-            test -s "$file" || { echo "$file is missing or empty"; exit 1; }
-          done
+      - name: Assert llms.txt
+        run: test -s dist/llms.txt || { echo "dist/llms.txt is missing or empty"; exit 1; }
 
   deploy:
     needs: check
@@ -93,12 +90,9 @@ jobs:
       - name: Build the site
         run: npm run build
 
-      # The job that deploys builds its own tree, so the files are asserted here as well.
-      - name: Assert the llms files
-        run: |
-          for file in dist/llms.txt dist/llms-full.txt; do
-            test -s "$file" || { echo "$file is missing or empty"; exit 1; }
-          done
+      # The job that deploys builds its own tree, so the file is asserted here as well.
+      - name: Assert llms.txt
+        run: test -s dist/llms.txt || { echo "dist/llms.txt is missing or empty"; exit 1; }
 
       # Pinned to the major: an unannounced breaking change in the Wrangler CLI
       # would otherwise take the deploy down with no change on this side.

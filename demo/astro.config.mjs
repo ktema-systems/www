@@ -2,7 +2,7 @@
 // directory: the pages under ./src, the files under ./public, and the artifact written beside it.
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { llmsFullText } from '../tools/llms.mjs';
+import { llmsText } from '../tools/llms.mjs';
 
 // The cockpit is deployed on its own, so the corpus names its address rather than importing
 // it. `PUBLIC_DELTA_URL` is what a build points at when the application moves.
@@ -15,8 +15,8 @@ export default defineConfig({
   integrations: [
     // The corpus is text rather than a page, so it stays out of the sitemap.
     sitemap({ filter: (page) => !page.endsWith('.txt') }),
-    // Every page as one file of text, at /llms.txt and at the name some readers ask for.
-    llmsFullText({
+    // Every page as one file of text, at /llms.txt.
+    llmsText({
       title: 'Ktema Systems Demo Center',
       stripSuffix: ' | Ktema Systems Demo Center',
       references: [

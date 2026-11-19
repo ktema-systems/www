@@ -148,11 +148,10 @@ Each build emits a sitemap index at `/sitemap-index.xml`, and each `robots.txt` 
 A page carried with `noindex` is filtered out of the sitemap, because offering a page to a
 crawler while telling that crawler to ignore it is the same mistake twice.
 
-Each build also writes the whole site as one text file, at `/llms.txt` and at
-`/llms-full.txt`, so a model can read before it fetches. `tools/llms.mjs` takes the text
-from the rendered pages: chrome outside `main` is left out, the decoration inside it is
-dropped, and headings and lists keep the shape they have on the page. Both names carry the
-same file, because the two are conventions rather than a split.
+Each build also writes the whole site as one text file, at `/llms.txt`, so a model can read
+before it fetches. `tools/llms.mjs` takes the text from the rendered pages: chrome outside
+`main` is left out, the decoration inside it is dropped, and headings and lists keep the
+shape they have on the page.
 
 The social card is `og.png` in each site's `public/`, 1200 by 630. It is captured from the
 built page at that viewport, so it carries the real typography rather than a second
