@@ -1,10 +1,12 @@
-// An Astro integration that writes llms.txt: every page the build produced, as text.
+// An Astro integration that publishes each page as markdown and writes the llms.txt that
+// lists them, following the llmstxt.org proposal: the index stays short, and the detail
+// lives behind the links.
 //
 // The sites carry their prose in .astro markup rather than a content collection, so the
-// corpus has to come from the rendered pages. Chrome is what sits outside <main>. Inside it
-// the decorative layers are dropped (scripts, inline SVG, canvases, the controls of an
-// embedded player) along with anything marked aria-hidden, and headings and lists are kept
-// so the text keeps the shape it has on the page.
+// text comes from the rendered pages. Chrome is what sits outside <main>. Inside it the
+// decorative layers are dropped (scripts, inline SVG, canvases, the controls of an embedded
+// player) along with anything marked aria-hidden, and headings and lists are kept so the
+// text keeps the shape it has on the page.
 //
 // The parser is a tag walk rather than a DOM: the input is our own generated output, and a
 // dependency for this would be larger than the code that reads it.
@@ -138,16 +140,36 @@ const titleOf = (html, suffix) =>
     .replace(suffix, '')
     .trim();
 
+const descriptionOf = (html) =>
+  decode(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']*)["']/i.exec(html)?.[1] ?? '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/** The page body as markdown, with its own title removed and its headings one level down. */
+function bodyOf(html, heading) {
+  const main = /<main[^>]*>([\s\S]*?)<\/main>/i.exec(html)?.[1] ?? /<body[^>]*>([\s\S]*?)<\/body>/i.exec(html)?.[1] ?? '';
+  let body = tidy(textOf(main));
+
+  const [first] = body.split('\n');
+  if (first?.startsWith('# ') && first.slice(2).trim() === heading) {
+    body = body.slice(first.length).replace(/^\n+/, '');
+  }
+
+  return body.replace(/^(#{1,6}) /gm, (_, hashes) => `${'#'.repeat(Math.min(hashes.length + 1, 6))} `);
+}
+
 /**
  * @param {object} options
- * @param {string} options.title  The heading the file opens with.
- * @param {string} [options.file] The name written at the site root.
- * @param {string[]} [options.references] Lines the file closes with, for addresses no page carries.
- * @param {string[]} [options.exclude] Path prefixes the corpus leaves out.
+ * @param {string} options.title  The name the index opens with.
+ * @param {string} options.summary  The blockquote under it, one line about the site.
+ * @param {string} [options.file] The index written at the site root.
+ * @param {string[]} [options.references] Lines the index closes with, for addresses no page carries.
+ * @param {string[]} [options.exclude] Path prefixes with no markdown version.
  * @param {string} [options.stripSuffix] A title suffix every page carries.
  */
 export function llmsText({
   title,
+  summary,
   file = 'llms.txt',
   references = [],
   exclude = [],
@@ -165,7 +187,7 @@ export function llmsText({
       'astro:build:done': async ({ dir, pages, logger }) => {
         const root = fileURLToPath(dir);
         // Astro reports each page's pathname without a leading slash, so the path and the
-        // file name are both derived from the stripped form.
+        // file names are all derived from the stripped form.
         const strip = (value) => value.replace(/^\//, '');
         const excluded = exclude.map(strip);
         const ordered = [...pages]
@@ -179,38 +201,41 @@ export function llmsText({
             return a.localeCompare(b);
           });
 
-        const blocks = [];
+        const entries = [];
         for (const path of ordered) {
-          const relative = path.endsWith('.html') ? path : `${path.replace(/\/?$/, '/')}index.html`;
+          const directory = path === '' || path.endsWith('/') ? path : `${path}/`;
+          const relative = path.endsWith('.html') ? path : `${directory}index.html`;
           const html = await readFile(join(root, relative), 'utf8');
-          const main = /<main[^>]*>([\s\S]*?)<\/main>/i.exec(html)?.[1] ?? /<body[^>]*>([\s\S]*?)<\/body>/i.exec(html)?.[1] ?? '';
           const heading = titleOf(html, stripSuffix);
-          let body = tidy(textOf(main)).replace(
-            /^(#{1,6}) /gm,
-            (_, hashes) => `${'#'.repeat(Math.min(hashes.length + 2, 6))} `,
-          );
-          const [first] = body.split('\n');
-          if (first?.startsWith('#') && first.replace(/^#+\s*/, '') === heading) {
-            body = body.slice(first.length).replace(/^\n+/, '');
-          }
+          const body = bodyOf(html, heading);
           if (!body) continue;
 
-          blocks.push([`## ${heading}`, `${origin}/${path}`, '', body, ''].join('\n'));
+          // A route that ends in a file name keeps its own name; a directory appends index.md,
+          // which is the address the proposal gives for a page without one.
+          const markdown = relative.replace(/index\.html$/, 'index.md');
+          await writeFile(join(root, markdown), `# ${heading}\n\n${origin}/${path}\n\n${body}\n`);
+
+          entries.push({ heading, href: `${origin}/${markdown}`, description: descriptionOf(html) });
         }
 
         const text = [
           `# ${title}`,
           '',
-          '> Every page this site publishes, in one file, as text. Generated at build time from the rendered pages.',
+          `> ${summary}`,
           '',
-          ...blocks,
-          ...(references.length > 0 ? ['## Links', '', ...references, ''] : []),
+          'Each page is also published as markdown. The link opens its text.',
+          '',
+          '## Pages',
+          '',
+          ...entries.map(
+            (entry) => `- [${entry.heading}](${entry.href})${entry.description ? `: ${entry.description}` : ''}`,
+          ),
+          ...(references.length > 0 ? ['', '## Links', '', ...references] : []),
+          '',
         ].join('\n');
-        const written = `${text.trimEnd()}\n`;
 
-        // One file, under the name the convention gives it.
-        await writeFile(join(root, file), written);
-        logger.info(`${file}: ${blocks.length} pages, ${Buffer.byteLength(written)} bytes`);
+        await writeFile(join(root, file), text);
+        logger.info(`${file}: ${entries.length} pages, plus a markdown file for each`);
       },
     },
   };

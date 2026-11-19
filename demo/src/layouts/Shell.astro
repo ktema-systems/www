@@ -25,6 +25,9 @@ const pageDescription = description ?? 'The surfaces Ktema Systems builds, in on
 const origin = Astro.site!;
 const canonical = new URL(Astro.url.pathname, origin);
 const ogImage = new URL('/og.png', origin);
+// Every page also ships as markdown at its own address, so an agent can take the text
+// without the page around it.
+const markdown = new URL(`${Astro.url.pathname}index.md`, origin);
 
 // The company the center demonstrates for. The bar links to it and the structured data
 // names it, so it is written once.
@@ -60,6 +63,8 @@ const structuredData = {
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="text/markdown" href={markdown} />
+    <link rel="describedby" href={new URL('/llms.txt', origin)} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#131210" />

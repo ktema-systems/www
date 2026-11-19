@@ -1,5 +1,7 @@
-# llms.txt carries the site's text as published, so it holds non-ASCII dashes and
-# apostrophes. The charset is stated here because a static host derives the type from the
-# extension and leaves the encoding to the client.
+# The index and the markdown pages carry the site's text as published, so they hold
+# non-ASCII dashes and apostrophes. The charset is stated here because a static host
+# derives the type from the extension and leaves the encoding to the client.
 /llms.txt
   Content-Type: text/plain; charset=utf-8
+/*.md
+  Content-Type: text/markdown; charset=utf-8

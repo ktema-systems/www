@@ -15,9 +15,11 @@ export default defineConfig({
   integrations: [
     // The corpus is text rather than a page, so it stays out of the sitemap.
     sitemap({ filter: (page) => !page.endsWith('.txt') }),
-    // Every page as one file of text, at /llms.txt.
+    // The index at /llms.txt, and a markdown version of every page beside it.
     llmsText({
       title: 'Ktema Systems Demo Center',
+      summary:
+        'The surfaces Ktema Systems builds, running: deployed applications, runs of the engine recorded in a terminal, and hardware on the bench.',
       stripSuffix: ' | Ktema Systems Demo Center',
       references: [
         '- [Ktema Systems](https://ktema.systems/): the company this center demonstrates, whose corpus is at https://ktema.systems/llms.txt',

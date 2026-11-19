@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { llmsText } from './tools/llms.mjs';
-import { references } from './home/corpus';
+import { references, summary } from './home/corpus';
 
 // The company site and the demonstration center are siblings under one root, and both
 // draw their palette and their fonts from lib/. That is why this source directory is
@@ -16,7 +16,7 @@ export default defineConfig({
     // out of the sitemap rather than offered to a crawler twice. The corpus is text rather
     // than a page, so it is left out of the sitemap too.
     sitemap({ filter: (page) => !page.includes('/one-space') && !page.endsWith('.txt') }),
-    // Every page as one file of text, at /llms.txt.
-    llmsText({ title: 'Ktema Systems', exclude: ['/one-space'], references }),
+    // The index at /llms.txt, and a markdown version of every page beside it.
+    llmsText({ title: 'Ktema Systems', summary, exclude: ['/one-space'], references }),
   ],
 });

@@ -42,6 +42,9 @@ const origin = Astro.site!;
 const isNotFound = /^\/404\/?$/.test(Astro.url.pathname);
 const canonical = isNotFound ? undefined : new URL(Astro.url.pathname, origin);
 const ogImage = new URL('/og.png', origin);
+// Every page that is listed in the index also ships as markdown at its own address, so an
+// agent can take the text without the page around it.
+const markdown = noindex || isNotFound ? undefined : new URL(`${Astro.url.pathname}index.md`, origin);
 
 // The company is one entity across the site, so it is described once and every page
 // points at that description. `WebSite` is what a search engine reads for the name it
@@ -79,6 +82,8 @@ const structuredData = {
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
+    {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
+    {markdown && <link rel="describedby" href={new URL('/llms.txt', origin)} />}
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
