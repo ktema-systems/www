@@ -150,7 +150,7 @@ crawler while telling that crawler to ignore it is the same mistake twice.
 
 Each build also publishes the site as text: a markdown version of every page at
 `<path>/index.md`, and an index at `/llms.txt` that links them, in the shape the
-llmstxt.org proposal describes. `tools/llms.mjs` takes the text from the rendered pages:
+llmstxt.org proposal describes. `packages/astro-llms` takes the text from the rendered pages:
 chrome outside `main` is left out, the decoration inside it is dropped, and headings and
 lists keep the shape they have on the page. Each page's head names its markdown version
 with `rel="alternate"` and the index with `rel="describedby"`.

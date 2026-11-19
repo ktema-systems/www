@@ -1,7 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
-import { llmsText } from './tools/llms.mjs';
+import { llmsTxt } from './packages/astro-llms/index.mjs';
 import { references, summary } from './home/corpus';
 
 // The company site and the demonstration center are siblings under one root, and both
@@ -17,6 +17,6 @@ export default defineConfig({
     // than a page, so it is left out of the sitemap too.
     sitemap({ filter: (page) => !page.includes('/one-space') && !page.endsWith('.txt') }),
     // The index at /llms.txt, and a markdown version of every page beside it.
-    llmsText({ title: 'Ktema Systems', summary, exclude: ['/one-space'], references }),
+    llmsTxt({ title: 'Ktema Systems', summary, exclude: ['/one-space'], links: references }),
   ],
 });

@@ -10,6 +10,7 @@ on:
       - "demo/**"
       - "lib/**"
       - "tools/**"
+      - "packages/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"
@@ -19,6 +20,7 @@ on:
       - "demo/**"
       - "lib/**"
       - "tools/**"
+      - "packages/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"
@@ -52,6 +54,9 @@ jobs:
       - name: Install dependencies
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
+
+      - name: Test the llms module
+        run: node --test packages/astro-llms
 
       - name: Check types
         run: npx astro check --root demo

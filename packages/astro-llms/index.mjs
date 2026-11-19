@@ -1,17 +1,20 @@
-// An Astro integration that publishes each page as markdown and writes the llms.txt that
-// lists them, following the llmstxt.org proposal: the index stays short, and the detail
-// lives behind the links.
+// An Astro integration that publishes each page of a site as markdown and writes an
+// llms.txt index that links them, following the proposal at https://llmstxt.org.
 //
-// The sites carry their prose in .astro markup rather than a content collection, so the
-// text comes from the rendered pages. Chrome is what sits outside <main>. Inside it the
-// decorative layers are dropped (scripts, inline SVG, canvases, the controls of an embedded
-// player) along with anything marked aria-hidden, and headings and lists are kept so the
-// text keeps the shape it has on the page.
+// Nothing here knows about the site it runs in: the name, the summary, the pages to leave
+// out, and the closing links all arrive as options. That is what lets the module be lifted
+// into a package, or into another generator's plugin, without carrying a site with it.
 //
-// The parser is a tag walk rather than a DOM: the input is our own generated output, and a
+// The prose of a site built from .astro markup has no markdown source, so the text is taken
+// from the rendered pages. Chrome is what sits outside <main>. Inside it the decorative
+// layers are dropped (scripts, inline SVG, canvases, the controls of an embedded player)
+// along with anything marked aria-hidden, and headings and lists are kept so the text keeps
+// the shape it has on the page.
+//
+// The parser is a tag walk rather than a DOM: the input is generated output, and a
 // dependency for this would be larger than the code that reads it.
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { access, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -37,18 +40,17 @@ const ENTITIES = {
   times: '\u00d7', minus: '\u2212', deg: '\u00b0', copy: '\u00a9', reg: '\u00ae', trade: '\u2122',
 };
 
-function decode(text) {
-  return text.replace(/&(#x[0-9a-fA-F]+|#[0-9]+|[a-zA-Z][a-zA-Z0-9]*);/g, (whole, body) => {
+const decode = (text) =>
+  text.replace(/&(#x[0-9a-fA-F]+|#[0-9]+|[a-zA-Z][a-zA-Z0-9]*);/g, (whole, body) => {
     if (body[0] === '#') {
       const code = body[1] === 'x' ? parseInt(body.slice(2), 16) : parseInt(body.slice(1), 10);
       return Number.isFinite(code) ? String.fromCodePoint(code) : whole;
     }
     return ENTITIES[body] ?? whole;
   });
-}
 
 /** The text of an HTML fragment, with headings and lists kept and decoration dropped. */
-function textOf(html) {
+export function textOf(html) {
   const parts = [];
   const stack = [];
   let skipping = 0;
@@ -118,10 +120,14 @@ function textOf(html) {
   return parts.join('');
 }
 
-function tidy(text) {
+/** Whitespace, seams and stray list markers brought to one readable form. */
+export function tidy(text) {
   return text
     .replace(/\r/g, '')
-    .replace(/(?<![([\u2018\u201c])([^\s\u0000])\u0000+(?![.,;:!?\u2019\u201d)\]])/g, '$1 ')
+    // Seams are folded first, so the rule below matches one marker and cannot backtrack past
+    // it to a second one.
+    .replace(/\u0000+/g, '\u0000')
+    .replace(/(?<![([\u2018\u201c])([^\s\u0000])\u0000(?![.,;:!?'\u2019\u201d)\]])/g, '$1 ')
     .replace(/\u0000/g, '')
     .replace(/[ \t\u00a0]+/g, ' ')
     .split('\n')
@@ -158,27 +164,51 @@ function bodyOf(html, heading) {
   return body.replace(/^(#{1,6}) /gm, (_, hashes) => `${'#'.repeat(Math.min(hashes.length + 1, 6))} `);
 }
 
+// A route that ends in a directory takes `index.md`, which is the address the proposal gives
+// a page without a file name; a route with a file name keeps its stem.
+const markdownName = (relative) =>
+  /(^|\/)index\.html$/.test(relative)
+    ? relative.replace(/index\.html$/, 'index.md')
+    : relative.replace(/\.html$/, '.md');
+
+const exists = async (path) => {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 /**
+ * Publish every page as markdown and write the index that links them.
+ *
  * @param {object} options
  * @param {string} options.title  The name the index opens with.
  * @param {string} options.summary  The blockquote under it, one line about the site.
- * @param {string} [options.file] The index written at the site root.
- * @param {string[]} [options.references] Lines the index closes with, for addresses no page carries.
- * @param {string[]} [options.exclude] Path prefixes with no markdown version.
- * @param {string} [options.stripSuffix] A title suffix every page carries.
+ * @param {string} [options.indexFile]  The index written at the site root.
+ * @param {string[]} [options.links]  Lines the index closes with, for addresses no page carries.
+ * @param {string[]} [options.exclude]  Path prefixes with no markdown version and no index entry.
+ * @param {string} [options.titleSuffix]  A suffix every page title carries, removed for display.
+ * @param {boolean} [options.markdown]  Write a markdown file per page.
  */
-export function llmsText({
+export function llmsTxt({
   title,
   summary,
-  file = 'llms.txt',
-  references = [],
+  indexFile = 'llms.txt',
+  links = [],
   exclude = [],
-  stripSuffix = '',
+  titleSuffix = '',
+  markdown = true,
 }) {
+  if (!title || !summary) {
+    throw new Error('llmsTxt: `title` and `summary` are required');
+  }
+
   let origin = '';
 
   return {
-    name: 'llms-text',
+    name: 'llms-txt',
     hooks: {
       'astro:config:done': ({ config }) => {
         origin = config.site ? new URL(config.site).href.replace(/\/$/, '') : '';
@@ -186,8 +216,8 @@ export function llmsText({
 
       'astro:build:done': async ({ dir, pages, logger }) => {
         const root = fileURLToPath(dir);
-        // Astro reports each page's pathname without a leading slash, so the path and the
-        // file names are all derived from the stripped form.
+        // Astro reports each page's pathname without a leading slash, and the not-found page
+        // is a document rather than a page, so it is left out.
         const strip = (value) => value.replace(/^\//, '');
         const excluded = exclude.map(strip);
         const ordered = [...pages]
@@ -201,21 +231,29 @@ export function llmsText({
             return a.localeCompare(b);
           });
 
+        const href = (path) => (origin ? `${origin}/${path}` : `/${path}`);
+
         const entries = [];
         for (const path of ordered) {
           const directory = path === '' || path.endsWith('/') ? path : `${path}/`;
           const relative = path.endsWith('.html') ? path : `${directory}index.html`;
           const html = await readFile(join(root, relative), 'utf8');
-          const heading = titleOf(html, stripSuffix);
+          const heading = titleOf(html, titleSuffix);
           const body = bodyOf(html, heading);
           if (!body) continue;
 
-          // A route that ends in a file name keeps its own name; a directory appends index.md,
-          // which is the address the proposal gives for a page without one.
-          const markdown = relative.replace(/index\.html$/, 'index.md');
-          await writeFile(join(root, markdown), `# ${heading}\n\n${origin}/${path}\n\n${body}\n`);
+          let link = href(path);
+          if (markdown) {
+            const file = markdownName(relative);
+            if (await exists(join(root, file))) {
+              logger.warn(`${file} is already in the build, so it is left as it is`);
+            } else {
+              await writeFile(join(root, file), `# ${heading}\n\n${href(path)}\n\n${body}\n`);
+            }
+            link = href(file);
+          }
 
-          entries.push({ heading, href: `${origin}/${markdown}`, description: descriptionOf(html) });
+          entries.push({ heading, link, description: descriptionOf(html) });
         }
 
         const text = [
@@ -223,19 +261,17 @@ export function llmsText({
           '',
           `> ${summary}`,
           '',
-          'Each page is also published as markdown. The link opens its text.',
+          markdown ? 'Each page is also published as markdown. The link opens its text.' : 'Each link opens the page.',
           '',
           '## Pages',
           '',
-          ...entries.map(
-            (entry) => `- [${entry.heading}](${entry.href})${entry.description ? `: ${entry.description}` : ''}`,
-          ),
-          ...(references.length > 0 ? ['', '## Links', '', ...references] : []),
+          ...entries.map((entry) => `- [${entry.heading}](${entry.link})${entry.description ? `: ${entry.description}` : ''}`),
+          ...(links.length > 0 ? ['', '## Links', '', ...links] : []),
           '',
         ].join('\n');
 
-        await writeFile(join(root, file), text);
-        logger.info(`${file}: ${entries.length} pages, plus a markdown file for each`);
+        await writeFile(join(root, indexFile), text);
+        logger.info(`${indexFile}: ${entries.length} pages${markdown ? ', each with markdown' : ''}`);
       },
     },
   };

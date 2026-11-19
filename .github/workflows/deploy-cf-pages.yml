@@ -8,6 +8,7 @@ on:
       - "lib/**"
       - "public/**"
       - "tools/**"
+      - "packages/**"
       - "astro.config.ts"
       - "tsconfig.json"
       - "package.json"
@@ -20,6 +21,7 @@ on:
       - "lib/**"
       - "public/**"
       - "tools/**"
+      - "packages/**"
       - "astro.config.ts"
       - "tsconfig.json"
       - "package.json"
@@ -55,6 +57,9 @@ jobs:
       - name: Install dependencies
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
+
+      - name: Test the llms module
+        run: node --test packages/astro-llms
 
       - name: Check types
         run: npx astro check

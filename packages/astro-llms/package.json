@@ -1,0 +1,24 @@
+{
+  "name": "@ktema-systems/astro-llms",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Publish every page of an Astro site as markdown, with an llms.txt index that links them.",
+  "type": "module",
+  "exports": {
+    ".": "./index.mjs"
+  },
+  "files": [
+    "index.mjs",
+    "README.md"
+  ],
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "llms",
+    "llms.txt",
+    "markdown"
+  ],
+  "scripts": {
+    "test": "node --test"
+  }
+}
