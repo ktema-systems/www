@@ -31,9 +31,10 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+# The check runs on every event, including the push to main this repository works on, and the
+# deploy waits for it. A change that fails the check therefore never reaches the host.
 jobs:
   check:
-    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -53,10 +54,17 @@ jobs:
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
 
+      - name: Check types
+        run: npx astro check
+
       - name: Build the site
         run: npm run build
 
+      - name: Assert the index
+        run: test -s dist/llms.txt || { echo "dist/llms.txt is missing or empty"; exit 1; }
+
   deploy:
+    needs: check
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
@@ -79,6 +87,10 @@ jobs:
 
       - name: Build the site
         run: npm run build
+
+      # The job that deploys builds its own tree, so the index is asserted here as well.
+      - name: Assert the index
+        run: test -s dist/llms.txt || { echo "dist/llms.txt is missing or empty"; exit 1; }
 
       # Pinned to the major: an unannounced breaking change in the Wrangler CLI
       # would otherwise take the deploy down with no change on this side.
