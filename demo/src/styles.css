@@ -45,7 +45,7 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(2.5rem, 1rem + 4.6vw, 4.6rem);
+  font-size: clamp(1.9rem, 1.1rem + 2.4vw, 3rem);
 }
 
 /* The ground is the site's own: one warm near-black, and the accent as the only colour on it. Nothing is drawn behind the
@@ -134,6 +134,10 @@ h1 {
   color: var(--accent);
 }
 
+.bar__crumb[aria-current='page'] {
+  color: var(--fg);
+}
+
 /* A bar item is a label rather than a line of prose: it stays on one row and the title gives up its width first. */
 .bar__brand,
 .bar__sep,
@@ -210,6 +214,7 @@ h1 {
   max-width: 900px;
 }
 
+
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -232,7 +237,7 @@ h1 {
 }
 
 h1 {
-  max-width: 22ch;
+  max-width: 32ch;
 }
 
 .lede {
@@ -453,64 +458,39 @@ h1 {
 
 /* ── a surface that is not built ──────────────────────────────────────── */
 
-/* A planned tile is drawn, not linked: there is nothing behind it, and a card that looks like the others but does not
-   open is the one thing this grid must not do. */
-.tile--planned {
-  background: color-mix(in srgb, var(--panel) 22%, transparent);
-  border-style: dashed;
-  border-color: var(--line);
-  color: var(--fg-3);
-  opacity: 0.52;
+/* A planned surface is drawn as a tile like any other: the frame, the title and the summary keep
+   the weight a recorded run has, and the bay is what says nothing has been recorded yet. The bay
+   comes up under the pointer the way a still is already at full strength. */
+.tile--opens:hover .tile__screen--empty::before,
+.tile--opens:focus-visible .tile__screen--empty::before {
+  opacity: 0.62;
 }
 
-.tile--planned .tile__body {
-  flex: 0 0 auto;
-}
-
-.tile--planned .tile__body {
-  justify-content: flex-start;
-  gap: 10px;
-  padding: 20px 22px 22px;
-}
-
-.tile--planned .tile__title {
-  font-size: 1.05rem;
-  color: var(--fg-2);
-}
-
-.tile--planned .tile__summary {
-  color: var(--fg-3);
-  font-size: 16px;
-}
-
-.badge--planned {
-  align-self: flex-start;
-  border-style: dashed;
-}
-
-/* A bay with nothing in it yet takes whatever height the row has left over, so the reserved
-   room is the bay itself rather than a gap under the words. */
+/* A bay is a package nobody has opened yet, and what is printed on it is the mark's own
+   construction: the hexagon, the diamond and the connectors, drawn far larger than the bay so
+   the frame crops it the way a viewport crops the field on the home page. The crop centres a
+   corner of the diamond, where six connectors meet, so the crossing the mark is made of is what
+   the bay shows. It does not move: the lines are the identity, and motion would only say the bay
+   is waiting. */
 .tile__screen--empty {
   position: relative;
-  flex: 1 1 auto;
-  min-height: 132px;
-  aspect-ratio: auto;
+  flex: 0 0 auto;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
-  border-bottom: 1px dashed var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-/* The bay carries the mark's construction as a backdrop. The whole form is drawn rather
-   than a crop of it, so it reads as the brand at a glance, and it stays behind the words. */
 .tile__screen--empty::before {
   content: '';
   position: absolute;
   inset: 0;
   background-color: var(--accent);
-  opacity: 0.2;
-  mask-image: url('/logo.svg');
-  mask-position: center;
-  mask-size: contain;
+  opacity: 0.20;
+  mask-image: url('/mark-field.svg');
   mask-repeat: no-repeat;
+  mask-size: 150% auto;
+  mask-position: 50% 38%;
+  transition: opacity 260ms var(--ease);
 }
 
 .page__head {
@@ -1037,5 +1017,504 @@ h1 {
 
   .tile--opens:hover .tile__still {
     transform: none;
+  }
+}
+
+/* ── the roadmap ──────────────────────────────────────────────────────── */
+
+/* The platform tag answers a different question from the product tag: the product says whose the
+   surface is, the platform says where the claim is checked and therefore what it may claim. It is
+   set quieter than the product tag so the two rows do not read as one list. */
+.platform-tag {
+  padding: 2px 7px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* The claim under a page's title, where the page states what its platform establishes. */
+.artifact__claim {
+  max-width: 62ch;
+  margin: 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--line-2);
+  color: var(--fg-2);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+
+.artifact__claim {
+  margin: 16px 0 0;
+  font-size: 17px;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.section-head h2 {
+  font-size: clamp(1.35rem, 1.1rem + 0.7vw, 1.7rem);
+}
+
+.section-head__note {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--fg-3);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.section-head__note a {
+  color: var(--accent);
+}
+
+/* The section that carries the demonstrations not yet recorded stands off the grid above it by the
+   same step the roadmap page uses between its own blocks. */
+.further,
+.roadmap-section {
+  margin-top: clamp(64px, 8vw, 96px);
+}
+
+.coverage {
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.coverage__row {
+  display: grid;
+  grid-template-columns: minmax(120px, 170px) minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.coverage__label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.coverage__proves {
+  color: var(--fg-3);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+
+/* ── the map ──────────────────────────────────────────────────────────── */
+
+/* One line stands for one part of the work: the claim on the left, the demonstrations that hold it on
+   the right. The rule between lines is what makes the page a map rather than six sections. */
+.map {
+  margin: clamp(40px, 5vw, 56px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map__line {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+  gap: 16px 56px;
+  padding: 28px 0;
+  border-top: 1px solid var(--line);
+}
+
+.map__line:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.map__title {
+  margin: 0;
+  font-family: var(--text);
+  font-stretch: 115%;
+  font-weight: 600;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.map__states {
+  max-width: 42ch;
+  margin: 10px 0 0;
+  color: var(--fg-3);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.map__demos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+}
+
+.map__demo {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.map__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-2);
+}
+
+.map__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map__bay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--accent);
+  opacity: 0.3;
+  mask-image: url('/mark-field.svg');
+  mask-repeat: no-repeat;
+  mask-size: auto 86%;
+  mask-position: 50% 50%;
+  transition: opacity 260ms var(--ease);
+}
+
+.map__name {
+  font-size: 15.5px;
+  line-height: 1.4;
+}
+
+.map__demo:hover .map__name,
+.map__demo:focus-visible .map__name {
+  color: var(--accent);
+}
+
+.map__demo:hover .map__bay,
+.map__demo:focus-visible .map__bay {
+  opacity: 0.62;
+}
+
+.map__demo .tags {
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .map__line {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 24px 0;
+  }
+
+  .map__states {
+    max-width: 62ch;
+  }
+}
+
+@media (max-width: 560px) {
+  .map__demo {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .map__demo .tags {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .coverage__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+
+/* ── notes ─────────────────────────────────────────────────────────────── */
+
+/* The row view of the notes. The date is fixed width so the titles line up down the page, which is
+   the only reason a list beats a grid for reading in order. */
+.posts {
+  margin: 44px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.post {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 20px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.post__date {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+.post__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post__title {
+  margin: 0;
+  font-family: var(--text);
+  font-stretch: 115%;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.post__title a:hover,
+.post__title a:focus-visible {
+  color: var(--accent);
+}
+
+.post .tags {
+  justify-content: flex-start;
+}
+
+.post__summary {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--fg-2);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .post {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+/* ── one note ──────────────────────────────────────────────────────────── */
+
+.note__date {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  color: var(--fg-3);
+}
+
+.note {
+  max-width: 70ch;
+}
+
+.note p {
+  margin: 0 0 18px;
+  color: var(--fg-2);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.note p:last-child {
+  margin-bottom: 0;
+}
+
+.note h2 {
+  margin: 34px 0 12px;
+  font-size: 1.15rem;
+}
+
+.note ol,
+.note ul {
+  margin: 0 0 18px;
+  padding-left: 22px;
+  color: var(--fg-2);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.note a {
+  color: var(--accent);
+}
+
+.note__demo {
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  font-size: 15px;
+}
+
+.note__demo a {
+  color: var(--accent);
+}
+
+/* ── the view switch, and the row view ────────────────────────────────── */
+
+/* The switch is the reader's, not the page's: the same entries are drawn twice and one of them is
+   shown. It sits in the bar beside the request, where the reader already looks for controls, and it
+   costs the page no height. The markup carries the grid, so the page is complete before any script
+   runs. */
+.views__bar {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.views__bar button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--fg-3);
+  cursor: pointer;
+}
+
+.views__bar button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.views__bar button:hover,
+.views__bar button:focus-visible {
+  color: var(--fg);
+  border-color: var(--line-2);
+}
+
+.views__bar button[aria-pressed='true'] {
+  color: var(--fg);
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+[data-view='grid'] .rows {
+  display: none;
+}
+
+[data-view='list'] .bento {
+  display: none;
+}
+
+/* The list takes the grid's top margin, so a switch between the two views moves the pages below it not at all. */
+.rows {
+  margin: clamp(44px, 6vw, 72px) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.row {
+  border-bottom: 1px solid var(--line);
+}
+
+.row__link {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 18px;
+  padding: 16px 0;
+  align-items: start;
+}
+
+.row__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+}
+
+.row__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The same construction the tile's bay draws, at the same crop, so a row and a tile describe the
+   same entry the same way. It comes up under the pointer for the same reason. */
+.row__bay {
+  position: absolute;
+  inset: 0;
+  background-color: var(--accent);
+  opacity: 0.16;
+  mask-image: url('/mark-field.svg');
+  mask-repeat: no-repeat;
+  mask-size: 150% auto;
+  mask-position: 50% 38%;
+  transition: opacity 260ms var(--ease);
+}
+
+.row__link:hover .row__bay,
+.row__link:focus-visible .row__bay {
+  opacity: 0.62;
+}
+
+.row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.row__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.row__title {
+  font-family: var(--text);
+  font-stretch: 115%;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.row__summary {
+  max-width: 70ch;
+  color: var(--fg-2);
+  font-size: 15.5px;
+  line-height: 1.6;
+}
+
+.row .tags {
+  justify-content: flex-end;
+}
+
+.row__link:hover .row__title,
+.row__link:focus-visible .row__title {
+  color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .row__link {
+    grid-template-columns: 1fr;
+  }
+
+  .row__thumb {
+    aspect-ratio: 16 / 9;
   }
 }

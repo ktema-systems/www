@@ -155,6 +155,13 @@ chrome outside `main` is left out, the decoration inside it is dropped, and head
 lists keep the shape they have on the page. Each page's head names its markdown version
 with `rel="alternate"` and the index with `rel="describedby"`.
 
+Notes are Markdown documents under `demo/src/posts`, each with a YAML header.
+`packages/astro-notes` reads them: `title`, `description` and `date` stay at the top because every
+document build understands them, and everything this project adds sits under `ktma` so a name cannot
+collide with a key another renderer owns. The package takes a map of path to text, so it does not
+depend on Astro and another build can hand it the same documents. `npm run test:packages` runs its
+tests beside the other package's.
+
 The social card is `og.png` in each site's `public/`, 1200 by 630. It is captured from the
 built page at that viewport, so it carries the real typography rather than a second
 rendering of it: build, serve the output, and screenshot the first 1200 by 630 pixels.

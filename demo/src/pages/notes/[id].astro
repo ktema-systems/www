@@ -1,0 +1,50 @@
+---
+// One note, rendered from its Markdown body.
+import { notes } from '../../data/posts';
+import { PLATFORMS } from '../../data/taxonomy';
+import Shell from '../../layouts/Shell.astro';
+import Markdown from '../../components/Markdown.astro';
+
+export function getStaticPaths() {
+  // `/notes/list` is the row view, so a note may not take that name.
+  for (const note of notes) {
+    if (note.id === 'list') throw new Error('a note is named list, which the row view owns');
+  }
+  return notes.map((note) => ({ params: { id: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props as { note: (typeof notes)[number] };
+---
+
+<Shell
+  title={note.title}
+  description={note.summary}
+  crumbs={[{ label: 'Demo Center', href: '/' }, { label: note.title }]}
+>
+  <header class="page__head">
+    <h1 class="artifact__title">{note.title}</h1>
+    <span class="tags">
+      {note.platforms.map((name) => (
+        <span class="platform-tag">{PLATFORMS[name].label}</span>
+      ))}
+      {note.products.map((name) => (
+        <span class="product-tag">{name}</span>
+      ))}
+    </span>
+    <time class="note__date" datetime={note.date}>
+      {note.date}
+    </time>
+  </header>
+
+  <article class="note">
+    <Markdown source={note.body} />
+  </article>
+
+  {
+    note.demonstration && (
+      <p class="note__demo">
+        <a href={note.demonstration}>The demonstration</a>
+      </p>
+    )
+  }
+</Shell>

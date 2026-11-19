@@ -1,0 +1,24 @@
+<svg viewBox="24 46.8 352 306.4" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+  <!-- The mark's own construction, the hexagon, the diamond and the connectors, at a hairline
+       weight. It is the same geometry as /logo.svg and exists for one use: a bay draws it several
+       times its own size, and at that scale the logo's 6-unit stroke becomes a band. The home
+       page's field is this same drawing at the same weight. -->
+  <g transform="rotate(30 200 200)">
+    <polygon points="200,30 347.22,115 347.22,285 200,370 52.78,285 52.78,115"/>
+    <polygon points="200,130 270,200 200,270 130,200"/>
+    <line x1="200"    y1="30"  x2="200"    y2="130"/>
+    <line x1="200"    y1="370" x2="200"    y2="270"/>
+    <line x1="52.78"  y1="115" x2="130"    y2="200"/>
+    <line x1="347.22" y1="115" x2="270"    y2="200"/>
+    <line x1="52.78"  y1="285" x2="130"    y2="200"/>
+    <line x1="347.22" y1="285" x2="270"    y2="200"/>
+    <line x1="52.78"  y1="115" x2="200"    y2="130"/>
+    <line x1="347.22" y1="115" x2="200"    y2="130"/>
+    <line x1="52.78"  y1="285" x2="200"    y2="270"/>
+    <line x1="347.22" y1="285" x2="200"    y2="270"/>
+    <line x1="200"    y1="30"  x2="130"    y2="200"/>
+    <line x1="200"    y1="30"  x2="270"    y2="200"/>
+    <line x1="200"    y1="370" x2="130"    y2="200"/>
+    <line x1="200"    y1="370" x2="270"    y2="200"/>
+  </g>
+</svg>

@@ -1,0 +1,89 @@
+---
+// The map: the parts of the work, and the demonstration that establishes each one.
+//
+// It reads from the same data the grid does, so a line cannot name a demonstration the center does not carry, and a
+// demonstration cannot be left off the map. The platforms table below the map is the vocabulary the claims rest on:
+// what each environment can establish, and therefore what a demonstration on it may claim.
+import { roadmap, entriesById } from '../data/roadmap';
+import { PLATFORMS, platformOf, type Platform } from '../data/taxonomy';
+import Shell from '../layouts/Shell.astro';
+
+const lines = roadmap.map((line) => ({
+  ...line,
+  demos: line.demos.map((id) => entriesById.get(id)!),
+}));
+
+const coverage = (Object.keys(PLATFORMS) as Platform[]).map((name) => ({
+  name,
+  label: PLATFORMS[name].label,
+  proves: PLATFORMS[name].proves,
+}));
+---
+
+<Shell
+  title="Roadmap"
+  description="The parts of the work Ktema Systems records, and the demonstration that establishes each one."
+  crumbs={[{ label: 'Demo Center', href: '/' }, { label: 'Roadmap' }]}
+>
+  <section class="hero">
+    <h1>Roadmap</h1>
+    <p class="lede">
+      The parts of the work, and the demonstrations that hold each one. A demonstration with a still is a recorded run;
+      a demonstration with the mark is a page that states the work before it is recorded.
+    </p>
+  </section>
+
+  <ol class="map">
+    {
+      lines.map((line) => (
+        <li class="map__line">
+          <div class="map__part">
+            <h2 class="map__title">{line.title}</h2>
+            <p class="map__states">{line.states}</p>
+          </div>
+          <ul class="map__demos">
+            {line.demos.map((demo) => (
+              <li>
+                <a class="map__demo" href={`/${demo.id}`}>
+                  <span class="map__thumb">
+                    {demo.poster ? (
+                      <img src={demo.poster} alt="" loading="lazy" decoding="async" />
+                    ) : (
+                      <span class="map__bay" aria-hidden="true" />
+                    )}
+                  </span>
+                  <span class="map__name">{demo.title}</span>
+                  <span class="tags">
+                    {demo.platforms.map((name) => (
+                      <span class="platform-tag">{platformOf(name).label}</span>
+                    ))}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))
+    }
+  </ol>
+
+  <section class="roadmap-section">
+    <header class="section-head">
+      <h2>The platforms</h2>
+      <p class="section-head__note">
+        What each platform can establish, and therefore what a demonstration on it may claim.
+      </p>
+    </header>
+
+    <ul class="coverage">
+      {
+        coverage.map((surface) => (
+          <li class="coverage__row">
+            <span class="coverage__label">{surface.label}</span>
+            <span class="coverage__proves">{surface.proves}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</Shell>

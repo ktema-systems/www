@@ -4,8 +4,10 @@
 // called, and where it lives. Nothing here knows how an artifact is built or what it contains, which is what lets a
 // hardware run, an FPGA board and a cockpit stand beside each other: each is a URL and a name.
 //
-// A surface that is not built yet is a separate list rather than an entry with an empty address, because an entry with
-// no address would still be a page. What is planned is a label and a sentence, and the grid draws it as what it is.
+// A demonstration that is specified and not yet recorded is a separate list rather than an entry with an empty
+// address, because an entry with no address would still be a page.
+
+import type { Platform } from './taxonomy';
 
 /** `live` is a deployed application; the center draws a page in front of it and links out. */
 export type ArtifactKind = 'live' | 'video' | 'document' | 'runs' | 'bench' | 'device' | 'package';
@@ -40,6 +42,12 @@ export interface Artifact {
   title: string;
   /** What the surface belongs to, drawn as small tags. A cockpit runs over every stack, so it can carry more than one. */
   products: string[];
+  /** Where the claim is checked, drawn as the second tag row. A demonstration that spans two environments carries two. */
+  platforms: Platform[];
+  /** The one sentence the surface proves, in the words its page uses. */
+  claim: string;
+  /** What a reader runs or opens to check the claim. */
+  evidence?: string;
   kind: ArtifactKind;
   /** What a reader learns before opening it, in one or two sentences. */
   summary: string;
@@ -65,9 +73,24 @@ export interface Artifact {
 
 /** A surface the center will carry and does not yet. */
 export interface PlannedSurface {
+  /** The page's address: `/<id>`, the same shape a built demonstration uses. */
+  id: string;
   title: string;
   products: string[];
+  platforms: Platform[];
+  /** What the platform will prove once the demonstration exists. */
+  claim: string;
+  /** The check that will produce the evidence. */
+  evidence: string;
   summary: string;
+  /** The purpose, stated rather than claimed. */
+  goal: string;
+  /** The procedure, in the order it is followed. */
+  plan: string[];
+  /** The preconditions. */
+  needs: string[];
+  /** The deliverable: what a reader gets when the work is done. */
+  shows: string;
 }
 
 // The cockpit is deployed on its own, so the center names its address rather than importing it. `PUBLIC_DELTA_URL` is
@@ -92,7 +115,7 @@ const RUNS: Recording[] = [
   },
   {
     id: 'region',
-    label: 'A power cut at every byte',
+    label: 'The power cut at every byte',
     detail:
       'The log is cut at each byte of its last record and every sixty-fourth byte after it. Every run opens, and none finds a record that was not there.',
     body: 'The region medium is the byte region a device holds at a fixed address, kept in a file. The check writes a volume, cuts the log at every byte of the last record and at every sixty-fourth byte of the rest, and opens what is left. It then changes every byte of the region header and every 128th byte of the log, which is the hazard a cut does not produce.\n\nEvery run opens, and none finds a record that was not there. The header refuses the eight bytes of magic and the four of version, checks the segment size, and does not read the rest. This is the durability claim as a sweep rather than a case someone reasoned about.',
@@ -105,7 +128,7 @@ const RUNS: Recording[] = [
   },
   {
     id: 'smoke',
-    label: 'A record round trip',
+    label: 'The record round trip',
     detail: 'Thirteen steps, eight records, one digest: the same run the device tier converges on.',
     body: 'Thirteen steps over a volume: writes at two clocks, six window queries over the time axis, a listing and a flush. Each step states what it expects, and the run reports each one as it happens.\n\nThe run ends on the digest 0x299bd5d0e1821fab, the same digest the device tier and the host converge on. The scenario is a text file: the run and the device-tier check read the same source.',
     command: 'target/debug/ktema-sim verify/scenarios/smoke.txt target/demo/smoke --reset',
@@ -148,6 +171,10 @@ export const artifacts: Artifact[] = [
     id: 'witness',
     title: 'One record set, two readers, one power cut',
     products: ['Ktema'],
+    platforms: ['bare-metal', 'fpga'],
+    claim:
+      'A record set written by a part with no operating system is recomputed by a second reader on a die, and survives the power cut.',
+    evidence: 'A two-reader check on the part, replayed from the console.',
     kind: 'video',
     summary:
       'An engine on a part with no operating system keeps the record of what the machine did, a second reader with nothing but the data recomputes it, and the set is read again after the power is cut. The address comes from the record\u2019s own fields, so there is no index to build and the audit needs no network.',
@@ -231,6 +258,9 @@ export const artifacts: Artifact[] = [
     id: 'delta',
     title: 'Fleet operations',
     products: ['Kletos', 'Delta'],
+    platforms: ['browser', 'host'],
+    claim:
+      'Every step, sensor reading and phone reach of a fleet resolves at one address, and the audit finds it offline.',
     kind: 'live',
     summary:
       'The cockpit for a working fleet: intents and records on the left, the cell in the middle, the ground on the right, the timeline below. Ten scenes, opening on a factory cell in Penang. Read-only, on mock data.',
@@ -250,8 +280,12 @@ export const artifacts: Artifact[] = [
   },
   {
       id: 'fpga',
-      title: 'A wrong value turns the light red',
+      title: 'The red light on a wrong value',
       products: ['Ktema'],
+      platforms: ['fpga'],
+      claim:
+        'Every value the die is handed is inside the alphabet, and one value outside it is refused rather than summed.',
+      evidence: 'A gate-level recomputation of the values, on the part.',
       kind: 'video',
       summary:
         'What a system measured, what happened, and what an audit asks later all resolve at one address, without a search. The read costs the same at 64 records and at 3,601. The same run hands 512 of those addresses to an FPGA: one value changed turns the light red, and the passing set is recomputed by an arithmetic the host does not share.',
@@ -260,7 +294,7 @@ export const artifacts: Artifact[] = [
       poster: '/proofs/fpga.jpg',
       posterAlt:
         'The iCESugar-Pro board, lit and connected, with the ECP5 under the RGB LED that carries the verdict.',
-      body: `## A constructed scenario
+      body: `## The scenario
   
   A valve station in a field with no network writes its line pressure once a second for an hour. At 14:02:05 the pressure falls, and the station writes what that second meant as well as what it measured: the limit it was given, the intent it acted on, and the fact the intent produced. Six months later the audit asks for that one address and gets all four records back without a search.
   
@@ -305,6 +339,10 @@ export const artifacts: Artifact[] = [
     id: 'bench',
     title: 'Measurements',
     products: ['Ktema'],
+    platforms: ['host'],
+    claim:
+      'What an open, a point read and an index cost from a thousand records to a million, in one table per store.',
+    evidence: 'A bench run over one workload on a host.',
     kind: 'bench',
     summary:
       'Three stores over one workload, from a thousand records to a million: bytes on the medium, the volume, the open, a point read, and the index each one has to hold.',
@@ -317,6 +355,10 @@ export const artifacts: Artifact[] = [
     id: 'device',
     title: 'One node, any scale',
     products: ['Ktema'],
+    platforms: ['bare-metal'],
+    claim:
+      'A part with no operating system writes a record into its own flash and reads it back by its address after a reset.',
+    evidence: "A device check on the part's own flash.",
     kind: 'device',
     summary:
       'The smallest host in the claim: a microcontroller with no operating system, 8 MB of flash and 64 kB of working memory, writing a record that survives a reset. The same build runs on every host above it, and a deployment can be a field of these nodes.',
@@ -329,6 +371,10 @@ export const artifacts: Artifact[] = [
     id: 'runs',
     title: 'Headless runs',
     products: ['Ktema'],
+    platforms: ['bare-metal', 'host'],
+    claim:
+      'A device and a host write the same bytes, a power cut lands at every byte, and one C surface runs on two architectures.',
+    evidence: 'A set of recorded runs, replayed from a terminal.',
     kind: 'runs',
     summary:
       'Most of what we build is infrastructure, with no front end to open. The demonstration is the execution itself, recorded in a terminal: a device and the host writing the same bytes, a power cut at every byte, and one C surface on two architectures.',
@@ -359,16 +405,236 @@ export const artifacts: Artifact[] = [
   // },
 ];
 
-// The order here is the order the grid draws them in. They sit beside the artifacts rather than under them, because a
-// reader who came for one demonstration still learns what the center is going to be. Each names the work it stands for,
-// which is what the devlogs carry rather than a description of what a video is. A planned surface is a tile with a badge
-// instead of an address, and each one is a part that is on the bench, so the bay states what the part will show rather
-// than what a page might say.
+// The order here is the order the page draws them in, and it follows dependency rather than preference: a
+// demonstration that needs another one first comes later. Each entry has a page of its own, and the page states the
+// purpose, the procedure, the preconditions, and the deliverable before the work exists. The lineup covers each
+// platform the stack runs on, and each entry is the anchor for its subject rather than a second view of one already
+// covered.
 export const planned: PlannedSurface[] = [
   {
-    title: 'A robot that answers for its walk',
+    id: 'cold-boot',
+    title: 'Cold boot on the part',
+    products: ['Ktema'],
+    platforms: ['bare-metal'],
+    claim:
+      "The engine writes into the part's own flash from a cold boot and reports the counts the next boot finds.",
+    evidence: "A device check on the part's own flash.",
+    summary:
+      'The LiteWing on the bench, switched on with nothing recorded, taking the record of a flight into its own flash and showing what the next boot reads.',
+    goal:
+      'To establish, on the part itself, that a machine with nothing recorded can keep its own history: the record is written while the part is doing the work, and the next boot reads it back by address with no host in the loop.',
+    plan: [
+      'Link the C surface into the firmware and give it a flash partition of its own.',
+      'Power on with the volume empty, fly, and let the part write the record as it goes.',
+      'Cut the rail in the middle of a write, restore it, and have the firmware print the addresses it finds and the counts it holds.',
+      'Dump the partition and compare it byte for byte with the same volume opened on a host.',
+    ],
+    needs: [
+      "The LiteWing's chip confirmed on the bench, since the firmware and the partition table target the ESP32-S3.",
+      'A partition table that leaves room for the record on a 4 MB part.',
+      'A flash medium the channel layer already models, wired to the part.',
+    ],
+    shows:
+      'A recorded take of the two boots, with the counts the firmware prints and the addresses it names, and the dump opened beside it.',
+  },
+  {
+    id: 'medium-image',
+    title: 'The medium read off the device',
+    products: ['Ktema'],
+    platforms: ['host'],
+    claim:
+      'A device medium is opened on another machine, one address answers, and the time its node stamped survives.',
+    evidence: 'An audit of a dumped partition.',
+    summary:
+      'The partition a device wrote is dumped and opened on a host, so a reader needs the medium rather than the device or a network.',
+    goal:
+      'To establish that a reader who never held the device can answer one address from the bytes it left behind, and see the time the recording node wrote rather than the time of the read.',
+    plan: [
+      'Take the dump the cold-boot demonstration produces.',
+      'Open it on a host with the audit tool and list the addresses it holds.',
+      'Ask one address and print the origin, the creator, and the time the node stamped.',
+      'Ask the same address on the device itself, and put the two answers side by side.',
+    ],
+    needs: [
+      'The dump from the cold-boot demonstration.',
+      'The address list the audit tool prints, which a device log does not otherwise hand over.',
+    ],
+    shows:
+      'A terminal take: one address asked on two machines, with the same record and the same time back from each.',
+  },
+  {
+    id: 'reader-check',
+    title: 'Payload verification at the call site',
+    products: ['Ktema'],
+    platforms: ['host'],
+    claim:
+      'A read hands over the bytes on the medium, and one call says whether they are the record the address names.',
+    evidence: 'A corruption test on one record.',
+    summary:
+      'The check a reader makes instead of trusting the writer, taken on a host where a byte can be changed and the answer compared.',
+    goal:
+      'To establish what a read does and does not tell a reader: the bytes come back as they are on the medium, and one call is what says whether they are the record.',
+    plan: [
+      'Write a record, ask the check, and read it back intact.',
+      'Change one byte of the payload on the medium and ask again, so the two hashes are printed side by side.',
+      'Read the same address without the check, and show the changed bytes arriving as a record.',
+      'Reopen the volume and state what a pass over it can tell and what it cannot, including the damage it cannot see.',
+    ],
+    needs: [
+      'The entry points that already exist, on the C surface and in the engine.',
+      'A take recorded against a real medium rather than a test fixture.',
+    ],
+    shows:
+      'A terminal take of one call in three states, and the list of damage it does not catch.',
+  },
+  {
+    id: 'full-volume',
+    title: 'Reclaiming a full volume',
+    products: ['Ktema'],
+    platforms: ['host'],
+    claim:
+      'A volume that fills keeps recording by retiring its oldest records, and a reader is told what a wrap retired.',
+    evidence: 'A check of a volume after it wraps.',
+    summary:
+      'A device that never stops recording runs out of slot rather than time: the newest record is kept, the oldest is retired, and the boundary is read rather than discovered.',
+    goal:
+      'To establish the behaviour of a device that records for years: a full volume keeps the newest records, retires the oldest, and reports the boundary instead of leaving a silent gap.',
+    plan: [
+      'Fill a volume past its capacity on a host, then on a part.',
+      'Read the newest records and the oldest, and show where the boundary sits.',
+      'State which records a wrap retired and what a reader gets when it asks for one.',
+      'Measure what a wrap costs the medium.',
+    ],
+    needs: [
+      'A statement of the retired set that the format can carry.',
+      'A volume small enough to wrap inside a recorded take.',
+    ],
+    shows:
+      'A take of a volume wrapping, with the boundary read before and after.',
+  },
+  {
+    id: 'address-in-gates',
+    title: 'Address derivation in gates',
+    products: ['Ktema'],
+    platforms: ['fpga'],
+    claim:
+      'The address a record is filed under is recomputed from the record in gates, with no processor in the path.',
+    evidence: 'A gate-level recomputation compared with the host.',
+    summary:
+      'The die stops checking values a host computed and derives the address itself, so the fabric is a second implementation of the address form rather than a checker of the host\u2019s answer.',
+    goal:
+      'To establish that the address form is small enough to exist twice: a record and its address both recomputed in gates, so a disagreement is visible without a processor to explain it.',
+    plan: [
+      'Derive the content hash and the base-11172 address from the record, in the fabric.',
+      'Hand the die a record and the address the host derived, and compare the two.',
+      'Change one byte of the record and confirm the die derives another address.',
+      'Report the resources and the clock the design takes on the part.',
+    ],
+    needs: [
+      'The derivation as a new top in the demonstration directory, never in the standard RTL.',
+      'A record set whose addresses both sides derive.',
+    ],
+    shows:
+      'A take of the die deriving addresses, with the resources and the timing beside the disagreement.',
+  },
+  {
+    id: 'archive',
+    title: 'The release that checks itself',
+    products: ['Ktema'],
+    platforms: ['bare-metal', 'host'],
+    claim:
+      'The archive a team receives builds its own example, runs it, and counts the entry points it carries.',
+    evidence: 'A packaging check of the released archive.',
+    summary:
+      'What a firmware team is handed: a header, a library per target, the specification, and an example that links and exits zero.',
+    goal:
+      'To establish that what a team receives checks itself before it is linked: every target class built from one revision, the example run from the unpacked archive, and the entry points counted against the header.',
+    plan: [
+      'Assemble the release bundle for each target class the host can build.',
+      'Unpack the archive into an empty directory, build the example from it, and run it.',
+      'Compare the entry points the library exports with the ones the header declares.',
+      'Publish the bundle at an address the demonstration can link to.',
+    ],
+    needs: [
+      'An address to serve the archive from.',
+      'The licence terms an evaluation copy is distributed under.',
+    ],
+    shows:
+      'A download, its manifest, and the counts the example printed.',
+  },
+  {
+    id: 'rtos-module',
+    title: 'Integration with a shipped RTOS',
+    products: ['Ktema'],
+    platforms: ['rtos'],
+    claim:
+      'A firmware keeps its platform and gains a record layer in one partition, with no rewrite of its drivers.',
+    evidence: 'An integration check on one board.',
+    summary:
+      'The same engine as a member of an RTOS build, for a team whose product already has one.',
+    goal:
+      'To establish, for a team that already ships an operating system, that the record layer arrives as one partition and one module, with the firmware around it unchanged.',
+    plan: [
+      'Wrap the engine as a module of one RTOS build for one board.',
+      'Hand it a flash partition and the clocks the RTOS already keeps.',
+      'Write from a task, reboot, and read back by address.',
+      'Run the bare-metal scenario on this build too, and compare the two volumes byte for byte.',
+    ],
+    needs: [
+      'A board the RTOS supports with a spare partition.',
+      'A decision on which RTOS build is first, which the same work answers for the others.',
+    ],
+    shows:
+      'A take of the module inside a firmware the team did not write for us, and the volume it produced.',
+  },
+  {
+    id: 'kernel-seam',
+    title: 'The medium contract at a kernel boundary',
+    products: ['Ktema'],
+    platforms: ['microkernel'],
+    claim:
+      "The kernel's certificate is its owner's; the record layer attaches through the medium contract and adds none of it.",
+    evidence: "A review of the seam by the layer's owner.",
+    summary:
+      'The seam written down rather than a port attempted: what a certified layer must hand over for the record to hold above it.',
+    goal:
+      'To separate what a certified kernel provides from what this layer provides, so a team that already holds the first can attach the second without either vouching for the other.',
+    plan: [
+      'State the medium contract in the kernel vocabulary: what a component supplies, and what it may assume.',
+      'Name what this layer does not provide and will not: isolation, attestation, scheduling.',
+      'Work one example through on paper, with every call mapped to the contract.',
+      'Take the seam to the kernel owner for review before any implementation is proposed.',
+    ],
+    needs: [
+      'A counterpart who owns a certified kernel build.',
+      'Their review, since an unreviewed seam is the port this demonstration exists to avoid.',
+    ],
+    shows:
+      'A written seam reviewed by the layer that owns the certificate: a document, not a take.',
+  },
+  {
+    id: 'robot',
+    title: 'The walk, recorded end to end',
     products: ['Delta'],
+    platforms: ['browser', 'host'],
+    claim:
+      "A walk's steps, sensor readings and phone reaches resolve at one address, and an audit that never met the robot finds them.",
+    evidence: 'A recorded walk, audited offline.',
     summary:
       'A walking robot as the room a device answers in: every step, sensor reading and phone reach recorded at one address.',
+    goal:
+      'To establish the whole stack in one room: a machine whose work, the readings it acted on, and the limits it was given are one record, watchable while it walks and answerable afterwards without the robot.',
+    plan: [
+      "Run the engine on the robot's host and record a walk as facts, intents and hints.",
+      'Serve the cockpit over that same volume, so the walk is visible while it happens.',
+      'Cut the link mid-walk, keep recording, and restore it.',
+      'Ask one address afterwards from a machine that never met the robot.',
+    ],
+    needs: [
+      "The robot host's first saved dataset, since the cockpit reads mock data today.",
+      'A recording of the walk that a reader can follow beside the page.',
+    ],
+    shows:
+      'A recorded walk with the cockpit beside it, and one address asked after the fact.',
   },
 ];

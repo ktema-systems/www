@@ -1,17 +1,22 @@
 ---
-// One surface in the center's grid: a deployed application, a recorded run, or a bay that is not built yet.
+// One surface in the center's grid.
 //
-// A tile is a link when it has somewhere to go and a drawing when it does not, which is the one distinction a reader
-// must be able to trust. A tile shows a still; a recording's animation is the run page's, not the thumbnail's.
+// A tile shows the still of the thing it opens when there is one, and the mark's construction when there is not. That is
+// the whole distinction a reader needs: a still means footage behind it, and no still means a page that describes the
+// work. A tile is a link when it has somewhere to go and a drawing when it does not.
+//
+// Two tags answer two questions: the product says whose surface it is, and the platform says where the claim is
+// checked. They are drawn differently because they are not the same kind of word.
+import { platformOf, type Platform } from '../data/taxonomy';
+
 interface Props {
   href?: string;
   title: string;
   products?: string[];
+  platforms?: Platform[];
   summary: string;
   poster?: string;
   posterAlt?: string;
-  /** The word a bay carries when it has nothing behind it yet. */
-  badge?: string;
   /** The line a tile ends with, when a caller wants one. No tile here passes it: the card is the link. */
   cta?: string;
   variant?: 'default' | 'proof';
@@ -22,49 +27,36 @@ const {
   href,
   title,
   products = [],
+  platforms = [],
   summary,
   poster,
   posterAlt,
-  badge,
   cta,
   variant = 'default',
   eager = false,
 } = Astro.props;
 
-const planned = !href;
+// A bay is a tile with no still: the page behind it describes the work rather than showing a run.
+const bay = !poster;
+const Tag = href ? 'a' : 'div';
+const link = href ? { href } : {};
 ---
 
-{
-  planned ? (
-    <div class:list={['tile', 'tile--planned', variant !== 'default' && `tile--${variant}`]}>
+<Tag
+  class:list={[
+    'tile',
+    Boolean(href) && 'tile--opens',
+    variant !== 'default' && `tile--${variant}`,
+  ]}
+  {...link}
+  style={poster ? `--wash: url('${poster}')` : undefined}
+>
+  {
+    bay ? (
       <span class="tile__screen tile__screen--empty" aria-hidden="true" />
-      <div class="tile__body">
-        {badge && (
-          <span class="badges">
-            <span class="badge badge--planned">{badge}</span>
-          </span>
-        )}
-        <span class="tile__head">
-          <span class="tile__title">{title}</span>
-          {products.length > 0 && (
-            <span class="tags">
-              {products.map((name) => (
-                <span class="product-tag">{name}</span>
-              ))}
-            </span>
-          )}
-        </span>
-        <span class="tile__summary">{summary}</span>
-      </div>
-    </div>
-  ) : (
-    <a
-      class:list={['tile', 'tile--opens', variant !== 'default' && `tile--${variant}`]}
-      href={href}
-      style={poster ? `--wash: url('${poster}')` : undefined}
-    >
-      {poster && <span class="tile__wash" aria-hidden="true" />}
-      {poster && (
+    ) : (
+      <>
+        <span class="tile__wash" aria-hidden="true" />
         <span class="tile__screen">
           <img
             class="tile__still"
@@ -74,27 +66,30 @@ const planned = !href;
             decoding="async"
           />
         </span>
-      )}
-      <span class="tile__body">
-        <span class="tile__head">
-          <span class="tile__title">{title}</span>
-          {products.length > 0 && (
-            <span class="tags">
-              {products.map((name) => (
-                <span class="product-tag">{name}</span>
-              ))}
-            </span>
-          )}
-        </span>
-        <span class="tile__summary">{summary}</span>
-        {cta && (
-          <span class="tile__cta">
-            {cta} <span class="tile__arrow" aria-hidden="true">
-              &#8594;
-            </span>
-          </span>
-        )}
+      </>
+    )
+  }
+  <span class="tile__body">
+    <span class="tile__head">
+      <span class="tile__title">{title}</span>
+      <span class="tags">
+        {platforms.map((name) => (
+          <span class="platform-tag">{platformOf(name).label}</span>
+        ))}
+        {products.map((name) => (
+          <span class="product-tag">{name}</span>
+        ))}
       </span>
-    </a>
-  )
-}
+    </span>
+    <span class="tile__summary">{summary}</span>
+    {
+      cta && (
+        <span class="tile__cta">
+          {cta} <span class="tile__arrow" aria-hidden="true">
+            &#8594;
+          </span>
+        </span>
+      )
+    }
+  </span>
+</Tag>

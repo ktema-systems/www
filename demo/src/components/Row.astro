@@ -1,0 +1,43 @@
+---
+// One entry of the center read as a row: the same tile, laid on its side for a list.
+//
+// The thumbnail is the same still a tile carries, or the same bay when there is none, so the two views describe an
+// entry the same way and cannot disagree about it.
+import { platformOf, type Platform } from '../data/taxonomy';
+
+interface Props {
+  href: string;
+  title: string;
+  products?: string[];
+  platforms?: Platform[];
+  summary: string;
+  poster?: string;
+  posterAlt?: string;
+}
+
+const { href, title, products = [], platforms = [], summary, poster, posterAlt } = Astro.props;
+---
+
+<li class="row">
+  <a class="row__link" href={href}>
+    <span class="row__thumb">
+      {
+        poster ? (
+          <img src={poster} alt={posterAlt ?? ''} loading="lazy" decoding="async" />
+        ) : (
+          <span class="row__bay" aria-hidden="true" />
+        )
+      }
+    </span>
+    <span class="row__body">
+      <span class="row__head">
+        <span class="row__title">{title}</span>
+        <span class="tags">
+          {platforms.map((name) => <span class="platform-tag">{platformOf(name).label}</span>)}
+          {products.map((name) => <span class="product-tag">{name}</span>)}
+        </span>
+      </span>
+      <span class="row__summary">{summary}</span>
+    </span>
+  </a>
+</li>

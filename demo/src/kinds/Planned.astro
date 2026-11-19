@@ -1,0 +1,91 @@
+---
+// A demonstration that is specified and not yet recorded.
+//
+// The page is a brief: purpose, procedure, preconditions, deliverable, and the check that produces the evidence. The
+// claim sits in the page header, where it sits on a recorded demonstration too, so the two kinds of page are read and
+// compared on the same terms.
+import type { PlannedSurface } from '../data/artifacts';
+
+interface Props {
+  surface: PlannedSurface;
+}
+
+const { surface } = Astro.props;
+---
+
+<article class="brief">
+  <section class="brief__section">
+    <h2>Purpose</h2>
+    <p>{surface.goal}</p>
+  </section>
+
+  <section class="brief__section">
+    <h2>Procedure</h2>
+    <ol>
+      {surface.plan.map((step) => <li>{step}</li>)}
+    </ol>
+  </section>
+
+  <section class="brief__section">
+    <h2>Preconditions</h2>
+    <ul>
+      {surface.needs.map((need) => <li>{need}</li>)}
+    </ul>
+  </section>
+
+  <section class="brief__section">
+    <h2>Deliverable</h2>
+    <p>{surface.shows}</p>
+  </section>
+
+  <section class="brief__section">
+    <h2>Verification</h2>
+    <p>{surface.evidence}</p>
+  </section>
+</article>
+
+<style>
+  .brief {
+    max-width: 74ch;
+  }
+
+  .brief__section {
+    margin-top: 36px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .brief__section:first-child {
+    margin-top: 8px;
+  }
+
+  .brief__section h2 {
+    margin: 0 0 14px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .brief__section p {
+    margin: 0;
+    color: var(--fg-2);
+    font-size: 16.5px;
+    line-height: 1.65;
+  }
+
+  .brief__section ol,
+  .brief__section ul {
+    margin: 0;
+    padding-left: 22px;
+    color: var(--fg-2);
+    font-size: 16.5px;
+    line-height: 1.65;
+  }
+
+  .brief__section li + li {
+    margin-top: 8px;
+  }
+</style>
