@@ -39,6 +39,11 @@ const operationsPanels = [
       height: 1047,
     },
   },
+  {
+    kicker: 'The reach',
+    title: 'The same record at every scale',
+    body: 'The engine is one library, from a part with no operating system to a service beside the database to a data center, and at the far end a fleet in orbit. What changes along that range is where the work runs, not how a record is read.',
+  },
 ];
 
 const accountabilityPanels = [
@@ -267,8 +272,8 @@ const assertNever = (value: never): never => {
             title="The run, seen from where it happens."
             lede="Delta is the cockpit: the machines, their records, the bounds around them, and the timeline, in one space."
             slides={operationsPanels}
-            labels={['Run']}
-            footnote="The campaign data in this view is simulated. Delta is planned to be open source."
+            labels={['Run', 'Reach']}
+            footnote="The campaign data in these views is simulated. Delta is planned to be open source."
           />
         );
       case 'accountability':
