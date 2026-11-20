@@ -219,8 +219,9 @@ const values: Record<string, string> = {
     The engine's flat cost is its whole namespace, walked once per query: {size(boxes.rows[0].bytes)} at a million
     records. The merge sets it. A listing compares each key once per segment, and a segment answers with an entry
     rather than with the bytes of the key, so a volume of eight segments reads eight entries for every key it lists,
-    and the box pays that whether it answers a tenth of the volume or all of it. A listing that seeks to the range's
-    start inside each segment would read the window rather than the namespace.
+    and the box pays that whether it answers a tenth of the volume or all of it. A listing begins at a prefix, and a
+    box is a set of ranges rather than a prefix, so the walk begins at the namespace's first key. A start-of-range
+    seek in the channel is what would make a box read its own window.
   </p>
   <p>
     A volume stops at 4 GiB, which at {ktema1m.bytes_per_record} bytes a record is {ceiling.records.toLocaleString('en-US')}{' '}
