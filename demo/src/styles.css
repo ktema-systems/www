@@ -1020,7 +1020,7 @@ h1 {
   }
 }
 
-/* ── the roadmap ──────────────────────────────────────────────────────── */
+/* ── the claims ──────────────────────────────────────────────────────── */
 
 /* The platform tag answers a different question from the product tag: the product says whose the
    surface is, the platform says where the claim is checked and therefore what it may claim. It is
@@ -1078,9 +1078,9 @@ h1 {
 }
 
 /* The section that carries the demonstrations not yet recorded stands off the grid above it by the
-   same step the roadmap page uses between its own blocks. */
+   same step the claims page uses between its own blocks. */
 .further,
-.roadmap-section {
+.claims-section {
   margin-top: clamp(64px, 8vw, 96px);
 }
 
@@ -1155,7 +1155,7 @@ h1 {
   line-height: 1.6;
 }
 
-.map__demos {
+.map__evidence {
   margin: 0;
   padding: 0;
   list-style: none;

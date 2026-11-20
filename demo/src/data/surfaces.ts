@@ -15,7 +15,7 @@ export interface Surface {
   /** What the platform will prove once the demonstration exists. */
   claim: string;
   summary: string;
-  /** The roadmap line the surface belongs to. */
+  /** The claim it belongs to, in the register. */
   line?: string;
   /** Where the page stands in the grid. */
   order: number;
