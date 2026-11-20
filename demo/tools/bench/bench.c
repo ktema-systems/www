@@ -350,6 +350,28 @@ static long long median_long(long long *v, size_t n) {
     return v[n / 2];
 }
 
+// A box on an axis that is not the leading one, which in this table is the last three characters of the address. The
+// rows that match are scattered through the file, so the shape is one a stored key order cannot prune.
+#define BOX_SQL "SELECT payload FROM records WHERE substr(fact_key,58,3)>=?1 AND substr(fact_key,58,3)<?2"
+
+static unsigned long long box_read(sqlite3 *db, const char *from3, const char *to3, long long *pages) {
+    sqlite3_stmt *stmt = NULL;
+    if (sqlite3_prepare_v2(db, BOX_SQL, -1, &stmt, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    if (pages) (void)pages_fetched(db, 1);
+    sqlite3_bind_text(stmt, 1, from3, 3, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, to3, 3, SQLITE_STATIC);
+    unsigned long long n = 0;
+    int rc;
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        (void)sqlite3_column_text(stmt, 0);
+        n++;
+    }
+    if (rc != SQLITE_DONE) fail(sqlite3_errmsg(db));
+    if (pages) *pages = pages_fetched(db, 0);
+    sqlite3_finalize(stmt);
+    return n;
+}
+
 typedef struct {
     unsigned long long records;
     unsigned long long volume_bytes;
@@ -363,6 +385,13 @@ typedef struct {
     unsigned long long page_size;
     unsigned long long point_read_medium_bytes;
     unsigned long long range_medium_bytes;
+    unsigned long long box_answers;
+    double box_scan_us;
+    unsigned long long box_scan_medium_bytes;
+    double box_indexed_us;
+    unsigned long long box_indexed_medium_bytes;
+    unsigned long long box_index_bytes;
+    double box_index_build_us;
 } DbResult;
 
 // A statement that binds an index into one of the three address columns. The key is a stack
@@ -568,6 +597,100 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
                                            (db_before.st_size + wal_before.st_size));
     }
     sqlite3_finalize(write);
+
+    // A box on an axis that is not the leading one. The engine answers this shape in one pass, because a computed
+    // address is not privileged along any axis. A stored order is: this predicate matches rows scattered through the
+    // file, so the database scans for it, or holds an index built for this one shape.
+    char edge[ADDRESS + 1];
+    char from3[4];
+    char to3[4];
+    address(edge, 0);
+    memcpy(from3, edge + ADDRESS - 3, 3);
+    address(edge, 62ULL * 62ULL * 62ULL / 10);
+    memcpy(to3, edge + ADDRESS - 3, 3);
+    from3[3] = '\0';
+    to3[3] = '\0';
+
+    sqlite3_stmt *box = NULL;
+    if (sqlite3_prepare_v2(db, BOX_SQL, -1, &box, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+
+    double scans[SAMPLES];
+    unsigned long long box_answers = 0;
+    for (size_t s = 0; s < SAMPLES; s++) {
+        double at = now_us();
+        sqlite3_reset(box);
+        sqlite3_bind_text(box, 1, from3, 3, SQLITE_STATIC);
+        sqlite3_bind_text(box, 2, to3, 3, SQLITE_STATIC);
+        unsigned long long n = 0;
+        int rc;
+        while ((rc = sqlite3_step(box)) == SQLITE_ROW) {
+            (void)sqlite3_column_text(box, 0);
+            n++;
+        }
+        if (rc != SQLITE_DONE) fail(sqlite3_errmsg(db));
+        scans[s] = now_us() - at;
+        box_answers = n;
+    }
+    sqlite3_finalize(box);
+
+    long long scan_pages[SAMPLES];
+    for (size_t s = 0; s < SAMPLES; s++) {
+        sqlite3 *one = db_open(path);
+        long long pages = 0;
+        (void)box_read(one, from3, to3, &pages);
+        scan_pages[s] = pages;
+        sqlite3_close(one);
+    }
+
+    struct stat before_db, before_wal, after_db, after_wal;
+    if (stat(path, &before_db) != 0) fail("stat");
+    if (stat(wal, &before_wal) != 0) fail("stat wal");
+    double build_at = now_us();
+    exec_ok(db, "CREATE INDEX box_axis ON records(substr(fact_key,58,3));");
+    double index_build_us = now_us() - build_at;
+    if (stat(path, &after_db) != 0) fail("stat");
+    if (stat(wal, &after_wal) != 0) fail("stat wal");
+    unsigned long long index_bytes =
+        (unsigned long long)((after_db.st_size + after_wal.st_size) - (before_db.st_size + before_wal.st_size));
+
+    sqlite3_stmt *indexed = NULL;
+    if (sqlite3_prepare_v2(db, BOX_SQL, -1, &indexed, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    double indexed_times[SAMPLES];
+    for (size_t s = 0; s < SAMPLES; s++) {
+        double at = now_us();
+        sqlite3_reset(indexed);
+        sqlite3_bind_text(indexed, 1, from3, 3, SQLITE_STATIC);
+        sqlite3_bind_text(indexed, 2, to3, 3, SQLITE_STATIC);
+        unsigned long long n = 0;
+        int rc;
+        while ((rc = sqlite3_step(indexed)) == SQLITE_ROW) {
+            (void)sqlite3_column_text(indexed, 0);
+            n++;
+        }
+        if (rc != SQLITE_DONE) fail(sqlite3_errmsg(db));
+        if (n != box_answers) fail("the index changed the answer");
+        indexed_times[s] = now_us() - at;
+    }
+    sqlite3_finalize(indexed);
+
+    long long indexed_pages[SAMPLES];
+    for (size_t s = 0; s < SAMPLES; s++) {
+        sqlite3 *one = db_open(path);
+        long long pages = 0;
+        (void)box_read(one, from3, to3, &pages);
+        indexed_pages[s] = pages;
+        sqlite3_close(one);
+    }
+
+    out->box_answers = box_answers;
+    out->box_scan_us = median(scans, SAMPLES);
+    out->box_scan_medium_bytes = (unsigned long long)median_long(scan_pages, SAMPLES) * (unsigned long long)page_size;
+    out->box_indexed_us = median(indexed_times, SAMPLES);
+    out->box_indexed_medium_bytes =
+        (unsigned long long)median_long(indexed_pages, SAMPLES) * (unsigned long long)page_size;
+    out->box_index_bytes = index_bytes;
+    out->box_index_build_us = index_build_us;
+
     sqlite3_close(db);
 
     out->records = records;
@@ -620,11 +743,16 @@ int main(int argc, char **argv) {
             "    { \"records\": %llu, \"volume_bytes\": %llu, \"open_us\": %.3f, "
             "\"point_read_us\": %.3f, \"range_us\": %.3f, \"range_answers\": %llu, "
             "\"write_us\": %.3f, \"write_bytes\": %llu, \"cache_bytes\": %llu, "
-            "\"page_size\": %llu, \"point_read_medium_bytes\": %llu, \"range_medium_bytes\": %llu }%s\n",
+            "\"page_size\": %llu, \"point_read_medium_bytes\": %llu, \"range_medium_bytes\": %llu, "
+            "\"box_answers\": %llu, \"box_scan_us\": %.3f, \"box_scan_medium_bytes\": %llu, "
+            "\"box_indexed_us\": %.3f, \"box_indexed_medium_bytes\": %llu, "
+            "\"box_index_bytes\": %llu, \"box_index_build_us\": %.3f }%s\n",
             dbs[r].records, dbs[r].volume_bytes, dbs[r].open_us, dbs[r].point_read_us,
             dbs[r].range_us, dbs[r].range_answers, dbs[r].write_us, dbs[r].write_bytes,
             dbs[r].cache_bytes, dbs[r].page_size, dbs[r].point_read_medium_bytes,
-            dbs[r].range_medium_bytes, r + 1 < RUNG_COUNT ? "," : "");
+            dbs[r].range_medium_bytes, dbs[r].box_answers, dbs[r].box_scan_us,
+            dbs[r].box_scan_medium_bytes, dbs[r].box_indexed_us, dbs[r].box_indexed_medium_bytes,
+            dbs[r].box_index_bytes, dbs[r].box_index_build_us, r + 1 < RUNG_COUNT ? "," : "");
     }
     printf("  ]\n}\n");
     return 0;

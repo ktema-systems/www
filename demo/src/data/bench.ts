@@ -50,10 +50,10 @@ export const engines: Engine[] = [
     name: 'Ktema',
     color: 'var(--accent)',
     rows: [
-      { records: 1_000, bytes_per_record: 485, volume_bytes: 485_019, open_us: 428.916, point_read_us: 0.958, point_read_bytes: 3_195, range_us: 95.416, range_answers: 101, range_bytes: 567_577, write_us: 4.625 },
-      { records: 10_000, bytes_per_record: 493, volume_bytes: 4_931_941, open_us: 401.25, point_read_us: 1.166, point_read_bytes: 7_458, range_us: 1_301.208, range_answers: 1_001, range_bytes: 8_290_652, write_us: 4.958 },
-      { records: 100_000, bytes_per_record: 493, volume_bytes: 49_275_418, open_us: 11_059.125, point_read_us: 1.333, point_read_bytes: 11_149, range_us: 22_021.833, range_answers: 10_008, range_bytes: 109_232_615, write_us: 13.166 },
-      { records: 1_000_000, bytes_per_record: 495, volume_bytes: 495_261_336, open_us: 42_446.792, point_read_us: 2.0, point_read_bytes: 20_544, range_us: 305_129.792, range_answers: 98_968, range_bytes: 1_620_870_132, write_us: 28.417 },
+      { records: 1_000, bytes_per_record: 485, volume_bytes: 485_019, open_us: 442.708, point_read_us: 1.042, point_read_bytes: 3_195, range_us: 97.667, range_answers: 101, range_bytes: 567_577, write_us: 4.667 },
+      { records: 10_000, bytes_per_record: 493, volume_bytes: 4_931_941, open_us: 414.375, point_read_us: 1.167, point_read_bytes: 7_458, range_us: 1_459.333, range_answers: 1_001, range_bytes: 8_290_652, write_us: 4.958 },
+      { records: 100_000, bytes_per_record: 493, volume_bytes: 49_275_418, open_us: 12_443.708, point_read_us: 1.375, point_read_bytes: 11_149, range_us: 22_844.958, range_answers: 10_008, range_bytes: 109_232_615, write_us: 13.834 },
+      { records: 1_000_000, bytes_per_record: 495, volume_bytes: 495_261_336, open_us: 43_869.833, point_read_us: 1.916, point_read_bytes: 20_544, range_us: 315_835.75, range_answers: 98_968, range_bytes: 1_620_870_132, write_us: 28.792 },
     ],
   },
   {
@@ -61,10 +61,10 @@ export const engines: Engine[] = [
     name: 'Append log',
     color: 'var(--fg-2)',
     rows: [
-      { records: 1_000, bytes_per_record: 254, volume_bytes: 253_890, open_us: 48.833, point_read_us: 0.042, range_us: 4.375, range_answers: 100, write_us: 1.833 },
-      { records: 10_000, bytes_per_record: 255, volume_bytes: 2_548_890, open_us: 473.75, point_read_us: 0.042, range_us: 40.667, range_answers: 1_000, write_us: 1.667 },
-      { records: 100_000, bytes_per_record: 256, volume_bytes: 25_588_890, open_us: 6_948.292, point_read_us: 0.042, range_us: 492.583, range_answers: 10_000, write_us: 1.833 },
-      { records: 1_000_000, bytes_per_record: 257, volume_bytes: 256_888_890, open_us: 114_553.625, point_read_us: 0.042, range_us: 5_306.667, range_answers: 100_000, write_us: 2.5 },
+      { records: 1_000, bytes_per_record: 254, volume_bytes: 253_890, open_us: 47.792, point_read_us: 0.042, range_us: 4.875, range_answers: 100, write_us: 1.75 },
+      { records: 10_000, bytes_per_record: 255, volume_bytes: 2_548_890, open_us: 493.042, point_read_us: 0.042, range_us: 41.167, range_answers: 1_000, write_us: 1.708 },
+      { records: 100_000, bytes_per_record: 256, volume_bytes: 25_588_890, open_us: 7_461.125, point_read_us: 0.042, range_us: 490.708, range_answers: 10_000, write_us: 1.583 },
+      { records: 1_000_000, bytes_per_record: 257, volume_bytes: 256_888_890, open_us: 117_306.25, point_read_us: 0.042, range_us: 5_452.917, range_answers: 100_000, write_us: 2.625 },
     ],
   },
   {
@@ -72,10 +72,10 @@ export const engines: Engine[] = [
     name: 'SQLite',
     color: 'rgb(122, 121, 119)',
     rows: [
-      { records: 1_000, bytes_per_record: 303, volume_bytes: 303_104, open_us: 238.125, point_read_us: 2.417, point_read_bytes: 12_288, range_us: 7.667, range_answers: 100, range_bytes: 40_960, write_us: 11.125 },
-      { records: 10_000, bytes_per_record: 294, volume_bytes: 2_936_832, open_us: 220.208, point_read_us: 2.667, point_read_bytes: 16_384, range_us: 57.375, range_answers: 1_000, range_bytes: 307_200, write_us: 12.5 },
-      { records: 100_000, bytes_per_record: 293, volume_bytes: 29_270_016, open_us: 226.833, point_read_us: 2.542, point_read_bytes: 20_480, range_us: 562.75, range_answers: 10_000, range_bytes: 2_949_120, write_us: 12.333 },
-      { records: 1_000_000, bytes_per_record: 293, volume_bytes: 292_589_568, open_us: 234.208, point_read_us: 2.667, point_read_bytes: 24_576, range_us: 12_212.75, range_answers: 100_000, range_bytes: 29_278_208, write_us: 10.0 },
+      { records: 1_000, bytes_per_record: 303, volume_bytes: 303_104, open_us: 329.792, point_read_us: 2.792, point_read_bytes: 12_288, range_us: 7.875, range_answers: 100, range_bytes: 40_960, write_us: 12.542 },
+      { records: 10_000, bytes_per_record: 294, volume_bytes: 2_936_832, open_us: 226.0, point_read_us: 2.458, point_read_bytes: 16_384, range_us: 59.583, range_answers: 1_000, range_bytes: 307_200, write_us: 11.875 },
+      { records: 100_000, bytes_per_record: 293, volume_bytes: 29_270_016, open_us: 231.208, point_read_us: 2.542, point_read_bytes: 20_480, range_us: 547.125, range_answers: 10_000, range_bytes: 2_949_120, write_us: 13.083 },
+      { records: 1_000_000, bytes_per_record: 293, volume_bytes: 292_589_568, open_us: 220.792, point_read_us: 2.542, point_read_bytes: 24_576, range_us: 11_509.125, range_answers: 100_000, range_bytes: 29_278_208, write_us: 10.417 },
     ],
   },
 ];
@@ -128,12 +128,30 @@ export const reads = {
   ],
 } as const;
 
+/**
+ * One box over a tenth of one axis, at a million records, through each store's own query path.
+ *
+ * The engine's address is computed, so a box costs the same whichever axis it constrains and it holds no index. A
+ * database stores one order, so a box that matches that order is a range read and any other is a scan, or an index
+ * built for that one shape. The indexed rows carry the bytes that index occupies.
+ */
+export const boxes = {
+  records: 1_000_000,
+  rows: [
+    { store: 'Ktema, the leading axis', answers: 98_968, us: 315_835.75, bytes: 1_620_870_132, index_bytes: 0 },
+    { store: 'Ktema, an inner axis', answers: 111_720, us: 318_178.167, bytes: 1_620_870_132, index_bytes: 0 },
+    { store: 'SQLite, the key range', answers: 100_000, us: 11_509.125, bytes: 29_278_208, index_bytes: 0 },
+    { store: 'SQLite, an inner axis', answers: 119_160, us: 228_587.625, bytes: 292_597_760, index_bytes: 0 },
+    { store: 'SQLite, an inner axis, indexed', answers: 119_160, us: 73_419.792, bytes: 43_372_544, index_bytes: 141_832_784 },
+  ],
+} as const;
+
 /** What produced the numbers, so a reader can reproduce them rather than trust them. */
 export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
   recorded: '2026-11-20',
   samples: 51,
-  engine: 'ktema 18cbe34, ktema-bench 1000 10000 100000 1000000',
+  engine: 'ktema a5a3563, ktema-bench 1000 10000 100000 1000000',
   peers: 'demo/tools/bench/run.sh',
   sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
 } as const;
