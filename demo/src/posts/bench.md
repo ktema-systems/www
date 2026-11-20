@@ -45,8 +45,8 @@ time comes from.
 The peers run with an operating system, a filesystem and a warm page cache. Neither runs on a part without one, and
 the log's address map stops fitting before the volumes it serves. The engine's case is that tier.
 
-The append figure is where runs spread widest: at a hundred thousand records the engine and the database both land
-between 10 and 19 µs, while the other three times stayed within a tenth of their value.
+The append figure is where runs spread widest: at a hundred thousand records the engine lands near 5 µs and the
+database near 12, while the other three times stayed within a tenth of their value.
 
 ## The path this page does not measure
 

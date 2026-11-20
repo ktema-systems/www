@@ -50,10 +50,10 @@ export const engines: Engine[] = [
     name: 'Ktema',
     color: 'var(--accent)',
     rows: [
-      { records: 1_000, bytes_per_record: 485, volume_bytes: 485_019, open_us: 442.708, point_read_us: 1.042, point_read_bytes: 3_195, range_us: 97.667, range_answers: 101, range_bytes: 567_577, write_us: 4.667 },
-      { records: 10_000, bytes_per_record: 493, volume_bytes: 4_931_941, open_us: 414.375, point_read_us: 1.167, point_read_bytes: 7_458, range_us: 1_459.333, range_answers: 1_001, range_bytes: 8_290_652, write_us: 4.958 },
-      { records: 100_000, bytes_per_record: 493, volume_bytes: 49_275_418, open_us: 12_443.708, point_read_us: 1.375, point_read_bytes: 11_149, range_us: 22_844.958, range_answers: 10_008, range_bytes: 109_232_615, write_us: 13.834 },
-      { records: 1_000_000, bytes_per_record: 495, volume_bytes: 495_261_336, open_us: 43_869.833, point_read_us: 1.916, point_read_bytes: 20_544, range_us: 315_835.75, range_answers: 98_968, range_bytes: 1_620_870_132, write_us: 28.792 },
+      { records: 1_000, bytes_per_record: 485, volume_bytes: 485_019, open_us: 0.25, point_read_us: 0.917, point_read_bytes: 2_785, range_us: 100.25, range_answers: 101, range_bytes: 577_701, write_us: 4.458 },
+      { records: 10_000, bytes_per_record: 493, volume_bytes: 4_931_941, open_us: 0.542, point_read_us: 1.125, point_read_bytes: 7_079, range_us: 1_424.75, range_answers: 1_001, range_bytes: 8_317_376, write_us: 4.625 },
+      { records: 100_000, bytes_per_record: 493, volume_bytes: 49_275_418, open_us: 0.792, point_read_us: 1.25, point_read_bytes: 10_990, range_us: 24_074.417, range_answers: 10_008, range_bytes: 109_628_159, write_us: 4.958 },
+      { records: 1_000_000, bytes_per_record: 495, volume_bytes: 495_261_336, open_us: 1.542, point_read_us: 1.834, point_read_bytes: 20_393, range_us: 314_402.333, range_answers: 98_968, range_bytes: 1_623_966_552, write_us: 7.583 },
     ],
   },
   {
@@ -138,8 +138,8 @@ export const reads = {
 export const boxes = {
   records: 1_000_000,
   rows: [
-    { store: 'Ktema, the leading axis', answers: 98_968, us: 315_835.75, bytes: 1_620_870_132, index_bytes: 0 },
-    { store: 'Ktema, an inner axis', answers: 111_720, us: 318_178.167, bytes: 1_620_870_132, index_bytes: 0 },
+    { store: 'Ktema, the leading axis', answers: 98_968, us: 314_402.333, bytes: 1_623_966_552, index_bytes: 0 },
+    { store: 'Ktema, an inner axis', answers: 111_720, us: 318_724.833, bytes: 1_623_966_552, index_bytes: 0 },
     { store: 'SQLite, the key range', answers: 100_000, us: 11_509.125, bytes: 29_278_208, index_bytes: 0 },
     { store: 'SQLite, an inner axis', answers: 119_160, us: 228_587.625, bytes: 292_597_760, index_bytes: 0 },
     { store: 'SQLite, an inner axis, indexed', answers: 119_160, us: 73_419.792, bytes: 43_372_544, index_bytes: 141_832_784 },
@@ -151,7 +151,7 @@ export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
   recorded: '2026-11-20',
   samples: 51,
-  engine: 'ktema a5a3563, ktema-bench 1000 10000 100000 1000000',
+  engine: 'ktema e5becad, ktema-bench 1000 10000 100000 1000000',
   peers: 'demo/tools/bench/run.sh',
   sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
 } as const;

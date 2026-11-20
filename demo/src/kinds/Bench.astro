@@ -25,6 +25,7 @@ const size = (bytes: number) =>
       ? `${(bytes / 1024 ** 2).toFixed(1)} MB`
       : `${(bytes / 1024).toFixed(0)} kB`;
 const span = (us: number) => (us >= 1000 ? `${(us / 1000).toFixed(1)} ms` : `${us.toFixed(0)} µs`);
+const opening = (us: number) => (us < 1000 ? `${us.toFixed(2)} µs` : `${(us / 1000).toFixed(2)} ms`);
 const rate = (row: (typeof boxes.rows)[number]) => Math.round(row.answers / (row.us / 1_000_000));
 const kilo = (value: number) =>
   value >= 1_000_000 ? `${(value / 1_000_000).toFixed(1)} million` : `${Math.round(value / 1000)} thousand`;
@@ -63,9 +64,9 @@ const values: Record<string, string> = {
   append_ktema: `${ktema100k.write_us.toFixed(1)} µs`,
   append_log: `${log100k.write_us.toFixed(1)} µs`,
   append_sqlite: `${sqlite100k.write_us.toFixed(1)} µs`,
-  open_ktema: `${(ktema100k.open_us / 1000).toFixed(2)} ms`,
-  open_log: `${(log100k.open_us / 1000).toFixed(2)} ms`,
-  open_sqlite: `${(sqlite100k.open_us / 1000).toFixed(2)} ms`,
+  open_ktema: opening(ktema100k.open_us),
+  open_log: opening(log100k.open_us),
+  open_sqlite: opening(sqlite100k.open_us),
   point_ktema: `${ktema100k.point_read_us.toFixed(2)} µs, reading ${kb(ktema100k.point_read_bytes ?? 0).toFixed(0)} kB`,
   point_log: `${log100k.point_read_us.toFixed(2)} µs`,
   point_sqlite: `${sqlite100k.point_read_us.toFixed(2)} µs, reading ${kb(sqlite100k.point_read_bytes ?? 0).toFixed(0)} kB`,
@@ -113,7 +114,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Open"
-    caption="Making the volume answerable. The log rebuilds its address map here; the engine reads its segment trailers."
+    caption="Making the volume answerable. The log rebuilds its address map here; the engine reads the trailer a stop wrote."
     unit="µs"
     scale="log"
     decimals={1}
