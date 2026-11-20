@@ -36,6 +36,7 @@ const ktema1m = at('ktema', 1_000_000);
 const log1m = at('log', 1_000_000);
 const sqlite1m = at('sqlite', 1_000_000);
 const ktemaRows = engines[0]!.rows;
+const sqliteRows = engines[2]!.rows;
 const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 const sqliteCache = indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes;
 
@@ -57,10 +58,10 @@ const values: Record<string, string> = {
   open_sqlite: `${(sqlite100k.open_us / 1000).toFixed(2)} ms`,
   point_ktema: `${ktema100k.point_read_us.toFixed(2)} µs, reading ${kb(ktema100k.point_read_bytes ?? 0).toFixed(0)} kB`,
   point_log: `${log100k.point_read_us.toFixed(2)} µs`,
-  point_sqlite: `${sqlite100k.point_read_us.toFixed(2)} µs`,
+  point_sqlite: `${sqlite100k.point_read_us.toFixed(2)} µs, reading ${kb(sqlite100k.point_read_bytes ?? 0).toFixed(0)} kB`,
   tenth_ktema: `${(ktema100k.range_us / 1000).toFixed(0)} ms, reading ${tenthMultiple.toFixed(1)} times the volume`,
   tenth_log: `${(log100k.range_us / 1000).toFixed(2)} ms`,
-  tenth_sqlite: `${(sqlite100k.range_us / 1000).toFixed(2)} ms`,
+  tenth_sqlite: `${(sqlite100k.range_us / 1000).toFixed(2)} ms, reading ${mib(sqlite100k.range_bytes ?? 0).toFixed(1)} MB`,
   ceiling_records: ceiling.records.toLocaleString('en-US'),
   volume_multiple: tenthMultiple.toFixed(1),
 };
@@ -143,20 +144,30 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Bytes read from the medium to answer"
-    caption="The engine's channel counts the bytes it reads, which is what the times above follow: one point read costs 11 kB at a hundred thousand records and 20 kB at a million, and a tenth costs 2.2 times the whole volume at a hundred thousand and 3.3 times at a million. The other two report no byte count, so this chart carries one engine."
+    caption="The bytes each store asked the medium for to answer one call. The engine's channel counts its reads; the database's pager counts the pages it fetched, at its 4 kB page, on a connection opened for the read, because a cache that already holds the page fetches nothing. A point read costs the engine 3.1 kB at a thousand records and the database 12 kB; at a million they are 20 kB and 24 kB. A tenth of the range is where the tree shows: the database reads 28 MB and the engine 1.5 GB, because the engine's path has no index and walks the log. The append log maps its file, so its reads are page faults no counter here sees: its open walks the whole file, and a point read afterwards touches a page already there."
     unit="MB"
     scale="log"
     decimals={2}
     series={[
       {
-        name: 'Point read',
+        name: 'Ktema, point read',
         color: 'var(--accent)',
         points: ktemaRows.map((row) => ({ label: label(row.records), value: mib(row.point_read_bytes ?? 0) })),
       },
       {
-        name: 'A tenth, enumerated',
+        name: 'Ktema, a tenth',
         color: 'var(--fg-2)',
         points: ktemaRows.map((row) => ({ label: label(row.records), value: mib(row.range_bytes ?? 0) })),
+      },
+      {
+        name: 'SQLite, point read',
+        color: 'rgb(122, 121, 119)',
+        points: sqliteRows.map((row) => ({ label: label(row.records), value: mib(row.point_read_bytes ?? 0) })),
+      },
+      {
+        name: 'SQLite, a tenth',
+        color: 'var(--fg-3)',
+        points: sqliteRows.map((row) => ({ label: label(row.records), value: mib(row.range_bytes ?? 0) })),
       },
     ]}
   />
@@ -225,7 +236,7 @@ const values: Record<string, string> = {
 </section>
 
 <p class="bench__source">
-  {source.engine} at {source.engine_recorded} and {source.peers} at {source.recorded} · {source.host} · median of {source.samples} samples ·
+  {source.engine} and {source.peers} · {source.host} · {source.recorded} · median of {source.samples} samples ·
   SQLite {source.sqlite}. The append log here is a fixed-width frame per record plus an address map, which is what an
   integrator writes without a database. A single volume stops at 4 GiB because the format's offsets are 32 bits.
 </p>

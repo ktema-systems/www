@@ -319,6 +319,37 @@ static void exec_ok(sqlite3 *db, const char *sql) {
     if (sqlite3_exec(db, sql, NULL, NULL, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
 }
 
+// The pages the pager had to fetch from the file, which is what one read costs the medium. SQLite counts a page
+// cache miss as a read at `PRAGMA page_size`, so the byte figure is exact rather than estimated. `reset` zeroes the
+// counter, so a caller brackets the operation it is pricing.
+static long long pages_fetched(sqlite3 *db, int reset) {
+    int current = 0;
+    int high = 0;
+    if (sqlite3_db_status(db, SQLITE_DBSTATUS_CACHE_MISS, &current, &high, reset) != SQLITE_OK)
+        fail("cache miss status");
+    return (long long)current;
+}
+
+static long long page_size_of(sqlite3 *db) {
+    sqlite3_stmt *page = NULL;
+    if (sqlite3_prepare_v2(db, "PRAGMA page_size", -1, &page, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    long long size = 4096;
+    if (sqlite3_step(page) == SQLITE_ROW) size = sqlite3_column_int64(page, 0);
+    sqlite3_finalize(page);
+    return size;
+}
+
+static int cmp_long(const void *a, const void *b) {
+    long long x = *(const long long *)a;
+    long long y = *(const long long *)b;
+    return (x > y) - (x < y);
+}
+
+static long long median_long(long long *v, size_t n) {
+    qsort(v, n, sizeof(long long), cmp_long);
+    return v[n / 2];
+}
+
 typedef struct {
     unsigned long long records;
     unsigned long long volume_bytes;
@@ -329,6 +360,9 @@ typedef struct {
     double write_us;
     unsigned long long write_bytes;
     unsigned long long cache_bytes;
+    unsigned long long page_size;
+    unsigned long long point_read_medium_bytes;
+    unsigned long long range_medium_bytes;
 } DbResult;
 
 // A statement that binds an index into one of the three address columns. The key is a stack
@@ -408,6 +442,7 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
     }
 
     db = db_open(path);
+    const long long page_size = page_size_of(db);
     sqlite3_stmt *point = NULL;
     if (sqlite3_prepare_v2(db, "SELECT payload FROM records WHERE fact_key=?1", -1, &point, NULL) !=
         SQLITE_OK)
@@ -421,6 +456,25 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
         if (sqlite3_step(point) != SQLITE_ROW) fail("point read missed");
         (void)sqlite3_column_text(point, 0);
         reads[s] = now_us() - at;
+    }
+
+    // What a point read costs the medium. SQLite counts a page cache miss as a page it fetched at the page size
+    // above, so the figure is exact. The read runs on a connection opened for it, whose cache is empty, and the
+    // counter is cleared after the statement is prepared: the schema read belongs to the open, not to the read.
+    long long point_pages[SAMPLES];
+    for (size_t s = 0; s < SAMPLES; s++) {
+        sqlite3 *one = db_open(path);
+        sqlite3_stmt *read = NULL;
+        if (sqlite3_prepare_v2(one, "SELECT payload FROM records WHERE fact_key=?1", -1, &read, NULL) !=
+            SQLITE_OK)
+            fail(sqlite3_errmsg(one));
+        (void)pages_fetched(one, 1);
+        bind_address(read, 1, records / 2 + s % 16);
+        if (sqlite3_step(read) != SQLITE_ROW) fail("point read missed");
+        (void)sqlite3_column_text(read, 0);
+        point_pages[s] = pages_fetched(one, 0);
+        sqlite3_finalize(read);
+        sqlite3_close(one);
     }
     sqlite3_finalize(point);
 
@@ -452,6 +506,25 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
         if (rc != SQLITE_DONE) fail(sqlite3_errmsg(db));
         ranges[s] = now_us() - at;
         answers = n;
+    }
+
+    long long range_pages[SAMPLES];
+    for (size_t s = 0; s < SAMPLES; s++) {
+        sqlite3 *one = db_open(path);
+        sqlite3_stmt *scan = NULL;
+        if (sqlite3_prepare_v2(one,
+                               "SELECT fact_key FROM records WHERE fact_key>=?1 AND fact_key<?2",
+                               -1, &scan, NULL) != SQLITE_OK)
+            fail(sqlite3_errmsg(one));
+        (void)pages_fetched(one, 1);
+        bind_address(scan, 1, records / 2);
+        bind_address(scan, 2, records / 2 + records / 10);
+        int rc;
+        while ((rc = sqlite3_step(scan)) == SQLITE_ROW) (void)sqlite3_column_text(scan, 0);
+        if (rc != SQLITE_DONE) fail(sqlite3_errmsg(one));
+        range_pages[s] = pages_fetched(one, 0);
+        sqlite3_finalize(scan);
+        sqlite3_close(one);
     }
     free(found);
     sqlite3_finalize(range);
@@ -505,6 +578,11 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
     out->range_answers = answers;
     out->write_us = median(writes, SAMPLES);
     out->write_bytes = write_bytes;
+    out->page_size = (unsigned long long)page_size;
+    out->point_read_medium_bytes =
+        (unsigned long long)median_long(point_pages, SAMPLES) * (unsigned long long)page_size;
+    out->range_medium_bytes =
+        (unsigned long long)median_long(range_pages, SAMPLES) * (unsigned long long)page_size;
 }
 
 int main(int argc, char **argv) {
@@ -541,10 +619,12 @@ int main(int argc, char **argv) {
         printf(
             "    { \"records\": %llu, \"volume_bytes\": %llu, \"open_us\": %.3f, "
             "\"point_read_us\": %.3f, \"range_us\": %.3f, \"range_answers\": %llu, "
-            "\"write_us\": %.3f, \"write_bytes\": %llu, \"cache_bytes\": %llu }%s\n",
+            "\"write_us\": %.3f, \"write_bytes\": %llu, \"cache_bytes\": %llu, "
+            "\"page_size\": %llu, \"point_read_medium_bytes\": %llu, \"range_medium_bytes\": %llu }%s\n",
             dbs[r].records, dbs[r].volume_bytes, dbs[r].open_us, dbs[r].point_read_us,
             dbs[r].range_us, dbs[r].range_answers, dbs[r].write_us, dbs[r].write_bytes,
-            dbs[r].cache_bytes, r + 1 < RUNG_COUNT ? "," : "");
+            dbs[r].cache_bytes, dbs[r].page_size, dbs[r].point_read_medium_bytes,
+            dbs[r].range_medium_bytes, r + 1 < RUNG_COUNT ? "," : "");
     }
     printf("  ]\n}\n");
     return 0;

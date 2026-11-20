@@ -46,9 +46,9 @@ The append log and the database are at their best on a host, with an operating s
 cache. Neither of them runs on a part with no operating system, and the log's address map stops fitting long before
 the volumes it is meant to serve. The engine's case is that tier.
 
-The append figure is where repeated runs spread widest: at a hundred thousand records it moves between 12 and 19 µs for
-both the engine and the database, while the other three stayed within a tenth of their value. Each row is one median of
-one run.
+The append figure is where runs spread widest: across repeated runs at a hundred thousand records the engine and the
+database both land between 10 and 19 µs, while the other three times stayed within a tenth of their value. Each row is
+one median of one run.
 
 ## The path this page does not measure
 

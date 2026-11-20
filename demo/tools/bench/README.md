@@ -40,8 +40,16 @@ reserve under the format's 4 GiB medium, so it is the peer side of that ceiling;
 | `open_us` | time to make the volume answerable; the log rebuilds its address map here |
 | `point_read_us` | one record by its address |
 | `range_us` | the addresses in a contiguous tenth, enumerated rather than counted |
+| `page_size` | the page the database stores rows in, and the unit its byte figures are counted at |
+| `point_read_medium_bytes` | bytes the store read from the medium to fetch one record by its address |
+| `range_medium_bytes` | bytes the store read to enumerate the tenth |
 | `map_bytes` | bytes of address map the log allocated, which is its cost per record |
 | `cache_bytes` | bytes of page cache the database held after the range query, which is how it answers by address without a map |
+
+The database's byte figures are its own page cache miss count, which is a page fetched from the file, multiplied by
+its page size. The read is measured on a connection opened for it, because a cache that already holds the page fetches
+nothing; the counter is cleared after the statement is prepared, so the schema read belongs to the open and not to the
+read. The log maps its file and lets the kernel fault pages in, so it issues no read call and has no figure here.
 
 The range query enumerates addresses rather than counting them, because that is what the engine
 returns. A count would let a database answer from its index alone and would measure a smaller
@@ -63,5 +71,5 @@ A device. Both baselines need an operating system and a filesystem, so this is a
 comparison, and the engine's host path goes through a region channel that keeps no block cache.
 The device tier is recorded by the runs under `../record` and by the engine's own gates.
 
-A single engine volume stops at 4 GiB, because the format's offsets are 32 bits. At 484 bytes a
-record that is about 8.9M records, so 10M is not a volume this engine can hold.
+A single engine volume stops at 4 GiB, because the format's offsets are 32 bits. At 495 bytes a
+record that is about 8.7M records, so 10M is not a volume this engine can hold.
