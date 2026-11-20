@@ -38,27 +38,20 @@ ktma:
 
 ## Reading the times
 
-The host rows are the engine's reference path, opened without record maps. That is the device's path: it reads the
-medium in bytes, keeps no block cache, and builds no index, so a box query walks the log. A tenth of the addresses at
-a hundred thousand records reads {{volume_multiple}} times the volume, which is where its time comes from. The section
-below prices the other path.
+The host rows are the engine's reference path: no record maps, no block cache, no index, so a box query walks the log.
+A tenth of the addresses at a hundred thousand records reads {{volume_multiple}} times the volume, which is where its
+time comes from.
 
-The append log and the database are at their best on a host, with an operating system, a filesystem and a warm page
-cache. Neither of them runs on a part with no operating system, and the log's address map stops fitting long before
-the volumes it is meant to serve. The engine's case is that tier.
+The peers run with an operating system, a filesystem and a warm page cache. Neither runs on a part without one, and
+the log's address map stops fitting before the volumes it serves. The engine's case is that tier.
 
-The append figure is where runs spread widest: across repeated runs at a hundred thousand records the engine and the
-database both land between 10 and 19 µs, while the other three times stayed within a tenth of their value. Each row is
-one median of one run.
+The append figure is where runs spread widest: at a hundred thousand records the engine and the database both land
+between 10 and 19 µs, while the other three times stayed within a tenth of their value.
 
 ## The path this page does not measure
 
-A volume opens two ways. The reference path builds nothing and answers by reading the log, which is what every number
-above measures. The cached path builds the record maps, at 394 to 406 bytes a record on a 32-bit target, and carries
-the structural index at about 354 kB, so a read is served from memory rather than from the medium. A host, or a part
-with memory to spare, can take that path. A part with 64 kB cannot, and that is the reason this page measures the
-reference path: it is the one that runs in both places.
+A volume opens two ways. The reference path answers by reading the log, which is what every number here measures. The
+cached path builds record maps at 394 to 406 bytes a record on a 32-bit target, with the structural index at about
+354 kB, so a read comes from memory. A part with 64 kB cannot take it.
 
-Both paths hold the same record in the same format, so the choice does not change what the volume is. It changes where
-the cost lands, on the medium or in the memory. What stays the same either way is the bytes each record takes, the
-4 GiB a volume can address, and the record being written where the event happened.
+Both paths hold the same record in the same format. The choice moves the cost between the medium and the memory.

@@ -78,16 +78,15 @@ const values: Record<string, string> = {
 ---
 
 <p class="bench__lede">
-  One record, three stores, on one machine. The record is three 60-byte addresses, an origin, a media type and a
-  payload of about 55 bytes, which is what the engine's own bench writes. Each chart below measures the same content,
-  so the differences are the formats.
+  One record, three stores, one machine. The record is three 60-byte addresses, an origin, a media type and a payload of
+  about 55 bytes, so the differences below are the formats.
 </p>
 
 <div class="bench__grid">
   <Chart
     title="Memory to answer by address"
     wide={true}
-    caption={`The index each engine has to hold. The bare log builds one map entry per record, and at five million records that map is ${mib(indexMemory.log_at_five_million).toFixed(0)} MB. The engine's line is its optional structural index, a fixed array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB that this benchmark does not build: the run opens without record maps, so it answers a box query by walking the log. A database keeps its index in a file, so the memory it holds is the page cache that file is read through, which follows the records until it reaches about ${mib(sqliteCache).toFixed(0)} MB, the size the cache was configured with.`}
+    caption={`The index each engine must hold. The bare log builds a map entry per record, ${mib(indexMemory.log_at_five_million).toFixed(0)} MB at five million. The engine's optional structural index is a fixed array of about ${kb(indexMemory.engine_bytes).toFixed(0)} kB, not built in this run. A database keeps its index in a file, so its memory is the page cache that file is read through, about ${mib(sqliteCache).toFixed(0)} MB.`}
     unit="MB"
     scale="log"
     decimals={2}
@@ -122,7 +121,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="One record by address"
-    caption="One record fetched by its own address. The log holds the whole address map in memory, so its lookup is constant; the engine builds no map, because the path that runs without an operating system has nowhere to keep one, so it finds the record by probing the segments of the log. That read grows from 3.1 kB at a thousand records to 20 kB at a million, and the line follows the bytes. The flat line in the memory chart is the same choice from the other side: no map is held, so the read is paid on the medium."
+    caption="One record by its own address. The log keeps the whole address map in memory, so its lookup is constant. The engine holds no map, so it probes the segments, and that read grows from 3.1 kB at a thousand records to 20 kB at a million."
     unit="µs"
     scale="log"
     decimals={2}
@@ -138,7 +137,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Bytes read from the medium to answer"
-    caption="The bytes each store asked the medium for to answer one call. The engine's channel counts its reads; the database's pager counts the pages it fetched, at its 4 kB page, on a connection opened for the read, because a cache that already holds the page fetches nothing. A point read costs the engine 3.1 kB at a thousand records and the database 12 kB; at a million they are 20 kB and 24 kB. A tenth of the range is where the tree shows: the database reads 27.9 MB and the engine 1.5 GB, because the engine's path has no index and walks the log. The append log maps its file, so its reads are page faults no counter here sees: its open walks the whole file, and a point read afterwards touches a page already there."
+    caption="The bytes each store asked the medium for. The engine counts its reads; the database counts the pages its pager fetched at 4 kB, on a connection opened for the read. A point read is 3.1 kB for the engine and 12 kB for the database at a thousand records, 20 kB and 24 kB at a million; a tenth of the range is 1.5 GB against 27.9 MB. The append log maps its file and issues no read call."
     unit="MB"
     scale="log"
     decimals={2}
@@ -194,25 +193,19 @@ const values: Record<string, string> = {
     </tbody>
   </table>
   <p>
-    The engine answers both shapes from the same pass, in the same bytes, because the address is computed and nothing
-    is stored to prune with. The database's inner-axis row is the shape its key order does not carry: {(
-      boxes.rows[3].bytes / boxes.rows[2].bytes
-    ).toFixed(1)} times the reads of the key range and {(
+    The engine answers both shapes in one pass and the same bytes, because the address is computed. The database's
+    inner-axis row costs {((boxes.rows[3].bytes / boxes.rows[2].bytes)).toFixed(1)} times the reads and {(
       boxes.rows[3].us / boxes.rows[2].us
-    ).toFixed(1)} times the time. An index makes that shape cheap again, and the index is {size(boxes.rows[4].index_bytes)} on a {size(sqlite1m.volume_bytes)} volume, held for one shape and
-    maintained by every append.
+    ).toFixed(1)} times the time, and an index of {size(boxes.rows[4].index_bytes)} on a {size(sqlite1m.volume_bytes)} volume makes it
+    cheap again.
   </p>
   <p>
-    The engine's flat cost is its whole namespace, walked once per query: {size(boxes.rows[0].bytes)} at a million
-    records. The merge sets it. A listing compares each key once per segment, and a segment answers with an entry
-    rather than with the bytes of the key, so a volume of eight segments reads eight entries for every key it lists,
-    and the box pays that whether it answers a tenth of the volume or all of it. A listing begins at a prefix, and a
-    box is a set of ranges rather than a prefix, so the walk begins at the namespace's first key. A start-of-range
-    seek in the channel is what would make a box read its own window.
+    The engine's flat cost is the namespace, walked once per query: {size(boxes.rows[0].bytes)} at a million records. A
+    listing compares each key once per segment, and a listing begins at a prefix, which a set of ranges is not.
   </p>
   <Chart
     title="What the rate costs to hold"
-    caption={`Answers a second across, bytes of index the store must hold up. The engine sits on the floor at either axis because it holds no index: ${kilo(rate(boxes.rows[0]))} and ${kilo(rate(boxes.rows[1]))} at zero state. The database answers the ordered shape at ${kilo(rate(boxes.rows[2]))} from the table it already stores, and the shape that table does not carry costs either ${size(boxes.rows[3].bytes)} of reads and ${span(boxes.rows[3].us)} as a scan, or ${size(boxes.rows[4].index_bytes)} of index to answer in ${span(boxes.rows[4].us)}.`}
+    caption={`Answers a second across, bytes of index held up. The engine sits on the floor at either axis: ${kilo(rate(boxes.rows[0]))} and ${kilo(rate(boxes.rows[1]))} answers a second at zero state. The database answers the ordered shape at ${kilo(rate(boxes.rows[2]))} from the table it already stores; the shape that table does not carry costs ${size(boxes.rows[3].bytes)} of reads and ${span(boxes.rows[3].us)} as a scan, or ${size(boxes.rows[4].index_bytes)} of index to answer in ${span(boxes.rows[4].us)}.`}
     unit="answers/s across, MB held up"
     kind="scatter"
     scale="linear"
@@ -243,23 +236,15 @@ const values: Record<string, string> = {
     ]}
   />
   <p>
-    Output and its cost are the two charts above: one is answers a second against the state that buys them, the other
-    is the bytes behind them. The database's rate follows the shape because it stores one order, so the shape that
-    order carries is answered from the table and every other shape is a scan or an index of its own. The engine's rate
-    does not follow the shape, because the address is computed, and the price sits on the other chart: {(
-      boxes.rows[0].bytes /
-      boxes.rows[0].answers /
-      1024
-    ).toFixed(1)} kB read per answer against {(
+    Per answer: {(boxes.rows[0].bytes / boxes.rows[0].answers / 1024).toFixed(1)} kB read against {(
       boxes.rows[2].bytes /
       boxes.rows[2].answers /
       1024
     ).toFixed(1)} kB.
   </p>
   <p>
-    A volume stops at 4 GiB, which at {ktema1m.bytes_per_record} bytes a record is {ceiling.records.toLocaleString('en-US')}{' '}
-    records. An analysis dataset at the size a particle-physics ntuple reaches is about a hundred times that, so the
-    unit here is the volume: a dataset that size is many volumes addressed together. This page measures one.
+    A volume stops at 4 GiB, {ceiling.records.toLocaleString('en-US')} records at {ktema1m.bytes_per_record} bytes each. A
+    particle-physics ntuple is about a hundred times that, so the unit here is the volume.
   </p>
 </section>
 
@@ -267,7 +252,7 @@ const values: Record<string, string> = {
   <h2>What a read costs the medium</h2>
   <Chart
     title="Reads a question costs the medium"
-    caption="The same record, read at 64 records and at 512. Neither count moves, which is the contract's claim: a point read asks the medium for the same four regions at any volume, and the listing reads no record. The bytes those regions cover follow the volume, which is the chart above."
+    caption="One record read at 64 records and at 512. Neither count moves: a point read asks the medium for the same four regions at any volume, and the listing reads no record. The bytes behind them follow the volume."
     unit="reads"
     kind="bar"
     decimals={0}
@@ -293,10 +278,8 @@ const values: Record<string, string> = {
     ]}
   />
   <p>
-    The engine counts the reads it asks the medium for, which is the unit its own read contract uses. The count stays
-    at one framing read and three fact reads at any volume, and a prefix read does not read a record. The bytes behind
-    those reads do grow, which is the line in the chart above: the count is fixed and what each read costs is not. The
-    same record is read at {reads.rows[0].records} and at {reads.rows[1].records} records.
+    The engine counts the reads it asks the medium for. The count is one framing read and three fact reads at any
+    volume, and a prefix read does not read a record.
   </p>
   <table>
     <thead>
@@ -314,15 +297,14 @@ const values: Record<string, string> = {
     </tbody>
   </table>
   <p>
-    An eightfold volume changes neither count. The listing issues no byte read at all, which is the contract's "does not
-    read a record"; the directory walk itself is not a call this counter sees, so the zero is a statement about records
-    and not a claim that a listing is free. Nor is either count a statement about bytes: the same four reads cover 3.1 kB
-    at a thousand records and 20 kB at a million.
+    An eightfold volume changes neither count. The listing issues no byte read, which is the contract's "does not read a
+    record"; the directory walk is not a call this counter sees. The bytes behind the four reads do grow, from 3.1 kB at
+    a thousand records to 20 kB at a million.
   </p>
 </section>
 
 <p class="bench__source">
   {source.engine} and {source.peers} · {source.host} · {source.recorded} · median of {source.samples} samples ·
-  SQLite {source.sqlite}. The append log here is a fixed-width frame per record plus an address map, which is what an
-  integrator writes without a database. A single volume stops at 4 GiB because the format's offsets are 32 bits.
+  SQLite {source.sqlite}. The append log is a fixed-width frame per record plus an address map, which is what an
+  integrator writes without a database.
 </p>
