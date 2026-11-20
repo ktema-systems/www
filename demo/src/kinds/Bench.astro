@@ -25,6 +25,10 @@ const size = (bytes: number) =>
       ? `${(bytes / 1024 ** 2).toFixed(1)} MB`
       : `${(bytes / 1024).toFixed(0)} kB`;
 const span = (us: number) => (us >= 1000 ? `${(us / 1000).toFixed(1)} ms` : `${us.toFixed(0)} µs`);
+const rate = (row: (typeof boxes.rows)[number]) => Math.round(row.answers / (row.us / 1_000_000));
+const kilo = (value: number) =>
+  value >= 1_000_000 ? `${(value / 1_000_000).toFixed(1)} million` : `${Math.round(value / 1000)} thousand`;
+const gigabytes = (bytes: number, us: number) => bytes / (us / 1_000_000) / 1024 ** 3;
 
 const seriesOf = (pick: (row: Row) => number) =>
   engines.map((engine) => ({
@@ -222,6 +226,38 @@ const values: Record<string, string> = {
     and the box pays that whether it answers a tenth of the volume or all of it. A listing begins at a prefix, and a
     box is a set of ranges rather than a prefix, so the walk begins at the namespace's first key. A start-of-range
     seek in the channel is what would make a box read its own window.
+  </p>
+  <Chart
+    title="Answers a second"
+    caption={`Answers a second, which is what a box returns rather than what it costs. The database's rate follows whether its key order carries the shape: ${kilo(rate(boxes.rows[2]))} for the ordered shape, ${kilo(rate(boxes.rows[3]))} for an inner axis, and ${kilo(rate(boxes.rows[4]))} once an index exists for that axis. The engine's rate is ${kilo(rate(boxes.rows[0]))} for the ordered shape and ${kilo(rate(boxes.rows[1]))} for an inner axis, because no axis is cheaper than another when the address is computed. The bytes behind those rates are on the chart above: ${gigabytes(boxes.rows[0].bytes, boxes.rows[0].us).toFixed(1)} GB/s through the engine's read path against ${gigabytes(boxes.rows[2].bytes, boxes.rows[2].us).toFixed(1)} GB/s through the database's, work the database does when its cache is cold and serves from memory otherwise.`}
+    unit="answers/s"
+    scale="linear"
+    decimals={0}
+    kind="bar"
+    series={[
+      {
+        name: 'Ktema',
+        color: 'var(--accent)',
+        points: [
+          { label: 'Axis in order', value: rate(boxes.rows[0]) },
+          { label: 'Inner axis', value: rate(boxes.rows[1]) },
+        ],
+      },
+      {
+        name: 'SQLite',
+        color: 'rgb(122, 121, 119)',
+        points: [
+          { label: 'Axis in order', value: rate(boxes.rows[2]) },
+          { label: 'Inner axis', value: rate(boxes.rows[3]) },
+        ],
+      },
+    ]}
+  />
+  <p>
+    A rate is output and bytes are its cost, so the two charts answer different questions and neither is the verdict.
+    What the rate shows is that the database's follows the shape and the engine's does not: the ordered shape is
+    where a stored order pays, and an axis it does not carry is where it falls to a scan. What the bytes show is what
+    that output costs, and the database pays it once because it keeps the page.
   </p>
   <p>
     A volume stops at 4 GiB, which at {ktema1m.bytes_per_record} bytes a record is {ceiling.records.toLocaleString('en-US')}{' '}
