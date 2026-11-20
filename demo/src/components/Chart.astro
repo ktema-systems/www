@@ -4,6 +4,12 @@
 interface Datum {
   label: string;
   value: number;
+  /** Where the point sits across the chart, for a scatter. Its `value` is the height. */
+  x?: number;
+  /** Which side of the point its label sits on, and how far from it. */
+  align?: 'start' | 'end';
+  dx?: number;
+  dy?: number;
 }
 interface Series {
   name: string;
@@ -14,7 +20,7 @@ interface Props {
   title: string;
   caption?: string;
   unit: string;
-  kind?: 'line' | 'bar';
+  kind?: 'line' | 'bar' | 'scatter';
   scale?: 'linear' | 'log';
   decimals?: number;
   series: Series[];
@@ -86,6 +92,21 @@ const count = series[0]?.points.length ?? 1;
 const slot = plotW / count;
 const xAt = (i: number) => m.left + slot * (i + 0.5);
 
+// A scatter carries a number across and a number up, so its horizontal axis is a scale rather than a slot per
+// entry. The two are decades, because what it plots spans orders of magnitude and a dot is a position, not a length.
+const scatter = kind === 'scatter';
+const across = series.flatMap((s) => s.points.map((p) => p.x ?? 0)).filter((v) => v > 0);
+const xTo = 10 ** Math.ceil(Math.log10(Math.max(...across, 10)));
+const xFrom = 10 ** Math.floor(Math.log10(Math.min(...across, xTo / 10)));
+const xScale = (v: number) => {
+  const lo = Math.log10(xFrom);
+  const hi = Math.log10(xTo);
+  return m.left + ((Math.log10(Math.max(v, xFrom)) - lo) / (hi - lo)) * plotW;
+};
+const xTicks = scatter
+  ? Array.from({ length: Math.round(Math.log10(xTo) - Math.log10(xFrom)) + 1 }, (_, i) => xFrom * 10 ** i)
+  : [];
+
 const colors = ['var(--accent)', 'var(--fg-2)', 'var(--accent-2)'];
 const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
 ---
@@ -127,14 +148,39 @@ const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
       ))
     }
 
-    {series[0]?.points.map((point, i) => (
-      <text class="chart__x" x={xAt(i)} y={m.top + plotH + 20} text-anchor="middle">
-        {point.label}
-      </text>
-    ))}
+    {scatter
+      ? xTicks.map((tick) => (
+          <text class="chart__tick" x={xScale(tick)} y={m.top + plotH + 18} text-anchor="middle">
+            {fmtTick(tick)}
+          </text>
+        ))
+      : series[0]?.points.map((point, i) => (
+          <text class="chart__x" x={xAt(i)} y={m.top + plotH + 20} text-anchor="middle">
+            {point.label}
+          </text>
+        ))}
 
     <line class="chart__axis" x1={m.left} x2={m.left} y1={m.top} y2={m.top + plotH} />
     <line class="chart__axis" x1={m.left} x2={W - m.right} y1={m.top + plotH} y2={m.top + plotH} />
+
+    {
+      scatter &&
+        series.map((s, si) =>
+          s.points.map((point) => (
+            <>
+              <circle class="chart__dot" cx={xScale(point.x ?? 0)} cy={yAt(point.value)} r="3.5" fill={colorOf(s, si)} />
+              <text
+                class="chart__x"
+                x={xScale(point.x ?? 0) + (point.align === 'end' ? -(point.dx ?? 8) : point.dx ?? 8)}
+                y={yAt(point.value) + (point.dy ?? -8)}
+                text-anchor={point.align ?? 'start'}
+              >
+                {point.label}
+              </text>
+            </>
+          ))
+        )
+    }
 
     {
       kind === 'bar' &&

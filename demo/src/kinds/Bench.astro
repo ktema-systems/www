@@ -228,6 +228,38 @@ const values: Record<string, string> = {
     seek in the channel is what would make a box read its own window.
   </p>
   <Chart
+    title="What the rate costs to hold"
+    caption={`Answers a second across, bytes of index the store must hold up. A point's height is the state it keeps to answer at that rate, which is the cost the rate chart below does not carry. The engine sits on the floor of this chart at either axis, because it holds no index: 313 thousand and 351 thousand answers a second at zero state. The database answers the ordered shape at ${kilo(rate(boxes.rows[2]))} and holds nothing extra for it, because that shape is its table. The shape its table does not carry costs ${size(boxes.rows[3].bytes)} of reads and ${span(boxes.rows[3].us)} as a scan, or an index of ${size(boxes.rows[4].index_bytes)} to answer in ${span(boxes.rows[4].us)}.`}
+    unit="answers/s across, MB held up"
+    kind="scatter"
+    scale="linear"
+    decimals={0}
+    series={[
+      {
+        name: 'Ktema',
+        color: 'var(--accent)',
+        points: [
+          { label: 'Ktema, either axis', x: rate(boxes.rows[0]), value: 0, align: 'end', dx: 10, dy: -10 },
+          { label: '', x: rate(boxes.rows[1]), value: 0 },
+        ],
+      },
+      {
+        name: 'SQLite',
+        color: 'rgb(122, 121, 119)',
+        points: [
+          { label: 'SQLite, key order', x: rate(boxes.rows[2]), value: 0, align: 'end', dx: 10, dy: -10 },
+          { label: 'SQLite, a scan', x: rate(boxes.rows[3]), value: 0, dy: -10 },
+          {
+            label: 'SQLite, an index',
+            x: rate(boxes.rows[4]),
+            value: boxes.rows[4].index_bytes / 1024 ** 2,
+            dy: -10,
+          },
+        ],
+      },
+    ]}
+  />
+  <Chart
     title="Answers a second"
     caption={`Answers a second, which is what a box returns rather than what it costs. The database's rate follows whether its key order carries the shape: ${kilo(rate(boxes.rows[2]))} for the ordered shape, ${kilo(rate(boxes.rows[3]))} for an inner axis, and ${kilo(rate(boxes.rows[4]))} once an index exists for that axis. The engine's rate is ${kilo(rate(boxes.rows[0]))} for the ordered shape and ${kilo(rate(boxes.rows[1]))} for an inner axis, because no axis is cheaper than another when the address is computed. The bytes behind those rates are on the chart above: ${gigabytes(boxes.rows[0].bytes, boxes.rows[0].us).toFixed(1)} GB/s through the engine's read path against ${gigabytes(boxes.rows[2].bytes, boxes.rows[2].us).toFixed(1)} GB/s through the database's, work the database does when its cache is cold and serves from memory otherwise.`}
     unit="answers/s"
