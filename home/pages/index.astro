@@ -31,56 +31,13 @@ const operationsPanels = [
   {
     kicker: 'The run',
     title: 'A fire on an island, met by the fleet already there',
-    body: 'Survey and thermal drones map the perimeter, a relay holds the link over the strait, and crawlers and boats take the shore. One intent carries every machine, and the operator changes it while the run moves.',
+    body: 'Survey and thermal drones map the perimeter, a relay holds the link, and crawlers and boats take the shore under one intent. A factory cell runs the same way on servos, conveyors, and cameras, and the operator changes the intent from where the record is read.',
     image: {
       src: '/delta_devscr.webp',
       alt: 'Rescue Wing: Island Fire. The intents and records on the left, the cell view of survey, thermal, photo and relay drones with crawlers, boats and rovers in the middle, the island and its shoreline on the right, and the timeline below.',
       width: 1842,
       height: 1047,
     },
-  },
-  {
-    kicker: 'The cell',
-    title: 'A workforce runs on one intent',
-    body: 'Servos, conveyors, cameras, maintenance robots, software agents, and the people who run them, in one cell view. An intent is written once, and the cell runs on it.',
-    image: {
-      src: '/delta_scr_factory.webp',
-      alt: 'The cockpit on a factory cell: the intents and records on the left, the feed and the cell view in the middle with servos, conveyors and maintenance robots, and the timeline along the bottom.',
-      width: 1766,
-      height: 920,
-    },
-  },
-  {
-    kicker: 'The span',
-    metrics: [{ value: '35,786', unit: 'km' }],
-    title: 'Land, air, and orbit in one view',
-    body: 'A rescue run reaches from a satellite at 35,786 km to a drone over the site, with the helicopters, the escorts, and the hospital on the same map.',
-    image: {
-      src: '/delta_scr_satelite.webp',
-      alt: 'A rescue campaign on the map and in the cell view: satellites at 550, 1,200 and 35,786 km, rescue and medevac aircraft, escorts, the hospital, and the operators on one space.',
-      width: 1265,
-      height: 686,
-    },
-  },
-  {
-    kicker: 'The seat',
-    title: 'The operator stands inside the run',
-    body: `On the island, the operator stands in the run: the drones, their record, and the bounds around them, with the intent changed from where the record is read.`,
-  },
-  {
-    kicker: 'The chain',
-    title: 'The ask and the act stay one chain',
-    body: 'A request is stated, claimed, performed, and written as a result, with the link back to the request. One chain across agents, people, machines, and outside systems.',
-  },
-  {
-    kicker: 'The terms',
-    title: 'The rules are written before the work starts',
-    body: 'A smart contract or a governance rule sets which model may act, at what cost, and on whose authority. The record is checked against it.',
-  },
-  {
-    kicker: 'The campaign',
-    title: 'A run another team can replay',
-    body: 'A finished run becomes a package that can be handed on and compared against another. The next campaign starts from it.',
   },
 ];
 
@@ -310,8 +267,8 @@ const assertNever = (value: never): never => {
             title="The run, seen from where it happens."
             lede="Delta is the cockpit: the machines, their records, the bounds around them, and the timeline, in one space."
             slides={operationsPanels}
-            labels={['Run', 'Cell', 'Span', 'Seat', 'Chain', 'Terms', 'Campaign']}
-            footnote="The campaign data in these views is simulated. Delta is planned to be open source."
+            labels={['Run']}
+            footnote="The campaign data in this view is simulated. Delta is planned to be open source."
           />
         );
       case 'accountability':

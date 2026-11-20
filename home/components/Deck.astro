@@ -221,26 +221,31 @@ const splitMetric = (value: string) => {
       </ol>
 
       <div class="deck__foot">
-        <p class="deck__count">
-          <span data-slide-now>01</span>
-          <span class="deck__of">/ {String(slides.length).padStart(2, '0')}</span>
-        </p>
+        {/* One slide needs no position, no tabs, and no rail: the figure is the section. */}
         {
-          labels && (
-            <div class="deck__tabs">
-              {labels.map((label, index) => (
-                <button
-                  type="button"
-                  class:list={['deck__tab', index === 0 && 'is-active']}
-                  data-slide-tab={index}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+          slides.length > 1 && (
+            <>
+              <p class="deck__count">
+                <span data-slide-now>01</span>
+                <span class="deck__of">/ {String(slides.length).padStart(2, '0')}</span>
+              </p>
+              {labels && (
+                <div class="deck__tabs">
+                  {labels.map((label, index) => (
+                    <button
+                      type="button"
+                      class:list={['deck__tab', index === 0 && 'is-active']}
+                      data-slide-tab={index}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              <div class="deck__rail"><span class="deck__bar" data-slide-bar /></div>
+            </>
           )
         }
-        <div class="deck__rail"><span class="deck__bar" data-slide-bar /></div>
         <button type="button" class="deck__cue" data-deck-skip aria-label="Skip to the next section">
           Skip
           <span class="deck__cue-arrow" aria-hidden="true">&#8595;</span>
