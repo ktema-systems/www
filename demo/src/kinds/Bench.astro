@@ -103,7 +103,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Volume size"
-    caption="Linear for all three, as a log is. At a million records the engine's volume is 473 MB, the append log's 245 MB and the database's 279 MB."
+    caption="Linear for all three, as a log is. At a million records the engine's volume is 472 MB, the append log's 245 MB and the database's 279 MB."
     unit="MB"
     scale="log"
     decimals={1}
@@ -127,7 +127,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="One record by address"
-    caption="One record fetched by its own address. The log holds the whole address map in memory, so its lookup is constant; the engine builds no map, because the path that runs without an operating system has nowhere to keep one, so it finds the record by reading the log. That read grows from 5.7 kB at a thousand records to 646 kB at a million, and the line follows the bytes. The flat line here and the rising line in the memory chart are one trade seen from two sides."
+    caption="One record fetched by its own address. The log holds the whole address map in memory, so its lookup is constant; the engine builds no map, because the path that runs without an operating system has nowhere to keep one, so it finds the record by probing the segments of the log. That read grows from 3.1 kB at a thousand records to 20 kB at a million, and the line follows the bytes. The flat line in the memory chart is the same choice from the other side: no map is held, so the read is paid on the medium."
     unit="µs"
     scale="log"
     decimals={2}
@@ -143,7 +143,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Bytes read from the medium to answer"
-    caption="The engine's channel counts the bytes it reads, which is what the times above follow: one point read costs 64 kB at a hundred thousand records and 646 kB at a million, and a tenth costs nine times the whole volume at a hundred thousand and eighty-six times at a million. The other two report no byte count, so this chart carries one engine."
+    caption="The engine's channel counts the bytes it reads, which is what the times above follow: one point read costs 11 kB at a hundred thousand records and 20 kB at a million, and a tenth costs 2.2 times the whole volume at a hundred thousand and 3.3 times at a million. The other two report no byte count, so this chart carries one engine."
     unit="MB"
     scale="log"
     decimals={2}
@@ -219,13 +219,13 @@ const values: Record<string, string> = {
   <p>
     An eightfold volume changes neither count. The listing issues no byte read at all, which is the contract's "does not
     read a record"; the directory walk itself is not a call this counter sees, so the zero is a statement about records
-    and not a claim that a listing is free. Nor is either count a statement about bytes: the same four reads cover 5.7 kB
-    at a thousand records and 646 kB at a million.
+    and not a claim that a listing is free. Nor is either count a statement about bytes: the same four reads cover 3.1 kB
+    at a thousand records and 20 kB at a million.
   </p>
 </section>
 
 <p class="bench__source">
-  {source.engine} and {source.peers} · {source.host} · {source.recorded} · median of {source.samples} samples ·
+  {source.engine} at {source.engine_recorded} and {source.peers} at {source.recorded} · {source.host} · median of {source.samples} samples ·
   SQLite {source.sqlite}. The append log here is a fixed-width frame per record plus an address map, which is what an
   integrator writes without a database. A single volume stops at 4 GiB because the format's offsets are 32 bits.
 </p>

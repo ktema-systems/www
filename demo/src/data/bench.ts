@@ -4,12 +4,13 @@
 // origin, a 10-byte media type, and a payload of about 55 bytes. Each engine stores that
 // content in its own shape, so what the charts compare is the shape, not the workload.
 //
-// The engine's row comes from `benches/run.sh` in the ktema checkout, which owns the format.
-// The two baselines come from `tools/bench/run.sh` here, which is the reproduction command
-// this comparison is obliged to ship. All rows are one run on one machine on one day.
+// The engine's row comes from `benches/run.sh` in the ktema checkout, which owns the format, and
+// was re-measured at commit 18cbe34. The two baselines come from `tools/bench/run.sh` here, which
+// is the reproduction command this comparison is obliged to ship, and are one run on the same
+// machine on 2026-11-12.
 //
-// A single volume stops at 4 GiB, because the format's offsets are 32 bits. At 484 bytes a
-// record that is about 8.9M records, so 10M is not a volume this engine can hold: the ladder
+// A single volume stops at 4 GiB, because the format's offsets are 32 bits. At 495 bytes a
+// record that is about 8.7M records, so 10M is not a volume this engine can hold: the ladder
 // ends at a million and the ceiling is stated rather than drawn.
 
 export interface Row {
@@ -46,10 +47,10 @@ export const engines: Engine[] = [
     name: 'Ktema',
     color: 'var(--accent)',
     rows: [
-      { records: 1_000, bytes_per_record: 497, volume_bytes: 496_776, open_us: 16.625, point_read_us: 1.083, point_read_bytes: 5_799, range_us: 127.417, range_answers: 101, range_bytes: 751_735, write_us: 4.584 },
-      { records: 10_000, bytes_per_record: 494, volume_bytes: 4_942_075, open_us: 67.875, point_read_us: 1.584, point_read_bytes: 16_537, range_us: 2_573.0, range_answers: 1_001, range_bytes: 15_324_827, write_us: 5.625 },
-      { records: 100_000, bytes_per_record: 495, volume_bytes: 49_495_101, open_us: 181.5, point_read_us: 4.75, point_read_bytes: 65_942, range_us: 123_679.25, range_answers: 10_008, range_bytes: 470_931_292, write_us: 17.666 },
-      { records: 1_000_000, bytes_per_record: 496, volume_bytes: 495_890_153, open_us: 1_130.792, point_read_us: 71.542, point_read_bytes: 661_296, range_us: 20_233_510.625, range_answers: 98_968, range_bytes: 42_720_268_547, write_us: 222.5 },
+      { records: 1_000, bytes_per_record: 485, volume_bytes: 485_019, open_us: 428.916, point_read_us: 0.958, point_read_bytes: 3_195, range_us: 95.416, range_answers: 101, range_bytes: 567_577, write_us: 4.625 },
+      { records: 10_000, bytes_per_record: 493, volume_bytes: 4_931_941, open_us: 401.25, point_read_us: 1.166, point_read_bytes: 7_458, range_us: 1_301.208, range_answers: 1_001, range_bytes: 8_290_652, write_us: 4.958 },
+      { records: 100_000, bytes_per_record: 493, volume_bytes: 49_275_418, open_us: 11_059.125, point_read_us: 1.333, point_read_bytes: 11_149, range_us: 22_021.833, range_answers: 10_008, range_bytes: 109_232_615, write_us: 13.166 },
+      { records: 1_000_000, bytes_per_record: 495, volume_bytes: 495_261_336, open_us: 42_446.792, point_read_us: 2.0, point_read_bytes: 20_544, range_us: 305_129.792, range_answers: 98_968, range_bytes: 1_620_870_132, write_us: 28.417 },
     ],
   },
   {
@@ -108,7 +109,7 @@ export const indexMemory = {
 /** The volume ceiling the format imposes, and what it costs at this record size. */
 export const ceiling = {
   bytes: 4_294_967_295,
-  records: Math.floor(4_294_967_295 / 496),
+  records: Math.floor(4_294_967_295 / 495),
 } as const;
 
 /**
@@ -129,7 +130,9 @@ export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
   recorded: '2026-11-12',
   samples: 51,
-  engine: 'ktema 91aff9d, ktema-bench 1000 10000 100000 1000000',
+  engine: 'ktema 18cbe34, ktema-bench 1000 10000 100000 1000000',
+  /** The baselines and the engine's row are separate runs, so each carries its own day. */
+  engine_recorded: '2026-11-20',
   peers: 'demo/tools/bench/run.sh',
   sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
 } as const;
