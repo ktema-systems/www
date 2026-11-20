@@ -55,6 +55,9 @@ The range query enumerates addresses rather than counting them, because that is 
 returns. A count would let a database answer from its index alone and would measure a smaller
 job for that peer.
 
+The append figure is taken before the box measurement creates its index, so it prices an append to
+a table that holds none. An append maintains every index the table has.
+
 ## The tile's still
 
 The center's Measurements tile shows the memory chart alone, so the crossing is what a reader sees before opening the

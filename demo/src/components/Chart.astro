@@ -101,7 +101,8 @@ const xFrom = 10 ** Math.floor(Math.log10(Math.min(...across, xTo / 10)));
 const xScale = (v: number) => {
   const lo = Math.log10(xFrom);
   const hi = Math.log10(xTo);
-  return m.left + ((Math.log10(Math.max(v, xFrom)) - lo) / (hi - lo)) * plotW;
+  const at = Math.min(Math.max(v, xFrom), xTo);
+  return m.left + ((Math.log10(at) - lo) / (hi - lo)) * plotW;
 };
 const xTicks = scatter
   ? Array.from({ length: Math.round(Math.log10(xTo) - Math.log10(xFrom)) + 1 }, (_, i) => xFrom * 10 ** i)
@@ -169,14 +170,16 @@ const colorOf = (s: Series, i: number) => s.color ?? colors[i % colors.length];
           s.points.map((point) => (
             <>
               <circle class="chart__dot" cx={xScale(point.x ?? 0)} cy={yAt(point.value)} r="3.5" fill={colorOf(s, si)} />
-              <text
-                class="chart__x"
-                x={xScale(point.x ?? 0) + (point.align === 'end' ? -(point.dx ?? 8) : point.dx ?? 8)}
-                y={yAt(point.value) + (point.dy ?? -8)}
-                text-anchor={point.align ?? 'start'}
-              >
-                {point.label}
-              </text>
+              {point.label && (
+                <text
+                  class="chart__x"
+                  x={xScale(point.x ?? 0) + (point.align === 'end' ? -(point.dx ?? 8) : point.dx ?? 8)}
+                  y={yAt(point.value) + (point.dy ?? -8)}
+                  text-anchor={point.align ?? 'start'}
+                >
+                  {point.label}
+                </text>
+              )}
             </>
           ))
         )

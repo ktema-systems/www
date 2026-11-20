@@ -350,13 +350,22 @@ static long long median_long(long long *v, size_t n) {
     return v[n / 2];
 }
 
-// A box on an axis that is not the leading one, which in this table is the last three characters of the address. The
-// rows that match are scattered through the file, so the shape is one a stored key order cannot prune.
-#define BOX_SQL "SELECT payload FROM records WHERE substr(fact_key,58,3)>=?1 AND substr(fact_key,58,3)<?2"
+// A box on an axis that is not the leading one, which in this table is the address's last window. The rows that match
+// are scattered through the file, so the shape is one a stored key order cannot prune. The window is cut from ADDRESS
+// rather than written as 58, so the query and the table cannot drift apart.
+static sqlite3_stmt *box_prepare(sqlite3 *db) {
+    char sql[192];
+    int at = snprintf(sql, sizeof sql,
+                      "SELECT payload FROM records WHERE substr(fact_key,%d,3)>=?1 AND substr(fact_key,%d,3)<?2",
+                      ADDRESS - 2, ADDRESS - 2);
+    if (at <= 0 || (size_t)at >= sizeof sql) fail("box query");
+    sqlite3_stmt *stmt = NULL;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    return stmt;
+}
 
 static unsigned long long box_read(sqlite3 *db, const char *from3, const char *to3, long long *pages) {
-    sqlite3_stmt *stmt = NULL;
-    if (sqlite3_prepare_v2(db, BOX_SQL, -1, &stmt, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    sqlite3_stmt *stmt = box_prepare(db);
     if (pages) (void)pages_fetched(db, 1);
     sqlite3_bind_text(stmt, 1, from3, 3, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, to3, 3, SQLITE_STATIC);
@@ -611,8 +620,7 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
     from3[3] = '\0';
     to3[3] = '\0';
 
-    sqlite3_stmt *box = NULL;
-    if (sqlite3_prepare_v2(db, BOX_SQL, -1, &box, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    sqlite3_stmt *box = box_prepare(db);
 
     double scans[SAMPLES];
     unsigned long long box_answers = 0;
@@ -653,8 +661,7 @@ static void measure_sqlite(const char *dir, unsigned long long records, DbResult
     unsigned long long index_bytes =
         (unsigned long long)((after_db.st_size + after_wal.st_size) - (before_db.st_size + before_wal.st_size));
 
-    sqlite3_stmt *indexed = NULL;
-    if (sqlite3_prepare_v2(db, BOX_SQL, -1, &indexed, NULL) != SQLITE_OK) fail(sqlite3_errmsg(db));
+    sqlite3_stmt *indexed = box_prepare(db);
     double indexed_times[SAMPLES];
     for (size_t s = 0; s < SAMPLES; s++) {
         double at = now_us();
