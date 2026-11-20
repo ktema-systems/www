@@ -28,7 +28,6 @@ const span = (us: number) => (us >= 1000 ? `${(us / 1000).toFixed(1)} ms` : `${u
 const rate = (row: (typeof boxes.rows)[number]) => Math.round(row.answers / (row.us / 1_000_000));
 const kilo = (value: number) =>
   value >= 1_000_000 ? `${(value / 1_000_000).toFixed(1)} million` : `${Math.round(value / 1000)} thousand`;
-const gigabytes = (bytes: number, us: number) => bytes / (us / 1_000_000) / 1024 ** 3;
 
 const seriesOf = (pick: (row: Row) => number) =>
   engines.map((engine) => ({
@@ -112,22 +111,6 @@ const values: Record<string, string> = {
         points: indexMemory.sqlite.map((point) => ({ label: label(point.records), value: mib(point.bytes) })),
       },
     ]}
-  />
-  <Chart
-    title="Volume size"
-    caption="Linear for all three, as a log is. At a million records the engine's volume is 472 MB, the append log's 245 MB and the database's 279 MB."
-    unit="MB"
-    scale="log"
-    decimals={1}
-    series={seriesOf((row) => mib(row.volume_bytes))}
-  />
-  <Chart
-    title="Write one record"
-    caption="Appending one record once the volume is built."
-    unit="µs"
-    scale="log"
-    decimals={2}
-    series={seriesOf((row) => row.write_us)}
   />
   <Chart
     title="Open"
@@ -229,7 +212,7 @@ const values: Record<string, string> = {
   </p>
   <Chart
     title="What the rate costs to hold"
-    caption={`Answers a second across, bytes of index the store must hold up. A point's height is the state it keeps to answer at that rate, which is the cost the rate chart below does not carry. The engine sits on the floor of this chart at either axis, because it holds no index: 313 thousand and 351 thousand answers a second at zero state. The database answers the ordered shape at ${kilo(rate(boxes.rows[2]))} and holds nothing extra for it, because that shape is its table. The shape its table does not carry costs ${size(boxes.rows[3].bytes)} of reads and ${span(boxes.rows[3].us)} as a scan, or an index of ${size(boxes.rows[4].index_bytes)} to answer in ${span(boxes.rows[4].us)}.`}
+    caption={`Answers a second across, bytes of index the store must hold up. The engine sits on the floor at either axis because it holds no index: ${kilo(rate(boxes.rows[0]))} and ${kilo(rate(boxes.rows[1]))} at zero state. The database answers the ordered shape at ${kilo(rate(boxes.rows[2]))} from the table it already stores, and the shape that table does not carry costs either ${size(boxes.rows[3].bytes)} of reads and ${span(boxes.rows[3].us)} as a scan, or ${size(boxes.rows[4].index_bytes)} of index to answer in ${span(boxes.rows[4].us)}.`}
     unit="answers/s across, MB held up"
     kind="scatter"
     scale="linear"
@@ -259,37 +242,19 @@ const values: Record<string, string> = {
       },
     ]}
   />
-  <Chart
-    title="Answers a second"
-    caption={`Answers a second, which is what a box returns rather than what it costs. The database's rate follows whether its key order carries the shape: ${kilo(rate(boxes.rows[2]))} for the ordered shape, ${kilo(rate(boxes.rows[3]))} for an inner axis, and ${kilo(rate(boxes.rows[4]))} once an index exists for that axis. The engine's rate is ${kilo(rate(boxes.rows[0]))} for the ordered shape and ${kilo(rate(boxes.rows[1]))} for an inner axis, because no axis is cheaper than another when the address is computed. The bytes behind those rates are on the chart above: ${gigabytes(boxes.rows[0].bytes, boxes.rows[0].us).toFixed(1)} GB/s through the engine's read path against ${gigabytes(boxes.rows[2].bytes, boxes.rows[2].us).toFixed(1)} GB/s through the database's, work the database does when its cache is cold and serves from memory otherwise.`}
-    unit="answers/s"
-    scale="linear"
-    decimals={0}
-    kind="bar"
-    series={[
-      {
-        name: 'Ktema',
-        color: 'var(--accent)',
-        points: [
-          { label: 'Axis in order', value: rate(boxes.rows[0]) },
-          { label: 'Inner axis', value: rate(boxes.rows[1]) },
-        ],
-      },
-      {
-        name: 'SQLite',
-        color: 'rgb(122, 121, 119)',
-        points: [
-          { label: 'Axis in order', value: rate(boxes.rows[2]) },
-          { label: 'Inner axis', value: rate(boxes.rows[3]) },
-        ],
-      },
-    ]}
-  />
   <p>
-    A rate is output and bytes are its cost, so the two charts answer different questions and neither is the verdict.
-    What the rate shows is that the database's follows the shape and the engine's does not: the ordered shape is
-    where a stored order pays, and an axis it does not carry is where it falls to a scan. What the bytes show is what
-    that output costs, and the database pays it once because it keeps the page.
+    Output and its cost are the two charts above: one is answers a second against the state that buys them, the other
+    is the bytes behind them. The database's rate follows the shape because it stores one order, so the shape that
+    order carries is answered from the table and every other shape is a scan or an index of its own. The engine's rate
+    does not follow the shape, because the address is computed, and the price sits on the other chart: {(
+      boxes.rows[0].bytes /
+      boxes.rows[0].answers /
+      1024
+    ).toFixed(1)} kB read per answer against {(
+      boxes.rows[2].bytes /
+      boxes.rows[2].answers /
+      1024
+    ).toFixed(1)} kB.
   </p>
   <p>
     A volume stops at 4 GiB, which at {ktema1m.bytes_per_record} bytes a record is {ceiling.records.toLocaleString('en-US')}{' '}
