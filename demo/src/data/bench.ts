@@ -4,13 +4,20 @@
 // origin, a 10-byte media type, and a payload of about 55 bytes. Each engine stores that
 // content in its own shape, so what the charts compare is the shape, not the workload.
 //
-// The engine's row comes from `benches/run.sh` in the ktema checkout, which owns the format, at
-// commit 18cbe34. The two baselines come from `tools/bench/run.sh` here, which is the reproduction
-// command this comparison is obliged to ship. The three were measured on one machine on one day.
+// The engine's rows are not in this file. They are the corpus record the key below names, exported to
+// `corpus-bench.json` by `ktema/corpus/export.sh`, so the page draws what a run measured rather than
+// what someone typed here. The two baselines come from `tools/bench/run.sh` in this repository, which
+// is the reproduction command this comparison is obliged to ship. The three were measured on one
+// machine.
 //
 // A single volume stops at 4 GiB, because the format's offsets are 32 bits. At 495 bytes a
 // record that is about 8.7M records, so 10M is not a volume this engine can hold: the ladder
 // ends at a million and the ceiling is stated rather than drawn.
+
+import corpus from './corpus-bench.json';
+
+/** The record this page draws, and the rows it carries. */
+const measured = corpus.bench[0];
 
 export interface Row {
   records: number;
@@ -49,12 +56,7 @@ export const engines: Engine[] = [
     id: 'ktema',
     name: 'Ktema',
     color: 'var(--accent)',
-    rows: [
-      { records: 1_000, bytes_per_record: 485, volume_bytes: 485_019, open_us: 0.25, point_read_us: 0.917, point_read_bytes: 2_785, range_us: 100.25, range_answers: 101, range_bytes: 577_701, write_us: 4.458 },
-      { records: 10_000, bytes_per_record: 493, volume_bytes: 4_931_941, open_us: 0.542, point_read_us: 1.125, point_read_bytes: 7_079, range_us: 1_424.75, range_answers: 1_001, range_bytes: 8_317_376, write_us: 4.625 },
-      { records: 100_000, bytes_per_record: 493, volume_bytes: 49_275_418, open_us: 0.792, point_read_us: 1.25, point_read_bytes: 10_990, range_us: 24_074.417, range_answers: 10_008, range_bytes: 109_628_159, write_us: 4.958 },
-      { records: 1_000_000, bytes_per_record: 495, volume_bytes: 495_261_336, open_us: 1.542, point_read_us: 1.834, point_read_bytes: 20_393, range_us: 314_402.333, range_answers: 98_968, range_bytes: 1_623_966_552, write_us: 7.583 },
-    ],
+    rows: measured.rows,
   },
   {
     id: 'log',
@@ -149,9 +151,11 @@ export const boxes = {
 /** What produced the numbers, so a reader can reproduce them rather than trust them. */
 export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
-  recorded: '2026-11-20',
+  recorded: measured.created.slice(0, 10),
   samples: 51,
-  engine: 'ktema e5becad, ktema-bench 1000 10000 100000 1000000',
-  peers: 'demo/tools/bench/run.sh',
+  /** The key the engine's rows came from, and the command those rows name. */
+  engine: `ktema ${measured.revision}, ktema-bench ${measured.rows.map((row) => row.records).join(' ')}`,
+  key: measured.key,
+  peers: 'ktema bench/peers/run.sh',
   sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
 } as const;

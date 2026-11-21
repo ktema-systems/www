@@ -1,0 +1,239 @@
+{
+  "format": "corpus-index/0.1",
+  "records": [
+    {
+      "key": "bench/9630d41/host/volume-sweep/2026-10-22T18:24:03Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "9630d41",
+      "created": "2026-10-22T18:24:03Z",
+      "class": "partial",
+      "claim": "one volume was measured",
+      "content_hash": "sha256:98019fa5be60cf56bd3f2341b20d9b279ae2a0ac4cc35759734806362cbffb28"
+    },
+    {
+      "key": "bench/0d8fc17/host/volume-sweep/2026-10-22T18:26:37Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "0d8fc17",
+      "created": "2026-10-22T18:26:37Z",
+      "class": "partial",
+      "claim": "a point read costs 1.04us at 1000 records and 1.67us at 10000",
+      "content_hash": "sha256:1a3a45d9a72dc39f7cc5c891260d2484817aa57ecb19208821d86528e9b72507"
+    },
+    {
+      "key": "bench/f42bf9b+/host/volume-sweep/2026-10-26T10:51:36Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "f42bf9b+",
+      "created": "2026-10-26T10:51:36Z",
+      "class": "partial",
+      "claim": "one volume was measured",
+      "content_hash": "sha256:073691be9541f8f7c5c4f8d5e250a87710a533c1a850e9c9f09d3f6441c99630"
+    },
+    {
+      "key": "bench/661c1bf/host/volume-sweep/2026-11-06T04:30:15Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "661c1bf",
+      "created": "2026-11-06T04:30:15Z",
+      "class": "partial",
+      "claim": "a point read costs 2.54us at 1000 records and 3.42us at 10000",
+      "content_hash": "sha256:f2b9f76a86084a28bf1e1bec25552b16c8a73e83c083f1cf8b908c92836752f2"
+    },
+    {
+      "key": "bench/661c1bf+/host/volume-sweep/2026-11-06T04:32:25Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "661c1bf+",
+      "created": "2026-11-06T04:32:25Z",
+      "class": "partial",
+      "claim": "a point read costs 1.08us at 1000 records and 1.63us at 10000",
+      "content_hash": "sha256:6995bcd9ca0044324383eda87ab6dc82bbea627d70ab3f933c377813e8178d35"
+    },
+    {
+      "key": "bench/aa025b0+/host/volume-sweep/2026-11-06T16:54:29Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "aa025b0+",
+      "created": "2026-11-06T16:54:29Z",
+      "class": "partial",
+      "claim": "a point read costs 1.75us at 1000 records and 1.58us at 10000",
+      "content_hash": "sha256:8c1744dceca0b039e4a0fac804a1a7c50becbe3e798474f07e2cafcd3e567822"
+    },
+    {
+      "key": "bench/aa025b0+/host/volume-sweep/2026-11-06T16:55:07Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "aa025b0+",
+      "created": "2026-11-06T16:55:07Z",
+      "class": "partial",
+      "claim": "a point read costs 1.75us at 1000 records and 1.63us at 10000",
+      "content_hash": "sha256:8acba4a301627ee7e8fdabac32bc4e5b26e4b6f28fdd07db147a2384db5cbafd"
+    },
+    {
+      "key": "bench/aa025b0+/host/volume-sweep/2026-11-06T16:55:43Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "aa025b0+",
+      "created": "2026-11-06T16:55:43Z",
+      "class": "partial",
+      "claim": "a point read costs 1.71us at 10000 records and 1.13us at 1000",
+      "content_hash": "sha256:aef9b8357ec20a23c6b3800dd5fdd2d6770d76f2b7c87b33e7491a0e67398b8b"
+    },
+    {
+      "key": "bench/660bb5d+/host/volume-sweep/2026-11-06T18:27:26Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "660bb5d+",
+      "created": "2026-11-06T18:27:26Z",
+      "class": "partial",
+      "claim": "a point read costs 1.58us at 10000 records and 1.08us at 1000",
+      "content_hash": "sha256:61893e8b593b99dd3c17da43735de7c92511b015e91a18ca0927dc3e3d16e46e"
+    },
+    {
+      "key": "bench/660bb5d+/host/volume-sweep/2026-11-06T18:28:09Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "660bb5d+",
+      "created": "2026-11-06T18:28:09Z",
+      "class": "partial",
+      "claim": "a point read costs 1.08us at 1000 records and 1.58us at 10000",
+      "content_hash": "sha256:0f5ede0e70e990798d80840bbd338384ebaa653b33dfd25c9ae3f0d63af6506f"
+    },
+    {
+      "key": "bench/19be5aa+/host/volume-sweep/2026-11-06T20:44:24Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "19be5aa+",
+      "created": "2026-11-06T20:44:24Z",
+      "class": "partial",
+      "claim": "a point read costs 1.08us at 1000 records and 4.58us at 100000",
+      "content_hash": "sha256:9124eda75c9e25a4b7407c2528eda4aaab29384cb6045d71f02ccf97a3444887"
+    },
+    {
+      "key": "demo/d821994/fpga/fpga-icesugarpro-audit/2026-11-15T08:35:00Z",
+      "activity": "demo",
+      "subject": "fpga-icesugarpro-audit",
+      "platform": "fpga",
+      "revision": "d821994",
+      "created": "2026-11-15T08:35:00Z",
+      "class": "exhaustive",
+      "claim": "the record layer's shape under an audit: the limit, the intent, and the fact at one address, read six months later with no network, with the die refusing a changed set",
+      "content_hash": "sha256:06904caf76ae5f4488ca29b3dd3398dd3982da0a907d097181d792808719f0e9",
+      "object": {
+        "path": "corpus/out/demo/fpga-icesugarpro-audit/20261115-083500/final.mp4",
+        "bytes": 32157723,
+        "digest": "sha256:c820ff834e0e8308928dfb39881424912d9f36abc60a0f8057767aecc7b936ae"
+      }
+    },
+    {
+      "key": "demo/978be27/bare-metal/esp32s3_fpga-litewing_icesugarpro-witness/2026-11-17T13:20:19Z",
+      "activity": "demo",
+      "subject": "esp32s3_fpga-litewing_icesugarpro-witness",
+      "platform": "bare-metal",
+      "revision": "978be27",
+      "created": "2026-11-17T13:20:19Z",
+      "class": "exhaustive",
+      "claim": "the engine on the machine that wrote the record: the part keeps seventy-two records across a power cut, and a die that shares nothing with it but the identifiers recomputes them",
+      "content_hash": "sha256:3106216ba3f8e4c45745b581b52d3c3a63d02fe60b4790b0ff1b202c0ccfc570",
+      "object": {
+        "path": "corpus/out/demo/esp32s3_fpga-litewing_icesugarpro-witness/20261117-132019/final.mp4",
+        "bytes": 49581105,
+        "digest": "sha256:892bb600e2dacd7dfd2fb546e35e77a5756294e7a93705d85a7461c8c7e3b10c"
+      }
+    },
+    {
+      "key": "bench/a5a3563/host/volume-sweep/2026-11-20T07:28:02Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "a5a3563",
+      "created": "2026-11-20T07:28:02Z",
+      "class": "partial",
+      "claim": "a point read costs 1.04us at 1000 records and 1.92us at 1000000",
+      "content_hash": "sha256:d2f679fe89651560564b148a1918b30c351da7133ba15c631452459cb90f0c2d"
+    },
+    {
+      "key": "bench/59d1615/host/volume-sweep/2026-11-20T07:42:59Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "59d1615",
+      "created": "2026-11-20T07:42:59Z",
+      "class": "partial",
+      "claim": "a point read costs 1us at 1000 records and 1.88us at 1000000",
+      "content_hash": "sha256:abda9301b13ea81babb99e95ba406e6f917efc2c4139da6de373db4319ee0271"
+    },
+    {
+      "key": "bench/e5becad/host/volume-sweep/2026-11-20T09:34:05Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "e5becad",
+      "created": "2026-11-20T09:34:05Z",
+      "class": "partial",
+      "claim": "a point read costs 0.92us at 1000 records and 1.83us at 1000000",
+      "content_hash": "sha256:d296dda3e76119e0fc8d944087d7b486f4e23302e275160309ccdee0136b82f0"
+    },
+    {
+      "key": "bench/8b5e3a3+/host/volume-sweep/2026-11-21T10:51:53Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "8b5e3a3+",
+      "created": "2026-11-21T10:51:53Z",
+      "class": "partial",
+      "claim": "a point read costs 0.92us at 1000 records and 1.25us at 10000",
+      "content_hash": "sha256:f4718c09c492e16dc9e6ddfa44d02ec2ece8719b333da638f8605a0fd3983155"
+    },
+    {
+      "key": "bench/8b5e3a3+/host/volume-sweep/2026-11-21T10:53:53Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "8b5e3a3+",
+      "created": "2026-11-21T10:53:53Z",
+      "class": "partial",
+      "claim": "a point read costs 0.96us at 1000 records and 1.79us at 1000000",
+      "content_hash": "sha256:8f6d69f3686eb38472de0ef1961e94a5d41db9e2d31834a92ed043c1d4bbc3ae"
+    },
+    {
+      "key": "bench/8f7da4a+/host/peer-baselines/2026-11-21T10:56:43Z",
+      "activity": "bench",
+      "subject": "peer-baselines",
+      "platform": "host",
+      "revision": "8f7da4a+",
+      "created": "2026-11-21T10:56:43Z",
+      "class": "partial",
+      "claim": "appending one record at 100000 records costs 1.71us in an append log and 12.75us in SQLite",
+      "content_hash": "sha256:cc8740df84894fb3d0c9bd3f20330531603323d45b2bf48d9dbe914420c3d13d"
+    }
+  ],
+  "claims": {
+    "record-on-the-machine": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "medium-survives-the-cut": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "second-reader": [
+      "esp32s3_fpga-litewing_icesugarpro-witness",
+      "fpga-icesugarpro-audit"
+    ],
+    "cost-stays-flat": [
+      "volume-sweep"
+    ]
+  }
+}

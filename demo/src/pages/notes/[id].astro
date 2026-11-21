@@ -20,7 +20,7 @@ const { note } = Astro.props as { note: Awaited<ReturnType<typeof getNotes>>[num
 <Shell
   title={note.title}
   description={note.summary}
-  crumbs={[{ label: 'Demo Center', href: '/' }, { label: note.title }]}
+  crumbs={[{ label: 'Corpus Center', href: '/' }, { label: note.title }]}
 >
   <header class="page__head">
     <h1 class="artifact__title">{note.title}</h1>

@@ -19,7 +19,7 @@ const { run } = Astro.props as { run: Recording };
 const product = (await getArtifacts()).find((artifact) => artifact.kind === 'runs')?.products[0] ?? 'Ktema';
 
 const crumbs = [
-  { label: 'Demo Center', href: '/' },
+  { label: 'Corpus Center', href: '/' },
   { label: 'Headless runs', href: '/runs' },
   { label: run.label },
 ];

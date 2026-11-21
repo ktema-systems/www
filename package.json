@@ -16,7 +16,9 @@
     "demo": "node tools/demo.mjs run",
     "demo:deploy": "node tools/demo.mjs deploy",
     "astro": "astro",
-    "test:packages": "node --test packages/*/index.test.mjs"
+    "test:packages": "node --test packages/*/index.test.mjs",
+    "corpus:sync": "node tools/demo.mjs corpus",
+    "corpus:show": "node tools/demo.mjs show"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "0.4.1",

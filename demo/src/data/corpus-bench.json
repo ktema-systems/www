@@ -1,0 +1,80 @@
+{
+  "format": "corpus-export/0.1",
+  "bench": [
+    {
+      "key": "bench/8b5e3a3+/host/volume-sweep/2026-11-21T10:53:53Z",
+      "subject": "volume-sweep",
+      "revision": "8b5e3a3+",
+      "platform": "host",
+      "created": "2026-11-21T10:53:53Z",
+      "class": "partial",
+      "claim": "a point read costs 0.96us at 1000 records and 1.79us at 1000000",
+      "content_hash": "sha256:8f6d69f3686eb38472de0ef1961e94a5d41db9e2d31834a92ed043c1d4bbc3ae",
+      "rows": [
+        {
+          "records": 1000,
+          "bytes_per_record": 485,
+          "volume_bytes": 485019,
+          "open_us": 0.25,
+          "point_read_us": 0.9590000000000001,
+          "point_read_bytes": 2785,
+          "range_us": 106.792,
+          "range_answers": 101,
+          "range_bytes": 577701,
+          "write_us": 4.458
+        },
+        {
+          "records": 10000,
+          "bytes_per_record": 493,
+          "volume_bytes": 4931941,
+          "open_us": 0.5419999999999999,
+          "point_read_us": 1.125,
+          "point_read_bytes": 7079,
+          "range_us": 1421.25,
+          "range_answers": 1001,
+          "range_bytes": 8317376,
+          "write_us": 4.583
+        },
+        {
+          "records": 100000,
+          "bytes_per_record": 493,
+          "volume_bytes": 49275418,
+          "open_us": 0.792,
+          "point_read_us": 1.333,
+          "point_read_bytes": 10990,
+          "range_us": 23944.625,
+          "range_answers": 10008,
+          "range_bytes": 109628159,
+          "write_us": 5.0
+        },
+        {
+          "records": 1000000,
+          "bytes_per_record": 495,
+          "volume_bytes": 495261336,
+          "open_us": 1.5,
+          "point_read_us": 1.792,
+          "point_read_bytes": 20393,
+          "range_us": 322745.33300000004,
+          "range_answers": 98968,
+          "range_bytes": 1623966552,
+          "write_us": 7.459
+        }
+      ]
+    }
+  ],
+  "claims": {
+    "record-on-the-machine": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "medium-survives-the-cut": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "second-reader": [
+      "esp32s3_fpga-litewing_icesugarpro-witness",
+      "fpga-icesugarpro-audit"
+    ],
+    "cost-stays-flat": [
+      "volume-sweep"
+    ]
+  }
+}
