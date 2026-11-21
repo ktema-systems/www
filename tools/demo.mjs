@@ -16,7 +16,7 @@
 //   CENTER_PAGES_PROJECT  the Pages project the deploy targets (ktema-demo)
 
 import { spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, rmSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -135,6 +135,14 @@ function corpus() {
     copyFileSync(source, join(ROOT, to));
     say(`corpus: ${from} -> ${to}`);
   }
+
+  // The documents are the fact in the form a person reads, so the center renders the corpus's own text rather than a
+  // copy kept here. The directory is replaced whole, so a document the corpus dropped stops being a page.
+  const docs = join(ktema, 'corpus/export/docs');
+  if (!existsSync(docs)) fail(`${docs} is not there: run corpus/assembly/export.sh in the ktema checkout`);
+  rmSync(join(ROOT, 'demo/src/posts'), { recursive: true, force: true });
+  cpSync(docs, join(ROOT, 'demo/src/posts'), { recursive: true });
+  say('corpus: corpus/export/docs -> demo/src/posts');
 }
 
 function deploy() {
