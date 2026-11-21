@@ -187,5 +187,20 @@
       "claim": "a point read costs 0.92us at 1000 records and 1.83us at 1000000",
       "content_hash": "sha256:d296dda3e76119e0fc8d944087d7b486f4e23302e275160309ccdee0136b82f0"
     }
-  ]
+  ],
+  "claims": {
+    "record-on-the-machine": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "medium-survives-the-cut": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "second-reader": [
+      "esp32s3_fpga-litewing_icesugarpro-witness",
+      "fpga-icesugarpro-audit"
+    ],
+    "cost-stays-flat": [
+      "volume-sweep"
+    ]
+  }
 }
