@@ -14,17 +14,62 @@
 
 import corpus from './corpus-bench.json';
 
-/** The record this page draws, and the rows it carries. */
-const measured = corpus.bench[0];
+/**
+ * One entry per subject: the record's own fields, and the payload as the run wrote it. The export declares no shape,
+ * so a run's field names are read here rather than there.
+ */
+interface Entry<T> {
+  key: string;
+  subject: string;
+  revision: string;
+  created: string;
+  claim: string;
+  class: string;
+  parameters: { sizes?: number[]; samples?: number; sqlite?: string };
+  payload: T;
+}
+
+/** A rung of the engine's own sweep, as `bench/` writes it. */
+interface VolumeRow {
+  records: number;
+  volume_bytes: number;
+  open_us: number;
+  point_read_us: number;
+  point_read_medium_bytes: number;
+  query_us: number;
+  query_answers: number;
+  query_medium_bytes: number;
+  write_us: number;
+}
+
+/** A rung of the two baselines, as `bench/peers/` writes them. */
+interface LogRow {
+  records: number;
+  volume_bytes: number;
+  map_bytes: number;
+  open_us: number;
+  point_read_us: number;
+  range_us: number;
+  range_answers: number;
+  write_us: number;
+}
+
+interface SqliteRow extends Omit<LogRow, 'map_bytes'> {
+  cache_bytes: number;
+  point_read_medium_bytes: number;
+  range_medium_bytes: number;
+}
+
+const entries = corpus.bench as unknown as Entry<unknown>[];
+
+/** The record this page draws. */
+const measured = entries.find((entry) => entry.subject === 'volume-sweep')! as Entry<{ volumes: VolumeRow[] }>;
 
 /** The two baselines the same host measured, from `ktema`'s `peer-baselines` record. */
-const peers = corpus.peers[0];
-
-// The ladder is the rungs the engine's own record covers; the baselines measure further, and the memory
-// note uses the rung beyond the ladder.
-const rungs = new Set(measured.rows.map((row) => row.records));
-const atLadder = <T extends { records: number }>(rows: T[]): T[] => rows.filter((row) => rungs.has(row.records));
-const fiveMillion = peers.rows.log.find((row) => row.records === 5_000_000)!;
+const peers = entries.find((entry) => entry.subject === 'peer-baselines')! as Entry<{
+  append_log: LogRow[];
+  sqlite_rows: SqliteRow[];
+}>;
 
 export interface Row {
   records: number;
@@ -58,24 +103,68 @@ export interface Engine {
   color: string;
 }
 
+const volumeRows: Row[] = measured.payload.volumes.map((row) => ({
+  records: row.records,
+  bytes_per_record: Math.round(row.volume_bytes / row.records),
+  volume_bytes: row.volume_bytes,
+  open_us: row.open_us,
+  point_read_us: row.point_read_us,
+  point_read_bytes: row.point_read_medium_bytes,
+  range_us: row.query_us,
+  range_answers: row.query_answers,
+  range_bytes: row.query_medium_bytes,
+  write_us: row.write_us,
+}));
+
+const logRows: Row[] = peers.payload.append_log.map((row) => ({
+  records: row.records,
+  bytes_per_record: Math.round(row.volume_bytes / row.records),
+  volume_bytes: row.volume_bytes,
+  open_us: row.open_us,
+  point_read_us: row.point_read_us,
+  range_us: row.range_us,
+  range_answers: row.range_answers,
+  write_us: row.write_us,
+}));
+
+const sqliteRows: Row[] = peers.payload.sqlite_rows.map((row) => ({
+  records: row.records,
+  bytes_per_record: Math.round(row.volume_bytes / row.records),
+  volume_bytes: row.volume_bytes,
+  open_us: row.open_us,
+  point_read_us: row.point_read_us,
+  point_read_bytes: row.point_read_medium_bytes,
+  range_us: row.range_us,
+  range_answers: row.range_answers,
+  range_bytes: row.range_medium_bytes,
+  write_us: row.write_us,
+}));
+
+// The ladder is the rungs the engine's own record covers; the baselines measure further, and the memory
+// note uses the rung beyond the ladder.
+const rungs = new Set(volumeRows.map((row) => row.records));
+const atLadder = (rows: Row[]): Row[] => rows.filter((row) => rungs.has(row.records));
+const atLadderRaw = <T extends { records: number }>(rows: T[]): T[] => rows.filter((row) => rungs.has(row.records));
+const fiveMillion = peers.payload.append_log.find((row) => row.records === 5_000_000)!;
+
 export const engines: Engine[] = [
   {
     id: 'ktema',
     name: 'Ktema',
     color: 'var(--accent)',
-    rows: measured.rows,
+    rows: volumeRows,
   },
   {
     id: 'log',
     name: 'Append log',
     color: 'var(--fg-2)',
-    rows: atLadder(peers.rows.log),
+    rows: atLadder(logRows),
   },
   {
     id: 'sqlite',
     name: 'SQLite',
     color: 'rgb(122, 121, 119)',
-    rows: atLadder(peers.rows.sqlite),
+    rows: atLadder(sqliteRows),
   },
 ];
 
@@ -92,8 +181,8 @@ export const engines: Engine[] = [
  */
 export const indexMemory = {
   engine_bytes: 354 * 1024,
-  log: atLadder(peers.rows.log).map((row) => ({ records: row.records, bytes: row.map_bytes })),
-  sqlite: atLadder(peers.rows.sqlite).map((row) => ({ records: row.records, bytes: row.cache_bytes })),
+  log: atLadderRaw(peers.payload.append_log).map((row) => ({ records: row.records, bytes: row.map_bytes })),
+  sqlite: atLadderRaw(peers.payload.sqlite_rows).map((row) => ({ records: row.records, bytes: row.cache_bytes })),
   /** Measured at five million, beyond the drawn ladder, for the projection the text states. */
   log_at_five_million: fiveMillion.map_bytes,
 } as const;
@@ -139,10 +228,10 @@ export const boxes = {
 export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
   recorded: measured.created.slice(0, 10),
-  samples: measured.parameters.samples,
+  samples: measured.parameters.samples ?? 0,
   /** The key the engine's rows came from, and the command those rows name. */
-  engine: `ktema ${measured.revision}, ktema-bench ${measured.rows.map((row) => row.records).join(' ')}`,
+  engine: `ktema ${measured.revision}, ktema-bench ${volumeRows.map((row) => row.records).join(' ')}`,
   key: measured.key,
   peers: peers.key,
-  sqlite: `${peers.parameters.sqlite}, WAL, synchronous=NORMAL, cache_size=8 MB`,
+  sqlite: `${peers.parameters.sqlite ?? 'unknown'}, WAL, synchronous=NORMAL, cache_size=8 MB`,
 } as const;
