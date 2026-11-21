@@ -6,9 +6,7 @@
 //
 // The engine's rows are not in this file. They are the corpus record the key below names, exported to
 // `corpus-bench.json` by `ktema/corpus/export.sh`, so the page draws what a run measured rather than
-// what someone typed here. The two baselines come from `tools/bench/run.sh` in this repository, which
-// is the reproduction command this comparison is obliged to ship. The three were measured on one
-// machine.
+// what someone typed here. A measurement is a run with a key, and the sentence under it is the run's own.
 //
 // A single volume stops at 4 GiB, because the format's offsets are 32 bits. At 495 bytes a
 // record that is about 8.7M records, so 10M is not a volume this engine can hold: the ladder
@@ -18,6 +16,15 @@ import corpus from './corpus-bench.json';
 
 /** The record this page draws, and the rows it carries. */
 const measured = corpus.bench[0];
+
+/** The two baselines the same host measured, from `ktema`'s `peer-baselines` record. */
+const peers = corpus.peers[0];
+
+// The ladder is the rungs the engine's own record covers; the baselines measure further, and the memory
+// note uses the rung beyond the ladder.
+const rungs = new Set(measured.rows.map((row) => row.records));
+const atLadder = <T extends { records: number }>(rows: T[]): T[] => rows.filter((row) => rungs.has(row.records));
+const fiveMillion = peers.rows.log.find((row) => row.records === 5_000_000)!;
 
 export interface Row {
   records: number;
@@ -62,23 +69,13 @@ export const engines: Engine[] = [
     id: 'log',
     name: 'Append log',
     color: 'var(--fg-2)',
-    rows: [
-      { records: 1_000, bytes_per_record: 254, volume_bytes: 253_890, open_us: 47.792, point_read_us: 0.042, range_us: 4.875, range_answers: 100, write_us: 1.75 },
-      { records: 10_000, bytes_per_record: 255, volume_bytes: 2_548_890, open_us: 493.042, point_read_us: 0.042, range_us: 41.167, range_answers: 1_000, write_us: 1.708 },
-      { records: 100_000, bytes_per_record: 256, volume_bytes: 25_588_890, open_us: 7_461.125, point_read_us: 0.042, range_us: 490.708, range_answers: 10_000, write_us: 1.583 },
-      { records: 1_000_000, bytes_per_record: 257, volume_bytes: 256_888_890, open_us: 117_306.25, point_read_us: 0.042, range_us: 5_452.917, range_answers: 100_000, write_us: 2.625 },
-    ],
+    rows: atLadder(peers.rows.log),
   },
   {
     id: 'sqlite',
     name: 'SQLite',
     color: 'rgb(122, 121, 119)',
-    rows: [
-      { records: 1_000, bytes_per_record: 303, volume_bytes: 303_104, open_us: 329.792, point_read_us: 2.792, point_read_bytes: 12_288, range_us: 7.875, range_answers: 100, range_bytes: 40_960, write_us: 12.542 },
-      { records: 10_000, bytes_per_record: 294, volume_bytes: 2_936_832, open_us: 226.0, point_read_us: 2.458, point_read_bytes: 16_384, range_us: 59.583, range_answers: 1_000, range_bytes: 307_200, write_us: 11.875 },
-      { records: 100_000, bytes_per_record: 293, volume_bytes: 29_270_016, open_us: 231.208, point_read_us: 2.542, point_read_bytes: 20_480, range_us: 547.125, range_answers: 10_000, range_bytes: 2_949_120, write_us: 13.083 },
-      { records: 1_000_000, bytes_per_record: 293, volume_bytes: 292_589_568, open_us: 220.792, point_read_us: 2.542, point_read_bytes: 24_576, range_us: 11_509.125, range_answers: 100_000, range_bytes: 29_278_208, write_us: 10.417 },
-    ],
+    rows: atLadder(peers.rows.sqlite),
   },
 ];
 
@@ -95,20 +92,10 @@ export const engines: Engine[] = [
  */
 export const indexMemory = {
   engine_bytes: 354 * 1024,
-  log: [
-    { records: 1_000, bytes: 65_536 },
-    { records: 10_000, bytes: 524_288 },
-    { records: 100_000, bytes: 4_194_304 },
-    { records: 1_000_000, bytes: 67_108_864 },
-  ],
-  sqlite: [
-    { records: 1_000, bytes: 53_504 },
-    { records: 10_000, bytes: 336_384 },
-    { records: 100_000, bytes: 3_143_424 },
-    { records: 1_000_000, bytes: 8_753_152 },
-  ],
-  /** Measured at 5M, beyond the drawn ladder, for the projection the text states. */
-  log_at_five_million: 268_435_456,
+  log: atLadder(peers.rows.log).map((row) => ({ records: row.records, bytes: row.map_bytes })),
+  sqlite: atLadder(peers.rows.sqlite).map((row) => ({ records: row.records, bytes: row.cache_bytes })),
+  /** Measured at five million, beyond the drawn ladder, for the projection the text states. */
+  log_at_five_million: fiveMillion.map_bytes,
 } as const;
 
 /** The volume ceiling the format imposes, and what it costs at this record size. */
@@ -152,10 +139,10 @@ export const boxes = {
 export const source = {
   host: 'Apple arm64, 8 Performance cores, macOS 15.7.1',
   recorded: measured.created.slice(0, 10),
-  samples: 51,
+  samples: measured.parameters.samples,
   /** The key the engine's rows came from, and the command those rows name. */
   engine: `ktema ${measured.revision}, ktema-bench ${measured.rows.map((row) => row.records).join(' ')}`,
   key: measured.key,
-  peers: 'ktema bench/peers/run.sh',
-  sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
+  peers: peers.key,
+  sqlite: `${peers.parameters.sqlite}, WAL, synchronous=NORMAL, cache_size=8 MB`,
 } as const;

@@ -10,6 +10,17 @@
       "class": "partial",
       "claim": "a point read costs 0.96us at 1000 records and 1.79us at 1000000",
       "content_hash": "sha256:8f6d69f3686eb38472de0ef1961e94a5d41db9e2d31834a92ed043c1d4bbc3ae",
+      "parameters": {
+        "sizes": [
+          1000,
+          10000,
+          100000,
+          1000000
+        ],
+        "profile": "release",
+        "samples": 51,
+        "medium_from": "verify/region/check.sh"
+      },
       "rows": [
         {
           "records": 1000,
@@ -60,6 +71,157 @@
           "write_us": 7.459
         }
       ]
+    }
+  ],
+  "peers": [
+    {
+      "key": "bench/8f7da4a+/host/peer-baselines/2026-11-21T10:56:43Z",
+      "subject": "peer-baselines",
+      "revision": "8f7da4a+",
+      "platform": "host",
+      "created": "2026-11-21T10:56:43Z",
+      "class": "partial",
+      "claim": "appending one record at 100000 records costs 1.71us in an append log and 12.75us in SQLite",
+      "content_hash": "sha256:cc8740df84894fb3d0c9bd3f20330531603323d45b2bf48d9dbe914420c3d13d",
+      "parameters": {
+        "sizes": [
+          1000,
+          10000,
+          100000,
+          1000000,
+          5000000
+        ],
+        "samples": 51,
+        "sqlite": "3.43.2",
+        "host": "Darwin arm64",
+        "peers_of": "volume-sweep"
+      },
+      "rows": {
+        "log": [
+          {
+            "records": 1000,
+            "bytes_per_record": 254,
+            "volume_bytes": 253890,
+            "map_bytes": 65536,
+            "open_us": 50.083,
+            "point_read_us": 0.042,
+            "range_us": 5.250,
+            "range_answers": 100,
+            "write_us": 2.167
+          },
+          {
+            "records": 10000,
+            "bytes_per_record": 255,
+            "volume_bytes": 2548890,
+            "map_bytes": 524288,
+            "open_us": 515.000,
+            "point_read_us": 0.042,
+            "range_us": 41.167,
+            "range_answers": 1000,
+            "write_us": 1.667
+          },
+          {
+            "records": 100000,
+            "bytes_per_record": 256,
+            "volume_bytes": 25588890,
+            "map_bytes": 4194304,
+            "open_us": 7711.208,
+            "point_read_us": 0.042,
+            "range_us": 494.583,
+            "range_answers": 10000,
+            "write_us": 1.708
+          },
+          {
+            "records": 1000000,
+            "bytes_per_record": 257,
+            "volume_bytes": 256888890,
+            "map_bytes": 67108864,
+            "open_us": 120768.958,
+            "point_read_us": 0.042,
+            "range_us": 5313.375,
+            "range_answers": 100000,
+            "write_us": 5.750
+          },
+          {
+            "records": 5000000,
+            "bytes_per_record": 258,
+            "volume_bytes": 1288888890,
+            "map_bytes": 268435456,
+            "open_us": 611490.083,
+            "point_read_us": 0.042,
+            "range_us": 26683.875,
+            "range_answers": 500000,
+            "write_us": 1.625
+          }
+        ],
+        "sqlite": [
+          {
+            "records": 1000,
+            "bytes_per_record": 303,
+            "volume_bytes": 303104,
+            "cache_bytes": 53504,
+            "open_us": 257.458,
+            "point_read_us": 2.500,
+            "point_read_bytes": 12288,
+            "range_us": 7.708,
+            "range_answers": 100,
+            "range_bytes": 40960,
+            "write_us": 10.792
+          },
+          {
+            "records": 10000,
+            "bytes_per_record": 294,
+            "volume_bytes": 2936832,
+            "cache_bytes": 336384,
+            "open_us": 220.875,
+            "point_read_us": 2.500,
+            "point_read_bytes": 16384,
+            "range_us": 59.042,
+            "range_answers": 1000,
+            "range_bytes": 307200,
+            "write_us": 11.542
+          },
+          {
+            "records": 100000,
+            "bytes_per_record": 293,
+            "volume_bytes": 29270016,
+            "cache_bytes": 3143424,
+            "open_us": 225.625,
+            "point_read_us": 2.500,
+            "point_read_bytes": 20480,
+            "range_us": 587.083,
+            "range_answers": 10000,
+            "range_bytes": 2949120,
+            "write_us": 12.750
+          },
+          {
+            "records": 1000000,
+            "bytes_per_record": 293,
+            "volume_bytes": 292589568,
+            "cache_bytes": 8753152,
+            "open_us": 227.417,
+            "point_read_us": 2.625,
+            "point_read_bytes": 24576,
+            "range_us": 11916.542,
+            "range_answers": 100000,
+            "range_bytes": 29278208,
+            "write_us": 10.792
+          },
+          {
+            "records": 5000000,
+            "bytes_per_record": 293,
+            "volume_bytes": 1462878208,
+            "cache_bytes": 8753152,
+            "open_us": 213.375,
+            "point_read_us": 2.542,
+            "point_read_bytes": 24576,
+            "range_us": 56895.708,
+            "range_answers": 500000,
+            "range_bytes": 146309120,
+            "write_us": 9.292
+          }
+        ]
+      }
     }
   ],
   "claims": {
