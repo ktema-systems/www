@@ -18,9 +18,6 @@ interface Props {
 
 const { title, description, crumbs = [{ label: 'Corpus Center' }] } = Astro.props;
 
-/** The bar's link to the corpus, hidden where the trail already ends there. */
-const atCorpus = Astro.url.pathname.startsWith('/corpus');
-
 const pageTitle = title === 'Corpus Center' ? 'Ktema Systems Corpus Center' : `${title} | Ktema Systems Corpus Center`;
 const pageDescription = description ?? 'The surfaces Ktema Systems builds, in one place.';
 
@@ -110,7 +107,9 @@ const structuredData = {
           ))
         }
         <span class="bar__spacer"></span>
-        {!atCorpus && <a class="bar__crumb" href="/corpus/">Corpus</a>}
+        <a class="bar__delta" href="https://delta.demo.ktema.systems/" target="_blank" rel="noreferrer">
+          Delta
+        </a>
         <slot name="bar" />
         <a class="bar__cta" href="mailto:demo@ktema.systems">Request a demo</a>
       </div>

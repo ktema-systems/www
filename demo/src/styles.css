@@ -147,6 +147,21 @@ h1 {
   white-space: nowrap;
 }
 
+.bar__delta {
+  flex: 0 0 auto;
+  padding: 5px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius);
+  white-space: nowrap;
+  color: var(--fg-2);
+}
+
+.bar__delta:hover,
+.bar__delta:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .bar__title {
   min-width: 0;
   overflow: hidden;
