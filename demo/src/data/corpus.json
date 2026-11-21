@@ -304,6 +304,141 @@
       "class": "partial",
       "claim": "appending one record at 100000 records costs 1.71us in an append log and 12.75us in SQLite",
       "content_hash": "sha256:cc8740df84894fb3d0c9bd3f20330531603323d45b2bf48d9dbe914420c3d13d"
+    },
+    {
+      "key": "demo/3e1ecbc/microkernel/kernel-seam/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "kernel-seam",
+      "platform": "microkernel",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "The kernel's certificate is its owner's; the record layer attaches through the medium contract and adds none of it.",
+      "content_hash": "sha256:4b82f93c23d053e9e741578ce25167630757576ae96df84d1a6de646ecf3975b",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/host/medium-image/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "medium-image",
+      "platform": "host",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "A device medium is opened on another machine, one address answers, and the time its node stamped survives.",
+      "content_hash": "sha256:9fffb79aec76c43689d85f1b0e228faf275b8bfd81691af6b9f3bb5bc283e170",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/host/full-volume/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "full-volume",
+      "platform": "host",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "A volume that fills keeps recording by retiring its oldest records, and a reader is told what a wrap retired.",
+      "content_hash": "sha256:acb4d76860afbdd1937e4ca4305956d74783f0146cbb62a232dc2a2bdf1aa954",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/fpga/address-in-gates/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "address-in-gates",
+      "platform": "fpga",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "The address a record is filed under is recomputed from the record in gates, with no processor in the path.",
+      "content_hash": "sha256:04c723d627f8276caa64cb3606102e1a3e0b5cc412d6fb81fa432fed7d2b8c64",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/browser/robot/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "robot",
+      "platform": "browser",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "A walk's steps, sensor readings and phone reaches resolve at one address, and an audit that never met the robot finds them.",
+      "content_hash": "sha256:7e673c92ddf7d438dd006a3d94c160adbf7ed1216d1b7b025b0b9a4fdba73a8b",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/bare-metal/cold-boot/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "cold-boot",
+      "platform": "bare-metal",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "The engine writes into the part's own flash from a cold boot and reports the counts the next boot finds.",
+      "content_hash": "sha256:6904681a97aded4a9683e69c8f72be05125a24f1d45fc668d5193006031c65f4",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/rtos/rtos-module/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "rtos-module",
+      "platform": "rtos",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "A firmware keeps its platform and gains a record layer in one partition, with no rewrite of its drivers.",
+      "content_hash": "sha256:55d8a9c8b493c2e5701667e7037e83137a778fe91111094b6a800b9c3b989532",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/host/reader-check/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "reader-check",
+      "platform": "host",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "A read hands over the bytes on the medium, and one call says whether they are the record the address names.",
+      "content_hash": "sha256:91c8b53c1c4a6de6741643395b6eb9e63a0d510d2f7ad26472d97a34538e25e8",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
+    },
+    {
+      "key": "demo/3e1ecbc/bare-metal/archive/2026-11-21T11:00:22Z",
+      "activity": "demo",
+      "subject": "archive",
+      "platform": "bare-metal",
+      "revision": "3e1ecbc",
+      "created": "2026-11-21T11:00:22Z",
+      "class": "partial",
+      "claim": "The archive a team receives builds its own example, runs it, and counts the entry points it carries.",
+      "content_hash": "sha256:e4f980321bdbc41ea7b851d039a4fabb9fa826f97fc89141bd6b52257630b2e9",
+      "kind": "fact",
+      "ext": {
+        "planned": true
+      }
     }
   ],
   "claims": {

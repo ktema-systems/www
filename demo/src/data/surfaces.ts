@@ -4,6 +4,7 @@
 // holds the purpose, the procedure, the preconditions, the deliverable and the check that produces the evidence.
 // Nothing here writes those sections; the document does.
 import { pageDocuments, text, type Document } from './documents';
+import { recordOf, type RecordEntry } from './records';
 import type { Platform } from './taxonomy';
 
 export interface Surface {
@@ -19,22 +20,26 @@ export interface Surface {
   line?: string;
   /** Where the page stands in the grid. */
   order: number;
+  /** The fact that states the plan, where the corpus holds one. */
+  record?: RecordEntry;
   /** The brief, as Markdown. */
   body: string;
 }
 
 /** A planned surface, where the document is one. */
 function surfaceOf(document: Document, order: number): Surface {
+  const record = recordOf(document.id);
   return {
     id: document.id,
     title: document.title,
     products: document.ktma.products as string[],
     platforms: document.ktma.platforms as Platform[],
-    claim: text(document.ktma.claim) ?? document.description,
+    claim: record?.claim ?? text(document.ktma.claim) ?? document.description,
     summary: document.description,
     line: text(document.ktma.line),
     order,
     body: document.body,
+    record,
   };
 }
 

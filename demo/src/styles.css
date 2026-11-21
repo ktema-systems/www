@@ -1047,6 +1047,13 @@ h1 {
   text-wrap: pretty;
 }
 
+.artifact__record {
+  margin: 10px 0 0;
+  color: var(--fg-3);
+  font-size: 12px;
+  word-break: break-all;
+}
+
 
 .artifact__claim {
   margin: 16px 0 0;

@@ -90,6 +90,13 @@ if (artifact && !ArtifactBody) throw new Error(`the center draws no page for a $
       ))}
     </span>
     <p class="artifact__claim">{claim}</p>
+    {
+      brief?.record && (
+        <p class="artifact__record">
+          <code>{brief.record.key}</code>
+        </p>
+      )
+    }
   </header>
   {brief && <Planned surface={brief} />}
   {artifact && ArtifactBody && <ArtifactBody artifact={artifact} />}

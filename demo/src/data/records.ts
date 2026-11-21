@@ -12,6 +12,8 @@ export interface RecordEntry {
   claim: string;
   revision: string;
   created: string;
+  /** What the record states beside its claim: a plan, where `planned` is true. */
+  ext?: { planned?: boolean };
 }
 
 const records = (corpus.records ?? []) as RecordEntry[];
