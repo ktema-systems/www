@@ -186,6 +186,28 @@
       "class": "partial",
       "claim": "a point read costs 0.92us at 1000 records and 1.83us at 1000000",
       "content_hash": "sha256:d296dda3e76119e0fc8d944087d7b486f4e23302e275160309ccdee0136b82f0"
+    },
+    {
+      "key": "bench/8b5e3a3+/host/volume-sweep/2026-11-21T10:51:53Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "8b5e3a3+",
+      "created": "2026-11-21T10:51:53Z",
+      "class": "partial",
+      "claim": "a point read costs 0.92us at 1000 records and 1.25us at 10000",
+      "content_hash": "sha256:f4718c09c492e16dc9e6ddfa44d02ec2ece8719b333da638f8605a0fd3983155"
+    },
+    {
+      "key": "bench/8b5e3a3+/host/volume-sweep/2026-11-21T10:53:53Z",
+      "activity": "bench",
+      "subject": "volume-sweep",
+      "platform": "host",
+      "revision": "8b5e3a3+",
+      "created": "2026-11-21T10:53:53Z",
+      "class": "partial",
+      "claim": "a point read costs 0.96us at 1000 records and 1.79us at 1000000",
+      "content_hash": "sha256:8f6d69f3686eb38472de0ef1961e94a5d41db9e2d31834a92ed043c1d4bbc3ae"
     }
   ],
   "claims": {

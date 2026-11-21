@@ -1,7 +1,8 @@
 // The demonstration center's commands.
 //
 //   npm run demo           the center beside a cockpit, both started and stopped together
-//   npm run demo:deploy    build the center and publish it to its Pages project
+//   npm run demo:deploy    take the corpus, build the center, and publish it to its Pages project
+//   npm run corpus:sync    take the corpus alone, for a local run
 //
 // The two are one file because they are one subject: what the center is made of, and where it goes. Nothing here is a
 // shell script, so the same command works wherever npm does.
@@ -15,7 +16,7 @@
 //   CENTER_PAGES_PROJECT  the Pages project the deploy targets (ktema-demo)
 
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { copyFileSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -112,8 +113,34 @@ async function run() {
   });
 }
 
+/**
+ * The records this center draws, taken from the ktema checkout.
+ *
+ * The center holds no measurement of its own: `bench.json` is the rows a page draws, and `corpus.json` is every record
+ * with the claim each one rests on. Both are written by `corpus/assembly/export.sh`, so publishing reads them rather
+ * than restating them. A checkout that has not run a bench has no export, and that is a failure rather than an empty
+ * page.
+ */
+function corpus() {
+  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  const pairs = [
+    ['corpus/export/bench.json', 'demo/src/data/corpus-bench.json'],
+    ['corpus/export/corpus.json', 'demo/src/data/corpus.json'],
+  ];
+  for (const [from, to] of pairs) {
+    const source = join(ktema, from);
+    if (!existsSync(source)) {
+      fail(`${source} is not there: run './run.sh --bench' in the ktema checkout, or set KTEMA_DIR`);
+    }
+    copyFileSync(source, join(ROOT, to));
+    say(`corpus: ${from} -> ${to}`);
+  }
+}
+
 function deploy() {
   const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
+
+  corpus();
 
   if (exec('npx', ['--yes', 'wrangler@4', 'whoami'], { cwd: ROOT, stdio: 'ignore' }) !== 0) {
     fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
@@ -142,6 +169,8 @@ if (mode === 'run') {
   await run();
 } else if (mode === 'deploy') {
   deploy();
+} else if (mode === 'corpus') {
+  corpus();
 } else {
-  fail(`unknown command '${mode}': use run or deploy`);
+  fail(`unknown command '${mode}': use run, deploy, or corpus`);
 }
