@@ -42,10 +42,13 @@ usage() {
   cat <<'USAGE'
 run.sh: every surface this repository publishes, on this machine.
 
-  ./run.sh            serve the homepage, the demo center and the cockpit
-  ./run.sh --rebuild  rebuild the cockpit first
-  ./run.sh --help     this text
+  ./run.sh                     serve the homepage, the demo center and the cockpit
+  ./run.sh --rebuild           rebuild the cockpit first
+  ./run.sh --board corpus      the cockpit drawing that board, through the cockpit's own launcher
+  ./run.sh --brand Acme        the name that cockpit goes by
+  ./run.sh --help              this text
 
+--delta and --web belong to the cockpit's own launcher, and this one points there.
 Ports: HOME_PORT (4321), CENTER_PORT (4322), DELTA_PORT (5276), BLOG_PORT (4323).
 NODE names the interpreter to run the servers with. DELTA_DIR names another cockpit
 checkout, DELTA_URL a cockpit this host is not serving.
@@ -53,12 +56,30 @@ USAGE
 }
 
 rebuild=0
-for arg in "$@"; do
-  case "$arg" in
+board=
+brand=
+while [ $# -gt 0 ]; do
+  case "$1" in
     --rebuild) rebuild=1 ;;
+    # The cockpit is what this launcher already serves, and the board is how another one is drawn here. Naming the
+    # cockpit's own launcher in this one is a command for the other tree, and it is answered where it can be followed.
+    --delta | --web)
+      die "--delta and --web are the cockpit's own launcher: (cd $(dirname "$(dirname "$DELTA_DIR")") && ./run.sh --delta --web); here, --board NAME draws a board"
+      ;;
+    --board)
+      [ $# -ge 2 ] || die '--board wants a name: --board corpus'
+      board=$2
+      shift
+      ;;
+    --brand)
+      [ $# -ge 2 ] || die '--brand wants a name: --brand Acme'
+      brand=$2
+      shift
+      ;;
     -h | --help) usage; exit 0 ;;
-    *) printf 'run: unknown argument %s\n' "$arg" >&2; usage >&2; exit 2 ;;
+    *) printf 'run: unknown argument %s\n' "$1" >&2; usage >&2; exit 2 ;;
   esac
+  shift
 done
 
 # Astro refuses to start below the Node floor this package declares, and an unchecked run
@@ -119,8 +140,23 @@ port_free() {
   node -e 'const s=require("net").createServer();s.once("error",()=>process.exit(1));s.listen(Number(process.argv[1]),"127.0.0.1",()=>s.close(()=>process.exit(0)))' "$1" 2>/dev/null
 }
 
-need_port() {
-  port_free "$1" || die "port $1 is in use: stop what holds it, or set $2"
+# A port this run needs is taken from whatever held it: a server left behind by a launcher that died is the thing this
+# run replaces, and it is not a reason to ask a person to clean up first. One that ignores the signal is killed.
+take_port() {
+  for pid in $(lsof -ti "tcp:$1" -sTCP:LISTEN 2>/dev/null || true); do
+    say "port $1 was held by $pid: $(ps -o command= -p "$pid" 2>/dev/null | cut -c1-64); stopping it"
+    kill "$pid" 2>/dev/null || true
+  done
+  tries=0
+  while ! port_free "$1" && [ "$tries" -lt 50 ]; do
+    sleep 0.1
+    tries=$((tries + 1))
+  done
+  if ! port_free "$1"; then
+    for pid in $(lsof -ti "tcp:$1" -sTCP:LISTEN 2>/dev/null || true); do kill -KILL "$pid" 2>/dev/null || true; done
+    sleep 0.2
+  fi
+  port_free "$1" || die "port $1 is still held: $2"
 }
 
 wait_for() {
@@ -139,6 +175,20 @@ own_delta=0
 
 if [ -n "$delta_url" ]; then
   delta_url=$(printf '%s' "$delta_url" | sed 's#/*$##')
+elif [ -n "$board" ]; then
+  # A board other than the exhibition's is the cockpit's dev server, because the board and the record it reads are files
+  # the cockpit's own launcher serves and a demonstration build does not carry. It is started there rather than here so
+  # the board, the sim and the port are that launcher's to get right.
+  launcher=$(cd "$DELTA_DIR/../.." && pwd)
+  [ -x "$launcher/run.sh" ] || die "no cockpit launcher at $launcher: set DELTA_DIR"
+  take_port "$DELTA_PORT" DELTA_PORT
+  delta_url="http://localhost:$DELTA_PORT"
+  set -- --delta --web --board "$board"
+  [ -n "$brand" ] && set -- "$@" --brand "$brand"
+  say "the cockpit draws the $board board, on $delta_url"
+  (cd "$launcher" && KLET_WEB_PORT="$DELTA_PORT" exec ./run.sh "$@") &
+  pids="$pids $!"
+  own_delta=1
 else
   [ -x "$DELTA_DIR/node_modules/.bin/vite" ] ||
     die "no cockpit at $DELTA_DIR: run npm install there, or set DELTA_DIR or DELTA_URL"
@@ -148,7 +198,7 @@ else
     (cd "$DELTA_DIR" && npm run build:demo) || die "the cockpit did not build"
   fi
 
-  need_port "$DELTA_PORT" DELTA_PORT
+  take_port "$DELTA_PORT" DELTA_PORT
   delta_url="http://localhost:$DELTA_PORT"
   (cd "$DELTA_DIR" && DELTA_DEMO=1 exec ./node_modules/.bin/vite preview --port "$DELTA_PORT" --strictPort) &
   pids="$pids $!"
@@ -160,11 +210,11 @@ fi
 # The blog stack joins here when there is one: a directory, a start command, and
 # BLOG_PORT. Until then the port is named in the summary and nothing holds it.
 
-need_port "$HOME_PORT" HOME_PORT
+take_port "$HOME_PORT" HOME_PORT
 "$astro" dev --port "$HOME_PORT" &
 pids="$pids $!"
 
-need_port "$CENTER_PORT" CENTER_PORT
+take_port "$CENTER_PORT" CENTER_PORT
 PUBLIC_DELTA_URL="$delta_url/" "$astro" dev --root demo --port "$CENTER_PORT" &
 pids="$pids $!"
 
