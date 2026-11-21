@@ -61,5 +61,20 @@
         }
       ]
     }
-  ]
+  ],
+  "claims": {
+    "record-on-the-machine": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "medium-survives-the-cut": [
+      "esp32s3_fpga-litewing_icesugarpro-witness"
+    ],
+    "second-reader": [
+      "esp32s3_fpga-litewing_icesugarpro-witness",
+      "fpga-icesugarpro-audit"
+    ],
+    "cost-stays-flat": [
+      "volume-sweep"
+    ]
+  }
 }
