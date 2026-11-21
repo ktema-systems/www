@@ -3,6 +3,7 @@
 //   npm run demo           the center beside a cockpit, both started and stopped together
 //   npm run demo:deploy    take the corpus, build the center, and publish it to its Pages project
 //   npm run corpus:sync    take the corpus alone, for a local run
+//   npm run corpus:show    export, take, build, and serve the center
 //
 // The two are one file because they are one subject: what the center is made of, and where it goes. Nothing here is a
 // shell script, so the same command works wherever npm does.
@@ -145,6 +146,33 @@ function corpus() {
   say('corpus: corpus/export/docs -> demo/src/posts');
 }
 
+/**
+ * The whole pipeline, from the volume to a served page.
+ *
+ * The corpus is taken first, which means running ktema's export against the volume already there and then copying what
+ * it wrote. Nothing is measured: a preview reads what earlier runs left, which is the property the corpus exists to
+ * give. The center is built and served, and Control-C stops it.
+ */
+function show() {
+  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  const exporter = join(ktema, 'corpus/assembly/export.sh');
+  if (!existsSync(exporter)) fail(`${exporter} is not there: set KTEMA_DIR to the ktema checkout`);
+  say(`corpus: ${exporter}`);
+  if (exec('bash', [exporter], { cwd: ktema, stdio: 'inherit' }) !== 0) fail('the export did not run');
+
+  corpus();
+
+  say('building the center');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the center did not build');
+  if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
+
+  const port = process.env.CENTER_PORT ?? '4321';
+  say(`serving http://localhost:${port}/ (Control-C stops it)`);
+  const served = spawn('npm', ['run', 'preview:demo', '--', '--port', port], { cwd: ROOT, stdio: 'inherit' });
+  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => served.kill(signal));
+  served.on('exit', (code) => process.exit(code ?? 0));
+}
+
 function deploy() {
   const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
 
@@ -179,6 +207,8 @@ if (mode === 'run') {
   deploy();
 } else if (mode === 'corpus') {
   corpus();
+} else if (mode === 'show') {
+  show();
 } else {
-  fail(`unknown command '${mode}': use run, deploy, or corpus`);
+  fail(`unknown command '${mode}': use run, show, deploy, or corpus`);
 }
