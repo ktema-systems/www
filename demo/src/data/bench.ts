@@ -156,6 +156,6 @@ export const source = {
   /** The key the engine's rows came from, and the command those rows name. */
   engine: `ktema ${measured.revision}, ktema-bench ${measured.rows.map((row) => row.records).join(' ')}`,
   key: measured.key,
-  peers: 'demo/tools/bench/run.sh',
+  peers: 'ktema bench/peers/run.sh',
   sqlite: '3.43.2, WAL, synchronous=NORMAL, cache_size=8 MB',
 } as const;
