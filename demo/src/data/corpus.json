@@ -208,6 +208,17 @@
       "class": "partial",
       "claim": "a point read costs 0.96us at 1000 records and 1.79us at 1000000",
       "content_hash": "sha256:8f6d69f3686eb38472de0ef1961e94a5d41db9e2d31834a92ed043c1d4bbc3ae"
+    },
+    {
+      "key": "bench/8f7da4a+/host/peer-baselines/2026-11-21T10:56:43Z",
+      "activity": "bench",
+      "subject": "peer-baselines",
+      "platform": "host",
+      "revision": "8f7da4a+",
+      "created": "2026-11-21T10:56:43Z",
+      "class": "partial",
+      "claim": "appending one record at 100000 records costs 1.71us in an append log and 12.75us in SQLite",
+      "content_hash": "sha256:cc8740df84894fb3d0c9bd3f20330531603323d45b2bf48d9dbe914420c3d13d"
     }
   ],
   "claims": {
