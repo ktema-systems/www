@@ -123,6 +123,91 @@
       "content_hash": "sha256:9124eda75c9e25a4b7407c2528eda4aaab29384cb6045d71f02ccf97a3444887"
     },
     {
+      "key": "demo/91aff9d/host/smoke/2026-11-12T18:40:22Z",
+      "activity": "demo",
+      "subject": "smoke",
+      "platform": "host",
+      "revision": "91aff9d",
+      "created": "2026-11-12T18:40:22Z",
+      "class": "partial",
+      "claim": "Thirteen steps, eight records, one digest: the same run the device tier converges on.",
+      "content_hash": "sha256:8af6dbaf2247cddf25ebee67e44cf5a7d60bfd6226d792a200a4e4caa7bc1501",
+      "kind": "fact",
+      "object": {
+        "path": "/proofs/smoke.mp4",
+        "bytes": 41014,
+        "digest": "sha256:93e7a7d2e997c1712fc5870b23dd4aac3e7446d95a742cbc5100be1504c26621"
+      }
+    },
+    {
+      "key": "demo/91aff9d/bare-metal/device/2026-11-12T18:40:22Z",
+      "activity": "demo",
+      "subject": "device",
+      "platform": "bare-metal",
+      "revision": "91aff9d",
+      "created": "2026-11-12T18:40:22Z",
+      "class": "partial",
+      "claim": "A RISC-V device tier and the host write the same volume, byte for byte: 0x299bd5d0e1821fab on both.",
+      "content_hash": "sha256:9302561d89ce5b6faa023ed7c4c8f50d92d4a1907ea71dad20f2805ed37e2dd9",
+      "kind": "fact",
+      "object": {
+        "path": "/proofs/device.mp4",
+        "bytes": 898140,
+        "digest": "sha256:538b623fe6cacaae49ff5c07e500c2d895f7986ca3d646e6449b1c419cc728c1"
+      }
+    },
+    {
+      "key": "demo/91aff9d/host/region/2026-11-12T18:40:22Z",
+      "activity": "demo",
+      "subject": "region",
+      "platform": "host",
+      "revision": "91aff9d",
+      "created": "2026-11-12T18:40:22Z",
+      "class": "partial",
+      "claim": "The log is cut at each byte of its last record and every sixty-fourth byte after it. Every run opens, and none finds a record that was not there.",
+      "content_hash": "sha256:f5c656bad8dbb81c5ace26876de38a32813bcdd5ee74ccef84e563eb0c4bb5bd",
+      "kind": "fact",
+      "object": {
+        "path": "/proofs/region.mp4",
+        "bytes": 86229,
+        "digest": "sha256:0b7f3ea9c300bf2d335266aa07d6083d902813605c3ddc9a54201563575277ba"
+      }
+    },
+    {
+      "key": "demo/91aff9d/bare-metal/c-abi/2026-11-12T18:40:23Z",
+      "activity": "demo",
+      "subject": "c-abi",
+      "platform": "bare-metal",
+      "revision": "91aff9d",
+      "created": "2026-11-12T18:40:23Z",
+      "class": "partial",
+      "claim": "The same C test body linked from C and run under QEMU on a Cortex-M4 and a RISC-V core, with the same fifteen measurements on both.",
+      "content_hash": "sha256:76bec7797a8496df26e9bd805104c653efd1fb0e6eed9ca70f6bc5760341f425",
+      "kind": "fact",
+      "object": {
+        "path": "/proofs/c-abi.mp4",
+        "bytes": 233307,
+        "digest": "sha256:c57c156e86265fab5da77e6a33124d7c098cbbc0e9c7d8554286b9b7e97a14a4"
+      }
+    },
+    {
+      "key": "demo/91aff9d/host/faults/2026-11-12T18:41:29Z",
+      "activity": "demo",
+      "subject": "faults",
+      "platform": "host",
+      "revision": "91aff9d",
+      "created": "2026-11-12T18:41:29Z",
+      "class": "partial",
+      "claim": "A medium that refuses a write, a worn medium, and a channel that holds a write past the end of the run.",
+      "content_hash": "sha256:e28a8c8e8d60621b80ef9da8e9a8d8791aa62759294f1759fbc748e802fd50ec",
+      "kind": "fact",
+      "object": {
+        "path": "/proofs/faults.mp4",
+        "bytes": 28723,
+        "digest": "sha256:3235315f6081a910591ef265b5103959d56ca1c8a785cc6abcc9efc4958207e6"
+      }
+    },
+    {
       "key": "demo/d821994/fpga/fpga-icesugarpro-audit/2026-11-15T08:35:00Z",
       "activity": "demo",
       "subject": "fpga-icesugarpro-audit",

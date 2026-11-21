@@ -58,5 +58,15 @@ const crumbs = [
       <dt>Recording</dt>
       <dd><a href={run.href}>Open it on asciinema</a></dd>
     </div>
+    {
+      run.record && (
+        <div>
+          <dt>Record</dt>
+          <dd>
+            <code>{run.record.key}</code>
+          </dd>
+        </div>
+      )
+    }
   </dl>
 </Shell>

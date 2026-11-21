@@ -10,6 +10,7 @@
 import { warn } from './warn';
 import { isText, pageDocuments, runDocuments, runName, strings, text, type Document } from './documents';
 import { KINDS, type ArtifactKind } from './kinds';
+import { recordOf, type RecordEntry } from './records';
 import type { Platform } from './taxonomy';
 
 /** Re-exported for the page that maps each kind to the component that draws it. */
@@ -29,6 +30,8 @@ export interface Recording {
   href: string;
   poster: string;
   posterAlt: string;
+  /** The corpus record this recording is evidence of, where the volume holds one. */
+  record?: RecordEntry;
   /** The recording as a video, so a reader can pause it, resume it, and scrub through the run. */
   video: string;
 }
@@ -98,16 +101,18 @@ function recordingOf(document: Document): Recording | undefined {
       return undefined;
     }
   }
+  const record = recordOf(runName(document.id));
   return {
     id: runName(document.id),
     label: document.title,
-    detail: document.description,
+    detail: record?.claim ?? document.description,
     body: document.body,
     command: run.command as string,
     href: run.href as string,
     poster: run.poster as string,
     posterAlt: run.posterAlt as string,
     video: run.video as string,
+    record,
   };
 }
 
