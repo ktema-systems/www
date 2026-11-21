@@ -1020,7 +1020,7 @@ h1 {
   }
 }
 
-/* ── the roadmap ──────────────────────────────────────────────────────── */
+/* ── the claims ──────────────────────────────────────────────────────── */
 
 /* The platform tag answers a different question from the product tag: the product says whose the
    surface is, the platform says where the claim is checked and therefore what it may claim. It is
@@ -1078,9 +1078,9 @@ h1 {
 }
 
 /* The section that carries the demonstrations not yet recorded stands off the grid above it by the
-   same step the roadmap page uses between its own blocks. */
+   same step the claims page uses between its own blocks. */
 .further,
-.roadmap-section {
+.claims-section {
   margin-top: clamp(64px, 8vw, 96px);
 }
 
@@ -1155,7 +1155,7 @@ h1 {
   line-height: 1.6;
 }
 
-.map__demos {
+.map__evidence {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1163,7 +1163,7 @@ h1 {
   gap: 4px;
 }
 
-.map__demo {
+.map__item {
   display: grid;
   grid-template-columns: 68px minmax(0, 1fr) auto;
   align-items: center;
@@ -1205,17 +1205,17 @@ h1 {
   line-height: 1.4;
 }
 
-.map__demo:hover .map__name,
-.map__demo:focus-visible .map__name {
+.map__item:hover .map__name,
+.map__item:focus-visible .map__name {
   color: var(--accent);
 }
 
-.map__demo:hover .map__bay,
-.map__demo:focus-visible .map__bay {
+.map__item:hover .map__bay,
+.map__item:focus-visible .map__bay {
   opacity: 0.62;
 }
 
-.map__demo .tags {
+.map__item .tags {
   justify-content: flex-end;
 }
 
@@ -1232,12 +1232,12 @@ h1 {
 }
 
 @media (max-width: 560px) {
-  .map__demo {
+  .map__item {
     grid-template-columns: 56px minmax(0, 1fr);
     gap: 12px;
   }
 
-  .map__demo .tags {
+  .map__item .tags {
     grid-column: 2;
     justify-content: flex-start;
   }

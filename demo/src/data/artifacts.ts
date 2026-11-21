@@ -64,7 +64,7 @@ export interface Artifact {
   poster?: string;
   /** What the still shows, for a reader who cannot see it. */
   posterAlt?: string;
-  /** The roadmap line the artifact belongs to. */
+  /** The claim it belongs to, in the register. */
   line?: string;
   /** Where the page stands in the grid: the document's `ktma.order`. */
   order: number;

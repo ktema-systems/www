@@ -27,7 +27,7 @@ export interface Ktma {
   video?: unknown;
   /** Where the grid draws the artifact, lowest first. A document without one follows the ones that have it. */
   order?: unknown;
-  /** The roadmap line the entry belongs to. */
+  /** The claim it belongs to, in the register. */
   line?: unknown;
 }
 
