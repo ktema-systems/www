@@ -193,8 +193,14 @@ own_delta=0
 # by CORPUS_URL, or the sibling checkout's. A page served from a copy the corpus moved past is the one thing this surface
 # must not do, and taking the copy is cheap.
 corpus_at=${CORPUS_URL:-}
-if [ -z "$corpus_at" ] && [ -f "${CORPUS_SOURCE:-${KTEMA_DIR:-../ktema}/corpus/export}/bench.json" ]; then
-  corpus_at=${CORPUS_SOURCE:-${KTEMA_DIR:-../ktema}/corpus/export}
+if [ -z "$corpus_at" ] && [ -n "${CORPUS_SOURCE:-}" ]; then
+  corpus_at=$CORPUS_SOURCE
+fi
+# A sibling checkout is where a person is most likely to have just built one, and it is the producer's own build
+# directory rather than a copy: the export never lives in the tree it came from.
+sibling=${KTEMA_DIR:-../ktema}/.build/corpus/export
+if [ -z "$corpus_at" ] && [ -f "$sibling/bench.json" ]; then
+  corpus_at=$sibling
 fi
 if [ -n "$corpus_at" ]; then
   say "taking the corpus from $corpus_at"

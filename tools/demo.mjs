@@ -14,9 +14,9 @@
 // are the second; `corpus:flow` asks for an export and then builds it, which is the whole of the second.
 //
 // Environment, all optional:
-//   CORPUS_SOURCE   where an export is published (default: CORPUS_URL, then ../ktema/corpus/export)
+//   CORPUS_SOURCE   an export beside this checkout, which is copied rather than fetched
 //   CORPUS_URL      the published export as a URL, which is what CI uses
-//   KTEMA_DIR       a ktema checkout, for the export and the values it states
+//   KTEMA_DIR       a ktema checkout, so a local run can take the export it builds here
 //   DELTA_DIR       a cockpit checkout, relative to this repository (../kletos/apps/delta)
 //   CENTER_PORT     the site's port on this host (4321)
 //   DELTA_PORT      the cockpit's port on this host (5276)
@@ -66,8 +66,9 @@ async function run() {
   const astro = join(ROOT, 'node_modules/.bin/astro');
   if (!existsSync(astro)) fail('the center is not installed here: run npm install');
 
-  // The served page and the board are the volume's own, so a run takes the export in first when the checkout has one.
-  if (existsSync(join(resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema'), 'corpus/export/bench.json'))) take();
+  // The served page and the board are the volume's own, so a run takes the export in first when one was named. `run.sh`
+  // resolves where it is and passes it here; nothing is guessed from a sibling directory.
+  if (process.env.CORPUS_URL || process.env.CORPUS_SOURCE) take();
 
   // A cockpit address given is a cockpit this host is not serving, which is what a run against a deployment is.
   let deltaUrl = process.env.DELTA_URL?.replace(/\/$/, '');
@@ -127,30 +128,38 @@ async function run() {
 /**
  * The export, taken from wherever it is published.
  *
- * A local checkout is copied; a URL is fetched. Either way the whole export is in hand before anything is written, and
+ * A local export is copied; a URL is fetched. Either way the whole export is in hand before anything is written, and
  * its digest is checked first, so a build never assembles from a corpus somebody edited after publishing it.
+ *
+ * Nothing is assumed about where a producer keeps its export: a tree that was not named is not read, so a build without
+ * `CORPUS_URL` or `CORPUS_SOURCE` says so rather than assembling from a directory that happens to exist.
  */
 function sourceOf() {
-  const asked = process.env.CORPUS_SOURCE;
-  if (asked) return resolve(ROOT, asked);
-  const url = process.env.CORPUS_URL;
-  if (url) {
-    const into = join(ROOT, '.corpus');
-    rmSync(into, { recursive: true, force: true });
-    mkdirSync(into, { recursive: true });
-    say(`corpus: fetching ${url}`);
-    for (const name of ['bench.json', 'corpus.json', 'runs.json', 'values.json', 'digest']) {
-      if (!fetchFile(`${url}/${name}`, join(into, name))) fail(`${url}/${name} did not answer`);
-    }
-    say('corpus: fetching the documents');
-    for (const file of indexOf(url)) {
-      const target = join(into, 'docs', file);
-      mkdirSync(join(target, '..'), { recursive: true });
-      if (!fetchFile(`${url}/docs/${file}`, target)) fail(`${url}/docs/${file} did not answer`);
-    }
-    return into;
+  const named = process.env.CORPUS_SOURCE ?? process.env.CORPUS_URL;
+  if (!named) {
+    fail('no corpus: set CORPUS_URL to the published export, or CORPUS_SOURCE to one beside this checkout');
   }
-  return resolve(ROOT, '../ktema/corpus/export');
+  // A path is a directory that is already there; anything else is an address to fetch from. `run.sh` passes a sibling
+  // checkout's build directory through the same variable, so the two are one answer to "where is the export".
+  if (existsSync(named)) return resolve(ROOT, named);
+  if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(named)) {
+    fail(`${named} is not there: set CORPUS_URL to the published export, or CORPUS_SOURCE to a directory`);
+  }
+  const url = named;
+  const into = join(ROOT, '.corpus');
+  rmSync(into, { recursive: true, force: true });
+  mkdirSync(into, { recursive: true });
+  say(`corpus: fetching ${url}`);
+  for (const name of ['bench.json', 'corpus.json', 'runs.json', 'values.json', 'digest']) {
+    if (!fetchFile(`${url}/${name}`, join(into, name))) fail(`${url}/${name} did not answer`);
+  }
+  say('corpus: fetching the documents');
+  for (const file of indexOf(url)) {
+    const target = join(into, 'docs', file);
+    mkdirSync(join(target, '..'), { recursive: true });
+    if (!fetchFile(`${url}/docs/${file}`, target)) fail(`${url}/docs/${file} did not answer`);
+  }
+  return into;
 }
 
 /** One file, fetched into place, as whether it arrived. */
@@ -239,7 +248,7 @@ function corpus() {
   for (const [from, to] of pairs()) {
     const source = join(exported, from);
     if (!existsSync(source)) {
-      fail(`${source} is not there: run './run.sh --bench' in the ktema checkout, or set KTEMA_DIR`);
+      fail(`${source} is not there: run corpus/assembly/export.sh in the ktema checkout`);
     }
     copyFileSync(source, join(ROOT, to));
     say(`corpus: ${from} -> ${to}`);
