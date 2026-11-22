@@ -29,6 +29,10 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+// The board Corpus View draws. Delta is the viewer stack and this board is its first customer's corpus, so a build of
+// the viewer names it rather than shipping whatever the cockpit opens with by default.
+const VIEW_BOARD = process.env.VIEW_BOARD ?? 'corpus';
+const boardEnv = () => ({ ...process.env, DELTA_BOARD: `projects/${VIEW_BOARD}.json` });
 
 const say = (line) => process.stdout.write(`demo: ${line}\n`);
 
@@ -433,10 +437,23 @@ function publish() {
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
 
   say('building the viewer');
-  if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit' }) !== 0) fail('the board did not build');
+  // The board is what the build draws, and a build that names none draws the demonstration. This one is the corpus board,
+  // because that is what Corpus View is: the records, not Delta shown as itself.
+  if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit', env: boardEnv() }) !== 0) {
+    fail('the board did not build');
+  }
   const built = join(delta, 'dist-demo');
-  for (const need of ['index.html', 'projects.json', '_redirects']) {
+  for (const need of ['index.html', '_redirects']) {
     if (!existsSync(join(built, need))) fail(`the board has no ${need} in its build`);
+  }
+  // A named board is written beside the app at its own path, and no `projects.json` is made at all. A build that
+  // shipped the demonstration while being published as the corpus would replace the corpus with the demo, and a reader
+  // would have no way to tell, so the board the build opens with is read back from what it wrote.
+  const drawn = join(built, 'projects', `${VIEW_BOARD}.json`);
+  if (!existsSync(drawn)) fail(`the viewer build has no projects/${VIEW_BOARD}.json: it drew another board`);
+  const shipped = JSON.parse(readFileSync(drawn, 'utf8'));
+  if (!shipped.opens?.startsWith(VIEW_BOARD)) {
+    fail(`the viewer build opens with ${shipped.opens} rather than a ${VIEW_BOARD} blackboard`);
   }
 
   // The hub first: the viewer names its pages, so the page a reader opens is the one this run published.
