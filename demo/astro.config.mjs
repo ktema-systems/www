@@ -18,12 +18,12 @@ export default defineConfig({
     sitemap({ filter: (page) => !page.endsWith('.txt') }),
     // The index at /llms.txt, and a markdown version of every page beside it.
     llmsTxt({
-      title: 'Kletos Corpus Hub',
+      title: 'Ktema Systems Corpus Hub',
       summary:
-        'The corpus Kletos publishes: the demonstrations it recorded, the measurements it took, and the surfaces it plans.',
-      titleSuffix: ' | Kletos Corpus Hub',
+        'The corpus Ktema Systems publishes: the demonstrations it recorded, the measurements it took, and the surfaces it plans.',
+      titleSuffix: ' | Ktema Systems Corpus Hub',
       links: [
-        '- [Ktema Systems](https://ktema.systems/): the company whose stack these records are, and whose llms index is at https://ktema.systems/llms.txt',
+        '- [Ktema Systems](https://ktema.systems/): the company this center demonstrates, whose corpus is at https://ktema.systems/llms.txt',
         `- [Corpus Space](${deltaApp}): this corpus as Delta reads it, whose entries open the page they belong to.`,
         '- [Documentation](https://docs.ktema.systems)',
         '- [Email](mailto:demo@ktema.systems)',

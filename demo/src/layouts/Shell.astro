@@ -24,8 +24,8 @@ const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://ktema-corpus-view
 // The observer is the page's own: a page with no hero call has nothing to wait for, and `data-hero-cta` is absent.
 const waitsForHero = Astro.url.pathname === '/' || Astro.url.pathname === '';
 
-const pageTitle = title === 'Corpus Hub' ? 'Kletos Corpus Hub' : `${title} | Kletos Corpus Hub`;
-const pageDescription = description ?? 'The demonstrations and the measurements Kletos records, in one place.';
+const pageTitle = title === 'Corpus Hub' ? 'Ktema Systems Corpus Hub' : `${title} | Ktema Systems Corpus Hub`;
+const pageDescription = description ?? 'The demonstrations and the measurements Ktema Systems records, in one place.';
 
 // `site` is set in the center's astro.config.mjs, so its own address is known at build time.
 const origin = Astro.site!;
@@ -52,7 +52,7 @@ const structuredData = {
     {
       '@type': 'WebSite',
       '@id': new URL('/#website', origin).href,
-      name: 'Kletos Corpus Hub',
+      name: 'Ktema Systems Corpus Hub',
       url: origin.href,
       inLanguage: 'en',
       publisher: { '@id': new URL('/#organization', company).href },
@@ -75,7 +75,7 @@ const structuredData = {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#131210" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Kletos Corpus Hub" />
+    <meta property="og:site_name" content="Ktema Systems Corpus Hub" />
     <meta property="og:locale" content="en" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
@@ -84,7 +84,7 @@ const structuredData = {
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="The Kletos Corpus Hub: the cockpit and an FPGA board on one page." />
+    <meta property="og:image:alt" content="The Ktema Systems Corpus Hub: the cockpit and an FPGA board on one page." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
@@ -96,7 +96,7 @@ const structuredData = {
       <div class="bar__inner">
         <a class="bar__brand" href={company}>
           <span class="bar__mark" aria-hidden="true"></span>
-          <span class="bar__name">Kletos</span>
+          <span class="bar__name">Ktema Systems</span>
         </a>
         {
           crumbs.map((crumb, index) => (
@@ -125,9 +125,9 @@ const structuredData = {
             href={viewUrl}
             target="_blank"
             rel="noreferrer"
-            title="Corpus Space: Kletos's own records, read in Delta"
+            title="Corpus Space: the corpus, read in Delta"
           >
-            Corpus Space
+            Launch Corpus Space
           </a>
         </span>
         <a class="bar__action" href="mailto:demo@ktema.systems">Request a demo</a>
