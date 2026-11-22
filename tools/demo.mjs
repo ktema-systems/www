@@ -44,7 +44,7 @@ function exec(command, args, options) {
   return result.status ?? 1;
 }
 
-/** Waits until an address answers, so the center is not opened on a frame with nothing behind it. */
+/** Waits until an address answers, so the hub is not opened on a frame with nothing behind it. */
 async function answered(url, tries = 40) {
   for (let attempt = 0; attempt < tries; attempt += 1) {
     try {
@@ -64,7 +64,7 @@ async function run() {
   const deltaDir = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
 
   const astro = join(ROOT, 'node_modules/.bin/astro');
-  if (!existsSync(astro)) fail('the center is not installed here: run npm install');
+  if (!existsSync(astro)) fail('the hub is not installed here: run npm install');
 
   // The served page and the board are the volume's own, so a run takes the export in first when one was named. `run.sh`
   // resolves where it is and passes it here; nothing is guessed from a sibling directory.
@@ -100,14 +100,14 @@ async function run() {
     await answered(deltaUrl);
   }
 
-  say(`the center on http://localhost:${centerPort}`);
+  say(`the hub on http://localhost:${centerPort}`);
 
   const center = spawn(astro, ['dev', '--root', 'demo', '--port', centerPort, '--force'], {
     cwd: ROOT,
     env: { ...process.env, PUBLIC_DELTA_URL: `${deltaUrl}/` },
     stdio: 'inherit',
   });
-  center.on('error', (error) => fail(`the center did not start: ${error.message}`));
+  center.on('error', (error) => fail(`the hub did not start: ${error.message}`));
 
   // Both are stopped from here rather than left to the terminal's process group, because the cockpit is this command's
   // child and nothing else would take it down.
@@ -254,7 +254,7 @@ function corpus() {
     say(`corpus: ${from} -> ${to}`);
   }
 
-  // The documents are the fact in the form a person reads, so the center renders the corpus's own text rather than a
+  // The documents are the fact in the form a person reads, so the hub renders the corpus's own text rather than a
   // copy kept here. The directory is replaced whole, so a document the corpus dropped stops being a page.
   const docs = join(exported, 'docs');
   if (!existsSync(docs)) fail(`${docs} is not there: run corpus/assembly/export.sh in the ktema checkout`);
@@ -326,13 +326,13 @@ function flow() {
  *
  * The corpus is taken first, which means running ktema's export against the volume already there and then copying what
  * it wrote. Nothing is measured: a preview reads what earlier runs left, which is the property the corpus exists to
- * give. The center is built and served, and Control-C stops it.
+ * give. The hub is built and served, and Control-C stops it.
  */
 function show() {
   flow();
 
-  say('building the center');
-  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the center did not build');
+  say('building the hub');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the hub did not build');
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
 
   const port = process.env.CENTER_PORT ?? '4321';
@@ -343,7 +343,7 @@ function show() {
 }
 
 /**
- * The files the center is drawn from, as the pairs the export owns.
+ * The files the hub is drawn from, as the pairs the export owns.
  *
  * A pair is the corpus's own name and the file the site imports. Keeping the two names in one list is what lets the
  * check, the take, and a reader of this file agree about which copies are copies.
@@ -366,7 +366,7 @@ function treeOf(directory) {
 }
 
 /**
- * Whether the center is still the export it was taken from.
+ * Whether the hub is still the export it was taken from.
  *
  * A checkout of this repository alone has no volume beside it, and the committed copy is then the only copy: the check
  * skips rather than calling that a failure. Where the export is there, a difference is a page that would quote a run
@@ -403,7 +403,7 @@ function check() {
     for (const line of drift) process.stderr.write(`demo: ${line}\n`);
     fail('the site is not the export: run npm run corpus:take');
   }
-  say('corpus: the center is the export it was taken from');
+  say('corpus: the hub is the export it was taken from');
 }
 
 /**
@@ -415,8 +415,8 @@ function check() {
  * note is the only thing it can say.
  */
 function publish() {
-  const site = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus';
-  const center = process.env.DELTA_PAGES_PROJECT ?? 'ktema-delta';
+  const site = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub';
+  const viewer = process.env.DELTA_PAGES_PROJECT ?? 'ktema-corpus-viewer';
   const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
 
   take();
@@ -446,10 +446,10 @@ function publish() {
   );
   if (first !== 0) fail('the hub did not publish');
 
-  say(`uploading the viewer to Cloudflare Pages (${center})`);
+  say(`uploading the viewer to Cloudflare Pages (${viewer})`);
   const second = exec(
     'npx',
-    ['--yes', 'wrangler@4', 'pages', 'deploy', 'dist-demo', `--project-name=${center}`, '--commit-dirty=true'],
+    ['--yes', 'wrangler@4', 'pages', 'deploy', 'dist-demo', `--project-name=${viewer}`, '--commit-dirty=true'],
     { cwd: delta, stdio: 'inherit' },
   );
   if (second !== 0) fail('the viewer did not publish');
@@ -462,7 +462,7 @@ function publish() {
  * together; this is kept for a deployment that reaches one of them.
  */
 function deploy() {
-  const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus';
+  const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub';
   take();
   if (exec('npx', ['--yes', 'wrangler@4', 'whoami'], { cwd: ROOT, stdio: 'ignore' }) !== 0) {
     fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
