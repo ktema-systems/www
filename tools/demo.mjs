@@ -29,7 +29,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-// The board Corpus View draws. Delta is the viewer stack and this board is its first customer's corpus, so a build of
+// The board Corpus Space draws. Delta is the viewer stack and this board is its first customer's corpus, so a build of
 // the viewer names it rather than shipping whatever the cockpit opens with by default.
 const VIEW_BOARD = process.env.VIEW_BOARD ?? 'corpus';
 const boardEnv = () => ({ ...process.env, DELTA_BOARD: `projects/${VIEW_BOARD}.json` });
@@ -438,7 +438,7 @@ function publish() {
 
   say('building the viewer');
   // The board is what the build draws, and a build that names none draws the demonstration. This one is the corpus board,
-  // because that is what Corpus View is: the records, not Delta shown as itself.
+  // because that is what Corpus Space is: the records, not Delta shown as itself.
   if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit', env: boardEnv() }) !== 0) {
     fail('the board did not build');
   }
