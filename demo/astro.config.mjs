@@ -11,7 +11,7 @@ const deltaApp = (process.env.PUBLIC_CENTER_URL ?? 'https://delta.ktema.systems/
 
 export default defineConfig({
   // The hub is published at its own address, and it is what its canonical links and sitemap are built from.
-  site: 'https://corpus.ktema.systems',
+  site: 'https://demo.ktema.systems',
   outDir: '../demo-dist',
   integrations: [
     // The index and the markdown pages are text rather than pages, so they stay out of the sitemap.

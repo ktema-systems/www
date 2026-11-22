@@ -216,6 +216,8 @@ fi
 if [ -n "$corpus_at" ]; then
   say "taking the corpus from $corpus_at"
   CORPUS_URL="$corpus_at" node tools/demo.mjs take || die 'the corpus could not be taken into both renderings'
+elif [ "$deploy" -eq 1 ]; then
+  die 'a deploy publishes the corpus: set CORPUS_URL to the published export'
 fi
 
 # Both cockpits come from one checkout, so the build is made once and served twice: the demo on the exhibition board

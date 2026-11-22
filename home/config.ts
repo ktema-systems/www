@@ -69,7 +69,7 @@ export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 // is only shown once the hero's has passed under it, so the two are one button that moves.
 export const corpusHub: NavItem = {
   label: 'Corpus Hub', // Don't change this
-  href: 'https://corpus.ktema.systems/',
+  href: 'https://demo.ktema.systems/',
 };
 
 /** The call to action the homepage and the product pages share. */
