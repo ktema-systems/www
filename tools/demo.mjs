@@ -120,10 +120,10 @@ async function run() {
 /**
  * The records this center draws, taken from the ktema checkout.
  *
- * The center holds no measurement of its own: `bench.json` is the rows a page draws, and `corpus.json` is every record
- * with the claim each one rests on. Both are written by `corpus/assembly/export.sh`, so publishing reads them rather
- * than restating them. A checkout that has not run a bench has no export, and that is a failure rather than an empty
- * page.
+ * The center holds no measurement of its own: `bench.json` is the rows a page draws, `corpus.json` is every record
+ * with the claim each one rests on, and `values.json` is the strings a document's placeholders ask for. All three are
+ * written by `corpus/assembly/export.sh`, so publishing reads them rather than restating them. A checkout that has not
+ * run a bench has no export, and that is a failure rather than an empty page.
  */
 function corpus() {
   const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
@@ -182,6 +182,7 @@ function pairs() {
   return [
     ['corpus/export/bench.json', 'demo/src/data/corpus-bench.json'],
     ['corpus/export/corpus.json', 'demo/src/data/corpus.json'],
+    ['corpus/export/values.json', 'demo/src/data/corpus-values.json'],
   ];
 }
 

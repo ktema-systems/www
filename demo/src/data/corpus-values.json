@@ -1,0 +1,39 @@
+{
+  "format": "corpus-values/0.1",
+  "documents": {
+    "bench": {
+      "bytes_ktema": "495",
+      "bytes_log": "257",
+      "bytes_sqlite": "293",
+      "index_ktema": "354 kB, optional; not built in this run",
+      "index_log": "64 MB, one entry per record",
+      "index_sqlite": "8.3 MB, page cache",
+      "append_ktema": "5.0 µs",
+      "append_log": "1.7 µs",
+      "append_sqlite": "12.8 µs",
+      "open_ktema": "0.79 µs",
+      "open_log": "7.71 ms",
+      "open_sqlite": "225.63 µs",
+      "point_ktema": "1.33 µs, reading 11 kB",
+      "point_log": "0.04 µs",
+      "point_sqlite": "2.50 µs, reading 20 kB",
+      "tenth_ktema": "24 ms, reading 2.2 times the volume",
+      "tenth_log": "0.49 ms",
+      "tenth_sqlite": "0.59 ms, reading 2.8 MB",
+      "ceiling_records": "8,676,701",
+      "volume_multiple": "2.2",
+      "box_bytes_ratio": "10.0",
+      "box_time_ratio": "19.8",
+      "box_index": "135.3 MB",
+      "box_volume": "279.0 MB",
+      "box_bytes": "1.5 GB",
+      "box_kb_engine": "16.0",
+      "box_kb_sqlite": "0.3",
+      "read_framing": "1",
+      "read_fact": "3",
+      "read_multiple": "174",
+      "point_kb_small": "2.7 kB",
+      "point_kb_large": "19.9 kB"
+    }
+  }
+}

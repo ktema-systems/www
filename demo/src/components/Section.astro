@@ -1,0 +1,30 @@
+---
+// One section of a document, rendered where its figure stands.
+//
+// A page places figures and the document owns the words, so a page renders the section it needs by name and the build
+// stops when the document no longer states it. That is what keeps a heading rename from leaving a figure with no
+// argument above it.
+import { createSatteriMarkdownProcessor } from '@astrojs/markdown-satteri';
+import { filled, sectionsOf } from '../data/bindings';
+
+interface Props {
+  /** The whole document, as Markdown. */
+  source: string;
+  /** The heading the section is stated under. */
+  name: string;
+  values?: Record<string, string>;
+}
+
+const { source, name, values = {} } = Astro.props;
+
+const found = sectionsOf(source).find((section) => section.name === name);
+if (!found) {
+  throw new Error(`the document states no section named "${name}": ${sectionsOf(source).map((s) => s.name).join(', ')}`);
+}
+
+const processor = await createSatteriMarkdownProcessor({});
+const { code } = await processor.render(filled(found.body, values));
+---
+
+<h2>{name}</h2>
+<Fragment set:html={code} />

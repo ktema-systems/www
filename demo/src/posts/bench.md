@@ -55,3 +55,33 @@ cached path builds record maps at 394 to 406 bytes a record on a 32-bit target, 
 354 kB, so a read comes from memory. A part with 64 kB cannot take it.
 
 Both paths hold the same record in the same format. The choice moves the cost between the medium and the memory.
+
+## A box on any axis
+
+A multi-dimensional query fixes ranges on some axes and asks for the records inside. One box over a tenth of one axis,
+at a million records, through each store's own query path:
+
+## What a box costs to hold
+
+The engine answers both shapes in one pass and the same bytes, because the address is computed. The database's
+inner-axis row costs {{box_bytes_ratio}} times the reads and {{box_time_ratio}} times the time, and an index of
+{{box_index}} on a {{box_volume}} volume makes it cheap again.
+
+The engine's flat cost is the namespace, walked once per query: {{box_bytes}} at a million records. A listing compares
+each key once per segment, and a listing begins at a prefix, which a set of ranges is not.
+
+Per answer: {{box_kb_engine}} kB read against {{box_kb_sqlite}} kB.
+
+A volume stops at 4 GiB, {{ceiling_records}} records at {{bytes_ktema}} bytes each. A particle-physics ntuple is about
+a hundred times that, so the unit here is the volume.
+
+## What a read costs the medium
+
+The engine counts the reads it asks the medium for. The count is {{read_framing}} framing read and {{read_fact}} fact
+reads at any volume, and a prefix read does not read a record.
+
+## The read contract
+
+{{read_multiple}} times the volume changes neither count. The listing issues no byte read, which is the contract's "does
+not read a record"; the directory walk is not a call this counter sees. The bytes behind the reads do grow, from
+{{point_kb_small}} at a thousand records to {{point_kb_large}} at a million.

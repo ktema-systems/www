@@ -198,6 +198,39 @@
       }
     },
     {
+      "key": "bench/d95a751+/host/read-contract/2026-11-22T11:59:48Z",
+      "subject": "read-contract",
+      "revision": "d95a751+",
+      "platform": "host",
+      "created": "2026-11-22T11:59:48Z",
+      "class": "partial",
+      "claim": "one point read asks the medium for 1 framing and 3 fact reads at 64 records and at 11172; a listing asks for 0",
+      "content_hash": "sha256:713a2fb0ea406d1773f14f156ebd6abb73a68355e30c5c7f54bfbe91ab9333ca",
+      "parameters": {
+        "sizes": [
+          64,
+          11172
+        ],
+        "medium_from": "verify/reads/check.sh"
+      },
+      "payload": {
+        "rows": [
+          {
+            "records": 64,
+            "framing": 1,
+            "fact": 3,
+            "listing": 0
+          },
+          {
+            "records": 11172,
+            "framing": 1,
+            "fact": 3,
+            "listing": 0
+          }
+        ]
+      }
+    },
+    {
       "key": "bench/8b5e3a3+/host/volume-sweep/2026-11-21T10:53:53Z",
       "subject": "volume-sweep",
       "revision": "8b5e3a3+",

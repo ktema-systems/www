@@ -13,6 +13,7 @@
 // ends at a million and the ceiling is stated rather than drawn.
 
 import corpus from './corpus-bench.json';
+import corpusValues from './corpus-values.json';
 
 /**
  * One entry per subject: the record's own fields, and the payload as the run wrote it. The export declares no shape,
@@ -39,6 +40,9 @@ interface VolumeRow {
   query_us: number;
   query_answers: number;
   query_medium_bytes: number;
+  scattered_us: number;
+  scattered_answers: number;
+  scattered_medium_bytes: number;
   write_us: number;
 }
 
@@ -58,9 +62,31 @@ interface SqliteRow extends Omit<LogRow, 'map_bytes'> {
   cache_bytes: number;
   point_read_medium_bytes: number;
   range_medium_bytes: number;
+  box_answers: number;
+  box_scan_us: number;
+  box_scan_medium_bytes: number;
+  box_indexed_us: number;
+  box_indexed_medium_bytes: number;
+  box_index_bytes: number;
+}
+
+/** The read contract's own probe, as `verify/reads` writes it. */
+interface ContractRow {
+  records: number;
+  framing: number;
+  fact: number;
+  listing: number;
 }
 
 const entries = corpus.bench as unknown as Entry<unknown>[];
+
+/**
+ * The strings a document's placeholders ask for, computed by the corpus's own assembly.
+ *
+ * A page and the board take the same file, so two renderings of one document cannot state two numbers. A name the
+ * document asks for and the export does not compute is caught where the values are written, not in a page.
+ */
+export const values: Record<string, string> = corpusValues.documents.bench;
 
 /** The record this page draws. */
 const measured = entries.find((entry) => entry.subject === 'volume-sweep')! as Entry<{ volumes: VolumeRow[] }>;
@@ -70,6 +96,15 @@ const peers = entries.find((entry) => entry.subject === 'peer-baselines')! as En
   append_log: LogRow[];
   sqlite_rows: SqliteRow[];
 }>;
+
+/** The read contract's counts, from `verify/reads` through `ktema`'s `read-contract` record. */
+const contract = entries.find((entry) => entry.subject === 'read-contract')! as Entry<{
+  rows: ContractRow[];
+}>;
+
+/** The rung a comparison is stated at. The box and the memory note both read one million. */
+const AT = 1_000_000;
+const rung = <T extends { records: number }>(rows: T[]): T => rows.find((row) => row.records === AT)!;
 
 export interface Row {
   records: number;
@@ -199,30 +234,58 @@ export const ceiling = {
  */
 export const reads = {
   probe: 'verify/reads/check.sh',
-  recorded: '2026-11-13',
-  rows: [
-    { records: 64, framing: 1, fact: 3, listing: 0 },
-    { records: 512, framing: 1, fact: 3, listing: 0 },
-  ],
-} as const;
+  key: contract.key,
+  rows: contract.payload.rows,
+};
 
 /**
  * One box over a tenth of one axis, at a million records, through each store's own query path.
  *
  * The engine's address is computed, so a box costs the same whichever axis it constrains and it holds no index. A
  * database stores one order, so a box that matches that order is a range read and any other is a scan, or an index
- * built for that one shape. The indexed rows carry the bytes that index occupies.
+ * built for that one shape. The indexed rows carry the bytes that index occupies. Every number is the run's: a renamed
+ * field is a build failure rather than a zero.
  */
 export const boxes = {
-  records: 1_000_000,
+  records: AT,
   rows: [
-    { store: 'Ktema, the leading axis', answers: 98_968, us: 314_402.333, bytes: 1_623_966_552, index_bytes: 0 },
-    { store: 'Ktema, an inner axis', answers: 111_720, us: 318_724.833, bytes: 1_623_966_552, index_bytes: 0 },
-    { store: 'SQLite, the key range', answers: 100_000, us: 11_509.125, bytes: 29_278_208, index_bytes: 0 },
-    { store: 'SQLite, an inner axis', answers: 119_160, us: 228_587.625, bytes: 292_597_760, index_bytes: 0 },
-    { store: 'SQLite, an inner axis, indexed', answers: 119_160, us: 73_419.792, bytes: 43_372_544, index_bytes: 141_832_784 },
+    {
+      store: 'Ktema, the leading axis',
+      answers: rung(measured.payload.volumes).query_answers,
+      us: rung(measured.payload.volumes).query_us,
+      bytes: rung(measured.payload.volumes).query_medium_bytes,
+      index_bytes: 0,
+    },
+    {
+      store: 'Ktema, an inner axis',
+      answers: rung(measured.payload.volumes).scattered_answers,
+      us: rung(measured.payload.volumes).scattered_us,
+      bytes: rung(measured.payload.volumes).scattered_medium_bytes,
+      index_bytes: 0,
+    },
+    {
+      store: 'SQLite, the key range',
+      answers: rung(peers.payload.sqlite_rows).range_answers,
+      us: rung(peers.payload.sqlite_rows).range_us,
+      bytes: rung(peers.payload.sqlite_rows).range_medium_bytes,
+      index_bytes: 0,
+    },
+    {
+      store: 'SQLite, an inner axis',
+      answers: rung(peers.payload.sqlite_rows).box_answers,
+      us: rung(peers.payload.sqlite_rows).box_scan_us,
+      bytes: rung(peers.payload.sqlite_rows).box_scan_medium_bytes,
+      index_bytes: 0,
+    },
+    {
+      store: 'SQLite, an inner axis, indexed',
+      answers: rung(peers.payload.sqlite_rows).box_answers,
+      us: rung(peers.payload.sqlite_rows).box_indexed_us,
+      bytes: rung(peers.payload.sqlite_rows).box_indexed_medium_bytes,
+      index_bytes: rung(peers.payload.sqlite_rows).box_index_bytes,
+    },
   ],
-} as const;
+};
 
 /** What produced the numbers, so a reader can reproduce them rather than trust them. */
 export const source = {
