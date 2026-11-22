@@ -27,3 +27,6 @@ demo-dist/
 
 # Local Wrangler state, written by `wrangler pages deploy`
 .wrangler/
+
+# The corpus an export was fetched into, which CI fetches and a run replaces.
+.corpus/

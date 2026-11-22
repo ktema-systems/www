@@ -3,17 +3,19 @@
 //   npm run corpus:source  take the export a producer published, and check it against its digest
 //   npm run corpus:take    take it into this site and the board, and check both
 //   npm run corpus:build   build the site and the board from what was taken
-//   npm run corpus:flow    take, build, and check
+//   npm run corpus:flow    take and check, from what a producer published
 //   npm run corpus:publish build and publish both to their Pages projects
 //   npm run demo           the site beside a cockpit, both started and stopped together
 //
-// This repository is the one that assembles and publishes the artifacts. A producer (ktema, kletos) exports a corpus;
-// this takes it, builds the site and the board from it, and publishes each to its own Pages project. The producers are
-// private, so what crosses into here is the artifact they published and its digest, never a checkout this build has to
-// reach into.
+// Two pipelines share this file. One runs in a checkout with the producers beside it (a person's machine, where
+// KTEMA_DIR and DELTA_DIR name them): it exports the volume and builds everything from the sources. The other runs
+// where the producers are not (CI, where their repositories are private): it fetches the export they published, refuses
+// one that does not match its digest, and builds the site from it. `corpus:source`, `corpus:take` and `corpus:publish`
+// are the second; `corpus:flow` asks for an export and then builds it, which is the whole of the second.
 //
 // Environment, all optional:
-//   CORPUS_SOURCE   where an export is published (default: ../ktema/corpus/export)
+//   CORPUS_SOURCE   where an export is published (default: CORPUS_URL, then ../ktema/corpus/export)
+//   CORPUS_URL      the published export as a URL, which is what CI uses
 //   KTEMA_DIR       a ktema checkout, for the export and the values it states
 //   DELTA_DIR       a cockpit checkout, relative to this repository (../kletos/apps/delta)
 //   CENTER_PORT     the site's port on this host (4321)
@@ -22,7 +24,7 @@
 
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, cpSync, existsSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -122,9 +124,51 @@ async function run() {
   });
 }
 
-/** Where an export is read from: a published directory, which is what a producer hands over. */
+/**
+ * The export, taken from wherever it is published.
+ *
+ * A local checkout is copied; a URL is fetched. Either way the whole export is in hand before anything is written, and
+ * its digest is checked first, so a build never assembles from a corpus somebody edited after publishing it.
+ */
 function sourceOf() {
-  return resolve(ROOT, process.env.CORPUS_SOURCE ?? '../ktema/corpus/export');
+  const asked = process.env.CORPUS_SOURCE;
+  if (asked) return resolve(ROOT, asked);
+  const url = process.env.CORPUS_URL;
+  if (url) {
+    const into = join(ROOT, '.corpus');
+    rmSync(into, { recursive: true, force: true });
+    mkdirSync(into, { recursive: true });
+    say(`corpus: fetching ${url}`);
+    for (const name of ['bench.json', 'corpus.json', 'runs.json', 'values.json', 'digest']) {
+      if (!fetchFile(`${url}/${name}`, join(into, name))) fail(`${url}/${name} did not answer`);
+    }
+    say('corpus: fetching the documents');
+    for (const file of indexOf(url)) {
+      const target = join(into, 'docs', file);
+      mkdirSync(join(target, '..'), { recursive: true });
+      if (!fetchFile(`${url}/docs/${file}`, target)) fail(`${url}/docs/${file} did not answer`);
+    }
+    return into;
+  }
+  return resolve(ROOT, '../ktema/corpus/export');
+}
+
+/** One file, fetched into place, as whether it arrived. */
+function fetchFile(url, into) {
+  const got = spawnSync('curl', ['-fsS', '-L', '--max-time', '60', '-o', into, url], { stdio: 'ignore' });
+  return got.status === 0;
+}
+
+/** The documents an export publishes, read from its index. */
+function indexOf(url) {
+  const listing = join(ROOT, '.corpus', 'documents.txt');
+  if (!fetchFile(`${url}/documents.txt`, listing)) {
+    fail(`${url}/documents.txt did not answer: an export states the documents it carries`);
+  }
+  return readFileSync(listing, 'utf8')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 /**
