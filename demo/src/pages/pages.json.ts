@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { getArtifacts, getSurfaces } from '../data/source';
+import digest from '../data/corpus-digest.txt?raw';
 
 /**
  * The pages this site published, as the list another surface navigates by.
@@ -31,7 +32,7 @@ export const GET: APIRoute = async () => {
     })),
   ];
 
-  return new Response(JSON.stringify({ pages }), {
+  return new Response(JSON.stringify({ digest: digest.trim(), pages }), {
     headers: {
       'content-type': 'application/json; charset=utf-8',
       // A public index, read by the center on another origin.

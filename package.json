@@ -19,6 +19,8 @@
     "astro": "astro",
     "test:packages": "node --test packages/*/index.test.mjs",
     "corpus:sync": "node tools/demo.mjs corpus",
+    "corpus:take": "node tools/demo.mjs take",
+    "corpus:flow": "node tools/demo.mjs flow",
     "corpus:check": "node tools/demo.mjs check",
     "corpus:show": "node tools/demo.mjs show"
   },

@@ -59,8 +59,8 @@ async function run() {
   const astro = join(ROOT, 'node_modules/.bin/astro');
   if (!existsSync(astro)) fail('the center is not installed here: run npm install');
 
-  // The served page is the volume's own, so a run takes the export in first when the checkout has one.
-  if (existsSync(join(resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema'), 'corpus/export/bench.json'))) corpus();
+  // The served page and the board are the volume's own, so a run takes the export in first when the checkout has one.
+  if (existsSync(join(resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema'), 'corpus/export/bench.json'))) take();
 
   // A cockpit address given is a cockpit this host is not serving, which is what a run against a deployment is.
   let deltaUrl = process.env.DELTA_URL?.replace(/\/$/, '');
@@ -146,6 +146,58 @@ function corpus() {
 }
 
 /**
+ * The whole pipeline, from the volume to both consumers.
+ *
+ * The corpus is measured by its producers, exported once, and taken into the site and the board. Each consumer's own
+ * check runs here, so a copy that is not the export stops the flow rather than being served.
+ */
+function take() {
+  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  const exported = join(ktema, 'corpus/export');
+  corpus();
+
+  const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
+  const corpusTool = join(delta, 'tools/corpus.mjs');
+  if (existsSync(corpusTool)) {
+    say('the board takes the corpus');
+    const steps = [
+      [corpusTool, '--take', exported],
+      [join(delta, 'tools/corpus-board.mjs')],
+      [join(delta, 'tools/board.mjs'), '--set', 'corpus'],
+    ];
+    for (const [script, ...args] of steps) {
+      if (exec(process.execPath, [script, ...args], { cwd: delta, stdio: 'inherit' }) !== 0) {
+        fail('the board did not take the corpus');
+      }
+    }
+    const checks = [
+      [corpusTool, '--check'],
+      [join(delta, 'tools/corpus-board.mjs'), '--check'],
+      [join(delta, 'tools/board.mjs'), '--set', 'corpus', '--check'],
+    ];
+    for (const [script, ...args] of checks) {
+      if (exec(process.execPath, [script, ...args], { cwd: delta, stdio: 'inherit' }) !== 0) {
+        fail('the board is not the corpus');
+      }
+    }
+  } else {
+    say(`no cockpit at ${delta}: the site is the only consumer taken`);
+  }
+
+  check();
+}
+
+/** The whole flow: export the volume once, then take it into both consumers and check them. */
+function flow() {
+  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  const exporter = join(ktema, 'corpus/assembly/export.sh');
+  if (!existsSync(exporter)) fail(`${exporter} is not there: set KTEMA_DIR`);
+  say(`corpus: ${exporter}`);
+  if (exec('bash', [exporter], { cwd: ktema, stdio: 'inherit' }) !== 0) fail('the export did not run');
+  take();
+}
+
+/**
  * The whole pipeline, from the volume to a served page.
  *
  * The corpus is taken first, which means running ktema's export against the volume already there and then copying what
@@ -153,13 +205,7 @@ function corpus() {
  * give. The center is built and served, and Control-C stops it.
  */
 function show() {
-  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
-  const exporter = join(ktema, 'corpus/assembly/export.sh');
-  if (!existsSync(exporter)) fail(`${exporter} is not there: set KTEMA_DIR to the ktema checkout`);
-  say(`corpus: ${exporter}`);
-  if (exec('bash', [exporter], { cwd: ktema, stdio: 'inherit' }) !== 0) fail('the export did not run');
-
-  corpus();
+  flow();
 
   say('building the center');
   if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the center did not build');
@@ -183,6 +229,7 @@ function pairs() {
     ['corpus/export/bench.json', 'demo/src/data/corpus-bench.json'],
     ['corpus/export/corpus.json', 'demo/src/data/corpus.json'],
     ['corpus/export/values.json', 'demo/src/data/corpus-values.json'],
+    ['corpus/export/digest', 'demo/src/data/corpus-digest.txt'],
   ];
 }
 
@@ -238,7 +285,7 @@ function check() {
 function deploy() {
   const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
 
-  corpus();
+  take();
 
   if (exec('npx', ['--yes', 'wrangler@4', 'whoami'], { cwd: ROOT, stdio: 'ignore' }) !== 0) {
     fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
@@ -269,10 +316,14 @@ if (mode === 'run') {
   deploy();
 } else if (mode === 'corpus') {
   corpus();
+} else if (mode === 'take') {
+  take();
+} else if (mode === 'flow') {
+  flow();
 } else if (mode === 'check') {
   check();
 } else if (mode === 'show') {
   show();
 } else {
-  fail(`unknown command '${mode}': use run, show, deploy, corpus, or check`);
+  fail(`unknown command '${mode}': use run, take, flow, show, deploy, corpus, or check`);
 }
