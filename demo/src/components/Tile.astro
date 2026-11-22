@@ -8,10 +8,13 @@
 // Two tags answer two questions: the product says whose surface it is, and the platform says where the claim is
 // checked. They are drawn differently because they are not the same kind of word.
 import { platformOf, type Platform } from '../data/taxonomy';
+import { CATEGORY_TAGS, type Category } from '../data/kinds';
 
 interface Props {
   href?: string;
   title: string;
+  /** What the page is, which is the first tag a reader reads. */
+  category?: Category;
   products?: string[];
   platforms?: Platform[];
   summary: string;
@@ -26,6 +29,7 @@ interface Props {
 const {
   href,
   title,
+  category,
   products = [],
   platforms = [],
   summary,
@@ -73,6 +77,11 @@ const link = href ? { href } : {};
     <span class="tile__head">
       <span class="tile__title">{title}</span>
       <span class="tags">
+        {category && (
+          <span class:list={['category-tag', `category-tag--${category}`]} title={CATEGORY_TAGS[category].title}>
+            {CATEGORY_TAGS[category].label}
+          </span>
+        )}
         {platforms.map((name) => (
           <span class="platform-tag">{platformOf(name).label}</span>
         ))}

@@ -4,10 +4,13 @@
 // The thumbnail is the same still a tile carries, or the same bay when there is none, so the two views describe an
 // entry the same way and cannot disagree about it.
 import { platformOf, type Platform } from '../data/taxonomy';
+import { CATEGORY_TAGS, type Category } from '../data/kinds';
 
 interface Props {
   href: string;
   title: string;
+  /** What the page is, which is the first tag a reader reads. */
+  category?: Category;
   products?: string[];
   platforms?: Platform[];
   summary: string;
@@ -15,7 +18,7 @@ interface Props {
   posterAlt?: string;
 }
 
-const { href, title, products = [], platforms = [], summary, poster, posterAlt } = Astro.props;
+const { href, title, category, products = [], platforms = [], summary, poster, posterAlt } = Astro.props;
 ---
 
 <li class="row">
@@ -33,6 +36,13 @@ const { href, title, products = [], platforms = [], summary, poster, posterAlt }
       <span class="row__head">
         <span class="row__title">{title}</span>
         <span class="tags">
+          {
+            category && (
+              <span class:list={['category-tag', `category-tag--${category}`]} title={CATEGORY_TAGS[category].title}>
+                {CATEGORY_TAGS[category].label}
+              </span>
+            )
+          }
           {platforms.map((name) => <span class="platform-tag">{platformOf(name).label}</span>)}
           {products.map((name) => <span class="product-tag">{name}</span>)}
         </span>

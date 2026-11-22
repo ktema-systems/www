@@ -6,3 +6,29 @@
 export const KINDS = ['live', 'video', 'document', 'runs', 'bench', 'device', 'package'] as const;
 
 export type ArtifactKind = (typeof KINDS)[number];
+
+/**
+ * What a page is, which is the tag a reader sees before opening it.
+ *
+ * `kind` says how a page is drawn; this says what the work is. The site carries demonstrations, measurements and plans
+ * for both, so a reader is told which one a page is rather than inferring it from the shape of the page. The corpus
+ * board reads the same field from the same documents, so one tag names one thing in both places.
+ */
+export const CATEGORIES = ['demonstration', 'bench', 'planned'] as const;
+
+export type Category = (typeof CATEGORIES)[number];
+
+/** The tag's word, and what it means where a reader asks. */
+export const CATEGORY_TAGS: Record<Category, { label: string; title: string }> = {
+  demonstration: { label: 'demo', title: 'a run recorded, or a surface standing in its own address' },
+  bench: { label: 'bench', title: 'a measurement, with the numbers the run wrote' },
+  planned: { label: 'planned', title: 'a surface stated and not yet recorded' },
+};
+
+/** The category a page is, from where it is stated: a plan states no kind and no demonstration. */
+export function categoryOf(kind: string | undefined, demonstration: unknown): Category {
+  if (demonstration !== undefined) return 'demonstration';
+  if (kind === 'bench') return 'bench';
+  if (kind === undefined || kind === '') return 'planned';
+  return 'demonstration';
+}

@@ -4,9 +4,10 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { llmsTxt } from '../packages/astro-llms/index.mjs';
 
-// The cockpit is deployed on its own, so the index names its address rather than importing
-// it. `PUBLIC_DELTA_URL` is what a build points at when the application moves.
-const deltaApp = (process.env.PUBLIC_DELTA_URL ?? 'https://delta.demo.ktema.systems/').replace(/\/?$/, '/');
+// The cockpit is deployed on its own, so the index names its address rather than importing it. `PUBLIC_DELTA_URL`
+// is what a build points at when the application moves, and the center's own address is what the bar opens: the site
+// is the entrance, and a page is where a reader goes on from.
+const deltaApp = (process.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
 
 export default defineConfig({
   // The center is published at its own address, and it is what its canonical links and sitemap are built from.
@@ -17,13 +18,13 @@ export default defineConfig({
     sitemap({ filter: (page) => !page.endsWith('.txt') }),
     // The index at /llms.txt, and a markdown version of every page beside it.
     llmsTxt({
-      title: 'Ktema Systems Demo Center',
+      title: 'Ktema Systems Corpus Center',
       summary:
-        'The surfaces Ktema Systems builds, running: deployed applications, runs of the engine recorded in a terminal, and hardware on the bench.',
-      titleSuffix: ' | Ktema Systems Demo Center',
+        'The corpus Ktema Systems publishes: the demonstrations it recorded, the measurements it took, and the surfaces it plans.',
+      titleSuffix: ' | Ktema Systems Corpus Center',
       links: [
         '- [Ktema Systems](https://ktema.systems/): the company this center demonstrates, whose corpus is at https://ktema.systems/llms.txt',
-        `- [Delta application](${deltaApp}): the cockpit this center opens directly.`,
+        `- [Corpus Center](${deltaApp}): this corpus as a board, whose entries open the page they belong to.`,
         '- [Documentation](https://docs.ktema.systems)',
         '- [Email](mailto:demo@ktema.systems)',
       ],

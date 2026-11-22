@@ -17,18 +17,21 @@ export const GET: APIRoute = async () => {
       title: artifact.title,
       url: `/${artifact.id}`,
       kind: artifact.kind,
+      category: artifact.category,
     })),
     ...surfaces.map((surface) => ({
       id: surface.id,
       title: surface.title,
       url: `/${surface.id}`,
       kind: 'planned',
+      category: surface.category,
     })),
     ...runs.map((run) => ({
       id: `runs/${run.id}`,
       title: run.label,
       url: `/runs/${run.id}`,
       kind: 'run',
+      category: 'demonstration' as const,
     })),
   ];
 

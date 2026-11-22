@@ -1051,6 +1051,31 @@ h1 {
   color: var(--fg-3);
 }
 
+/* The category tag answers the first question a visitor asks now that the center carries more than demonstrations:
+   whether a page is a demonstration, a measurement, or a plan. It is the one tag drawn in the accent, because it
+   orders the rest. */
+.category-tag {
+  padding: 2px 7px;
+  border: 1px solid color-mix(in srgb, var(--accent) 52%, transparent);
+  border-radius: var(--radius);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.category-tag--bench {
+  border-color: var(--line-2);
+  color: var(--fg-2);
+}
+
+.category-tag--planned {
+  border-style: dashed;
+  border-color: var(--line-2);
+  color: var(--fg-3);
+}
+
 /* The claim under a page's title, where the page states what its platform establishes. */
 .artifact__claim {
   max-width: 62ch;

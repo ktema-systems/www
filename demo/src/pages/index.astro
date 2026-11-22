@@ -11,6 +11,7 @@ import Row from '../components/Row.astro';
 const recorded = (await getArtifacts()).map((artifact) => ({
   id: artifact.id,
   title: artifact.title,
+  category: artifact.category,
   products: artifact.products,
   platforms: artifact.platforms,
   summary: artifact.summary,
@@ -21,6 +22,7 @@ const recorded = (await getArtifacts()).map((artifact) => ({
 const further = (await getSurfaces()).map((surface) => ({
   id: surface.id,
   title: surface.title,
+  category: surface.category,
   products: surface.products,
   platforms: surface.platforms,
   summary: surface.summary,
@@ -64,6 +66,7 @@ const further = (await getSurfaces()).map((surface) => ({
             <Tile
               href={`/${entry.id}`}
               title={entry.title}
+              category={entry.category}
               products={entry.products}
               platforms={entry.platforms}
               summary={entry.summary}
@@ -82,6 +85,7 @@ const further = (await getSurfaces()).map((surface) => ({
           <Row
             href={`/${entry.id}`}
             title={entry.title}
+            category={entry.category}
             products={entry.products}
             platforms={entry.platforms}
             summary={entry.summary}
@@ -123,6 +127,7 @@ const further = (await getSurfaces()).map((surface) => ({
             <Row
               href={`/${entry.id}`}
               title={entry.title}
+              category={entry.category}
               products={entry.products}
               platforms={entry.platforms}
               summary={entry.summary}

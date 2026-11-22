@@ -9,7 +9,7 @@
 
 import { warn } from './warn';
 import { isText, pageDocuments, runDocuments, runName, strings, text, type Document } from './documents';
-import { KINDS, type ArtifactKind } from './kinds';
+import { KINDS, categoryOf, type ArtifactKind, type Category } from './kinds';
 import { recordOf, type RecordEntry } from './records';
 import type { Platform } from './taxonomy';
 
@@ -52,6 +52,8 @@ export interface Artifact {
   platforms: Platform[];
   /** The one sentence the surface proves, in the words its page uses. */
   claim: string;
+  /** What the page is: a demonstration, a measurement, or a plan. */
+  category: Category;
   /** What a reader runs or opens to check the claim. */
   evidence?: string;
   kind: ArtifactKind;
@@ -157,6 +159,7 @@ function artifactOf(document: Document, runs: Map<string, Document>, liveSource?
     claim,
     evidence: text(artifact.evidence),
     kind: artifact.kind,
+    category: categoryOf(artifact.kind, artifact.demonstration),
     summary: document.description,
     // The cockpit is deployed on its own, so a build can point at where it moved without editing the document.
     source: artifact.kind === 'live' ? (liveSource ?? source) : source,

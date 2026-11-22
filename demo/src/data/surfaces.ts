@@ -6,6 +6,7 @@
 import { pageDocuments, text, type Document } from './documents';
 import { recordOf, type RecordEntry } from './records';
 import type { Platform } from './taxonomy';
+import type { Category } from './kinds';
 
 export interface Surface {
   /** The page's address: `/<id>`, the same shape a built demonstration uses. */
@@ -15,6 +16,8 @@ export interface Surface {
   platforms: Platform[];
   /** What the platform will prove once the demonstration exists. */
   claim: string;
+  /** A planned surface is a plan until it is built; the tag says so. */
+  category: Category;
   summary: string;
   /** The claim it belongs to, in the register. */
   line?: string;
@@ -39,6 +42,7 @@ function surfaceOf(document: Document, order: number): Surface {
     line: text(document.ktma.line),
     order,
     body: document.body,
+    category: 'planned',
     record,
   };
 }
