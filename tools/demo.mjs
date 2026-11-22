@@ -415,7 +415,9 @@ function check() {
  * note is the only thing it can say.
  */
 function publish() {
-  const site = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub';
+  // Two projects serve the hub: the one this repository owns and the one the address has always been on. A reader who
+  // arrives at `demo.ktema.systems` gets the same bytes as one who opens the project's own host.
+  const sites = (process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub,ktema-demo').split(',');
   const viewer = process.env.DELTA_PAGES_PROJECT ?? 'ktema-corpus-viewer';
   const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
 
@@ -438,13 +440,15 @@ function publish() {
   }
 
   // The hub first: the viewer names its pages, so the page a reader opens is the one this run published.
-  say(`uploading demo-dist to Cloudflare Pages (${site})`);
-  const first = exec(
-    'npx',
-    ['--yes', 'wrangler@4', 'pages', 'deploy', 'demo-dist', `--project-name=${site}`, '--commit-dirty=true'],
-    { cwd: ROOT, stdio: 'inherit' },
-  );
-  if (first !== 0) fail('the hub did not publish');
+  for (const site of sites) {
+    say(`uploading demo-dist to Cloudflare Pages (${site})`);
+    const uploaded = exec(
+      'npx',
+      ['--yes', 'wrangler@4', 'pages', 'deploy', 'demo-dist', `--project-name=${site}`, '--commit-dirty=true'],
+      { cwd: ROOT, stdio: 'inherit' },
+    );
+    if (uploaded !== 0) fail(`the hub did not publish to ${site}`);
+  }
 
   say(`uploading the viewer to Cloudflare Pages (${viewer})`);
   const second = exec(
