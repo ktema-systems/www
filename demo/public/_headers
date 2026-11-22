@@ -5,3 +5,8 @@
   Content-Type: text/plain; charset=utf-8
 /*.md
   Content-Type: text/markdown; charset=utf-8
+
+# The corpus center frames these pages, so the site states who may. A page is shown as the site draws it rather than
+# copied into the board, which keeps one rendering of a document.
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://corpus.ktema.systems http://localhost:* http://127.0.0.1:*

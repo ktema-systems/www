@@ -192,7 +192,7 @@ elif [ -n "$board" ]; then
   set -- --delta --web --board "$board"
   [ -n "$brand" ] && set -- "$@" --brand "$brand"
   say "the cockpit draws the $board board, on $delta_url"
-  (cd "$launcher" && KLET_WEB_PORT="$DELTA_PORT" exec ./run.sh "$@") &
+  (cd "$launcher" && KLET_WEB_PORT="$DELTA_PORT" DELTA_SITE="http://localhost:$CENTER_PORT" exec ./run.sh "$@") &
   pids="$pids $!"
   own_delta=1
 else
