@@ -50,6 +50,9 @@ const boardEnv = (delta) => {
 
 const say = (line) => process.stdout.write(`demo: ${line}\n`);
 
+/** Where this run reads the export from, once it has been taken. A remote export is fetched once and then reused. */
+let fetched = '';
+
 const fail = (line) => {
   process.stderr.write(`demo: ${line}\n`);
   process.exit(1);
@@ -153,13 +156,16 @@ async function run() {
  * `CORPUS_URL` or `CORPUS_SOURCE` says so rather than assembling from a directory that happens to exist.
  */
 function sourceOf() {
+  // An export fetched once is where this run reads it: `take` asks twice, for the site and for the board, and fetching
+  // the same twenty files twice is time spent on the network for an answer already in hand.
+  if (fetched) return fetched;
   const named = process.env.CORPUS_SOURCE ?? process.env.CORPUS_URL;
   if (!named) {
     fail('no corpus: set CORPUS_URL to the published export, or CORPUS_SOURCE to one beside this checkout');
   }
   // A path is a directory that is already there; anything else is an address to fetch from. `run.sh` passes a sibling
   // checkout's build directory through the same variable, so the two are one answer to "where is the export".
-  if (existsSync(named)) return resolve(ROOT, named);
+  if (existsSync(named)) return (fetched = resolve(ROOT, named));
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(named)) {
     fail(`${named} is not there: set CORPUS_URL to the published export, or CORPUS_SOURCE to a directory`);
   }
@@ -177,13 +183,24 @@ function sourceOf() {
     mkdirSync(join(target, '..'), { recursive: true });
     if (!fetchFile(`${url}/docs/${file}`, target)) fail(`${url}/docs/${file} did not answer`);
   }
-  return into;
+  return (fetched = into);
 }
 
 /** One file, fetched into place, as whether it arrived. */
-function fetchFile(url, into) {
-  const got = spawnSync('curl', ['-fsS', '-L', '--max-time', '60', '-o', into, url], { stdio: 'ignore' });
-  return got.status === 0;
+/**
+ * One file, fetched into place, as whether it arrived.
+ *
+ * A raw host answers a burst of documents unevenly: the export is some twenty files asked for one after another, and a
+ * request the host declined in the middle of that burst is the host asking to be waited for rather than a file the
+ * export does not carry. So a failed take is tried again, with a pause that grows, and only then reported.
+ */
+function fetchFile(url, into, tries = 4) {
+  for (let attempt = 0; attempt < tries; attempt += 1) {
+    const got = spawnSync('curl', ['-fsS', '-L', '--max-time', '60', '-o', into, url], { stdio: 'ignore' });
+    if (got.status === 0) return true;
+    if (attempt + 1 < tries) spawnSync('sleep', [String(attempt + 1)], { stdio: 'ignore' });
+  }
+  return false;
 }
 
 /**
