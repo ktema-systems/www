@@ -188,15 +188,15 @@ function digestOf(directory) {
   const lines = names.map((name) => {
     const file = join(directory, name);
     if (!existsSync(file)) fail(`${file} is missing: the export states four files and its digest`);
-    return `${sha256(readFileSync(file))}  ${join('export', name)}`;
+    return `${sha256(readFileSync(file))}  ${name}`;
   });
   const docs = join(directory, 'docs');
   if (!existsSync(docs)) fail(`${docs} is missing: the export carries its documents`);
   for (const file of treeOf(docs)) {
-    lines.push(`${sha256(readFileSync(join(docs, file)))}  ${join('export', 'docs', file)}`);
+    lines.push(`${sha256(readFileSync(join(docs, file)))}  ${join('docs', file)}`);
   }
-  // The listing the producer digests names its files as `export/...`, relative to the corpus directory, and the newline
-  // at its end belongs to it: the digest is over the bytes of the file, not over the lines read out of it.
+  // The listing the producer digests names its files relative to the export, and the newline at its end belongs to it:
+  // the digest is over the bytes of the file, not over the lines read out of it.
   return sha256(Buffer.from(`${lines.join('\n')}\n`));
 }
 
