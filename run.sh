@@ -1,28 +1,31 @@
 #!/usr/bin/env sh
 #
-# Bring up every surface this repository publishes, on this machine, in one step.
+# Bring up every surface this repository publishes, on this machine or on the web, in one step.
 #
 #   homepage      this package's own site                     HOME_PORT   (4321)
-#   demo center   demo/, whose links name the cockpit below   CENTER_PORT (4322)
-#   delta demo    the cockpit in the sibling kletos checkout  DELTA_PORT  (5276)
-#   blog          reserved: nothing to serve yet              BLOG_PORT   (4323)
+#   corpus hub    demo/, the pages the corpus renders          CENTER_PORT (4322)
+#   corpus viewer the cockpit in the sibling kletos checkout   DELTA_PORT  (5276)
+#   blog          reserved: nothing to serve yet               BLOG_PORT   (4323)
 #
-# The cockpit is the build in its dist-demo, because that is the build the center names
-# in its links; --rebuild rebuilds it first, and a checkout without one is built on the
-# first run. A host that already serves a cockpit can be named with DELTA_URL, and then
-# none is started here. Ctrl-C stops the servers this run started.
+# `--deploy` is the same pipeline against the web: it takes the corpus hub's export, builds both
+# renderings, and publishes them to their Cloudflare Pages projects. Nothing else changes, so
+# what a person looks at locally is what a deploy sends.
 #
-# Ports are checked before anything starts, because a dev server that finds its port
-# taken serves the next one and the web of links above it would then be wrong.
+# The viewer is the build in the cockpit's dist-demo, because that is the build the hub names in
+# its links; --rebuild rebuilds it first, and a checkout without one is built on the first run.
+# A host that already serves a viewer can be named with DELTA_URL, and then none is started here.
+# Ctrl-C stops the servers this run started.
 #
 # Environment, all optional:
-#   NODE         the interpreter to run the servers with, chosen automatically when unset
-#   HOME_PORT    the homepage's port
-#   CENTER_PORT  the demo center's port
-#   DELTA_PORT   the cockpit's port
-#   BLOG_PORT    the port held for the blog
-#   DELTA_DIR    a cockpit checkout, relative to this repository (../kletos/apps/delta)
-#   DELTA_URL    a cockpit this host is not serving; none is started here
+#   NODE          the interpreter to run the servers with, chosen automatically when unset
+#   HOME_PORT     the homepage's port
+#   CENTER_PORT   the corpus hub's port
+#   DELTA_PORT    the corpus viewer's port
+#   BLOG_PORT     the port held for the blog
+#   DELTA_DIR     a viewer checkout, relative to this repository (../kletos/apps/delta)
+#   DELTA_URL     a viewer this host is not serving; none is started here
+#   CORPUS_URL    the published export, which is what a deploy takes
+#   CORPUS_SOURCE an export beside this checkout, which is what a local run takes when there is one
 
 set -eu
 
@@ -40,31 +43,35 @@ die() { printf 'run: %s\n' "$*" >&2; exit 1; }
 
 usage() {
   cat <<'USAGE'
-run.sh: every surface this repository publishes, on this machine.
+run.sh: every surface this repository publishes, here or on the web.
 
-  ./run.sh                     serve the homepage, the demo center and the cockpit
-  ./run.sh --rebuild           rebuild the cockpit first
-  ./run.sh --board corpus      the cockpit drawing that board, through the cockpit's own launcher
-  ./run.sh --brand Acme        the name that cockpit goes by
+  ./run.sh                     serve the homepage, the corpus hub and the viewer
+  ./run.sh --deploy            take the published corpus, build both renderings, and publish them
+  ./run.sh --rebuild           rebuild the viewer before serving it
+  ./run.sh --board corpus      the viewer drawing that board, through the viewer's own launcher
+  ./run.sh --brand Acme        the name that viewer goes by
   ./run.sh --help              this text
 
---delta and --web belong to the cockpit's own launcher, and this one points there.
+--delta and --web belong to the viewer's own launcher, and this one points there.
 Ports: HOME_PORT (4321), CENTER_PORT (4322), DELTA_PORT (5276), BLOG_PORT (4323).
-NODE names the interpreter to run the servers with. DELTA_DIR names another cockpit
-checkout, DELTA_URL a cockpit this host is not serving.
+NODE names the interpreter to run the servers with. DELTA_DIR names another viewer
+checkout, DELTA_URL a viewer this host is not serving. CORPUS_URL names the export
+a deploy takes, and CORPUS_SOURCE an export beside this checkout.
 USAGE
 }
 
 rebuild=0
+deploy=0
 board=
 brand=
 while [ $# -gt 0 ]; do
   case "$1" in
     --rebuild) rebuild=1 ;;
-    # The cockpit is what this launcher already serves, and the board is how another one is drawn here. Naming the
-    # cockpit's own launcher in this one is a command for the other tree, and it is answered where it can be followed.
+    --deploy) deploy=1 ;;
+    # The viewer is what this launcher already serves, and the board is how another one is drawn here. Naming the
+    # viewer's own launcher in this one is a command for the other tree, and it is answered where it can be followed.
     --delta | --web)
-      die "--delta and --web are the cockpit's own launcher: (cd $(dirname "$(dirname "$DELTA_DIR")") && ./run.sh --delta --web); here, --board NAME draws a board"
+      die "--delta and --web are the viewer's own launcher: (cd $(dirname "$(dirname "$DELTA_DIR")") && ./run.sh --delta --web); here, --board NAME draws a board"
       ;;
     --board)
       [ $# -ge 2 ] || die '--board wants a name: --board corpus'
@@ -125,6 +132,15 @@ say "node $("$node_bin" -v) at $node_bin"
 astro=$ROOT/node_modules/.bin/astro
 [ -x "$astro" ] || die "this package is not installed: run npm install"
 
+# The deploy is the same pipeline as a local run, stopping at the publish instead of a server. It is answered here rather
+# than at the bottom of the file so that a deploy never binds a port or starts a viewer it would leave running.
+if [ "$deploy" -eq 1 ]; then
+  [ -z "$board" ] || die '--deploy publishes the corpus itself; a board is what a local run draws with --board'
+  [ -z "$brand" ] || die '--deploy publishes the corpus itself; --brand names a viewer a local run starts'
+  say 'taking the published corpus and publishing both renderings'
+  exec node tools/demo.mjs publish
+fi
+
 pids=
 stop() {
   for pid in $pids; do
@@ -173,35 +189,41 @@ wait_for() {
 delta_url=${DELTA_URL:-}
 own_delta=0
 
-# The center is a projection of the volume, so a run takes the export in when the sibling checkout has one. A page
-# served from a copy the corpus moved past is the one thing this surface must not do, and the copy is cheap.
-if [ -f "${CORPUS_SOURCE:-${KTEMA_DIR:-../ktema}/corpus/export}/bench.json" ]; then
-  node tools/demo.mjs take || die 'the corpus could not be taken into both renderings'
+# The hub is a projection of the corpus, so a run takes the export in when there is one to hand: the published one named
+# by CORPUS_URL, or the sibling checkout's. A page served from a copy the corpus moved past is the one thing this surface
+# must not do, and taking the copy is cheap.
+corpus_at=${CORPUS_URL:-}
+if [ -z "$corpus_at" ] && [ -f "${CORPUS_SOURCE:-${KTEMA_DIR:-../ktema}/corpus/export}/bench.json" ]; then
+  corpus_at=${CORPUS_SOURCE:-${KTEMA_DIR:-../ktema}/corpus/export}
+fi
+if [ -n "$corpus_at" ]; then
+  say "taking the corpus from $corpus_at"
+  CORPUS_URL="$corpus_at" node tools/demo.mjs take || die 'the corpus could not be taken into both renderings'
 fi
 
 if [ -n "$delta_url" ]; then
   delta_url=$(printf '%s' "$delta_url" | sed 's#/*$##')
 elif [ -n "$board" ]; then
-  # A board other than the exhibition's is the cockpit's dev server, because the board and the record it reads are files
-  # the cockpit's own launcher serves and a demonstration build does not carry. It is started there rather than here so
+  # A board other than the exhibition's is the viewer's dev server, because the board and the record it reads are files
+  # the viewer's own launcher serves and a demonstration build does not carry. It is started there rather than here so
   # the board, the sim and the port are that launcher's to get right.
   launcher=$(cd "$DELTA_DIR/../.." && pwd)
-  [ -x "$launcher/run.sh" ] || die "no cockpit launcher at $launcher: set DELTA_DIR"
+  [ -x "$launcher/run.sh" ] || die "no viewer launcher at $launcher: set DELTA_DIR"
   take_port "$DELTA_PORT" DELTA_PORT
   delta_url="http://localhost:$DELTA_PORT"
   set -- --delta --web --board "$board"
   [ -n "$brand" ] && set -- "$@" --brand "$brand"
-  say "the cockpit draws the $board board, on $delta_url"
+  say "the viewer draws the $board board, on $delta_url"
   (cd "$launcher" && KLET_WEB_PORT="$DELTA_PORT" DELTA_SITE="http://localhost:$CENTER_PORT" exec ./run.sh "$@") &
   pids="$pids $!"
   own_delta=1
 else
   [ -x "$DELTA_DIR/node_modules/.bin/vite" ] ||
-    die "no cockpit at $DELTA_DIR: run npm install there, or set DELTA_DIR or DELTA_URL"
+    die "no viewer at $DELTA_DIR: run npm install there, or set DELTA_DIR or DELTA_URL"
 
   if [ "$rebuild" -eq 1 ] || [ ! -f "$DELTA_DIR/dist-demo/index.html" ]; then
-    say "building the cockpit"
-    (cd "$DELTA_DIR" && npm run build:demo) || die "the cockpit did not build"
+    say "building the viewer"
+    (cd "$DELTA_DIR" && npm run build:demo) || die "the viewer did not build"
   fi
 
   take_port "$DELTA_PORT" DELTA_PORT
@@ -226,12 +248,12 @@ pids="$pids $!"
 
 cat <<SUMMARY
 
-  homepage     http://localhost:$HOME_PORT
-  delta demo   $delta_url
-  demo center  http://localhost:$CENTER_PORT
-  blog         reserved on $BLOG_PORT, nothing to serve yet
+  homepage       http://localhost:$HOME_PORT
+  corpus hub     http://localhost:$CENTER_PORT
+  corpus viewer  $delta_url
+  blog           reserved on $BLOG_PORT, nothing to serve yet
 
-  Ctrl-C stops the servers this run started.
+  Ctrl-C stops the servers this run started. --deploy publishes both renderings instead.
 
 SUMMARY
 

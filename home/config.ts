@@ -64,12 +64,21 @@ export const defaultNav: readonly NavItem[] = [
 
 export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 
-// The demo center is where the surfaces run, so the homepage's call to action opens it. The bar carries the same one:
-// its copy is only shown once the hero's has passed under it, so the two are one button that moves.
-export const demoCta: NavItem = {
-  label: 'Demo Center', // Don't change this
-  href: 'https://demo.ktema.systems/',
+// The corpus hub holds every surface this corpus publishes, and the viewer is the hub as a board. The homepage's call
+// to action opens the hub, and the bar carries the same one: its copy is only shown once the hero's has passed under it,
+// so the two are one button that moves.
+export const corpusHub: NavItem = {
+  label: 'Corpus Hub', // Don't change this
+  href: 'https://corpus.ktema.systems/',
 };
+
+export const corpusViewer: NavItem = {
+  label: 'Open Corpus Viewer',
+  href: 'https://corpus.ktema.systems/',
+};
+
+/** The call to action the homepage and the product pages share. */
+export const demoCta: NavItem = corpusHub;
 
 export const papers = [
   {

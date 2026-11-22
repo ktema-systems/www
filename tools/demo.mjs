@@ -1,4 +1,4 @@
-// The corpus center's commands.
+// The corpus hub's commands.
 //
 //   npm run corpus:source  take the export a producer published, and check it against its digest
 //   npm run corpus:take    take it into this site and the board, and check both
@@ -406,8 +406,8 @@ function check() {
  * note is the only thing it can say.
  */
 function publish() {
-  const site = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
-  const center = process.env.DELTA_PAGES_PROJECT ?? 'ktema-corpus';
+  const site = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus';
+  const center = process.env.DELTA_PAGES_PROJECT ?? 'ktema-delta';
   const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
 
   take();
@@ -416,51 +416,50 @@ function publish() {
     fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
   }
 
-  say('building the site');
-  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the site did not build');
+  say('building the hub');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the hub did not build');
   // A build that exits zero without a home page would publish a shell with nothing in it.
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
 
-  say('building the board');
+  say('building the viewer');
   if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit' }) !== 0) fail('the board did not build');
   const built = join(delta, 'dist-demo');
   for (const need of ['index.html', 'projects.json', '_redirects']) {
     if (!existsSync(join(built, need))) fail(`the board has no ${need} in its build`);
   }
 
-  // The site first: the board names its pages, so the page a reader opens is the one this run published.
+  // The hub first: the viewer names its pages, so the page a reader opens is the one this run published.
   say(`uploading demo-dist to Cloudflare Pages (${site})`);
   const first = exec(
     'npx',
     ['--yes', 'wrangler@4', 'pages', 'deploy', 'demo-dist', `--project-name=${site}`, '--commit-dirty=true'],
     { cwd: ROOT, stdio: 'inherit' },
   );
-  if (first !== 0) fail('the site did not publish');
+  if (first !== 0) fail('the hub did not publish');
 
-  say(`uploading the board to Cloudflare Pages (${center})`);
+  say(`uploading the viewer to Cloudflare Pages (${center})`);
   const second = exec(
     'npx',
     ['--yes', 'wrangler@4', 'pages', 'deploy', 'dist-demo', `--project-name=${center}`, '--commit-dirty=true'],
     { cwd: delta, stdio: 'inherit' },
   );
-  if (second !== 0) fail('the board did not publish');
+  if (second !== 0) fail('the viewer did not publish');
 }
 
 /**
- * The site alone, for a deployment that publishes one surface.
+ * The hub alone, for a deployment that publishes one surface.
  *
- * `npm run demo:deploy` is that case, and it waits on what this repository is: the site is published with the board or
- * not at all. It is kept for the existing deployment while the two are still separate projects, and it publishes the
- * site from what was taken.
+ * `npm run demo:deploy` is that case. The full pipeline is `corpus:publish`, which publishes the hub and the viewer
+ * together; this is kept for a deployment that reaches one of them.
  */
 function deploy() {
-  const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
+  const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus';
   take();
   if (exec('npx', ['--yes', 'wrangler@4', 'whoami'], { cwd: ROOT, stdio: 'ignore' }) !== 0) {
     fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
   }
-  say('building the site');
-  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the site did not build');
+  say('building the hub');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the hub did not build');
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
   say(`uploading demo-dist to Cloudflare Pages (${project})`);
   const uploaded = exec(

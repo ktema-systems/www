@@ -8,9 +8,9 @@ site, `demo/` is the demonstration center. Static output.
 ```
 npm install
 npm run dev          # home
-npm run dev:demo     # demo center
+npm run dev:demo     # corpus hub
 npm run build        # home into dist/
-npm run build:demo   # demo center into demo-dist/
+npm run build:demo   # corpus hub into demo-dist/
 npm run test:packages
 ```
 

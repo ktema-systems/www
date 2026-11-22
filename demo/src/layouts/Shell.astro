@@ -16,9 +16,11 @@ interface Props {
   crumbs?: Crumb[];
 }
 
-const { title, description, crumbs = [{ label: 'Corpus Center' }] } = Astro.props;
+const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
+// The viewer is deployed on its own, so the bar names its address rather than assuming the hub's.
+const viewerUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://delta.ktema.systems/').replace(/\/?$/, '/');
 
-const pageTitle = title === 'Corpus Center' ? 'Ktema Systems Corpus Center' : `${title} | Ktema Systems Corpus Center`;
+const pageTitle = title === 'Corpus Hub' ? 'Ktema Systems Corpus Hub' : `${title} | Ktema Systems Corpus Hub`;
 const pageDescription = description ?? 'The surfaces Ktema Systems builds, in one place.';
 
 // `site` is set in the center's astro.config.mjs, so its own address is known at build time.
@@ -46,7 +48,7 @@ const structuredData = {
     {
       '@type': 'WebSite',
       '@id': new URL('/#website', origin).href,
-      name: 'Ktema Systems Corpus Center',
+      name: 'Ktema Systems Corpus Hub',
       url: origin.href,
       inLanguage: 'en',
       publisher: { '@id': new URL('/#organization', company).href },
@@ -69,7 +71,7 @@ const structuredData = {
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#131210" />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Ktema Systems Corpus Center" />
+    <meta property="og:site_name" content="Ktema Systems Corpus Hub" />
     <meta property="og:locale" content="en" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
@@ -78,7 +80,7 @@ const structuredData = {
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="The Ktema Systems Corpus Center: the cockpit and an FPGA board on one page." />
+    <meta property="og:image:alt" content="The Ktema Systems Corpus Hub: the cockpit and an FPGA board on one page." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
@@ -109,12 +111,12 @@ const structuredData = {
         <span class="bar__spacer"></span>
         <a
           class="bar__delta"
-          href="https://corpus.ktema.systems/"
+          href={viewerUrl}
           target="_blank"
           rel="noreferrer"
-          title="the corpus center: this corpus, as a board of its measurements and demonstrations"
+          title="open the corpus viewer: this corpus, as a board of its measurements and demonstrations"
         >
-          Corpus Center
+          Open Corpus Viewer
         </a>
         <slot name="bar" />
         <a class="bar__cta" href="mailto:demo@ktema.systems">Request a demo</a>

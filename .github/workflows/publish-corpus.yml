@@ -7,8 +7,8 @@ name: Publish the corpus
 # reaches into a producer's checkout: what crosses is the export and its digest, which is what makes the two repositories
 # independent of each other's internals.
 #
-# The corpus center is a cockpit, and its source is a producer's too. It is rebuilt from the cockpit whose artifact is
-# published beside the export, and its pages point at the site this job publishes, so one run leaves the two renderings
+# The corpus viewer is a cockpit, and its source is a producer's too. It is rebuilt from the cockpit whose artifact is
+# published beside the export, and its pages point at the hub this job publishes, so one run leaves the two renderings
 # of one corpus in step.
 
 on:
@@ -125,7 +125,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_DEPLOY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-        run: npx wrangler@4 pages deploy demo-dist/ --project-name=ktema-demo
+        run: npx wrangler@4 pages deploy demo-dist/ --project-name=ktema-corpus
 
       # The cockpit whose board lists these pages. It is built from the cockpit repository's own artifact, and this job
       # only records which export the site it names was built from, so a center a corpus behind says so on its list.
