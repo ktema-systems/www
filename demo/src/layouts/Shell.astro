@@ -18,7 +18,7 @@ interface Props {
 
 const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
 // The Corpus app is deployed on its own, so the bar names its address rather than assuming the hub's.
-const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://ktema-corpus-viewer.pages.dev/').replace(/\/?$/, '/');
+const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
 
 // The front page carries the same call in its hero, so the bar's copy stays closed until that one has passed under it.
 // The observer is the page's own: a page with no hero call has nothing to wait for, and `data-hero-cta` is absent.
@@ -127,7 +127,7 @@ const structuredData = {
             rel="noreferrer"
             title="Corpus Space: the corpus, read in Delta"
           >
-            Launch Corpus Space
+            Open Corpus Space
           </a>
         </span>
         <a class="bar__action" href="mailto:demo@ktema.systems">Request a demo</a>

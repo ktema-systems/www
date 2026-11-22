@@ -32,7 +32,21 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // The board Corpus Space draws. Delta is the viewer stack and this board is its first customer's corpus, so a build of
 // the viewer names it rather than shipping whatever the cockpit opens with by default.
 const VIEW_BOARD = process.env.VIEW_BOARD ?? 'corpus';
-const boardEnv = () => ({ ...process.env, DELTA_BOARD: `projects/${VIEW_BOARD}.json` });
+/**
+ * What the cockpit build is told to draw.
+ *
+ * The board names the projects and the brand the window goes by, and both travel as the environment rather than as edits
+ * to the application: a deployment is a board's, so a build that named one and not the other would draw the corpus under
+ * the demonstration's name.
+ */
+const boardEnv = (delta) => {
+  const declared = JSON.parse(readFileSync(join(delta, 'projects', `${VIEW_BOARD}.board.json`), 'utf8'));
+  return {
+    ...process.env,
+    DELTA_BOARD: `projects/${VIEW_BOARD}.json`,
+    ...(typeof declared.brand === 'string' && declared.brand.trim() ? { DELTA_BRAND: declared.brand } : {}),
+  };
+};
 
 const say = (line) => process.stdout.write(`demo: ${line}\n`);
 
@@ -419,9 +433,9 @@ function check() {
  * note is the only thing it can say.
  */
 function publish() {
-  // Two projects serve the hub: the one this repository owns and the one the address has always been on. A reader who
-  // arrives at `demo.ktema.systems` gets the same bytes as one who opens the project's own host.
-  const sites = (process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub,ktema-demo').split(',');
+  // One project serves the hub. `CENTER_PAGES_PROJECT` names another, or several separated by commas, when a deployment
+  // reaches more than one host.
+  const sites = (process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub').split(',');
   const viewer = process.env.DELTA_PAGES_PROJECT ?? 'ktema-corpus-viewer';
   const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
 
@@ -439,7 +453,7 @@ function publish() {
   say('building the viewer');
   // The board is what the build draws, and a build that names none draws the demonstration. This one is the corpus board,
   // because that is what Corpus Space is: the records, not Delta shown as itself.
-  if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit', env: boardEnv() }) !== 0) {
+  if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit', env: boardEnv(delta) }) !== 0) {
     fail('the board did not build');
   }
   const built = join(delta, 'dist-demo');

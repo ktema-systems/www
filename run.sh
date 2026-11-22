@@ -140,12 +140,17 @@ say "node $("$node_bin" -v) at $node_bin"
 astro=$ROOT/node_modules/.bin/astro
 [ -x "$astro" ] || die "this package is not installed: run npm install"
 
+# The corpus this repository publishes to. A deploy takes it by name rather than asking for one.
+published=${CORPUS_URL:-https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export}
+
 # The deploy is the same pipeline as a local run, stopping at the publish instead of a server. It is answered here rather
 # than at the bottom of the file so that a deploy never binds a port or starts a viewer it would leave running.
 if [ "$deploy" -eq 1 ]; then
   [ -z "$board" ] || die '--deploy publishes the corpus itself; a board is what a local run draws with --board'
   [ -z "$brand" ] || die '--deploy publishes the corpus itself; --brand names a viewer a local run starts'
-  say 'taking the published corpus and publishing both renderings'
+  say "taking the corpus from ${CORPUS_SOURCE:-$published} and publishing both renderings"
+  CORPUS_URL="${CORPUS_SOURCE:-$published}"
+  export CORPUS_URL
   exec node tools/demo.mjs publish
 fi
 
@@ -196,6 +201,8 @@ wait_for() {
   die "$1 did not answer after 120s: its log above says why"
 }
 
+
+
 delta_url=${DELTA_URL:-}
 demo_url=
 own_delta=0
@@ -203,21 +210,20 @@ own_delta=0
 # The hub is a projection of the corpus, so a run takes the export in when there is one to hand: the published one named
 # by CORPUS_URL, or the sibling checkout's. A page served from a copy the corpus moved past is the one thing this surface
 # must not do, and taking the copy is cheap.
-corpus_at=${CORPUS_URL:-}
-if [ -z "$corpus_at" ] && [ -n "${CORPUS_SOURCE:-}" ]; then
-  corpus_at=$CORPUS_SOURCE
-fi
+corpus_at=${CORPUS_SOURCE:-}
+# A deploy publishes the corpus as it was recorded, so it takes the hub's export. A local run reads the sibling checkout
+# first, because that is what a person who has just measured something is looking at.
 # A sibling checkout is where a person is most likely to have just built one, and it is the producer's own build
 # directory rather than a copy: the export never lives in the tree it came from.
 sibling=${KTEMA_DIR:-../ktema}/.build/corpus/export
-if [ -z "$corpus_at" ] && [ -f "$sibling/bench.json" ]; then
+if [ "$deploy" -eq 1 ]; then
+  corpus_at=${corpus_at:-$published}
+elif [ -z "$corpus_at" ] && [ -f "$sibling/bench.json" ]; then
   corpus_at=$sibling
 fi
 if [ -n "$corpus_at" ]; then
   say "taking the corpus from $corpus_at"
   CORPUS_URL="$corpus_at" node tools/demo.mjs take || die 'the corpus could not be taken into both renderings'
-elif [ "$deploy" -eq 1 ]; then
-  die 'a deploy publishes the corpus: set CORPUS_URL to the published export'
 fi
 
 # Both cockpits come from one checkout, so the build is made once and served twice: the demo on the exhibition board
