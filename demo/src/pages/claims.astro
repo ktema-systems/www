@@ -1,9 +1,10 @@
 ---
-// The claim register: the sentences the program is built to hold, and the evidence under each.
+// What the stack establishes: one line per thing it sets out to do, with the entry under each.
 //
-// It reads from the same data the grid does, so a claim cannot name evidence the center does not carry, and an artifact
-// cannot be left off the register. The platforms table below is the vocabulary the claims rest on: what each environment
-// can establish, and therefore what evidence on it may claim.
+// It reads from the same data the grid does, so a line cannot name evidence the hub does not carry, and an artifact
+// cannot be left off the register. The platforms table below is the vocabulary the lines rest on: what each environment
+// can establish, and so what a run on it can show. A line whose entry is still a plan stands beside one whose entry is
+// a recorded run: this is where what is done and what is planned are read together.
 import { placeLines } from '../data/claims';
 import { getArtifacts, getSurfaces } from '../data/source';
 import { PLATFORMS, platformOf, type Platform } from '../data/taxonomy';
@@ -19,15 +20,16 @@ const coverage = (Object.keys(PLATFORMS) as Platform[]).map((name) => ({
 ---
 
 <Shell
-  title="Claims"
-  description="The claims Ktema Systems holds, and the evidence that establishes each one."
-  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Claims' }]}
+  title="What it establishes"
+  description="What Kletos sets out to establish, and the recorded runs or stated plans under each."
+  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'What it establishes' }]}
 >
   <section class="hero">
-    <h1>Claims</h1>
+    <h1>What it establishes</h1>
     <p class="lede">
-      The sentences the program is built to hold, and the evidence under each. An entry with a still is a recorded run;
-      one with the mark is a page that states the work before it is recorded.
+      Each line is one thing the stack sets out to establish, with the entry under it that does so. An entry with a
+      still is a recorded run; one with the mark is a page that states the work before it is recorded, so both what is
+      done and what is planned stand here together.
     </p>
   </section>
 
@@ -69,7 +71,7 @@ const coverage = (Object.keys(PLATFORMS) as Platform[]).map((name) => ({
     <header class="section-head">
       <h2>The platforms</h2>
       <p class="section-head__note">
-        What each platform can establish, and therefore what a demonstration on it may claim.
+        What each platform can establish, and so what a demonstration on it can show.
       </p>
     </header>
 
