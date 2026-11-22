@@ -173,6 +173,12 @@ wait_for() {
 delta_url=${DELTA_URL:-}
 own_delta=0
 
+# The center is a projection of the volume, so a run takes the export in when the sibling checkout has one. A page
+# served from a copy the corpus moved past is the one thing this surface must not do, and the copy is cheap.
+if [ -f "${KTEMA_DIR:-../ktema}/corpus/export/bench.json" ]; then
+  node tools/demo.mjs corpus || die 'the corpus could not be taken'
+fi
+
 if [ -n "$delta_url" ]; then
   delta_url=$(printf '%s' "$delta_url" | sed 's#/*$##')
 elif [ -n "$board" ]; then

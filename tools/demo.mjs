@@ -17,8 +17,8 @@
 //   CENTER_PAGES_PROJECT  the Pages project the deploy targets (ktema-demo)
 
 import { spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, cpSync, existsSync, rmSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { copyFileSync, cpSync, existsSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -58,6 +58,9 @@ async function run() {
 
   const astro = join(ROOT, 'node_modules/.bin/astro');
   if (!existsSync(astro)) fail('the center is not installed here: run npm install');
+
+  // The served page is the volume's own, so a run takes the export in first when the checkout has one.
+  if (existsSync(join(resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema'), 'corpus/export/bench.json'))) corpus();
 
   // A cockpit address given is a cockpit this host is not serving, which is what a run against a deployment is.
   let deltaUrl = process.env.DELTA_URL?.replace(/\/$/, '');
@@ -124,11 +127,7 @@ async function run() {
  */
 function corpus() {
   const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
-  const pairs = [
-    ['corpus/export/bench.json', 'demo/src/data/corpus-bench.json'],
-    ['corpus/export/corpus.json', 'demo/src/data/corpus.json'],
-  ];
-  for (const [from, to] of pairs) {
+  for (const [from, to] of pairs()) {
     const source = join(ktema, from);
     if (!existsSync(source)) {
       fail(`${source} is not there: run './run.sh --bench' in the ktema checkout, or set KTEMA_DIR`);
@@ -173,6 +172,68 @@ function show() {
   served.on('exit', (code) => process.exit(code ?? 0));
 }
 
+/**
+ * The files the center is drawn from, as the pairs the export owns.
+ *
+ * A pair is the corpus's own name and the file the site imports. Keeping the two names in one list is what lets the
+ * check, the take, and a reader of this file agree about which copies are copies.
+ */
+function pairs() {
+  return [
+    ['corpus/export/bench.json', 'demo/src/data/corpus-bench.json'],
+    ['corpus/export/corpus.json', 'demo/src/data/corpus.json'],
+  ];
+}
+
+/** Every file under a directory, as relative paths, so two trees are compared whole. */
+function treeOf(directory) {
+  return readdirSync(directory, { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile())
+    .map((entry) => relative(directory, join(entry.parentPath ?? entry.path, entry.name)))
+    .sort();
+}
+
+/**
+ * Whether the center is still the export it was taken from.
+ *
+ * A checkout of this repository alone has no volume beside it, and the committed copy is then the only copy: the check
+ * skips rather than calling that a failure. Where the export is there, a difference is a page that would quote a run
+ * nobody made, so the run stops and names the command that fixes it.
+ */
+function check() {
+  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  const wanted = pairs();
+  if (wanted.some(([from]) => !existsSync(join(ktema, from)))) {
+    say('corpus: no export beside this checkout, so the committed copy is what is served');
+    return;
+  }
+  const drift = [];
+  for (const [from, to] of wanted) {
+    if (!existsSync(join(ROOT, to))) drift.push(`${to} is missing`);
+    else if (!readFileSync(join(ktema, from)).equals(readFileSync(join(ROOT, to)))) drift.push(`${to} is not ${from}`);
+  }
+  const docs = join(ktema, 'corpus/export/docs');
+  const posts = join(ROOT, 'demo/src/posts');
+  if (existsSync(docs)) {
+    const left = treeOf(docs);
+    const right = existsSync(posts) ? treeOf(posts) : [];
+    for (const file of left) {
+      if (!existsSync(join(posts, file))) drift.push(`demo/src/posts/${file} is missing`);
+      else if (!readFileSync(join(docs, file)).equals(readFileSync(join(posts, file)))) {
+        drift.push(`demo/src/posts/${file} is not ${join('corpus/export/docs', file)}`);
+      }
+    }
+    for (const file of right) {
+      if (!left.includes(file)) drift.push(`demo/src/posts/${file} is not in the export`);
+    }
+  }
+  if (drift.length) {
+    for (const line of drift) process.stderr.write(`demo: ${line}\n`);
+    fail('the center is not the export: run npm run corpus:sync');
+  }
+  say('corpus: the center is the export it was taken from');
+}
+
 function deploy() {
   const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
 
@@ -207,8 +268,10 @@ if (mode === 'run') {
   deploy();
 } else if (mode === 'corpus') {
   corpus();
+} else if (mode === 'check') {
+  check();
 } else if (mode === 'show') {
   show();
 } else {
-  fail(`unknown command '${mode}': use run, show, deploy, or corpus`);
+  fail(`unknown command '${mode}': use run, show, deploy, corpus, or check`);
 }

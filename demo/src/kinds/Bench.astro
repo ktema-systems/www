@@ -43,6 +43,8 @@ const at = (id: string, records: number) =>
 const ktema100k = at('ktema', 100_000);
 const log100k = at('log', 100_000);
 const sqlite100k = at('sqlite', 100_000);
+const ktema1k = at('ktema', 1_000);
+const sqlite1k = at('sqlite', 1_000);
 const ktema1m = at('ktema', 1_000_000);
 const log1m = at('log', 1_000_000);
 const sqlite1m = at('sqlite', 1_000_000);
@@ -50,6 +52,11 @@ const ktemaRows = engines[0]!.rows;
 const sqliteRows = engines[2]!.rows;
 const logMap1m = indexMemory.log[indexMemory.log.length - 1]!.bytes;
 const sqliteCache = indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes;
+
+// The bytes a point read asked the medium for, at the two rungs the prose compares. The measure is the run's own, so a
+// re-run cannot leave the sentence quoting a number the chart no longer draws.
+const asked = (row: Row) => `${kb(row.point_read_bytes ?? 0).toFixed(1)} kB`;
+const askedRange = (row: Row) => size(row.range_bytes ?? 0);
 
 // How many times the volume the engine reads to answer a tenth of it, which is what its time follows.
 const tenthMultiple = (ktema100k.range_bytes ?? 0) / ktema100k.volume_bytes;
@@ -122,7 +129,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="One record by address"
-    caption="One record by its own address. The log keeps the whole address map in memory, so its lookup is constant. The engine holds no map, so it probes the segments, and that read grows from 3.1 kB at a thousand records to 20 kB at a million."
+    caption={`One record by its own address. The log keeps the whole address map in memory, so its lookup is constant. The engine holds no map, so it probes the segments, and that read grows from ${asked(ktema1k)} at a thousand records to ${asked(ktema1m)} at a million.`}
     unit="µs"
     scale="log"
     decimals={2}
@@ -138,7 +145,7 @@ const values: Record<string, string> = {
   />
   <Chart
     title="Bytes read from the medium to answer"
-    caption="The bytes each store asked the medium for. The engine counts its reads; the database counts the pages its pager fetched at 4 kB, on a connection opened for the read. A point read is 3.1 kB for the engine and 12 kB for the database at a thousand records, 20 kB and 24 kB at a million; a tenth of the range is 1.5 GB against 27.9 MB. The append log maps its file and issues no read call."
+    caption={`The bytes each store asked the medium for. The engine counts its reads; the database counts the pages its pager fetched at 4 kB, on a connection opened for the read. A point read is ${asked(ktema1k)} for the engine and ${asked(sqlite1k)} for the database at a thousand records, ${asked(ktema1m)} and ${asked(sqlite1m)} at a million; a tenth of the range is ${askedRange(ktema1m)} against ${askedRange(sqlite1m)}. The append log maps its file and issues no read call.`}
     unit="MB"
     scale="log"
     decimals={2}
@@ -299,8 +306,8 @@ const values: Record<string, string> = {
   </table>
   <p>
     An eightfold volume changes neither count. The listing issues no byte read, which is the contract's "does not read a
-    record"; the directory walk is not a call this counter sees. The bytes behind the four reads do grow, from 3.1 kB at
-    a thousand records to 20 kB at a million.
+    record"; the directory walk is not a call this counter sees. The bytes behind the four reads do grow, from {asked(ktema1k)} at
+    a thousand records to {asked(ktema1m)} at a million.
   </p>
 </section>
 
