@@ -141,9 +141,9 @@ const structuredData = {
         <script>
           // The bar's call is a box the row can close, and it stays closed while the hero's call is on screen: the
           // width is measured once the fonts are in, because the button's own width is what the box opens to.
-          const bar = document.querySelector('.bar__inner');
-          const slot = bar?.querySelector('.bar__main');
-          const button = slot?.querySelector('.bar__action--main');
+          const bar = document.querySelector<HTMLElement>('.bar__inner');
+          const slot = bar?.querySelector<HTMLElement>('.bar__main');
+          const button = slot?.querySelector<HTMLElement>('.bar__action--main');
           const hero = document.querySelector('[data-hero-cta]');
           if (bar && slot && button && hero) {
             const measure = () => {
