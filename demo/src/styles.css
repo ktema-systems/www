@@ -142,24 +142,46 @@ h1 {
 .bar__brand,
 .bar__sep,
 .bar__crumb,
-.bar__cta {
+.bar__action {
   flex: 0 0 auto;
   white-space: nowrap;
 }
 
-.bar__delta {
+/* Both actions in the bar are one shape and one size, so the bar reads as two choices rather than two styles. */
+.bar__action {
   flex: 0 0 auto;
-  padding: 5px 12px;
+  padding: 6px 12px;
   border: 1px solid var(--line-2);
   border-radius: var(--radius);
   white-space: nowrap;
   color: var(--fg-2);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    background 240ms var(--ease),
+    border-color 240ms var(--ease),
+    color 240ms var(--ease);
 }
 
-.bar__delta:hover,
-.bar__delta:focus-visible {
+.bar__action:hover,
+.bar__action:focus-visible {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* The hub's own action: Corpus View is what a reader can do here that they cannot do on a page. */
+.bar__action--main {
+  border-color: color-mix(in srgb, var(--accent) 46%, transparent);
+  color: var(--accent);
+}
+
+.bar__action--main:hover,
+.bar__action--main:focus-visible {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: var(--accent);
+  color: var(--fg);
 }
 
 .bar__title {
@@ -187,30 +209,6 @@ h1 {
 
 .bar__crumb {
   color: var(--fg-3);
-}
-
-/* The one thing the bar asks of a reader, on every page: a demo can be requested by mail. It is the accent's own edge,
-   filled only when it is reached. */
-.bar__cta {
-  padding: 6px 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
-  border-radius: var(--radius);
-  color: var(--accent);
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition:
-    background 240ms var(--ease),
-    border-color 240ms var(--ease),
-    color 240ms var(--ease);
-}
-
-.bar__cta:hover,
-.bar__cta:focus-visible {
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--fg);
 }
 
 
@@ -956,7 +954,7 @@ h1 {
     font-size: 12px;
   }
 
-  .bar__cta {
+  .bar__action {
     padding: 5px 8px;
     font-size: 9px;
     letter-spacing: 0.06em;
@@ -1005,7 +1003,7 @@ h1 {
     display: none;
   }
 
-  .bar__cta {
+  .bar__action {
     margin-left: auto;
   }
 
