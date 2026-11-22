@@ -1,22 +1,27 @@
-// The demonstration center's commands.
+// The corpus center's commands.
 //
-//   npm run demo           the center beside a cockpit, both started and stopped together
-//   npm run demo:deploy    take the corpus, build the center, and publish it to its Pages project
-//   npm run corpus:sync    take the corpus alone, for a local run
-//   npm run corpus:show    export, take, build, and serve the center
+//   npm run corpus:source  take the export a producer published, and check it against its digest
+//   npm run corpus:take    take it into this site and the board, and check both
+//   npm run corpus:build   build the site and the board from what was taken
+//   npm run corpus:flow    take, build, and check
+//   npm run corpus:publish build and publish both to their Pages projects
+//   npm run demo           the site beside a cockpit, both started and stopped together
 //
-// The two are one file because they are one subject: what the center is made of, and where it goes. Nothing here is a
-// shell script, so the same command works wherever npm does.
+// This repository is the one that assembles and publishes the artifacts. A producer (ktema, kletos) exports a corpus;
+// this takes it, builds the site and the board from it, and publishes each to its own Pages project. The producers are
+// private, so what crosses into here is the artifact they published and its digest, never a checkout this build has to
+// reach into.
 //
 // Environment, all optional:
-//   CENTER_PORT   the center's port on this host (4321)
-//   DELTA_PORT    the cockpit's port on this host (5276)
-//   DELTA_DIR     a cockpit checkout, relative to this repository (../kletos/apps/delta)
-//   DELTA_URL     a cockpit this host is not serving; no preview server is started
-//   DEMO_REBUILD  1 rebuilds the cockpit before showing it
-//   CENTER_PAGES_PROJECT  the Pages project the deploy targets (ktema-demo)
+//   CORPUS_SOURCE   where an export is published (default: ../ktema/corpus/export)
+//   KTEMA_DIR       a ktema checkout, for the export and the values it states
+//   DELTA_DIR       a cockpit checkout, relative to this repository (../kletos/apps/delta)
+//   CENTER_PORT     the site's port on this host (4321)
+//   DELTA_PORT      the cockpit's port on this host (5276)
+//   CENTER_PAGES_PROJECT, DELTA_PAGES_PROJECT  the Pages projects the publish targets
 
 import { spawn, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { copyFileSync, cpSync, existsSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -117,18 +122,73 @@ async function run() {
   });
 }
 
+/** Where an export is read from: a published directory, which is what a producer hands over. */
+function sourceOf() {
+  return resolve(ROOT, process.env.CORPUS_SOURCE ?? '../ktema/corpus/export');
+}
+
 /**
- * The records this center draws, taken from the ktema checkout.
+ * An export checked against its own digest.
  *
- * The center holds no measurement of its own: `bench.json` is the rows a page draws, `corpus.json` is every record
- * with the claim each one rests on, and `values.json` is the strings a document's placeholders ask for. All three are
- * written by `corpus/assembly/export.sh`, so publishing reads them rather than restating them. A checkout that has not
- * run a bench has no export, and that is a failure rather than an empty page.
+ * The digest is computed over the four files and the documents, by the same rule the producer's assembly uses. A source
+ * that does not match its digest is an export somebody edited after publishing, and a site built from it would state a
+ * run nobody made.
+ */
+function digestOf(directory) {
+  const names = ['bench.json', 'corpus.json', 'runs.json', 'values.json'];
+  const lines = names.map((name) => {
+    const file = join(directory, name);
+    if (!existsSync(file)) fail(`${file} is missing: the export states four files and its digest`);
+    return `${sha256(readFileSync(file))}  ${join('export', name)}`;
+  });
+  const docs = join(directory, 'docs');
+  if (!existsSync(docs)) fail(`${docs} is missing: the export carries its documents`);
+  for (const file of treeOf(docs)) {
+    lines.push(`${sha256(readFileSync(join(docs, file)))}  ${join('export', 'docs', file)}`);
+  }
+  // The listing the producer digests names its files as `export/...`, relative to the corpus directory, and the newline
+  // at its end belongs to it: the digest is over the bytes of the file, not over the lines read out of it.
+  return sha256(Buffer.from(`${lines.join('\n')}\n`));
+}
+
+/** The sha256 of bytes, in the form `shasum -a 256` writes. */
+function sha256(bytes) {
+  return createHash('sha256').update(bytes).digest('hex');
+}
+
+/**
+ * The export this site was built from, taken from wherever it is published.
+ *
+ * The source is checked against its digest first, so a copy this build takes is the one the producer stated. Nothing is
+ * written before the whole export is in hand: a half-taken corpus would be a page a corpus apart from its documents.
+ */
+function source() {
+  const from = sourceOf();
+  if (!existsSync(from)) {
+    fail(`${from} is not there: set CORPUS_SOURCE to a published export, or run the producer's export`);
+  }
+  const held = existsSync(join(from, 'digest')) ? readFileSync(join(from, 'digest'), 'utf8').trim() : '';
+  if (!held) fail(`${join(from, 'digest')} is missing: an export states the digest of its own contents`);
+  const now = digestOf(from);
+  if (now !== held) {
+    fail(`${from} does not match its digest: ${held.slice(0, 12)}, and its contents digest to ${now.slice(0, 12)}`);
+  }
+  say(`corpus: the source matches its digest (${held.slice(0, 12)})`);
+  return from;
+}
+
+/**
+ * The records this site draws, taken from the export.
+ *
+ * The site holds no measurement of its own: `bench.json` is the rows a page draws, `corpus.json` is every record with the
+ * claim each one rests on, and `values.json` is the strings a document's placeholders ask for. All of them are written by
+ * the producer's assembly, so publishing reads them rather than restating them.
  */
 function corpus() {
-  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  source();
+  const exported = sourceOf();
   for (const [from, to] of pairs()) {
-    const source = join(ktema, from);
+    const source = join(exported, from);
     if (!existsSync(source)) {
       fail(`${source} is not there: run './run.sh --bench' in the ktema checkout, or set KTEMA_DIR`);
     }
@@ -138,7 +198,7 @@ function corpus() {
 
   // The documents are the fact in the form a person reads, so the center renders the corpus's own text rather than a
   // copy kept here. The directory is replaced whole, so a document the corpus dropped stops being a page.
-  const docs = join(ktema, 'corpus/export/docs');
+  const docs = join(exported, 'docs');
   if (!existsSync(docs)) fail(`${docs} is not there: run corpus/assembly/export.sh in the ktema checkout`);
   rmSync(join(ROOT, 'demo/src/posts'), { recursive: true, force: true });
   cpSync(docs, join(ROOT, 'demo/src/posts'), { recursive: true });
@@ -152,8 +212,7 @@ function corpus() {
  * check runs here, so a copy that is not the export stops the flow rather than being served.
  */
 function take() {
-  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
-  const exported = join(ktema, 'corpus/export');
+  const exported = sourceOf();
   corpus();
 
   const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
@@ -187,14 +246,21 @@ function take() {
   check();
 }
 
-/** The whole flow: export the volume once, then take it into both consumers and check them. */
+/**
+ * The whole flow here: take what the producer published, build, and check.
+ *
+ * The export is the producer's. This command reads it, refuses it when it does not match its digest, and builds both
+ * renderings from it, so the pipeline a CI job runs is the one a person runs.
+ */
 function flow() {
-  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
-  const exporter = join(ktema, 'corpus/assembly/export.sh');
-  if (!existsSync(exporter)) fail(`${exporter} is not there: set KTEMA_DIR`);
-  say(`corpus: ${exporter}`);
-  if (exec('bash', [exporter], { cwd: ktema, stdio: 'inherit' }) !== 0) fail('the export did not run');
   take();
+
+  say('building the site and the board');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the site did not build');
+  const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
+  if (existsSync(join(delta, 'package.json'))) {
+    if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit' }) !== 0) fail('the board did not build');
+  }
 }
 
 /**
@@ -226,10 +292,10 @@ function show() {
  */
 function pairs() {
   return [
-    ['corpus/export/bench.json', 'demo/src/data/corpus-bench.json'],
-    ['corpus/export/corpus.json', 'demo/src/data/corpus.json'],
-    ['corpus/export/values.json', 'demo/src/data/corpus-values.json'],
-    ['corpus/export/digest', 'demo/src/data/corpus-digest.txt'],
+    ['bench.json', 'demo/src/data/corpus-bench.json'],
+    ['corpus.json', 'demo/src/data/corpus.json'],
+    ['values.json', 'demo/src/data/corpus-values.json'],
+    ['digest', 'demo/src/data/corpus-digest.txt'],
   ];
 }
 
@@ -249,18 +315,18 @@ function treeOf(directory) {
  * nobody made, so the run stops and names the command that fixes it.
  */
 function check() {
-  const ktema = resolve(ROOT, process.env.KTEMA_DIR ?? '../ktema');
+  const exported = sourceOf();
   const wanted = pairs();
-  if (wanted.some(([from]) => !existsSync(join(ktema, from)))) {
+  if (wanted.some(([from]) => !existsSync(join(exported, from)))) {
     say('corpus: no export beside this checkout, so the committed copy is what is served');
     return;
   }
   const drift = [];
   for (const [from, to] of wanted) {
     if (!existsSync(join(ROOT, to))) drift.push(`${to} is missing`);
-    else if (!readFileSync(join(ktema, from)).equals(readFileSync(join(ROOT, to)))) drift.push(`${to} is not ${from}`);
+    else if (!readFileSync(join(exported, from)).equals(readFileSync(join(ROOT, to)))) drift.push(`${to} is not ${from}`);
   }
-  const docs = join(ktema, 'corpus/export/docs');
+  const docs = join(exported, 'docs');
   const posts = join(ROOT, 'demo/src/posts');
   if (existsSync(docs)) {
     const left = treeOf(docs);
@@ -268,7 +334,7 @@ function check() {
     for (const file of left) {
       if (!existsSync(join(posts, file))) drift.push(`demo/src/posts/${file} is missing`);
       else if (!readFileSync(join(docs, file)).equals(readFileSync(join(posts, file)))) {
-        drift.push(`demo/src/posts/${file} is not ${join('corpus/export/docs', file)}`);
+        drift.push(`demo/src/posts/${file} is not ${join('docs', file)}`);
       }
     }
     for (const file of right) {
@@ -277,13 +343,23 @@ function check() {
   }
   if (drift.length) {
     for (const line of drift) process.stderr.write(`demo: ${line}\n`);
-    fail('the center is not the export: run npm run corpus:sync');
+    fail('the site is not the export: run npm run corpus:take');
   }
   say('corpus: the center is the export it was taken from');
 }
 
-function deploy() {
-  const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
+/**
+ * Both renderings of one export, published from here.
+ *
+ * This repository assembles a corpus into its artifacts: the site, and the board that names the site's pages. So one
+ * command builds both from the export it took and publishes each to its own Pages project. They are published in one
+ * run because they are two renderings of one corpus: a site a corpus apart from the board would be a board whose drift
+ * note is the only thing it can say.
+ */
+function publish() {
+  const site = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
+  const center = process.env.DELTA_PAGES_PROJECT ?? 'ktema-corpus';
+  const delta = resolve(ROOT, process.env.DELTA_DIR ?? '../kletos/apps/delta');
 
   take();
 
@@ -291,14 +367,52 @@ function deploy() {
     fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
   }
 
-  say('building the center');
-  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) {
-    fail('the center did not build');
-  }
-
+  say('building the site');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the site did not build');
   // A build that exits zero without a home page would publish a shell with nothing in it.
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
 
+  say('building the board');
+  if (exec('npm', ['run', 'build:demo'], { cwd: delta, stdio: 'inherit' }) !== 0) fail('the board did not build');
+  const built = join(delta, 'dist-demo');
+  for (const need of ['index.html', 'projects.json', '_redirects']) {
+    if (!existsSync(join(built, need))) fail(`the board has no ${need} in its build`);
+  }
+
+  // The site first: the board names its pages, so the page a reader opens is the one this run published.
+  say(`uploading demo-dist to Cloudflare Pages (${site})`);
+  const first = exec(
+    'npx',
+    ['--yes', 'wrangler@4', 'pages', 'deploy', 'demo-dist', `--project-name=${site}`, '--commit-dirty=true'],
+    { cwd: ROOT, stdio: 'inherit' },
+  );
+  if (first !== 0) fail('the site did not publish');
+
+  say(`uploading the board to Cloudflare Pages (${center})`);
+  const second = exec(
+    'npx',
+    ['--yes', 'wrangler@4', 'pages', 'deploy', 'dist-demo', `--project-name=${center}`, '--commit-dirty=true'],
+    { cwd: delta, stdio: 'inherit' },
+  );
+  if (second !== 0) fail('the board did not publish');
+}
+
+/**
+ * The site alone, for a deployment that publishes one surface.
+ *
+ * `npm run demo:deploy` is that case, and it waits on what this repository is: the site is published with the board or
+ * not at all. It is kept for the existing deployment while the two are still separate projects, and it publishes the
+ * site from what was taken.
+ */
+function deploy() {
+  const project = process.env.CENTER_PAGES_PROJECT ?? 'ktema-demo';
+  take();
+  if (exec('npx', ['--yes', 'wrangler@4', 'whoami'], { cwd: ROOT, stdio: 'ignore' }) !== 0) {
+    fail('Wrangler is not logged in: run `npx wrangler@4 login`, or set CLOUDFLARE_API_TOKEN');
+  }
+  say('building the site');
+  if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the site did not build');
+  if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
   say(`uploading demo-dist to Cloudflare Pages (${project})`);
   const uploaded = exec(
     'npx',
@@ -320,10 +434,14 @@ if (mode === 'run') {
   take();
 } else if (mode === 'flow') {
   flow();
+} else if (mode === 'source') {
+  source();
 } else if (mode === 'check') {
   check();
 } else if (mode === 'show') {
   show();
+} else if (mode === 'publish') {
+  publish();
 } else {
-  fail(`unknown command '${mode}': use run, take, flow, show, deploy, corpus, or check`);
+  fail(`unknown command '${mode}': use run, source, take, flow, check, show, publish, deploy, or corpus`);
 }
