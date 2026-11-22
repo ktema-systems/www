@@ -159,7 +159,12 @@ function fetchFile(url, into) {
   return got.status === 0;
 }
 
-/** The documents an export publishes, read from its index. */
+/**
+ * The documents an export publishes, read from the export itself.
+ *
+ * `documents.txt` states the names, including the ones under a directory, so a raw host answers it directly and no
+ * listing call is made. A hub that holds the export as a git tree is read the same way a local checkout is.
+ */
 function indexOf(url) {
   const listing = join(ROOT, '.corpus', 'documents.txt');
   if (!fetchFile(`${url}/documents.txt`, listing)) {

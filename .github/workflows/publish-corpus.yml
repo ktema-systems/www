@@ -21,7 +21,7 @@ on:
       corpus_url:
         description: The published export, as a directory URL
         required: false
-        default: https://corpus-assets.ktema.systems/export
+        default: https://raw.githubusercontent.com/ktema-systems/corpus/main/export
   push:
     branches: ["main"]
     paths:
@@ -38,7 +38,7 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-  CORPUS_URL: ${{ github.event.inputs.corpus_url || 'https://corpus-assets.ktema.systems/export' }}
+  CORPUS_URL: ${{ github.event.inputs.corpus_url || 'https://raw.githubusercontent.com/ktema-systems/corpus/main/export' }}
 
 jobs:
   check:
