@@ -25,12 +25,19 @@ on:
       - "package-lock.json"
       - ".github/workflows/deploy-center.yml"
   workflow_dispatch:
+    inputs:
+      corpus_url:
+        description: The published export, as a directory URL
+        required: false
+        default: https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export
 
 permissions:
   contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # The hub is a rendering of one export, so the build before it needs the corpus the producer published.
+  CORPUS_URL: ${{ github.event.inputs.corpus_url || 'https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export' }}
 
 # The check runs on every event, including the push to main this repository works on, and the
 # deploy waits for it. A change that fails the check therefore never reaches the host.
