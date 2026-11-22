@@ -20,6 +20,10 @@ const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
 // The Corpus app is deployed on its own, so the bar names its address rather than assuming the hub's.
 const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://ktema-corpus-viewer.pages.dev/').replace(/\/?$/, '/');
 
+// The front page carries the same call in its hero, so the bar's copy stays closed until that one has passed under it.
+// The observer is the page's own: a page with no hero call has nothing to wait for, and `data-hero-cta` is absent.
+const waitsForHero = Astro.url.pathname === '/' || Astro.url.pathname === '';
+
 const pageTitle = title === 'Corpus Hub' ? 'Ktema Systems Corpus Hub' : `${title} | Ktema Systems Corpus Hub`;
 const pageDescription = description ?? 'The surfaces Ktema Systems builds, in one place.';
 
@@ -111,19 +115,54 @@ const structuredData = {
         <span class="bar__spacer"></span>
         <a class="bar__action" href="mailto:demo@ktema.systems">Request a demo</a>
         <slot name="bar" />
-        <a
-          class="bar__action bar__action--main"
-          href={viewUrl}
-          target="_blank"
-          rel="noreferrer"
-          title="Corpus View: Ktema Systems' own records, read in Delta"
-        >
-          Corpus View
-        </a>
+        {
+          /* The hub's own call, which the hero carries the same of on the front page. The bar's copy takes no width
+             until the hero's has passed under it, so the two are one button that moves. */
+        }
+        <span class="bar__main">
+          <a
+            class="bar__action bar__action--main"
+            href={viewUrl}
+            target="_blank"
+            rel="noreferrer"
+            title="Corpus View: Ktema Systems' own records, read in Delta"
+          >
+            Corpus View
+          </a>
+        </span>
       </div>
     </header>
     <main class="main">
       <slot />
     </main>
+    {
+      waitsForHero && (
+        <script>
+          // The bar's call is a box the row can close, and it stays closed while the hero's call is on screen: the
+          // width is measured once the fonts are in, because the button's own width is what the box opens to.
+          const bar = document.querySelector('.bar__inner');
+          const slot = bar?.querySelector('.bar__main');
+          const button = slot?.querySelector('.bar__action--main');
+          const hero = document.querySelector('[data-hero-cta]');
+          if (bar && slot && button && hero) {
+            const measure = () => {
+              slot.style.maxWidth = 'none';
+              const width = Math.ceil(button.getBoundingClientRect().width);
+              slot.style.maxWidth = '';
+              if (width > 0) bar.style.setProperty('--cta-w', `${width + 8}px`);
+            };
+            measure();
+            void document.fonts?.ready.then(measure);
+            window.addEventListener('resize', measure);
+
+            const barHeight = Math.ceil(bar.getBoundingClientRect().height);
+            new IntersectionObserver(
+              ([entry]) => bar.classList.toggle('is-cta-past', !entry.isIntersecting),
+              { rootMargin: `-${barHeight}px 0px 0px 0px` },
+            ).observe(hero);
+          }
+        </script>
+      )
+    }
   </body>
 </html>

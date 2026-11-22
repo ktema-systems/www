@@ -4,6 +4,10 @@ import Shell from '../layouts/Shell.astro';
 import Tile from '../components/Tile.astro';
 import Row from '../components/Row.astro';
 
+// The hub's board, which is what the front page's own call opens. `PUBLIC_CENTER_URL` is where a build points when the
+// application moves, and the shell names the same address in its bar.
+const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://ktema-corpus-viewer.pages.dev/').replace(/\/?$/, '/');
+
 // Two lists, each drawn twice. The surfaces that are recorded stand in the first; the demonstrations that are
 // specified and not yet recorded stand under them in their own section. Every entry is drawn as a tile and as a row,
 // and the switch in the bar picks which of the two is shown, so the views cannot disagree about what the center
@@ -53,8 +57,14 @@ const further = (await getSurfaces()).map((surface) => ({
   <section class="hero">
     <h1>The stack, surface by surface.</h1>
     <p class="lede">
-      Every page is one surface and the claim that surface establishes: a record engine on a part with no operating
-      system, the same bytes recomputed by a second implementation on a die, and the cockpit over both.
+      Ktema Systems builds a record engine for machines that run without an operating system, a second implementation
+      of the same bytes in gates, and Delta, the cockpit that reads both. This hub collects what those surfaces
+      establish: the demonstrations that show them running, and the measurements that state what a run cost.
+    </p>
+    <p class="hero__actions">
+      <a class="btn" href={viewUrl} target="_blank" rel="noreferrer" data-hero-cta>
+        Corpus View
+      </a>
     </p>
   </section>
 

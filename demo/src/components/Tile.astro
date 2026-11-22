@@ -6,7 +6,9 @@
 // work. A tile is a link when it has somewhere to go and a drawing when it does not.
 //
 // Two tags answer two questions: the product says whose surface it is, and the platform says where the claim is
-// checked. They are drawn differently because they are not the same kind of word.
+// checked. They are drawn differently because they are not the same kind of word. What the entry is (a demonstration or
+// a measurement) is not a tag beside those two: it is the badge on the still, because it is the first thing a reader
+// sorts the grid by and the grid is read picture by picture.
 import { platformOf, type Platform } from '../data/taxonomy';
 import { CATEGORY_TAGS, type Category } from '../data/kinds';
 
@@ -57,7 +59,18 @@ const link = href ? { href } : {};
 >
   {
     bay ? (
-      <span class="tile__screen tile__screen--empty" aria-hidden="true" />
+      <span class="tile__screen tile__screen--empty" aria-hidden="true">
+        {
+          category && (
+            <span
+              class:list={['tile__kind', `tile__kind--${category}`]}
+              title={CATEGORY_TAGS[category].title}
+            >
+              {CATEGORY_TAGS[category].label}
+            </span>
+          )
+        }
+      </span>
     ) : (
       <>
         <span class="tile__wash" aria-hidden="true" />
@@ -69,6 +82,16 @@ const link = href ? { href } : {};
             loading={eager ? 'eager' : 'lazy'}
             decoding="async"
           />
+          {
+            category && (
+              <span
+                class:list={['tile__kind', `tile__kind--${category}`]}
+                title={CATEGORY_TAGS[category].title}
+              >
+                {CATEGORY_TAGS[category].label}
+              </span>
+            )
+          }
         </span>
       </>
     )
@@ -77,11 +100,6 @@ const link = href ? { href } : {};
     <span class="tile__head">
       <span class="tile__title">{title}</span>
       <span class="tags">
-        {category && (
-          <span class:list={['category-tag', `category-tag--${category}`]} title={CATEGORY_TAGS[category].title}>
-            {CATEGORY_TAGS[category].label}
-          </span>
-        )}
         {platforms.map((name) => (
           <span class="platform-tag">{platformOf(name).label}</span>
         ))}

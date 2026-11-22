@@ -184,6 +184,34 @@ h1 {
   color: var(--fg);
 }
 
+/* The bar's own call is a box the row can close. On the front page the hero carries the same call, so this one takes no
+   width until that one has passed under the bar; the button inside keeps its shape, so only the box moves. A page with
+   no hero call has no `data-hero-cta`, and the box is open from the first paint. */
+.bar__main {
+  display: flex;
+  flex: 0 0 auto;
+  max-width: var(--cta-w, 16rem);
+  overflow: hidden;
+  transition:
+    max-width 240ms var(--ease),
+    margin-left 240ms var(--ease),
+    opacity 240ms var(--ease),
+    visibility 240ms;
+}
+
+body:has([data-hero-cta]) .bar__inner:not(.is-cta-past) .bar__main {
+  max-width: 0;
+  margin-left: -8px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The box clips the button, so the focus ring is drawn inside it. */
+.bar__main .bar__action:focus-visible {
+  outline-offset: -2px;
+}
+
 .bar__title {
   min-width: 0;
   overflow: hidden;
@@ -262,7 +290,68 @@ h1 {
   text-wrap: pretty;
 }
 
+/* The front page's own call, which the bar carries the same of once it has scrolled past. */
+.hero__actions {
+  margin: 32px 0 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  border: 1px solid color-mix(in srgb, var(--accent) 46%, transparent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background 240ms var(--ease),
+    border-color 240ms var(--ease),
+    color 240ms var(--ease);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
 /* ── the deck: the grid the surfaces stand on ─────────────────────────── */
+
+/* What an entry is, read off the picture rather than out of the title row: a demonstration or a measurement is how a
+   reader sorts the grid, and the grid is read picture by picture. The badge floats over the still's top corner on a
+   blurred pane, so it stays legible over any footage without hiding it. */
+.tile__kind {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+  padding: 3px 9px;
+  border: 1px solid color-mix(in srgb, var(--fg) 18%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 46%, transparent);
+  backdrop-filter: blur(14px) saturate(150%);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg);
+  pointer-events: none;
+}
+
+/* A measurement is a second reading rather than a second accent: the demonstration keeps the accent's mark. */
+.tile__kind--bench {
+  color: var(--fg-2);
+}
+
+.tile__kind--planned {
+  border-style: dashed;
+  color: var(--fg-3);
+}
 
 /* The grid sizes itself from the container, so a catalogue grows by adding items rather than by editing columns. An
    item that carries a thumbnail takes a wider bay, which is the emphasis the cockpit had when the grid was fixed. */

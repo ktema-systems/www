@@ -2,7 +2,8 @@
 // One entry of the center read as a row: the same tile, laid on its side for a list.
 //
 // The thumbnail is the same still a tile carries, or the same bay when there is none, so the two views describe an
-// entry the same way and cannot disagree about it.
+// entry the same way and cannot disagree about it. What the entry is rides on the thumbnail in both, because that is
+// where the grid and the list both look first.
 import { platformOf, type Platform } from '../data/taxonomy';
 import { CATEGORY_TAGS, type Category } from '../data/kinds';
 
@@ -31,18 +32,18 @@ const { href, title, category, products = [], platforms = [], summary, poster, p
           <span class="row__bay" aria-hidden="true" />
         )
       }
+      {
+        category && (
+          <span class:list={['tile__kind', `tile__kind--${category}`]} title={CATEGORY_TAGS[category].title}>
+            {CATEGORY_TAGS[category].label}
+          </span>
+        )
+      }
     </span>
     <span class="row__body">
       <span class="row__head">
         <span class="row__title">{title}</span>
         <span class="tags">
-          {
-            category && (
-              <span class:list={['category-tag', `category-tag--${category}`]} title={CATEGORY_TAGS[category].title}>
-                {CATEGORY_TAGS[category].label}
-              </span>
-            )
-          }
           {platforms.map((name) => <span class="platform-tag">{platformOf(name).label}</span>)}
           {products.map((name) => <span class="product-tag">{name}</span>)}
         </span>
