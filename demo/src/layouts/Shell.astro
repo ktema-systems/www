@@ -18,7 +18,7 @@ interface Props {
 
 const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
 // The Corpus app is deployed on its own, so the bar names its address rather than assuming the hub's.
-const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus-space.ktema.systems/').replace(/\/?$/, '/');
+const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://ktema-corpus-viewer.pages.dev/').replace(/\/?$/, '/');
 
 const pageTitle = title === 'Corpus Hub' ? 'Ktema Systems Corpus Hub' : `${title} | Ktema Systems Corpus Hub`;
 const pageDescription = description ?? 'The surfaces Ktema Systems builds, in one place.';

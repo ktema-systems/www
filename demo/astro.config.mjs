@@ -7,7 +7,7 @@ import { llmsTxt } from '../packages/astro-llms/index.mjs';
 // The viewer is deployed on its own, so the index names its address rather than importing it. `PUBLIC_CENTER_URL` is what
 // a build points at when the application moves, and the viewer's own address is what the bar opens: the hub is the
 // entrance, and a page is where a reader goes on from.
-const deltaApp = (process.env.PUBLIC_CENTER_URL ?? 'https://corpus-space.ktema.systems/').replace(/\/?$/, '/');
+const deltaApp = (process.env.PUBLIC_CENTER_URL ?? 'https://ktema-corpus-viewer.pages.dev/').replace(/\/?$/, '/');
 
 export default defineConfig({
   // The hub is published at its own address, and it is what its canonical links and sitemap are built from.
