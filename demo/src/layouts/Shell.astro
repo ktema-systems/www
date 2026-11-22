@@ -17,8 +17,8 @@ interface Props {
 }
 
 const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
-// The viewer is deployed on its own, so the bar names its address rather than assuming the hub's.
-const viewerUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://delta.ktema.systems/').replace(/\/?$/, '/');
+// The Corpus app is deployed on its own, so the bar names its address rather than assuming the hub's.
+const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://delta.ktema.systems/').replace(/\/?$/, '/');
 
 const pageTitle = title === 'Corpus Hub' ? 'Ktema Systems Corpus Hub' : `${title} | Ktema Systems Corpus Hub`;
 const pageDescription = description ?? 'The surfaces Ktema Systems builds, in one place.';
@@ -111,12 +111,12 @@ const structuredData = {
         <span class="bar__spacer"></span>
         <a
           class="bar__delta"
-          href={viewerUrl}
+          href={viewUrl}
           target="_blank"
           rel="noreferrer"
-          title="open the corpus viewer: this corpus, as a board of its measurements and demonstrations"
+          title="the Corpus app: Ktema Systems' own records, read in Delta"
         >
-          Open Corpus Viewer
+          Corpus
         </a>
         <slot name="bar" />
         <a class="bar__cta" href="mailto:demo@ktema.systems">Request a demo</a>

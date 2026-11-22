@@ -24,7 +24,7 @@ export default defineConfig({
       titleSuffix: ' | Ktema Systems Corpus Hub',
       links: [
         '- [Ktema Systems](https://ktema.systems/): the company this center demonstrates, whose corpus is at https://ktema.systems/llms.txt',
-        `- [Corpus Viewer](${deltaApp}): this corpus as a board, whose entries open the page they belong to.`,
+        `- [Corpus](${deltaApp}): this corpus as Delta reads it, whose entries open the page they belong to.`,
         '- [Documentation](https://docs.ktema.systems)',
         '- [Email](mailto:demo@ktema.systems)',
       ],

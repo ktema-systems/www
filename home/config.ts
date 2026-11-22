@@ -64,16 +64,11 @@ export const defaultNav: readonly NavItem[] = [
 
 export const companyCta: NavItem = { label: 'Contact', href: '#contact' };
 
-// The corpus hub holds every surface this corpus publishes, and the viewer is the hub as a board. The homepage's call
-// to action opens the hub, and the bar carries the same one: its copy is only shown once the hero's has passed under it,
-// so the two are one button that moves.
+// The corpus hub holds every surface this corpus publishes, and the Corpus app is Delta's first customer: Ktema
+// Systems' own records, served. The homepage's call to action opens the hub, and the bar carries the same one: its copy
+// is only shown once the hero's has passed under it, so the two are one button that moves.
 export const corpusHub: NavItem = {
   label: 'Corpus Hub', // Don't change this
-  href: 'https://corpus.ktema.systems/',
-};
-
-export const corpusViewer: NavItem = {
-  label: 'Open Corpus Viewer',
   href: 'https://corpus.ktema.systems/',
 };
 

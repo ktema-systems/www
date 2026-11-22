@@ -7,7 +7,7 @@ name: Publish the corpus
 # reaches into a producer's checkout: what crosses is the export and its digest, which is what makes the two repositories
 # independent of each other's internals.
 #
-# The corpus viewer is a cockpit, and its source is a producer's too. It is rebuilt from the cockpit whose artifact is
+# The corpus app is a cockpit, and its source is a producer's too. It is rebuilt from the cockpit whose artifact is
 # published beside the export, and its pages point at the hub this job publishes, so one run leaves the two renderings
 # of one corpus in step.
 
