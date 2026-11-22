@@ -109,17 +109,17 @@ const structuredData = {
           ))
         }
         <span class="bar__spacer"></span>
+        <a class="bar__delta" href="mailto:demo@ktema.systems">Request a demo</a>
+        <slot name="bar" />
         <a
-          class="bar__delta"
+          class="bar__cta"
           href={viewUrl}
           target="_blank"
           rel="noreferrer"
-          title="the Corpus app: Ktema Systems' own records, read in Delta"
+          title="Corpus View: Ktema Systems' own records, read in Delta"
         >
-          Corpus
+          Corpus View
         </a>
-        <slot name="bar" />
-        <a class="bar__cta" href="mailto:demo@ktema.systems">Request a demo</a>
       </div>
     </header>
     <main class="main">
