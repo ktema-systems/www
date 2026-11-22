@@ -394,7 +394,10 @@ function treeOf(directory) {
  * nobody made, so the run stops and names the command that fixes it.
  */
 function check() {
-  const exported = sourceOf();
+  // A tree that has already taken an export needs no address: the copy it took is the one its files were written from,
+  // so the check reads that rather than asking for the same export twice.
+  const held = join(ROOT, '.corpus');
+  const exported = process.env.CORPUS_URL || process.env.CORPUS_SOURCE || !existsSync(held) ? sourceOf() : held;
   const wanted = pairs();
   if (wanted.some(([from]) => !existsSync(join(exported, from)))) {
     say('corpus: no export beside this checkout, so the committed copy is what is served');

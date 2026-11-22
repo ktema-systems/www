@@ -62,6 +62,11 @@ jobs:
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
 
+      # The documents and the measurements are the export's, so they are taken before anything reads them: a build
+      # without them would draw a corpus this repository invented.
+      - name: Take the corpus
+        run: npm run corpus:take
+
       - name: Test the llms module
         run: node --test packages/astro-llms/index.test.mjs
 
@@ -98,6 +103,9 @@ jobs:
       - name: Install dependencies
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm ci
+
+      - name: Take the corpus
+        run: npm run corpus:take
 
       - name: Build the center
         run: npm run build:demo

@@ -34,3 +34,10 @@ demo-dist/
 # The documents the site renders, copied from the export by `corpus:take`. They are the corpus's own pages, so a copy
 # kept here would be a document with two homes and the take would delete it on every run.
 demo/src/posts/
+
+# The measurements and the records a page draws, taken from the export by `corpus:take`. A build without them has no
+# corpus to render, so the take is what makes them, and CI runs it before anything reads them.
+demo/src/data/corpus-bench.json
+demo/src/data/corpus-values.json
+demo/src/data/corpus.json
+demo/src/data/corpus-digest.txt
