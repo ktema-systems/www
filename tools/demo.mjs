@@ -295,13 +295,16 @@ function take() {
   const corpusTool = join(delta, 'tools/corpus.mjs');
   if (existsSync(corpusTool)) {
     say('the board takes the corpus');
+    // The board reads the export from the same address this site did, so both renderings are drawn from one source and
+    // neither carries its own copy of it.
+    const env = { ...process.env, CORPUS_SOURCE: exported };
     const steps = [
-      [corpusTool, '--take', exported],
+      [corpusTool],
       [join(delta, 'tools/corpus-board.mjs')],
       [join(delta, 'tools/board.mjs'), '--set', 'corpus'],
     ];
     for (const [script, ...args] of steps) {
-      if (exec(process.execPath, [script, ...args], { cwd: delta, stdio: 'inherit' }) !== 0) {
+      if (exec(process.execPath, [script, ...args], { cwd: delta, env, stdio: 'inherit' }) !== 0) {
         fail('the board did not take the corpus');
       }
     }
@@ -311,7 +314,7 @@ function take() {
       [join(delta, 'tools/board.mjs'), '--set', 'corpus', '--check'],
     ];
     for (const [script, ...args] of checks) {
-      if (exec(process.execPath, [script, ...args], { cwd: delta, stdio: 'inherit' }) !== 0) {
+      if (exec(process.execPath, [script, ...args], { cwd: delta, env, stdio: 'inherit' }) !== 0) {
         fail('the board is not the corpus');
       }
     }

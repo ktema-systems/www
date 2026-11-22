@@ -30,3 +30,7 @@ demo-dist/
 
 # The corpus an export was fetched into, which CI fetches and a run replaces.
 .corpus/
+
+# The documents the site renders, copied from the export by `corpus:take`. They are the corpus's own pages, so a copy
+# kept here would be a document with two homes and the take would delete it on every run.
+demo/src/posts/
