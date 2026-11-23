@@ -64,13 +64,13 @@ jobs:
       - name: Test the llms module
         run: node --test packages/astro-llms/index.test.mjs
 
-      - name: Check types
-        run: npx astro check --root demo
-
-      # The export is the input, so it is taken and checked before anything is built: a corpus that does not match its
-      # digest stops the run here rather than becoming a page.
+      # The export is the input, so it is taken and checked before anything reads it: a corpus that does not match its
+      # digest stops the run here rather than becoming a page, and the measurements a page imports are written by the take.
       - name: Take the corpus
         run: npm run corpus:take
+
+      - name: Check types
+        run: npx astro check --root demo
 
       - name: Assert the site is the export
         run: npm run corpus:check
