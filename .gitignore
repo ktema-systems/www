@@ -9,6 +9,9 @@ demo-dist/
 # Generated types, from `astro sync`
 .*
 .*/
+# The attributes file is a repository file like any other: the pattern above is for the state a tool writes, and this
+# one states which media Git LFS holds.
+!.gitattributes
 # Environment files. The negation keeps a future `.env.example` tracked, so the
 # shape of the configuration stays documented.
 !.env.example
