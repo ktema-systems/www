@@ -165,7 +165,18 @@ function sourceOf() {
   }
   // A path is a directory that is already there; anything else is an address to fetch from. `run.sh` passes a sibling
   // checkout's build directory through the same variable, so the two are one answer to "where is the export".
-  if (existsSync(named)) return (fetched = resolve(ROOT, named));
+  // A local export is copied into the same place a fetched one is, so the board's check reads one directory whichever
+  // way this run got its corpus; a run that skipped the copy left `.corpus` a corpus behind and failed its own check.
+  if (existsSync(named)) {
+    const local = resolve(ROOT, named);
+    const into = join(ROOT, '.corpus');
+    if (local !== into) {
+      rmSync(into, { recursive: true, force: true });
+      cpSync(local, into, { recursive: true });
+      say(`corpus: ${local} -> .corpus`);
+    }
+    return (fetched = into);
+  }
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(named)) {
     fail(`${named} is not there: set CORPUS_URL to the published export, or CORPUS_SOURCE to a directory`);
   }

@@ -60,6 +60,10 @@ h1 {
   height: var(--bar);
   border-bottom: 1px solid transparent;
   background: transparent;
+  /* A row of labels that does not fit is clipped here rather than widening the page. The bar is the one element whose
+     contents change width while a reader watches, and a page that grows for a frame and shrinks back is a scrollbar
+     that appears and leaves. */
+  overflow: hidden;
   backdrop-filter: blur(14px) saturate(120%);
   transition:
     background 260ms var(--ease),
@@ -1129,6 +1133,30 @@ h1 {
 
 /* Below the width where the whole name, the way back and the request cannot share one row, the trail takes a second
    row. The name is the one thing the bar does not shorten, so the row count is what changes. */
+/* Below the width where the whole name, the way back and the request cannot share one row, the trail takes a second
+   row. The name is the one thing the bar does not shorten, so the row count is what changes. A measurement carries one
+   more action than a demonstration, so the width where its row stops fitting is wider. */
+@media (max-width: 500px) {
+  .bar:has(.bar__action--figures) {
+    height: auto;
+  }
+
+  .bar__inner:has(.bar__action--figures) {
+    height: auto;
+    flex-wrap: wrap;
+    padding-block: 7px;
+    row-gap: 3px;
+  }
+
+  .bar__inner:has(.bar__action--figures) .bar__spacer {
+    display: none;
+  }
+
+  .bar__inner:has(.bar__action--figures) .bar__action--figures {
+    order: 3;
+  }
+}
+
 @media (max-width: 380px) {
   .bar:has(.bar__crumb) {
     height: auto;
