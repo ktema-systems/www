@@ -10,6 +10,10 @@ name: Publish the corpus
 # The corpus app is a cockpit, and its source is a producer's too. It is rebuilt from the cockpit whose artifact is
 # published beside the export, and its pages point at the hub this job publishes, so one run leaves the two renderings
 # of one corpus in step.
+#
+# This is the only workflow that publishes the hub. It also carries the check a pull request runs, which the separate
+# `deploy-center.yml` used to hold: two workflows publishing one Pages project made the last upload decide the site, so
+# the check and the publish are one file and one pipeline.
 
 on:
   # A producer publishes an export and asks this to publish it.
@@ -23,6 +27,18 @@ on:
         required: false
         default: https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export
   push:
+    branches: ["main"]
+    paths:
+      - "demo/**"
+      - "lib/**"
+      - "tools/**"
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/publish-corpus.yml"
+  # A change that would reach the hub is checked before it merges. The publish job skips a pull request, so this event
+  # costs a build and never an upload.
+  pull_request:
     branches: ["main"]
     paths:
       - "demo/**"

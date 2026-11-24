@@ -455,7 +455,84 @@ function check() {
  * run because they are two renderings of one corpus: a site a corpus apart from the board would be a board whose drift
  * note is the only thing it can say.
  */
-function publish() {
+
+/**
+ * Every address the viewer's board opens a window on, read from the board the build wrote.
+ *
+ * A board names a take or a still by address, and the address is served by somebody: the hub for a path the site
+ * publishes, a bucket for a file the corpus recorded. A board published with an address nothing answers is a reader's
+ * window that never fills, and the build cannot see it because the build never opens the address.
+ *
+ * A named board is one file, `projects/<name>.json`, holding every project it draws; the complete board writes the same
+ * shape, so both are read the same way.
+ */
+function windowsOf(projects) {
+  const addresses = new Set();
+  for (const entry of readdirSync(projects, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith('.json')) continue;
+    const declared = JSON.parse(readFileSync(join(projects, entry.name), 'utf8'));
+    // A board is a list of projects; a project's own file has none and is read as one project by the frame.
+    const held = Array.isArray(declared.projects) ? declared.projects : [declared];
+    for (const project of held) {
+      for (const resource of project.resources ?? []) {
+        if (resource.kind !== 'place') continue;
+        for (const unit of Object.values(resource.at?.units ?? {})) {
+          for (const view of unit.views ?? []) {
+            if (view.src && /^https?:\/\//.test(view.src)) addresses.add(view.src);
+            if (view.poster && /^https?:\/\//.test(view.poster)) addresses.add(view.poster);
+          }
+        }
+      }
+    }
+  }
+  return [...addresses].sort();
+}
+
+/**
+ * Whether every address the board opens a window on answers with the medium the board asked for.
+ *
+ * A status alone is not the answer. The hub is a single page whose router returns `index.html` for a path it does not
+ * hold, so a take the site stopped carrying answers `200 text/html` and a player given it plays nothing. What a
+ * window needs is the medium: a `video/*` for a take and an `image/*` for a still. That is what is read here, and a
+ * `404` or an HTML page for a file is the failure this exists to stop.
+ *
+ * A network the check cannot reach is reported rather than read as a pass: an address nobody could ask about is not
+ * an address that answered.
+ */
+async function answers(address) {
+  const wants = /\.(?:mp4|webm|mov|m4v)(?:[?#]|$)/i.test(address) ? 'video' : 'image';
+  try {
+    const response = await fetch(address, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
+    const type = response.headers.get('content-type') ?? '';
+    const served = response.ok && type.startsWith(`${wants}/`);
+    return { address, ok: served, why: `HTTP ${response.status}, ${type || 'no content type'}` };
+  } catch (error) {
+    return { address, ok: false, why: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+/**
+ * Refuse to publish a board whose windows point at addresses nothing serves.
+ *
+ * This is the one failure a build cannot see and a reader meets first: the corpus moved a take to a bucket while the
+ * site stopped carrying it, and the board kept the path. The run stops here rather than publishing windows over
+ * nothing, so a deployment never leaves the two renderings a corpus apart.
+ */
+async function windowsAnswer(projects) {
+  const addresses = windowsOf(projects);
+  if (addresses.length === 0) return;
+  say(`checking ${addresses.length} window address(es) the board opens`);
+  const held = await Promise.all(addresses.map(answers));
+  const broken = held.filter((one) => !one.ok);
+  if (broken.length === 0) {
+    say('every window address serves its medium');
+    return;
+  }
+  for (const one of broken) process.stderr.write(`demo: ${one.address} does not serve its medium (${one.why})\n`);
+  fail('the board opens windows on addresses that serve nothing; publishing would ship them');
+}
+
+async function publish() {
   // One project serves the hub. `CENTER_PAGES_PROJECT` names another, or several separated by commas, when a deployment
   // reaches more than one host.
   const sites = (process.env.CENTER_PAGES_PROJECT ?? 'ktema-corpus-hub').split(',');
@@ -492,6 +569,11 @@ function publish() {
   if (!shipped.opens?.startsWith(VIEW_BOARD)) {
     fail(`the viewer build opens with ${shipped.opens} rather than a ${VIEW_BOARD} blackboard`);
   }
+
+  // The last thing before an upload: every address the board opens a window on has to answer. A corpus that moved its
+  // takes and a site that still names the old paths is the drift a build cannot see, and publishing it would ship
+  // windows over nothing.
+  await windowsAnswer(join(built, 'projects'));
 
   // The hub first: the viewer names its pages, so the page a reader opens is the one this run published.
   for (const site of sites) {
@@ -556,7 +638,7 @@ if (mode === 'run') {
 } else if (mode === 'show') {
   show();
 } else if (mode === 'publish') {
-  publish();
+  await publish();
 } else {
   fail(`unknown command '${mode}': use run, source, take, flow, check, show, publish, deploy, or corpus`);
 }
