@@ -37,11 +37,19 @@ const {
   scale = 'linear',
   decimals = 1,
   series,
-  height = 240,
+  height = 208,
   wide = false,
 } = Astro.props;
 
-const W = 720;
+/**
+ * The drawing's own frame, in its own units.
+ *
+ * A chart's proportions are its own, and the card it stands in is a column of the page: the drawing is made in one width
+ * and the card is whatever the grid gives it, so a card narrower than the drawing is stretched to its own column and a
+ * drawing made at the card's own width is not. The half-width cards are the ones the grid makes, so they are read at
+ * their own proportions instead of being a wide picture shrunk into a narrow column.
+ */
+const W = wide ? 720 : 616;
 const H = height;
 const m = { top: 22, right: 18, bottom: 40, left: 78 };
 const plotW = W - m.left - m.right;
@@ -74,7 +82,14 @@ function yAt(v: number) {
 
 const ticks =
   scale === 'log'
-    ? Array.from({ length: Math.round(Math.log10(yMax) - Math.log10(yMin)) + 1 }, (_, i) => yMin * 10 ** i)
+    ? // One line a decade, which is what makes a log axis readable: the midpoint of two decades is not a round number and
+      // a reader cannot place a value against it. A ladder narrower than a decade keeps its two ends.
+      (() => {
+        const first = Math.ceil(Math.log10(yMin));
+        const last = Math.floor(Math.log10(yMax));
+        const powers = Array.from({ length: Math.max(0, last - first) + 1 }, (_, i) => 10 ** (first + i));
+        return powers.length >= 2 ? powers : [yMin, yMax];
+      })()
     : Array.from({ length: 5 }, (_, i) => (yMax * i) / 4);
 
 function fmtTick(v: number) {
@@ -88,7 +103,11 @@ function fmtTick(v: number) {
   return v.toFixed(decimals);
 }
 
-const count = series[0]?.points.length ?? 1;
+// A scatter is two numbers across and up, so both axes are scales over the page's own room. Everything else is read a
+// rung at a time, and a rung is a tick: the labels under the axis are the sizes the run measured, so they come from the
+// series rather than from a count of them.
+const rungs = series[0]?.points.map((point) => point.label) ?? [];
+const count = Math.max(1, rungs.length);
 const slot = plotW / count;
 const xAt = (i: number) => m.left + slot * (i + 0.5);
 

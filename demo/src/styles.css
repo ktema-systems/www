@@ -184,6 +184,25 @@ h1 {
   color: var(--fg);
 }
 
+/* The second way into the app, which only a figure set carries: it is the same box as the main call so the row stays one
+   size, and it gives up its words rather than the row at the narrowest width. */
+.bar__action--figures {
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--accent-2);
+}
+
+.bar__action--figures:hover,
+.bar__action--figures:focus-visible {
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+@media (max-width: 900px) {
+  .bar__action--figures {
+    display: none;
+  }
+}
+
 /* The bar's own call is a box the row can close. On the front page the hero carries the same call, so this one takes no
    width until that one has passed under the bar; the button inside keeps its shape, so only the box moves. A page with
    no hero call has no `data-hero-cta`, and the box is open from the first paint. */
@@ -795,9 +814,26 @@ h1 {
 
 .bench__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  /* `auto-fill` with a fixed floor decides the columns from the container, so the row the page is in cannot force a
+     second, narrower one: the grid is two columns of the page's own width at every size above the floor. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap: 16px;
   margin-top: clamp(28px, 4vw, 44px);
+}
+
+/* A chart is drawn at its own proportions and the height follows them, so two charts standing in one row are the same
+   height whether their captions take two lines or five. The drawing is the card's own measure rather than a picture
+   centred in it: a chart is what the card exists for, so it takes the width it is given and keeps its aspect. */
+.bench__grid > .chart {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bench__grid > .chart > svg {
+  align-self: stretch;
+  width: 100%;
+  height: auto;
 }
 
 /* The index chart carries the comparison the page exists for, so it gets the full width. */
@@ -899,6 +935,23 @@ h1 {
 
 .bench__fit td:first-child {
   color: var(--fg-3);
+}
+
+/* The way from a run's row into the app's own figures of it. */
+.bench__figures-link {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.bench__figures-link:hover,
+.bench__figures-link:focus-visible {
+  color: var(--fg);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* A chart carries one unit and no decoration that does not hold a number. */

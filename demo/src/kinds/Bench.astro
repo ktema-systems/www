@@ -6,7 +6,7 @@
 // number arrives from `data/bench.ts` through the values below, so a re-run cannot leave the prose quoting an old one.
 import Chart from '../components/Chart.astro';
 import Section from '../components/Section.astro';
-import { engines, indexMemory, source, reads, boxes, values, type Row } from '../data/bench';
+import { engines, indexMemory, source, reads, boxes, runs, values, type Row } from '../data/bench';
 import type { Artifact } from '../data/artifacts';
 
 interface Props {
@@ -57,6 +57,12 @@ const sqliteCache = indexMemory.sqlite[indexMemory.sqlite.length - 1]!.bytes;
 // re-run cannot leave the sentence quoting a number the chart no longer draws.
 const asked = (row: Row) => `${kb(row.point_read_bytes ?? 0).toFixed(1)} kB`;
 const askedRange = (row: Row) => size(row.range_bytes ?? 0);
+
+// Where a run's own figures stand in Corpus Space. The app draws the records a project holds, so a link is the app's
+// figures reading at the project that holds the measurements, and the record it opens is the run's own key.
+const appUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
+const figuresOf = (subject: string) =>
+  new URL(`figures?project=corpus-bench&pick=${encodeURIComponent(subject)}`, appUrl).href;
 ---
 
 <p class="bench__lede">
@@ -254,8 +260,37 @@ const askedRange = (row: Row) => size(row.range_bytes ?? 0);
   <Section source={artifact.body ?? ''} name="The read contract" values={values} />
 </section>
 
+<section class="bench__fit">
+  <h2>The runs behind the numbers</h2>
+  <p>
+    Every figure above is one of three records. Each opens the run's own numbers in Corpus Space, drawn from the same
+    fields and the same rungs.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Run</th><th>Revision</th><th>Fills</th><th></th></tr>
+    </thead>
+    <tbody>
+      {
+        runs.map((run) => (
+          <tr>
+            <td>{run.heading}</td>
+            <td>{run.revision}</td>
+            <td>{run.created.slice(0, 10)}</td>
+            <td>
+              <a class="bench__figures-link" href={figuresOf(run.subject)} target="_blank" rel="noreferrer">
+                The figures
+              </a>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</section>
+
 <p class="bench__source">
-  {source.engine} and {source.peers} · {source.host} · {source.recorded} · median of {source.samples} samples ·
+  {source.engine} · {source.peers} · {source.host} · {source.recorded} · median of {source.samples} samples ·
   SQLite {source.sqlite}. The append log is a fixed-width frame per record plus an address map, which is what an
   integrator writes without a database. The engine's rows are the corpus record <code>{source.key}</code>.
 </p>

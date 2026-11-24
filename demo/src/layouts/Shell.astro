@@ -13,12 +13,17 @@ interface Crumb {
 interface Props {
   title: string;
   description?: string;
+  /** What the page is, where it is one this chrome draws a way into the app for. */
+  kind?: string;
   crumbs?: Crumb[];
 }
 
 const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
 // The Corpus app is deployed on its own, so the bar names its address rather than assuming the hub's.
-const viewUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
+const base = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
+// A page that is a figure set has a picture of it in Corpus Space, and the app's address is what a link there is built
+// from. It is stated once here so no page has to know where the app is served.
+const viewUrl = base;
 
 // The front page carries the same call in its hero, so the bar's copy stays closed until that one has passed under it.
 // The observer is the page's own: a page with no hero call has nothing to wait for, and `data-hero-cta` is absent.
@@ -59,6 +64,11 @@ const structuredData = {
     },
   ],
 };
+
+// A bench item opens its figures in the app, which draws the run's own numbers beside the ones this page states. The
+// address is the app's, at the project that holds the measurements; the label is the field set the page is.
+const figuresUrl = new URL('figures?project=corpus-bench', base).href;
+const isBench = Astro.props.kind === 'bench';
 ---
 
 <!doctype html>
@@ -130,10 +140,25 @@ const structuredData = {
             Open Corpus Space
           </a>
         </span>
+        {
+          /* A measurement has a second picture of itself: the app draws each run's figures, and a reader who has read the
+             page is one press from the numbers drawn live. */
+          isBench && (
+            <a
+              class="bar__action bar__action--figures"
+              href={figuresUrl}
+              target="_blank"
+              rel="noreferrer"
+              title="The measurements as Corpus Space draws them, from this corpus's own runs"
+            >
+              Figures in Corpus Space
+            </a>
+          )
+        }
         <a class="bar__action" href="mailto:demo@ktema.systems">Request a demo</a>
       </div>
     </header>
-    <main class="main">
+    <main class="main" data-app={viewUrl}>
       <slot />
     </main>
     {

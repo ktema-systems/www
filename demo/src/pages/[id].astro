@@ -69,6 +69,7 @@ if (artifact && !ArtifactBody) throw new Error(`the center draws no page for a $
 <Shell
   title={title}
   description={summary}
+  kind={artifact?.kind}
   crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: title }]}
 >
   <header class="page__head">

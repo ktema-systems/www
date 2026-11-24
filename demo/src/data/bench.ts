@@ -298,3 +298,35 @@ export const source = {
   peers: peers.key,
   sqlite: `${peers.parameters.sqlite ?? 'unknown'}, WAL, synchronous=NORMAL, cache_size=8 MB`,
 } as const;
+
+/** The record a run is, for the link that opens it in Corpus Space: the day it was made and the revision it was. */
+export interface RunEntry {
+  /** What the entry is about: the subject the record was filed under. */
+  subject: string;
+  label: string;
+  key: string;
+  created: string;
+  revision: string;
+  /** The figure this subject's page draws from it, in the words the page uses. */
+  heading: string;
+}
+
+/**
+ * The runs this page is drawn from, each with the record behind it.
+ *
+ * Every number on the page is one of these records: a reader who has read the page is one press from the run's own
+ * figures in Corpus Space, where the same rungs are drawn from the same fields.
+ */
+export const runs: RunEntry[] = [measured, peers, contract].map((entry) => ({
+  subject: entry.subject,
+  label: `${entry.revision} on ${entry.created.slice(0, 10)}`,
+  key: entry.key,
+  created: entry.created,
+  revision: entry.revision,
+  heading:
+    entry.subject === 'volume-sweep'
+      ? "The engine's own sweep"
+      : entry.subject === 'peer-baselines'
+        ? 'The two baselines'
+        : "The read contract's probe",
+}));
