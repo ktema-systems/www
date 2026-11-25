@@ -510,16 +510,24 @@ function windowsOf(projects) {
  * A network the check cannot reach is reported rather than read as a pass: an address nobody could ask about is not
  * an address that answered.
  */
-async function answers(address) {
+async function answers(address, tries = 3) {
   const wants = /\.(?:mp4|webm|mov|m4v)(?:[?#]|$)/i.test(address) ? 'video' : 'image';
-  try {
-    const response = await fetch(address, { method: 'HEAD', signal: AbortSignal.timeout(8000) });
-    const type = response.headers.get('content-type') ?? '';
-    const served = response.ok && type.startsWith(`${wants}/`);
-    return { address, ok: served, why: `HTTP ${response.status}, ${type || 'no content type'}` };
-  } catch (error) {
-    return { address, ok: false, why: error instanceof Error ? error.message : String(error) };
+  let why = '';
+  // A host that does not answer inside the timeout is not a host that serves nothing, and a publish stopped by a slow
+  // network is worse than one stopped by a missing file: the same address is asked again before it is called broken.
+  for (let attempt = 0; attempt < tries; attempt += 1) {
+    try {
+      const response = await fetch(address, { method: 'HEAD', signal: AbortSignal.timeout(15000) });
+      const type = response.headers.get('content-type') ?? '';
+      if (response.ok && type.startsWith(`${wants}/`)) return { address, ok: true, why: '' };
+      // An answer that arrives is the host's verdict, and asking again does not change it.
+      return { address, ok: false, why: `HTTP ${response.status}, ${type || 'no content type'}` };
+    } catch (error) {
+      why = error instanceof Error ? error.message : String(error);
+      if (attempt + 1 < tries) await new Promise((done) => setTimeout(done, 1000 * (attempt + 1)));
+    }
   }
+  return { address, ok: false, why };
 }
 
 /**
