@@ -517,17 +517,23 @@ async function answers(address, tries = 3) {
   // network is worse than one stopped by a missing file: the same address is asked again before it is called broken.
   for (let attempt = 0; attempt < tries; attempt += 1) {
     try {
-      const response = await fetch(address, { method: 'HEAD', signal: AbortSignal.timeout(15000) });
+      // The first byte rather than a HEAD, because a HEAD is what a Pages host answers with a body it then closes: the
+      // connection error reads as a file that serves nothing, while the range request a player makes is the one that
+      // reports what the address really is.
+      const response = await fetch(address, {
+        headers: { range: 'bytes=0-0' },
+        signal: AbortSignal.timeout(20000),
+      });
+      await response.body?.cancel().catch(() => {});
       const type = response.headers.get('content-type') ?? '';
       if (response.ok && type.startsWith(`${wants}/`)) return { address, ok: true, why: '' };
-      // An answer that arrives is the host's verdict, and asking again does not change it.
       return { address, ok: false, why: `HTTP ${response.status}, ${type || 'no content type'}` };
     } catch (error) {
       why = error instanceof Error ? error.message : String(error);
       if (attempt + 1 < tries) await new Promise((done) => setTimeout(done, 1000 * (attempt + 1)));
     }
   }
-  return { address, ok: false, why };
+  return { address, ok: false, why: why || 'no answer' };
 }
 
 /**
@@ -541,7 +547,10 @@ async function windowsAnswer(projects) {
   const addresses = windowsOf(projects);
   if (addresses.length === 0) return;
   say(`checking ${addresses.length} window address(es) the board opens`);
-  const held = await Promise.all(addresses.map(answers));
+  // One at a time: a board names a dozen and a half addresses, and asking for all of them at once is a burst the host
+  // met with connections it closed, which read as files that serve nothing.
+  const held = [];
+  for (const address of addresses) held.push(await answers(address));
   const broken = held.filter((one) => !one.ok);
   if (broken.length === 0) {
     say('every window address serves its medium');
