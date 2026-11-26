@@ -25,10 +25,12 @@ export const CATEGORY_TAGS: Record<Category, { label: string; title: string }> =
   planned: { label: 'planned', title: 'a surface stated and not yet recorded' },
 };
 
-/** The category a page is, from where it is stated: a plan states no kind and no demonstration. */
+/** The category a page is, from what it states: a plan says `kind: planned` and nothing else is one. */
 export function categoryOf(kind: string | undefined, demonstration: unknown): Category {
   if (demonstration !== undefined) return 'demonstration';
   if (kind === 'bench') return 'bench';
-  if (kind === undefined || kind === '') return 'planned';
+  // A plan is a page that says it is one. An absent kind cannot tell a plan from a page whose writer forgot the field, so
+  // a page that states nothing is read as the demonstration it has always been drawn as.
+  if (kind === 'planned') return 'planned';
   return 'demonstration';
 }

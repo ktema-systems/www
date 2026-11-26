@@ -577,16 +577,18 @@ async function publish() {
   if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the hub did not build');
   // A build that exits zero without a home page would publish a shell with nothing in it.
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
-  // The plans' section stands when the corpus states a plan and is hidden when it states none, so a section drawn without
-  // that mark is a page whose plans went missing: nothing under the last demonstration but a heading.
+  // The plans' section stands when the corpus states a plan and is hidden when it states none. A plan says
+  // `kind: planned`, and the section's own mark is what the build drew from that: a section drawn where the corpus states
+  // no plan is a page whose plans went missing, or one whose plans never reached it.
   const home = readFileSync(join(ROOT, 'demo-dist', 'index.html'), 'utf8');
-  const stated = existsSync(join(ROOT, 'demo/src/posts'))
-    ? readdirSync(join(ROOT, 'demo/src/posts'))
+  const posts = existsSync(join(ROOT, 'demo/src/posts')) ? join(ROOT, 'demo/src/posts') : null;
+  const stated = posts
+    ? readdirSync(posts)
         .filter((name) => name.endsWith('.md'))
         .some((name) => {
-          const text = readFileSync(join(ROOT, 'demo/src/posts', name), 'utf8');
-          const front = text.split('\n---')[0];
-          return !/^\s+kind:/m.test(front) && !/^\s+demonstration:/m.test(front);
+          const front = readFileSync(join(posts, name), 'utf8').split('\n---')[0];
+          const planned = /^\s+kind:\s*"?planned"?\s*$/m.test(front);
+          return planned && !/^\s+demonstration:/m.test(front);
         })
     : false;
   const hidden = /<section class="further" hidden>/.test(home);
