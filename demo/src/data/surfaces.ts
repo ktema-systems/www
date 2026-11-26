@@ -50,13 +50,14 @@ function surfaceOf(document: Document, order: number): Surface {
 /**
  * The planned surfaces, in the order the grid draws them.
  *
- * A plan says so: `ktma.kind: planned` is the document stating that the work is not recorded yet. It used to be an
- * absence, and an absence cannot tell a plan from a page whose writer forgot the field, which is how nine finished
- * deliveries came to publish as work waiting to be done.
+ * A plan is a page the center does not carry: it states no `kind`, which is how the corpus marks work that has no
+ * record yet, and `migrate-plans.sh` writes a plan fact for every one of them. A page that states a kind is drawn by
+ * that kind, so it is a delivery rather than a plan.
  */
 export function buildSurfaces(documents: Document[]): Surface[] {
   return pageDocuments(documents)
-    .filter((document) => document.ktma.kind === 'planned')
+    .filter((document) => document.ktma.kind === undefined || document.ktma.kind === 'planned')
+    .filter((document) => document.ktma.demonstration === undefined)
     .map((document, index) => {
       const order = document.ktma.order;
       return surfaceOf(document, typeof order === 'number' && Number.isFinite(order) ? order : Number.POSITIVE_INFINITY + index);

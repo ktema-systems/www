@@ -25,12 +25,12 @@ export const CATEGORY_TAGS: Record<Category, { label: string; title: string }> =
   planned: { label: 'planned', title: 'a surface stated and not yet recorded' },
 };
 
-/** The category a page is, from what it states: a plan says `kind: planned` and nothing else is one. */
+/** The category a page is: a plan is a page the center does not carry, which the corpus states by leaving `kind` out. */
 export function categoryOf(kind: string | undefined, demonstration: unknown): Category {
   if (demonstration !== undefined) return 'demonstration';
   if (kind === 'bench') return 'bench';
-  // A plan is a page that says it is one. An absent kind cannot tell a plan from a page whose writer forgot the field, so
-  // a page that states nothing is read as the demonstration it has always been drawn as.
-  if (kind === 'planned') return 'planned';
+  // A plan is work stated and not delivered, and the corpus says so by writing no `kind` and a plan fact beside it. The
+  // field is also read where a page states it outright, so a document may say `planned` and mean the same thing.
+  if (kind === undefined || kind === '' || kind === 'planned') return 'planned';
   return 'demonstration';
 }

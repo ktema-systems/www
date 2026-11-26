@@ -587,7 +587,10 @@ async function publish() {
         .filter((name) => name.endsWith('.md'))
         .some((name) => {
           const front = readFileSync(join(posts, name), 'utf8').split('\n---')[0];
-          const planned = /^\s+kind:\s*"?planned"?\s*$/m.test(front);
+          // A plan is a page the center does not carry: no `kind`, or `planned` where it says so outright, and no
+          // demonstration named. The hub draws exactly this set.
+          const kind = /^\s+kind:\s*"?([a-z]+)"?\s*$/m.exec(front)?.[1];
+          const planned = kind === undefined || kind === 'planned';
           return planned && !/^\s+demonstration:/m.test(front);
         })
     : false;
