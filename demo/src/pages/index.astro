@@ -105,7 +105,7 @@ const further = (await getSurfaces()).map((surface) => ({
       }
     </ul>
 
-    <section class="further">
+    <section class="further" hidden={!further.length}>
       <header class="section-head">
         <h2>Further demonstrations</h2>
         <p class="section-head__note">
@@ -115,9 +115,9 @@ const further = (await getSurfaces()).map((surface) => ({
         </p>
       </header>
 
-      <ul class="bento">
-        {
-          further.map((entry) => (
+      {further.length ? (
+        <ul class="bento">
+          {further.map((entry) => (
             <li>
               <Tile
                 href={`/${entry.id}`}
@@ -127,13 +127,13 @@ const further = (await getSurfaces()).map((surface) => ({
                 summary={entry.summary}
               />
             </li>
-          ))
-        }
-      </ul>
+          ))}
+        </ul>
+      ) : null}
 
-      <ul class="rows">
-        {
-          further.map((entry) => (
+      {further.length ? (
+        <ul class="rows">
+          {further.map((entry) => (
             <Row
               href={`/${entry.id}`}
               title={entry.title}
@@ -142,9 +142,9 @@ const further = (await getSurfaces()).map((surface) => ({
               platforms={entry.platforms}
               summary={entry.summary}
             />
-          ))
-        }
-      </ul>
+          ))}
+        </ul>
+      ) : null}
     </section>
   </div>
 </Shell>

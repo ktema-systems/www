@@ -577,6 +577,21 @@ async function publish() {
   if (exec('npm', ['run', 'build:demo'], { cwd: ROOT, stdio: 'inherit' }) !== 0) fail('the hub did not build');
   // A build that exits zero without a home page would publish a shell with nothing in it.
   if (!existsSync(join(ROOT, 'demo-dist', 'index.html'))) fail('demo-dist/index.html is missing');
+  // The plans' section stands when the corpus states a plan and is hidden when it states none, so a section drawn without
+  // that mark is a page whose plans went missing: nothing under the last demonstration but a heading.
+  const home = readFileSync(join(ROOT, 'demo-dist', 'index.html'), 'utf8');
+  const stated = existsSync(join(ROOT, 'demo/src/posts'))
+    ? readdirSync(join(ROOT, 'demo/src/posts'))
+        .filter((name) => name.endsWith('.md'))
+        .some((name) => {
+          const text = readFileSync(join(ROOT, 'demo/src/posts', name), 'utf8');
+          const front = text.split('\n---')[0];
+          return !/^\s+kind:/m.test(front) && !/^\s+demonstration:/m.test(front);
+        })
+    : false;
+  const hidden = /<section class="further" hidden>/.test(home);
+  if (stated && hidden) fail('the corpus states a plan, and the home page hides the section it stands in');
+  if (!stated && !hidden) fail('the corpus states no plan, and the home page draws an empty section of them');
 
   say('building the viewer');
   // The board is what the build draws, and a build that names none draws the demonstration. This one is the corpus board,
