@@ -36,16 +36,17 @@ const platforms = [
 ---
 
 <Shell
-  title="Trial build"
-  description="The build a partner evaluates: the platforms it runs on, what arrives, and the terms it is sent under."
-  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Trial build' }]}
+  title="Ktema trial build"
+  description="The Ktema engine to evaluate: the platforms it runs on, what arrives, and the terms it is sent under."
+  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Ktema trial build' }]}
 >
   <section class="hero">
+    <p class="hero__product"><span class="product-tag">Ktema</span></p>
     <h1>Trial build</h1>
     <p class="lede">
-      One engine, from a part with no operating system to a Linux host: the same build a firmware team links and a
-      host runs. It carries the specification it implements and runs where you put it, with no account and no network
-      call. Ask for it and we send the archive that matches your machine.
+      The Ktema engine is the product ready to evaluate: from a part with no operating system to a Linux host, the same
+      build a firmware team links and a host runs. It carries the specification it implements and runs where you put it,
+      with no account and no network call. The trial covers this product alone.
     </p>
   </section>
 
@@ -122,6 +123,10 @@ const platforms = [
 </Shell>
 
 <style>
+  .hero__product {
+    margin: 0 0 0.75rem;
+  }
+
   .section {
     margin-block-start: 3rem;
   }
