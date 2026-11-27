@@ -1,36 +1,94 @@
 ---
 // The page a partner reads before asking for the trial build.
 //
-// It answers one question: what is ready, and who to ask for it. The build travels on request,
-// so the page states it and sends the reader to the call. It lists no files: the evidence those
-// files carry is on the pages that describe the runs, and a download index is not what a reader
-// deciding about a trial is looking for.
+// It answers three questions in the order an evaluation program usually asks them: what runs
+// here, what arrives, and what is owed on both sides before it travels. The build is not offered
+// as a download: it is sent under an evaluation agreement, so the page states the terms and asks
+// for the call. It lists no files; the evidence those carry is on the pages that describe the runs.
 import Shell from '../layouts/Shell.astro';
 
 const contact = 'mailto:demo@ktema.systems';
+
+// The classes one build carries. The archive's own manifest states which of them it got, and a
+// class that is not here is built to order rather than promised.
+const platforms = [
+  {
+    machine: 'Part, no operating system',
+    target: 'riscv32imac-unknown-none-elf',
+    you: 'The header, the static library, and the worked example',
+  },
+  {
+    machine: 'Part, no operating system',
+    target: 'thumbv7em-none-eabihf',
+    you: 'The header, the static library, and the worked example',
+  },
+  {
+    machine: 'Workstation or server',
+    target: 'x86_64-unknown-linux-gnu',
+    you: 'Those, a shared object, a Python binding, and the daemon',
+  },
+  {
+    machine: 'Single-board computer',
+    target: 'aarch64-unknown-linux-gnu',
+    you: 'Those, a shared object, a Python binding, and the daemon',
+  },
+];
 ---
 
 <Shell
   title="Trial build"
-  description="The build a partner evaluates: what is ready, what it holds, and how to ask for it."
+  description="The build a partner evaluates: the platforms it runs on, what arrives, and the terms it is sent under."
   crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Trial build' }]}
 >
   <section class="hero">
     <h1>Trial build</h1>
     <p class="lede">
-      One engine, built for a part with no operating system and for Linux machines: the same build a firmware team
-      links and a host runs. It comes with the specification it implements, and it answers no network and needs no
-      account. Ask for it and we send the archive that matches your hardware.
+      One engine, from a part with no operating system to a Linux host: the same build a firmware team links and a
+      host runs. It carries the specification it implements and runs where you put it, with no account and no network
+      call. Ask for it and we send the archive that matches your machine.
     </p>
   </section>
 
   <section class="section">
-    <h2>What is ready</h2>
+    <h2>Platforms</h2>
+    <p class="section__lede">
+      These are the classes one build carries. A port to another class, or to a board with its own storage, is built
+      to order.
+    </p>
+    <div class="platforms-wrap">
+      <table class="platforms">
+        <thead>
+          <tr>
+            <th scope="col">Machine</th>
+            <th scope="col">Target</th>
+            <th scope="col">What you get</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            platforms.map((row) => (
+              <tr>
+                <td>{row.machine}</td>
+                <td>
+                  <code>{row.target}</code>
+                </td>
+                <td>{row.you}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>What you receive</h2>
     <dl class="ready">
       <dt>The build</dt>
       <dd>
-        A C header, a static library, and a worked example for each machine class; a shared object and a Python
-        binding where the class has an operating system; a daemon for each Linux class.
+        A C header, a static library, and a worked example for each class above; a shared object and a Python binding
+        where the class has an operating system; a daemon for each Linux class. The manifest states the classes it
+        got and the ones it did not.
       </dd>
       <dt>The specification</dt>
       <dd>
@@ -39,17 +97,26 @@ const contact = 'mailto:demo@ktema.systems';
       </dd>
       <dt>The check</dt>
       <dd>
-        A digest for every file in the archive, a signature over that list, and the fingerprint of the key that
-        made it.
+        A digest for every file in the archive, a signature over that list, and the fingerprint of the key that made
+        it.
       </dd>
     </dl>
+  </section>
+
+  <section class="section">
+    <h2>Requesting it</h2>
+    <p class="section__lede">
+      The build that matches your machine is sent on request, under an evaluation agreement. An NDA can be signed
+      before anything is shared, and the terms it is issued under travel in the archive as <code>LICENSE</code>. A
+      board with its own storage reaches the engine through four storage functions and two critical-section hooks that
+      the integrator supplies.
+    </p>
     <p class="call">
       <a class="btn btn--accent" href={contact}>Write to us</a>
     </p>
     <p class="note">
-      The archive travels with its digest, and the fingerprint is sent the same way, so what arrives can be
-      checked against what was signed. The runs behind it, a demonstration and a measurement each, are on the
-      hub at their own pages.
+      The archive travels with its digest, and the fingerprint is sent the same way, so what arrives can be checked
+      against what was signed.
     </p>
   </section>
 </Shell>
@@ -63,13 +130,55 @@ const contact = 'mailto:demo@ktema.systems';
     margin-block-end: 0.25rem;
   }
 
+  .section__lede {
+    margin-block: 0 1.5rem;
+    color: var(--fg-3);
+    max-inline-size: 64ch;
+  }
+
+  /* A narrow screen scrolls the table rather than stacking it: the three columns are read
+     across, and a stacked row loses the comparison the table exists for. */
+  .platforms-wrap {
+    overflow-x: auto;
+  }
+
+  .platforms {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+    font-size: 0.92em;
+  }
+
+  .platforms th,
+  .platforms td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.7rem 1.5rem 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .platforms th {
+    font-family: var(--mono);
+    font-size: 0.78em;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .platforms td code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    color: var(--fg-2);
+  }
+
   /* What a partner is deciding about, read as a list rather than a paragraph: the three things
      that arrive are the answer, and each is one line. */
   .ready {
     display: grid;
     grid-template-columns: minmax(10rem, max-content) 1fr;
     gap: 0.6rem 1.5rem;
-    margin: 1.5rem 0 2rem;
+    margin: 1.5rem 0 0;
     max-inline-size: 74ch;
   }
 
@@ -92,7 +201,7 @@ const contact = 'mailto:demo@ktema.systems';
     margin: 0;
     color: var(--fg-3);
     font-size: 0.88em;
-    max-inline-size: 60ch;
+    max-inline-size: 64ch;
   }
 
   @media (max-width: 640px) {
