@@ -1060,6 +1060,13 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   margin-top: clamp(36px, 3.4vw, 48px);
 }
 
+/* The head is read, not measured. A lede left to the body column runs the width of a
+   figure and breaks at whatever the deck happens to be, so it takes the measure the wide
+   grids already give their head. */
+.section__head {
+  max-width: 52rem;
+}
+
 .section__head > * + * {
   margin-top: 16px;
 }
