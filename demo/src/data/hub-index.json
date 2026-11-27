@@ -123,14 +123,6 @@
       "bytes": 5308
     },
     {
-      "kind": "bundle",
-      "name": "ktema-fmt0.1-abi7-4c42aed-eval.tar.gz",
-      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/ktema-fmt0.1-abi7-4c42aed-eval.tar.gz",
-      "sha256": "sha256:0550908d915975b838eea1403e03659c13a941aeba0222ce14e118732f20676f",
-      "signature": "SHA256SUMS.sig",
-      "bytes": 9973225
-    },
-    {
       "kind": "demo",
       "name": "esp32s3_fpga-litewing_icesugarpro-witness-20261117-132019.mp4",
       "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/esp32s3_fpga-litewing_icesugarpro-witness-20261117-132019.mp4",
