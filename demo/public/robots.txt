@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://demo.ktema.systems/sitemap-index.xml
+Sitemap: https://hub.ktema.systems/sitemap-index.xml

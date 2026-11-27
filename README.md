@@ -71,7 +71,7 @@ entries, so another build can draw the center from the same files.
 
 ## Addresses
 
-`https://ktema.systems` and `https://demo.ktema.systems`, each declared in its own
+`https://ktema.systems` and `https://hub.ktema.systems`, each declared in its own
 config. Every build writes a sitemap, a markdown version of each page at
 `<path>/index.md`, and an index at `/llms.txt`. The social card is `og.png`,
 1200 by 630, captured from the built page at that viewport.

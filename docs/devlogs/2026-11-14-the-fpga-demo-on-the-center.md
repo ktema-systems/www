@@ -97,4 +97,4 @@ earlier one of the same physical sequence.
 
 `npm run demo:deploy` builds the center and uploads `demo-dist` to the `ktema-demo`
 project. The deployment that carried this artifact is
-`https://aac85982.ktema-demo.pages.dev`, served at `https://demo.ktema.systems/fpga/`.
+`https://aac85982.ktema-demo.pages.dev`, served at `https://hub.ktema.systems/fpga/`.
