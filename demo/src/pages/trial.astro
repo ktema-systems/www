@@ -1,34 +1,17 @@
 ---
 // The page a partner reads before asking for the trial build.
 //
-// The hub's other pages draw what a run measured. This one answers a reader who is deciding
-// whether to evaluate the engine: what the build holds, how to run it, and what every file is
-// checked against. It also carries the evidence beside it, the recordings of what ran and the
-// logs the measurements wrote, because a trial is judged by those as much as by the archive.
-import { getDeliveries, byKind, type Delivery, type DeliveryKind } from '../data/deliveries';
+// It answers one question: what is ready, and who to ask for it. The build travels on request,
+// so the page states it and sends the reader to the call rather than to a file. The recordings
+// and the measurement logs stay as rows: they are the evidence a trial is judged by, and they
+// are published.
+import { getDeliveries, byKind, type Delivery } from '../data/deliveries';
 import Shell from '../layouts/Shell.astro';
 
 const all = getDeliveries();
-
-// One section per kind, in the order a reader needs them. A kind with nothing under it is drawn with a line saying
-// so, because an empty section a reader cannot see is indistinguishable from a page that forgot one.
-const sections: { kind: DeliveryKind; title: string; lede: string }[] = [
-  {
-    kind: 'bundle',
-    title: 'The build',
-    lede: 'The engine as a firmware team links it: built for a part with no operating system and for Linux machines, with a worked example and the specification it implements. This is what a trial starts from.',
-  },
-  {
-    kind: 'demo',
-    title: 'Recordings',
-    lede: 'The cut video of a demonstration, with the terminal session and the apparatus in one frame.',
-  },
-  {
-    kind: 'bench',
-    title: 'Measurements',
-    lede: 'The raw log a measurement wrote: what the medium cost per record, in the run that produced it.',
-  },
-];
+const recordings = byKind(all, 'demo');
+const measurements = byKind(all, 'bench');
+const contact = 'mailto:demo@ktema.systems';
 
 const size = (bytes: number) => {
   if (bytes >= 1 << 20) return `${(bytes / (1 << 20)).toFixed(1)} MB`;
@@ -41,90 +24,97 @@ const digest = (delivery: Delivery) => delivery.sha256.replace(/^sha256:/, '');
 
 <Shell
   title="Trial build"
-  description="The build a partner evaluates: what it holds, where to fetch it, and the digest to check it against."
+  description="The build a partner evaluates: what is ready, what it holds, and how to ask for it."
   crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Trial build' }]}
 >
   <section class="hero">
     <h1>Trial build</h1>
     <p class="lede">
-      The build a partner evaluates, with the evidence behind it: recordings of what ran, and the logs the
-      measurements wrote. Each entry states where to fetch it and the SHA-256 to check it against. The build is
-      also signed, so the key's fingerprint can be compared with the one that reached you out of band.
+      One engine, built for a part with no operating system and for Linux machines: the same build a firmware team
+      links and a host runs. It comes with the specification it implements, and it answers no network and needs no
+      account. Ask for it and we send the archive that matches your hardware.
     </p>
   </section>
 
-  {
-    sections.map((section) => {
-      const rows = byKind(all, section.kind);
-      return (
-        <section class="section" id={section.kind === 'bundle' ? 'bundles' : undefined}>
-          <h2>{section.title}</h2>
-          <p class="section__lede">{section.lede}</p>
-          {
-            section.kind === 'bundle' && (
-              <div class="inventory">
-                <h3>What you receive</h3>
-                <dl>
-                  <dt>The specification</dt>
-                  <dd>
-                    Four documents: the format, the medium, the index, and the coordinate read. They are enough to build
-                    a conforming implementation and to check a record you did not write.
-                  </dd>
-                  <dt>The C surface</dt>
-                  <dd>
-                    A header, a static library, a worked example, and the terms, for each machine class. Where the class
-                    has an operating system, a shared object and a Python binding come with it, using nothing outside
-                    the standard library.
-                  </dd>
-                  <dt>The daemon</dt>
-                  <dd>
-                    The engine answering on a unix socket, for Linux machines. One binary for each architecture, since a
-                    build for one does not run on the other.
-                  </dd>
-                  <dt>The bill of materials</dt>
-                  <dd>Each class's dependencies in CycloneDX, stating what is linked into an image.</dd>
-                  <dt>The trial record</dt>
-                  <dd>What the build was held to, and what each test printed.</dd>
-                  <dt>The manifest</dt>
-                  <dd>The version, the ABI, the format, and the machine classes this build covers.</dd>
-                  <dt>The signature</dt>
-                  <dd>
-                    A digest for every file, a signature over that list, and the fingerprint of the key that made it.
-                  </dd>
-                </dl>
-                <p>
-                  Everything in it runs where you put it: no account, no network call, and no service of ours in the
-                  path.
-                </p>
+  <section class="section">
+    <h2>What is ready</h2>
+    <dl class="ready">
+      <dt>The build</dt>
+      <dd>
+        A C header, a static library, and a worked example for each machine class; a shared object and a Python
+        binding where the class has an operating system; a daemon for each Linux class.
+      </dd>
+      <dt>The specification</dt>
+      <dd>
+        Four documents: the format, the medium, the index, and the coordinate read. They are enough to build a
+        conforming implementation and to check a record you did not write.
+      </dd>
+      <dt>The evidence</dt>
+      <dd>The recordings below, and the logs the measurements wrote. Each is published with its digest.</dd>
+      <dt>The check</dt>
+      <dd>
+        A digest for every file in the archive, a signature over that list, and the fingerprint of the key that
+        made it.
+      </dd>
+    </dl>
+    <p class="call">
+      <a class="btn btn--accent" href={contact}>Write to us</a>
+    </p>
+    <p class="note">
+      The archive travels with its digest, and the fingerprint is sent the same way, so what arrives can be
+      checked against what was signed.
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>Recordings</h2>
+    <p class="section__lede">The cut video of a demonstration, with the terminal session and the apparatus in one frame.</p>
+    {
+      recordings.length === 0 ? (
+        <p class="empty">Nothing of this kind is published yet.</p>
+      ) : (
+        <ul class="files">
+          {recordings.map((delivery) => (
+            <li class="file">
+              <a class="file__name" href={delivery.url}>
+                {delivery.name}
+              </a>
+              <div class="file__meta">
+                <span>{size(delivery.bytes)}</span>
+                <span class="file__unsigned">digest only</span>
               </div>
-            )
-          }
-          {rows.length === 0 ? (
-            <p class="empty">Nothing of this kind is published yet.</p>
-          ) : (
-            <ul class="files">
-              {rows.map((delivery) => (
-                <li class="file">
-                  <a class="file__name" href={delivery.url}>
-                    {delivery.name}
-                  </a>
-                  <div class="file__meta">
-                    <span>{size(delivery.bytes)}</span>
-                    {delivery.signature ? (
-                      <span class="file__signed">signed, {delivery.signature}</span>
-                    ) : (
-                      <span class="file__unsigned">digest only</span>
-                    )}
-                  </div>
-                  <code class="file__digest">{digest(delivery)}</code>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      );
-    })
-  }
+              <code class="file__digest">{digest(delivery)}</code>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <section class="section">
+    <h2>Measurements</h2>
+    <p class="section__lede">The raw log a measurement wrote: what the medium cost per record, in the run that produced it.</p>
+    {
+      measurements.length === 0 ? (
+        <p class="empty">Nothing of this kind is published yet.</p>
+      ) : (
+        <ul class="files">
+          {measurements.map((delivery) => (
+            <li class="file">
+              <a class="file__name" href={delivery.url}>
+                {delivery.name}
+              </a>
+              <div class="file__meta">
+                <span>{size(delivery.bytes)}</span>
+                <span class="file__unsigned">digest only</span>
+              </div>
+              <code class="file__digest">{digest(delivery)}</code>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
 </Shell>
 
 <style>
@@ -146,57 +136,51 @@ const digest = (delivery: Delivery) => delivery.sha256.replace(/^sha256:/, '');
     color: var(--fg-3);
   }
 
-  /* What a bundle holds, read as a list rather than a paragraph: a reader deciding
-     whether to ask for one reads the inventory, not the sentence about it. */
-  .inventory {
-    margin-block-end: 2rem;
+  /* What a partner is deciding about, read as a list rather than a paragraph: the four things
+     that arrive are the answer, and each is one line. */
+  .ready {
+    display: grid;
+    grid-template-columns: minmax(10rem, max-content) 1fr;
+    gap: 0.6rem 1.5rem;
+    margin: 1.5rem 0 2rem;
     max-inline-size: 74ch;
   }
 
-  .inventory h3 {
-    margin-block: 0 0.75rem;
-    font-size: 1rem;
-    color: var(--fg-2);
-    font-weight: 600;
-  }
-
-  .inventory dl {
-    display: grid;
-    grid-template-columns: minmax(10rem, max-content) 1fr;
-    gap: 0.5rem 1.5rem;
-    margin: 0 0 1rem;
-  }
-
-  .inventory dt {
+  .ready dt {
     font-size: 0.95em;
     color: var(--fg);
   }
 
-  .inventory dd {
+  .ready dd {
     margin: 0;
     color: var(--fg-3);
-    font-size: 0.9em;
+    font-size: 0.92em;
   }
 
-  .inventory p {
+  .call {
+    margin: 0 0 0.75rem;
+  }
+
+  .note {
     margin: 0;
     color: var(--fg-3);
-    font-size: 0.9em;
+    font-size: 0.88em;
+    max-inline-size: 60ch;
   }
 
   @media (max-width: 640px) {
-    .inventory dl {
+    .ready {
       grid-template-columns: 1fr;
       gap: 0.15rem;
     }
 
-    .inventory dd {
+    .ready dd {
       margin-block-end: 0.75rem;
     }
   }
 
-  /* A file is a row on the page's own ground, ruled like every other list here.
-     A card would make three entries look like three islands. */
+  /* A file is a row on the page's own ground, ruled like every other list here. A card would
+     make three entries look like three islands. */
   .files {
     list-style: none;
     padding: 0;
@@ -221,10 +205,6 @@ const digest = (delivery: Delivery) => delivery.sha256.replace(/^sha256:/, '');
     gap: 1rem;
     font-size: 0.85em;
     color: var(--fg-3);
-  }
-
-  .file__signed {
-    color: var(--accent);
   }
 
   .file__unsigned {
