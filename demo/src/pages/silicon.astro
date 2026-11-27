@@ -8,6 +8,16 @@ import Shell from '../layouts/Shell.astro';
 
 const contact = 'mailto:demo@ktema.systems';
 const source = 'https://github.com/ssccsorg/syntagma/blob/main/hw/visuals/render_gds.py';
+
+// The six metal layers, bottom to top, each drawn from the same window of the same GDS.
+const stackLayers = [
+  { file: 'layer-67', name: 'li1' },
+  { file: 'layer-68', name: 'met1' },
+  { file: 'layer-69', name: 'met2' },
+  { file: 'layer-70', name: 'met3' },
+  { file: 'layer-71', name: 'met4' },
+  { file: 'layer-72', name: 'met5' },
+];
 ---
 
 <Shell
@@ -90,6 +100,33 @@ const source = 'https://github.com/ssccsorg/syntagma/blob/main/hw/visuals/render
   </figure>
 
   <section class="section">
+    <h2>In three dimensions</h2>
+    <p class="section__lede">
+      The six metal layers separated and stacked, <code>li1</code> at the bottom and <code>met5</code> at the top. Each
+      plate is the same window of the same GDS. The spacing between them is even so the stack can be read, and is not
+      to scale.
+    </p>
+    <div class="stack3d" data-stack3d>
+      <div class="stack3d__stage" data-stack-stage>
+        {
+          stackLayers.map((layer, index) => (
+            <img
+              src={`/proofs/stack/${layer.file}.png`}
+              alt=""
+              width="1000"
+              height="1000"
+              loading="lazy"
+              decoding="async"
+              style={`--i:${index}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+    <p class="note">Drag to turn the stack. <span class="stack3d__key">Bottom to top: {stackLayers.map((l) => l.name).join(', ')}.</span></p>
+  </section>
+
+  <section class="section">
     <h2>Where it comes from</h2>
     <p class="section__lede">
       The RTL, the flow configuration, and the renderer live in the hardware tree of the syntagma repository. The images
@@ -157,6 +194,55 @@ const source = 'https://github.com/ssccsorg/syntagma/blob/main/hw/visuals/render
     max-inline-size: 68ch;
   }
 
+  /* The stack is turned as one object: the six plates keep their own depth and the stage rotates around a
+     shared centre, so a drag moves the whole stack rather than one plate against another. */
+  .stack3d {
+    display: grid;
+    place-items: center;
+    margin-block-start: 2rem;
+    padding-block: 2%;
+    perspective: 1600px;
+    cursor: grab;
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    /* A turned plate projects wider than the box it is drawn in, so the container clips the overflow rather than
+       letting the page scroll sideways. */
+    overflow: clip;
+  }
+
+  .stack3d:active {
+    cursor: grabbing;
+  }
+
+  .stack3d__stage {
+    position: relative;
+    width: min(100%, 620px);
+    aspect-ratio: 1;
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 62deg)) rotateZ(var(--rz, -32deg));
+  }
+
+  .stack3d__stage img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateZ(calc(var(--i) * 30px));
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+    pointer-events: none;
+  }
+
+  .stack3d__key {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 720px) {
+    .stack3d__stage {
+      width: 78%;
+    }
+  }
+
   @media (max-width: 640px) {
     .facts {
       grid-template-columns: 1fr;
@@ -168,3 +254,55 @@ const source = 'https://github.com/ssccsorg/syntagma/blob/main/hw/visuals/render
     }
   }
 </style>
+
+<script>
+  // The stack turns on its own until a reader takes it, and a drag then sets the two angles directly. The stage keeps
+  // the transform in custom properties so the plates' own depth stays in the sheet.
+  const stack = document.querySelector<HTMLElement>('[data-stack3d]');
+  const stage = stack?.querySelector<HTMLElement>('[data-stack-stage]');
+  if (stack && stage) {
+    let rx = 62;
+    let rz = -32;
+    let spin = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let frame = 0;
+
+    const draw = () => {
+      stage.style.setProperty('--rx', `${rx}deg`);
+      stage.style.setProperty('--rz', `${rz}deg`);
+    };
+
+    const tick = () => {
+      if (!spin) return;
+      rz = (rz + 0.18) % 360;
+      draw();
+      frame = requestAnimationFrame(tick);
+    };
+
+    stack.addEventListener('pointerdown', (event) => {
+      spin = false;
+      cancelAnimationFrame(frame);
+      stack.setPointerCapture(event.pointerId);
+      let x = event.clientX;
+      let y = event.clientY;
+      const move = (next: PointerEvent) => {
+        rz += (next.clientX - x) * 0.45;
+        rx = Math.min(86, Math.max(16, rx - (next.clientY - y) * 0.35));
+        x = next.clientX;
+        y = next.clientY;
+        draw();
+      };
+      const up = (next: PointerEvent) => {
+        stack.releasePointerCapture(next.pointerId);
+        stack.removeEventListener('pointermove', move);
+        stack.removeEventListener('pointerup', up);
+        stack.removeEventListener('pointercancel', up);
+      };
+      stack.addEventListener('pointermove', move);
+      stack.addEventListener('pointerup', up);
+      stack.addEventListener('pointercancel', up);
+    });
+
+    draw();
+    if (spin) frame = requestAnimationFrame(tick);
+  }
+</script>
