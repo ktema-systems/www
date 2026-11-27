@@ -88,10 +88,16 @@ const stills = [
         SkyWater 130 nm high-density standard cells, placed and routed by the OpenROAD flow, with the clock constrained
         to the 12 MHz the block was built for.
       </dd>
+      <dt>The size</dt>
+      <dd>
+        588 two-input cells in the gate estimate, 201 LUT4 and 41 carry cells on an iCE40 FPGA, and 388 standard cells
+        covering 2,826 µm² in SkyWater 130 nm. The standard-cell figure has no registers, since the decode is
+        combinational.
+      </dd>
       <dt>The area</dt>
       <dd>
-        The cells cover 4,430 µm², 34% of the core: 410 logic and register cells in 1,920 placed instances, the rest fill
-        and tap.
+        The block that went through place and route, the decoder with its output registers and the validity flag, covers
+        4,430 µm² at 34% of the core: 410 logic and register cells in 1,920 placed instances, the rest fill and tap.
       </dd>
       <dt>The timing</dt>
       <dd>
@@ -100,7 +106,7 @@ const stills = [
       </dd>
       <dt>The power</dt>
       <dd>
-        57.8 µW at the tool's default switching activity, 36.6 µW at one code point per clock.
+        57.8 µW at the tool's default switching activity, 36.6 µW at one code point per clock, about 3.0 pJ per decode.
       </dd>
       <dt>The check</dt>
       <dd>
@@ -108,6 +114,10 @@ const stills = [
         against the same anchors, and the RTL and the gate netlist are proven equivalent.
       </dd>
     </dl>
+    <p class="note facts__note">
+      These come from one synthesis and one placed run of one revision; a different cell library or clock constraint
+      moves them.
+    </p>
   </section>
 
   <ul class="gallery">
@@ -221,6 +231,11 @@ const stills = [
     margin: 0;
     color: var(--fg-3);
     font-size: 0.92em;
+  }
+
+  .facts__note {
+    margin-block-start: 1.25rem;
+    max-inline-size: 74ch;
   }
 
   /* Two stills in one row: a close crop and the same die without the power. */
