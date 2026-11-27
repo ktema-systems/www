@@ -13,4 +13,9 @@ export const collections = {
   documents: defineCollection({
     loader: glob({ pattern: '**/*.md', base: './src/posts' }),
   }),
+  // The pages this repository owns rather than a producer: a surface about the work itself, filed beside the exported
+  // corpus. They are read the same way and merged in `data/source.ts`, so a producer's export never carries them.
+  local: defineCollection({
+    loader: glob({ pattern: '**/*.md', base: './src/local' }),
+  }),
 };

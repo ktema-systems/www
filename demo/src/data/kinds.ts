@@ -14,19 +14,26 @@ export type ArtifactKind = (typeof KINDS)[number];
  * for both, so a reader is told which one a page is rather than inferring it from the shape of the page. The corpus
  * board reads the same field from the same documents, so one tag names one thing in both places.
  */
-export const CATEGORIES = ['demonstration', 'bench', 'planned'] as const;
+export const CATEGORIES = ['demonstration', 'bench', 'visual', 'planned'] as const;
 
 export type Category = (typeof CATEGORIES)[number];
+
+/** Whether a document named a category the center draws. */
+export const isCategory = (value: unknown): value is Category =>
+  typeof value === 'string' && (CATEGORIES as readonly string[]).includes(value);
 
 /** The tag's word, and what it means where a reader asks. */
 export const CATEGORY_TAGS: Record<Category, { label: string; title: string }> = {
   demonstration: { label: 'demo', title: 'a run recorded, or a surface standing in its own address' },
   bench: { label: 'bench', title: 'a measurement, with the numbers the run wrote' },
+  visual: { label: 'visual', title: 'the work drawn rather than run: a layout, a figure, a still' },
   planned: { label: 'planned', title: 'a surface stated and not yet recorded' },
 };
 
 /** The category a page is: a plan is a page the center does not carry, which the corpus states by leaving `kind` out. */
-export function categoryOf(kind: string | undefined, demonstration: unknown): Category {
+export function categoryOf(kind: string | undefined, demonstration: unknown, declared?: unknown): Category {
+  // A page that names its category decides it, for work no kind describes: a finished layout is drawn, not run.
+  if (isCategory(declared)) return declared;
   if (demonstration !== undefined) return 'demonstration';
   if (kind === 'bench') return 'bench';
   // A plan is work stated and not delivered, and the corpus says so by writing no `kind` and a plan fact beside it. The

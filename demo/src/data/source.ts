@@ -3,7 +3,7 @@
 // Astro parses the documents and a build names where a deployed application is served from. Everything that decides
 // what a page is, what it says and what happens to a document that does not fit lives beside this file with no import
 // from Astro, so another build can hand the same documents over and draw the center.
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { readDocuments, type SourceEntry } from './documents';
 import { buildArtifacts, type Artifact } from './artifacts';
 import { buildNotes, type Note } from './posts';
@@ -15,10 +15,10 @@ function pathOf(id: string, filePath: string | undefined): string {
 }
 
 async function read(): Promise<ReturnType<typeof readDocuments>> {
-  const entries = await getCollection('documents');
+  const [exported, local] = await Promise.all([getCollection('documents'), getCollection('local')]);
   return readDocuments(
-    entries.map(
-      (entry: CollectionEntry<'documents'>): SourceEntry => ({
+    [...exported, ...local].map(
+      (entry): SourceEntry => ({
         id: entry.id,
         path: pathOf(entry.id, entry.filePath),
         data: entry.data,

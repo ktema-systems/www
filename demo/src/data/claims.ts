@@ -59,7 +59,7 @@ export const claims: ClaimLine[] = [
 
 /** A line's demonstrations, resolved to the entries the center draws. */
 export interface PlacedLine extends Omit<ClaimLine, 'evidence'> {
-  evidence: { id: string; title: string; platforms: Platform[]; poster?: string }[];
+  evidence: { id: string; title: string; platforms: Platform[]; poster?: string; page: string }[];
 }
 
 interface Entry {
@@ -67,6 +67,7 @@ interface Entry {
   title: string;
   platforms: Platform[];
   poster?: string;
+  page: string;
   line?: string;
   order: number;
 }
@@ -82,6 +83,7 @@ export function placeLines(artifacts: Artifact[], surfaces: Surface[]): PlacedLi
       title: artifact.title,
       platforms: artifact.platforms,
       poster: artifact.poster,
+      page: artifact.page,
       line: artifact.line,
       order: artifact.order,
     })),
@@ -89,6 +91,7 @@ export function placeLines(artifacts: Artifact[], surfaces: Surface[]): PlacedLi
       id: surface.id,
       title: surface.title,
       platforms: surface.platforms,
+      page: `/${surface.id}`,
       line: surface.line,
       order: surface.order,
     })),
@@ -113,6 +116,12 @@ export function placeLines(artifacts: Artifact[], surfaces: Surface[]): PlacedLi
 
   return claims.map((line) => ({
     ...line,
-    evidence: (placed.get(line.id) ?? []).map(({ id, title, platforms, poster }) => ({ id, title, platforms, poster })),
+    evidence: (placed.get(line.id) ?? []).map(({ id, title, platforms, poster, page }) => ({
+      id,
+      title,
+      platforms,
+      poster,
+      page,
+    })),
   }));
 }

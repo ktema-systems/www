@@ -28,8 +28,11 @@ type Entry =
 export async function getStaticPaths() {
   const [artifacts, surfaces] = await Promise.all([getArtifacts(), getSurfaces()]);
   const seen = new Set<string>();
+  // An entry may open a page the site already serves at another address, as the layout does. That page is drawn where
+  // it lives, so this route does not draw it a second time.
+  const own = artifacts.filter((artifact) => artifact.page === `/${artifact.id}`);
   const paths = [
-    ...artifacts.map((artifact) => ({
+    ...own.map((artifact) => ({
       params: { id: artifact.id },
       props: { entry: { kind: 'artifact', artifact } as Entry },
     })),

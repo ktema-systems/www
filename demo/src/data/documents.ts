@@ -27,6 +27,10 @@ export interface Ktma {
   video?: unknown;
   /** Where the grid draws the artifact, lowest first. A document without one follows the ones that have it. */
   order?: unknown;
+  /** The category the page belongs to, where no kind decides it. */
+  category?: unknown;
+  /** The address the entry opens, when it is a page that already exists rather than one the center draws. */
+  page?: unknown;
   /** The claim it belongs to, in the register. */
   line?: unknown;
 }

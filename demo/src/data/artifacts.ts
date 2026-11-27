@@ -9,7 +9,7 @@
 
 import { warn } from './warn';
 import { isText, pageDocuments, runDocuments, runName, strings, text, type Document } from './documents';
-import { KINDS, categoryOf, type ArtifactKind, type Category } from './kinds';
+import { KINDS, categoryOf, isCategory, type ArtifactKind, type Category } from './kinds';
 import { recordOf, type RecordEntry } from './records';
 import type { Platform } from './taxonomy';
 
@@ -52,8 +52,10 @@ export interface Artifact {
   platforms: Platform[];
   /** The one sentence the surface proves, in the words its page uses. */
   claim: string;
-  /** What the page is: a demonstration, a measurement, or a plan. */
+  /** What the page is: a demonstration, a measurement, a visual, or a plan. */
   category: Category;
+  /** The address the tile opens: the entry's own page by default, or the page it already has. */
+  page: string;
   /** What a reader runs or opens to check the claim. */
   evidence?: string;
   kind: ArtifactKind;
@@ -151,6 +153,12 @@ function artifactOf(document: Document, runs: Map<string, Document>, liveSource?
       )
     : undefined;
 
+  if (artifact.category !== undefined && !isCategory(artifact.category)) {
+    warn(
+      `[artifacts] ${document.path}: ktma.category "${String(artifact.category)}" is not one the center draws; the kind decides`,
+    );
+  }
+
   return {
     id: document.id,
     title: document.title,
@@ -159,7 +167,9 @@ function artifactOf(document: Document, runs: Map<string, Document>, liveSource?
     claim,
     evidence: text(artifact.evidence),
     kind: artifact.kind,
-    category: categoryOf(artifact.kind, artifact.demonstration),
+    category: categoryOf(artifact.kind, artifact.demonstration, artifact.category),
+    // An entry may open a page that already exists at its own address, as a layout does.
+    page: text(artifact.page) ?? `/${document.id}`,
     summary: document.description,
     // The cockpit is deployed on its own, so a build can point at where it moved without editing the document.
     source: artifact.kind === 'live' ? (liveSource ?? source) : source,

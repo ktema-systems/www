@@ -15,7 +15,7 @@ export const GET: APIRoute = async () => {
     ...artifacts.map((artifact) => ({
       id: artifact.id,
       title: artifact.title,
-      url: `/${artifact.id}`,
+      url: artifact.page,
       kind: artifact.kind,
       category: artifact.category,
     })),

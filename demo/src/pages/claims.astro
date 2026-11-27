@@ -44,7 +44,7 @@ const coverage = (Object.keys(PLATFORMS) as Platform[]).map((name) => ({
           <ul class="map__evidence">
             {line.evidence.map((item) => (
               <li>
-                <a class="map__item" href={`/${item.id}`}>
+                <a class="map__item" href={item.page}>
                   <span class="map__thumb">
                     {item.poster ? (
                       <img src={item.poster} alt="" loading="lazy" decoding="async" />
