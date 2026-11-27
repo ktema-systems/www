@@ -175,6 +175,14 @@ function sourceOf() {
       cpSync(local, into, { recursive: true });
       say(`corpus: ${local} -> .corpus`);
     }
+    // The hub's index sits beside the export rather than inside it, so a copy of the
+    // export alone would leave the artifacts page with nothing to read. A producer's
+    // run writes it one directory up; a fetched one arrives already placed.
+    const beside = join(local, '..', 'index.json');
+    if (existsSync(beside) && !existsSync(join(into, 'index.json'))) {
+      copyFileSync(beside, join(into, 'index.json'));
+      say('corpus: index.json -> .corpus/index.json');
+    }
     return (fetched = into);
   }
   if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(named)) {
@@ -412,7 +420,7 @@ function pairs() {
     ['digest', 'demo/src/data/corpus-digest.txt'],
     // The hub's own index, which is where the artifacts it states by reference are
     // named. A page that lists them reads this rather than walking the repository.
-    ['../index.json', 'demo/src/data/hub-index.json'],
+    ['index.json', 'demo/src/data/hub-index.json'],
   ];
 }
 
