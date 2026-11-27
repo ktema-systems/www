@@ -68,6 +68,16 @@ digraph DOTGraph {
 
 - The hero field is a page backdrop. It stays fixed to the viewport, or otherwise spans the viewport, and must never be clipped at a finite bottom edge. Do not restore a height cap, `overflow: hidden` on the hero, or a section-height limit that cuts it.
 
+## Layout
+
+- A block owns the space above it: the step belongs in the container's `gap` or in the block's own `margin-block-start`. A block's gap must never depend on the previous sibling's bottom margin.
+- A class that sets `margin: 0` cancels the rhythm its container gives it, silently, and a later rule of equal specificity cancels a margin set earlier. Check the computed gap, not the sheet.
+
+## Tables
+
+- Terms carry no article: `Block`, not `The block`.
+- A table of numbers is introduced as `The <subject>, in numbers`, the way `The run, in numbers` introduces a run's figures.
+
 ## Git
 
 - Do not push.

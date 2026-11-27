@@ -79,36 +79,36 @@ const productNav: readonly NavItem[] = [
     lede="Ktema stores the record where the question will look for it. A reader computes the address from the fields instead of walking an index."
   >
     <dl class="spec">
-      <dt>The address</dt>
+      <dt>Address</dt>
       <dd>
         A record's fields are its coordinates. The engine computes the address from the record, so a
         writer and a reader arrive at the same place without a lookup.
       </dd>
-      <dt>The record</dt>
+      <dt>Record</dt>
       <dd>
         Three kinds of entry: a fact, an intent, and a hint. Each is written once, under its own
         coordinate.
       </dd>
-      <dt>The question</dt>
+      <dt>Question</dt>
       <dd>
         A question is a region on the same axes, such as one origin over a time window. The answer is
         the set of records whose coordinates fall inside it. No index, and no scan from the start of
         the log.
       </dd>
-      <dt>The medium</dt>
+      <dt>Medium</dt>
       <dd>
         The engine asks the medium for a region, a write, and an erase. On a part that is a region of
         flash; in a service it is the storage the process already has. The record is append-only; a
         segment is the unit of recovery, and the memory the engine holds is bounded by one segment,
         not by the record count.
       </dd>
-      <dt>The edge</dt>
+      <dt>Edge</dt>
       <dd>
         A Rust library with a C ABI, including read and query, at the application edge. It links into
         the build you already ship, or the service you already run: no operating system, no file
         system, and no database under the engine.
       </dd>
-      <dt>The limit</dt>
+      <dt>Limit</dt>
       <dd>
         A question that needs a join across separate systems, or a record that may leave the process
         or the device, is a database's job. The engine is for the question answered where the record
