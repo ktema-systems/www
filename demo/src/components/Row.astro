@@ -22,7 +22,7 @@ interface Props {
 const { href, title, category, products = [], platforms = [], summary, poster, posterAlt } = Astro.props;
 ---
 
-<li class="row">
+<li class="row" data-category={category}>
   <a class="row__link" href={href}>
     <span class="row__thumb">
       {

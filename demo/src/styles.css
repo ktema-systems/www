@@ -376,6 +376,12 @@ h1 {
   color: var(--fg-3);
 }
 
+/* A figure is the one entry that is a picture of the work rather than a record of it, so it takes the second accent. */
+.tile__kind--figure {
+  border-color: color-mix(in srgb, var(--accent-2) 42%, transparent);
+  color: var(--accent-2);
+}
+
 /* The grid sizes itself from the container, so a catalogue grows by adding items rather than by editing columns. An
    item that carries a thumbnail takes a wider bay, which is the emphasis the cockpit had when the grid was fixed. */
 .bento {
@@ -1190,6 +1196,26 @@ h1 {
   }
 }
 
+/* The index's bar carries two view controls and the filter beside the actions. Below the width where those and the
+   actions share one row, the actions take a second one rather than the filter being clipped. */
+@media (max-width: 520px) {
+  .bar:has(.views__filter) {
+    height: auto;
+  }
+
+  .bar__inner:has(.views__filter) {
+    height: auto;
+    flex-wrap: wrap;
+    padding-block: 7px;
+    row-gap: 4px;
+  }
+
+  .bar__inner:has(.views__filter) .bar__spacer {
+    flex: 1 0 100%;
+    height: 0;
+  }
+}
+
 /* A person who asked their machine to stop moving things has already said what they think of a pulsing dot. */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1629,6 +1655,55 @@ h1 {
 .views__bar button[aria-pressed='true'] {
   color: var(--fg);
   border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* The filter is the bar's third control, sized to the two beside it so the row reads as one set. */
+.views__filter {
+  position: relative;
+  display: inline-flex;
+}
+
+.views__filter select {
+  height: 30px;
+  padding: 0 24px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--fg-3);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  appearance: none;
+}
+
+.views__filter select:hover,
+.views__filter select:focus-visible {
+  color: var(--fg);
+  border-color: var(--line-2);
+}
+
+/* The caret is drawn on the wrapper, because a select's own arrow cannot be styled and the native one breaks the row. */
+.views__filter::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 9px;
+  width: 5px;
+  height: 5px;
+  margin-top: -4px;
+  border-right: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  color: var(--fg-3);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.views__filter select option {
+  background: var(--bg-2);
+  color: var(--fg);
+  text-transform: none;
 }
 
 [data-view='grid'] .rows {

@@ -1,5 +1,6 @@
 ---
 import { getArtifacts, getSurfaces } from '../data/source';
+import { CATEGORIES, CATEGORY_TAGS } from '../data/kinds';
 import Shell from '../layouts/Shell.astro';
 import Tile from '../components/Tile.astro';
 import Row from '../components/Row.astro';
@@ -34,6 +35,9 @@ const further = (await getSurfaces()).map((surface) => ({
   poster: undefined as string | undefined,
   posterAlt: undefined as string | undefined,
 }));
+
+// The filter offers only what the grid carries, in the taxonomy's order, so a choice never opens an empty page.
+const present = CATEGORIES.filter((name) => [...recorded, ...further].some((entry) => entry.category === name));
 ---
 
 <Shell title="Corpus Hub">
@@ -52,6 +56,14 @@ const further = (await getSurfaces()).map((surface) => ({
           <path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke-linecap="round" />
         </svg>
       </button>
+      <span class="views__filter">
+        <select data-category-filter aria-label="Filter by category">
+          <option value="all">All</option>
+          {present.map((name) => (
+            <option value={name}>{CATEGORY_TAGS[name].label}</option>
+          ))}
+        </select>
+      </span>
     </div>
   </Fragment>
 
@@ -72,7 +84,7 @@ const further = (await getSurfaces()).map((surface) => ({
     <ul class="bento">
       {
         recorded.map((entry, index) => (
-          <li>
+          <li data-category={entry.category}>
             <Tile
               href={entry.page}
               title={entry.title}
@@ -119,7 +131,7 @@ const further = (await getSurfaces()).map((surface) => ({
       {further.length ? (
         <ul class="bento">
           {further.map((entry) => (
-            <li>
+            <li data-category={entry.category}>
               <Tile
                 href={`/${entry.id}`}
                 title={entry.title}
@@ -163,5 +175,21 @@ const further = (await getSurfaces()).map((surface) => ({
     for (const button of buttons) {
       button.addEventListener('click', () => select(button.dataset.viewSet ?? 'grid'));
     }
+  }
+
+  // The category filter narrows both views at once, since they draw the same entries. The planned section stands apart in
+  // the page, so it is hidden as a whole unless it is what was asked for.
+  const filter = document.querySelector<HTMLSelectElement>('[data-category-filter]');
+  if (root && filter) {
+    const items = root.querySelectorAll<HTMLElement>('[data-category]');
+    const further = root.querySelector<HTMLElement>('.further');
+    const planned = further ? further.querySelectorAll('[data-category]').length : 0;
+    const apply = () => {
+      const want = filter.value;
+      for (const item of items) item.hidden = want !== 'all' && item.dataset.category !== want;
+      if (further) further.hidden = planned === 0 || (want !== 'all' && want !== 'planned');
+    };
+    filter.addEventListener('change', apply);
+    apply();
   }
 </script>

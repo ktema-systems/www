@@ -14,7 +14,7 @@ export type ArtifactKind = (typeof KINDS)[number];
  * for both, so a reader is told which one a page is rather than inferring it from the shape of the page. The corpus
  * board reads the same field from the same documents, so one tag names one thing in both places.
  */
-export const CATEGORIES = ['demonstration', 'bench', 'visual', 'planned'] as const;
+export const CATEGORIES = ['demonstration', 'bench', 'figure', 'planned'] as const;
 
 export type Category = (typeof CATEGORIES)[number];
 
@@ -26,7 +26,7 @@ export const isCategory = (value: unknown): value is Category =>
 export const CATEGORY_TAGS: Record<Category, { label: string; title: string }> = {
   demonstration: { label: 'demo', title: 'a run recorded, or a surface standing in its own address' },
   bench: { label: 'bench', title: 'a measurement, with the numbers the run wrote' },
-  visual: { label: 'visual', title: 'the work drawn rather than run: a layout, a figure, a still' },
+  figure: { label: 'figure', title: 'a still or a drawing that carries the work visually' },
   planned: { label: 'planned', title: 'a surface stated and not yet recorded' },
 };
 
