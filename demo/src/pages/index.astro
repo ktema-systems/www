@@ -64,6 +64,7 @@ const further = (await getSurfaces()).map((surface) => ({
       <a class="btn" href={viewUrl} target="_blank" rel="noreferrer" data-hero-cta>
         Corpus Space
       </a>
+      <a class="hero__more" href="/silicon/">The layout on silicon</a>
     </p>
   </section>
 
@@ -148,6 +149,32 @@ const further = (await getSurfaces()).map((surface) => ({
     </section>
   </div>
 </Shell>
+
+<style>
+  /* The hero carries the product's own entry beside the hub's: the layout is the one page here that
+     is not a recorded run, so it is offered as a way in rather than a tile. */
+  .hero__more {
+    margin-inline-start: 1.25rem;
+    color: var(--fg-3);
+    font-size: 0.95em;
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--fg-3) 55%, transparent);
+    text-underline-offset: 0.25em;
+  }
+
+  .hero__more:hover,
+  .hero__more:focus-visible {
+    color: var(--fg);
+    text-decoration-color: currentColor;
+  }
+
+  @media (max-width: 480px) {
+    .hero__more {
+      display: block;
+      margin: 1rem 0 0;
+    }
+  }
+</style>
 
 <script>
   const root = document.querySelector<HTMLElement>('[data-views]');

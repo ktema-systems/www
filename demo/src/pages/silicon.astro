@@ -1,0 +1,174 @@
+---
+// The decoder as a finished layout, for a reader who has not seen a GDS before.
+//
+// The pictures are the flow's final GDS rather than an illustration: the renderer keeps the metal
+// layers and leaves the device layers out. The page states what the layout is, what it was checked
+// against, and where the source lives, so the image is evidence and not decoration.
+import Shell from '../layouts/Shell.astro';
+
+const contact = 'mailto:demo@ktema.systems';
+const source = 'https://github.com/ssccsorg/syntagma/blob/main/hw/visuals/render_gds.py';
+---
+
+<Shell
+  title="On silicon"
+  description="The decoder the engine's coordinate model describes, carried to a finished SkyWater 130 nm layout."
+  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'On silicon' }]}
+>
+  <section class="hero">
+    <h1>The same decoder, in gates.</h1>
+    <p class="lede">
+      The unit the engine's coordinate model describes also exists as a finished layout: a 16-bit code point in, three
+      axis labels out, placed and routed on SkyWater 130 nm standard cells. These images are the flow's own final GDS,
+      drawn from the metal layers it left behind.
+    </p>
+  </section>
+
+  <figure class="run__figure figure--lead">
+    <img
+      src="/proofs/silicon.png"
+      width="2317"
+      height="2400"
+      alt="The full die of the decoder layout: a grid of magenta and white power straps over dense teal and gold routing."
+      decoding="async"
+    />
+    <figcaption>
+      The die at its full frame, in the metal the flow left: <code>li1</code> and <code>met1</code> through
+      <code>met5</code>. The wide straps are the power distribution; the dense field between them is the logic and its
+      wiring.
+    </figcaption>
+  </figure>
+
+  <section class="section">
+    <h2>What it is</h2>
+    <dl class="facts">
+      <dt>The unit</dt>
+      <dd>
+        A 16-bit code point enters and three axis labels leave, in one registered stage. The decode itself is
+        combinational, and the outputs are registered on the clock so the latency is a measurable number.
+      </dd>
+      <dt>The target</dt>
+      <dd>
+        SkyWater 130 nm high-density standard cells, placed and routed by the OpenROAD flow, with the clock constrained
+        to 12 MHz.
+      </dd>
+      <dt>The check</dt>
+      <dd>
+        The RTL is verified against the software reference over every code point, the gate netlist is simulated against
+        the same golden anchors, and the RTL and the gate netlist are proven equivalent.
+      </dd>
+    </dl>
+  </section>
+
+  <figure class="run__figure">
+    <img
+      src="/proofs/silicon-detail.png"
+      width="1800"
+      height="1800"
+      alt="A close view of the die centre: standard cell rows crossed by teal signal wiring, gold longer routes, and magenta and white power straps."
+      loading="lazy"
+      decoding="async"
+    />
+    <figcaption>
+      The centre of the die, close. <code>met1</code> and <code>met2</code> carry the local wiring, <code>met3</code>
+      the longer runs, and <code>met4</code> and <code>met5</code> the power.
+    </figcaption>
+  </figure>
+
+  <figure class="run__figure">
+    <img
+      src="/proofs/silicon-routing.png"
+      width="2317"
+      height="2400"
+      alt="The same window with the power straps removed, leaving only signal routing in blue, teal and gold."
+      loading="lazy"
+      decoding="async"
+    />
+    <figcaption>
+      The same window with the power straps withheld, so the signal routing stands on its own: the local wires, the
+      longer runs, and the cells underneath them.
+    </figcaption>
+  </figure>
+
+  <section class="section">
+    <h2>Where it comes from</h2>
+    <p class="section__lede">
+      The RTL, the flow configuration, and the renderer live in the hardware tree of the syntagma repository. The image
+      is produced from the final GDS by a small script that keeps the metal layers and crops to the placed cells, so it
+      can be redrawn whenever the flow runs again. The
+      <a href={source}>renderer</a> is the only part of this page that is code, and it carries no knowledge of the
+      design.
+    </p>
+    <p class="call">
+      <a class="btn" href="/trial/">The build to evaluate</a>
+      <a class="btn" href="/claims/">What the stack establishes</a>
+    </p>
+    <p class="note">
+      A layout at this size is a demonstration of the primitive, not a product die. Ask us about a part built to your
+      own workload: <a href={contact}>write to us</a>.
+    </p>
+  </section>
+</Shell>
+
+<style>
+  .figure--lead {
+    margin-block-start: 2.5rem;
+  }
+
+  .section {
+    margin-block-start: 3rem;
+  }
+
+  .section h2 {
+    margin-block-end: 0.25rem;
+  }
+
+  .section__lede {
+    color: var(--fg-3);
+    max-inline-size: 68ch;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: minmax(9rem, max-content) 1fr;
+    gap: 0.6rem 1.5rem;
+    margin: 1.25rem 0 0;
+    max-inline-size: 74ch;
+  }
+
+  .facts dt {
+    color: var(--fg);
+    font-size: 0.95em;
+  }
+
+  .facts dd {
+    margin: 0;
+    color: var(--fg-3);
+    font-size: 0.92em;
+  }
+
+  .call {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  .note {
+    margin: 0;
+    color: var(--fg-3);
+    font-size: 0.88em;
+    max-inline-size: 68ch;
+  }
+
+  @media (max-width: 640px) {
+    .facts {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
+
+    .facts dd {
+      margin-block-end: 0.75rem;
+    }
+  }
+</style>
