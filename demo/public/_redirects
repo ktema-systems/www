@@ -1,3 +1,8 @@
 # The page is the claim register, and a published link to the old name still lands.
 /roadmap/ /claims/ 301
 /roadmap /claims/ 301
+
+# The files page is the trial build a partner asks for, and the name it was published
+# under still lands.
+/artifacts/ /trial/ 301
+/artifacts /trial/ 301

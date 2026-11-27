@@ -1,13 +1,10 @@
 ---
-// The files a reader fetches rather than reads.
+// The page a partner reads before asking for the trial build.
 //
-// The hub's other pages draw what a run measured. This one names what a run produced: the bundle a firmware team
-// links, the cut video of a demonstration, the raw medium log a measurement wrote. Each states where to fetch it
-// from and the digest to check it against, so a reader who downloaded one can establish that what arrived is what
-// was published.
-//
-// A bundle carries a signature inside itself and the page says so. Anything else is a video or a log: its digest
-// establishes that the file is the one stated, which is what a video needs and all it can be given without a key.
+// The hub's other pages draw what a run measured. This one answers a reader who is deciding
+// whether to evaluate the engine: what the build holds, how to run it, and what every file is
+// checked against. It also carries the evidence beside it, the recordings of what ran and the
+// logs the measurements wrote, because a trial is judged by those as much as by the archive.
 import { getDeliveries, byKind, type Delivery, type DeliveryKind } from '../data/deliveries';
 import Shell from '../layouts/Shell.astro';
 
@@ -18,8 +15,8 @@ const all = getDeliveries();
 const sections: { kind: DeliveryKind; title: string; lede: string }[] = [
   {
     kind: 'bundle',
-    title: 'Bundles',
-    lede: 'The engine as a firmware team links it: built for a part with no operating system and for Linux machines, with a worked example and the specification it implements. A trial or a proof of concept starts from this file.',
+    title: 'The build',
+    lede: 'The engine as a firmware team links it: built for a part with no operating system and for Linux machines, with a worked example and the specification it implements. This is what a trial starts from.',
   },
   {
     kind: 'demo',
@@ -43,15 +40,15 @@ const digest = (delivery: Delivery) => delivery.sha256.replace(/^sha256:/, '');
 ---
 
 <Shell
-  title="Artifacts"
-  description="The files the hub publishes: bundles, recordings, and measurement logs, each with the digest to check it against."
-  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Artifacts' }]}
+  title="Trial build"
+  description="The build a partner evaluates: what it holds, where to fetch it, and the digest to check it against."
+  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Trial build' }]}
 >
   <section class="hero">
-    <h1>Artifacts</h1>
+    <h1>Trial build</h1>
     <p class="lede">
-      Everything this hub publishes as a file: the trial build, the recordings of what ran, and the logs the
-      measurements wrote. Each entry states where to fetch it and the SHA-256 to check it against. The trial build is
+      The build a partner evaluates, with the evidence behind it: recordings of what ran, and the logs the
+      measurements wrote. Each entry states where to fetch it and the SHA-256 to check it against. The build is
       also signed, so the key's fingerprint can be compared with the one that reached you out of band.
     </p>
   </section>

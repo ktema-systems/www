@@ -52,13 +52,13 @@ const values: Record<string, string> = {
       <tr><td>Format</td><td>{values.format}, the version a volume written by this library carries</td></tr>
       <tr><td>Entry points</td><td>{values.entry_points}, plus the two critical-section hooks the caller defines</td></tr>
       <tr><td>Assembled from</td><td>revision {values.revision}</td></tr>
-      <tr><td>Targets</td><td>{values.target_count} built, {values.absent_count} not built on the host that assembled it</td></tr>
+      <tr><td>Targets</td><td>{values.target_count} built, {values.absent_count} not included in this build</td></tr>
     </tbody>
   </table>
 </section>
 
 <section class="bench__fit">
-  <h2>The artifacts</h2>
+  <h2>The files</h2>
   {
     !bundle.served && (
       <p>

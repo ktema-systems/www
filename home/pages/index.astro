@@ -27,9 +27,9 @@ const companyNav: readonly NavItem[] = homeSections.map(({ key, label, id }) => 
   ...(key === 'stack' ? { items: productMenu } : {}),
 }));
 
-// The files the hub publishes, named relative to the hub the call opens, so the two
+// The trial build's page, named relative to the hub the call opens, so the two
 // addresses are decided in one place.
-const artifactsHref = new URL('artifacts/', demoCta.href).href;
+const trialHref = new URL('trial/', demoCta.href).href;
 
 const operationsPanels = [
   {
@@ -339,7 +339,7 @@ const assertNever = (value: never): never => {
           >
             <p class="contact-actions">
               <a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a>
-              <a class="btn" href={artifactsHref}>Artifacts</a>
+              <a class="btn" href={trialHref}>Trial build</a>
             </p>
           </Section>
         );
