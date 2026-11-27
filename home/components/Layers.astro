@@ -1,9 +1,14 @@
 ---
 import Section from './Section.astro';
 
-// The stack as the reader meets it first: the six names, what each one does in a
-// phrase, and the page where it is explained. The depth stays on the product pages,
-// so this band is an index rather than a second telling of the same six parts.
+// The stack as the reader meets it: the six names, what each one does in a phrase, and
+// the page where it is explained. The depth stays on the product pages, so this band is
+// an index rather than a second telling of the same six parts.
+//
+// The grid is the stack's shape. Ktema fills the first column, Kletos runs down the
+// second, and Krisis and Kleis share the third. Delta and Telos sit in the second
+// column under Kletos, which is where they are carried: the two parts a run takes when
+// it needs a seat, a move, or a door.
 interface Props {
   id?: string;
   eyebrow?: string;
@@ -17,36 +22,50 @@ const parts = [
     role: 'Record',
     href: '/ktema',
     body: 'The engine that answers a question from its own record, with no index to maintain.',
+    area: 'ktema',
+    // Ktema stands alone in the stack, so its cell carries the three things a reader needs
+    // before the other five mean anything: what a record is, what it runs on, and whether
+    // it can be tried.
+    points: [
+      'A record is three parts: a fact, an intent, and a hint. The address is computed from those fields, so a reader arrives without an index to walk.',
+      'One build, from a part with no operating system to a Linux host. A port is not a separate product line.',
+      'The evaluation build is ready: a binary per host class, and the same record returns the same address on a board and on a host.',
+    ],
   },
   {
     name: 'Kletos',
     role: 'Execution',
     href: '/kletos',
     body: 'An ask becomes verified work, and the work becomes a fact on the record.',
-  },
-  {
-    name: 'Krisis',
-    role: 'Judgment',
-    href: '/krisis',
-    body: 'The rules the work runs inside: which model, at what cost, on whose authority.',
+    area: 'kletos',
   },
   {
     name: 'Delta',
     role: 'Operation',
     href: '/delta',
     body: 'The cockpit where a run is seen, and the intent changed from where it is read.',
+    area: 'delta',
   },
   {
     name: 'Telos',
     role: 'Transport',
     href: '/telos',
     body: 'Live state moved between agents, people, and spaces by address.',
+    area: 'telos',
+  },
+  {
+    name: 'Krisis',
+    role: 'Judgment',
+    href: '/krisis',
+    body: 'The rules the work runs inside: which model, at what cost, on whose authority.',
+    area: 'krisis',
   },
   {
     name: 'Kleis',
-    role: 'Authorization',
+    role: 'Security',
     href: '/kleis',
     body: 'The key a holder presents, and the proof that the holder was in control.',
+    area: 'kleis',
   },
 ];
 ---
@@ -55,16 +74,23 @@ const parts = [
   id={id}
   label={eyebrow}
   title="Six parts, one record format."
-  lede="Each part stands on its own, and together they carry one record from the ask to the proven act, written where the work runs. A model is optional."
+  lede="Ktema writes the record. Kletos turns an ask into one, and Krisis sets what the work may do. Delta and Telos come with Kletos when a run needs a seat or a move; Kleis comes when a record has to be opened by a key."
 >
   <ul class="stack">
     {
       parts.map((part) => (
-        <li>
-          <a class="stack__part" href={part.href}>
+        <li class={`stack__item stack__item--${part.area}`}>
+          <a class={`stack__part stack__part--${part.area}`} href={part.href}>
             <span class="stack__role">{part.role}</span>
             <span class="stack__name">{part.name}</span>
             <span class="stack__body">{part.body}</span>
+            {'points' in part && part.points && (
+              <ul class="stack__points">
+                {part.points.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+            )}
           </a>
         </li>
       ))
@@ -73,11 +99,17 @@ const parts = [
 </Section>
 
 <style>
-  /* Six parts on one screen: the grid is the index, and a part is one click from the
-     page that explains it. */
+  /* Three columns and three rows, with the parts spanning the cells they carry. The
+     column widths differ because the spans do: Ktema stands alone, Kletos is one of two
+     in its column, and the third column holds Krisis above Kleis. */
   .stack {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      'ktema kletos krisis'
+      'ktema delta  kleis'
+      'ktema telos  kleis';
     gap: 1px;
     padding: 0;
     list-style: none;
@@ -87,12 +119,37 @@ const parts = [
     overflow: hidden;
   }
 
-  .stack li {
+  .stack__item {
     display: flex;
+  }
+
+  .stack__item--ktema {
+    grid-area: ktema;
+  }
+
+  .stack__item--kletos {
+    grid-area: kletos;
+  }
+
+  .stack__item--delta {
+    grid-area: delta;
+  }
+
+  .stack__item--telos {
+    grid-area: telos;
+  }
+
+  .stack__item--krisis {
+    grid-area: krisis;
+  }
+
+  .stack__item--kleis {
+    grid-area: kleis;
   }
 
   .stack__part {
     display: grid;
+    align-content: start;
     gap: 6px;
     width: 100%;
     padding: 22px 22px 24px;
@@ -129,15 +186,86 @@ const parts = [
     text-wrap: pretty;
   }
 
+  /* Ktema's cell is the one that carries the engine's own account, so its three points sit
+     under the sentence and above a rule, at the size the other cells use for their body. */
+  .stack__points {
+    margin: 14px 0 0;
+    padding: 14px 0 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+  }
+
+  .stack__points li {
+    position: relative;
+    padding-left: 15px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--fg-3);
+    text-wrap: pretty;
+  }
+
+  .stack__points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 5px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  /* The parts that ride under Kletos or close a column are set a step down in size and in
+   colour, so the eye reads them as parts of the column above rather than as two more
+   peers. */
+.stack__part--delta,
+.stack__part--telos,
+.stack__part--kleis {
+  padding: 14px 22px 15px;
+}
+
+.stack__part--delta .stack__name,
+.stack__part--telos .stack__name,
+.stack__part--kleis .stack__name {
+  font-size: 1rem;
+  color: var(--fg-2);
+}
+
+.stack__part--delta .stack__role,
+.stack__part--telos .stack__role,
+.stack__part--kleis .stack__role {
+  color: var(--fg-3);
+}
+
+.stack__part--delta .stack__body,
+.stack__part--telos .stack__body,
+.stack__part--kleis .stack__body {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--fg-3);
+}
+
   @media (max-width: 900px) {
     .stack {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas:
+        'ktema kletos'
+        'ktema delta'
+        'ktema telos'
+        'krisis kleis';
     }
   }
 
   @media (max-width: 560px) {
     .stack {
       grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'ktema'
+        'kletos'
+        'delta'
+        'telos'
+        'krisis'
+        'kleis';
     }
   }
 </style>

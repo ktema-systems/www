@@ -24,7 +24,21 @@ const {
   openProducts = false,
 } = Astro.props;
 
+// The stack's shape, as the panel draws it: three columns that carry the stack, and the
+// parts that wait under two of them. The panel is the only menu; a second hover list
+// beside it would say the same thing twice and open on the same pointer.
+const COLUMNS = [
+  { root: '/ktema', children: [] },
+  { root: '/kletos', children: ['/delta', '/telos'] },
+  { root: '/krisis', children: ['/kleis'] },
+] as const;
+
 const productLinks = products ?? items.find((item) => item.items)?.items ?? [];
+const byHref = new Map(productLinks.map((entry) => [entry.href, entry]));
+const columns = COLUMNS.map((column) => ({
+  root: byHref.get(column.root),
+  children: column.children.map((href) => byHref.get(href)).filter(Boolean),
+})).filter((column) => column.root);
 // The sheet lists the products as its own group, so the bar's Products entry, which
 // exists only to open the panel, is not repeated there.
 const sheetItems = items.filter((item) => !item.items);
@@ -82,11 +96,33 @@ const sheetItems = items.filter((item) => !item.items);
         <span class="product-menu__light" aria-hidden="true"></span>
         <div class="product-menu__fold">
           <div class="wrap product-menu__inner">
-            {productLinks.map((entry) => (
-              <a href={entry.href} aria-current={entry.href === current ? 'page' : undefined}>
-                <span class="product-menu__name">{entry.label}</span>
-                {entry.note && <span class="product-menu__note">{entry.note}</span>}
-              </a>
+            {columns.map((column) => (
+              <div class="product-menu__col">
+                <a
+                  href={column.root!.href}
+                  aria-current={column.root!.href === current ? 'page' : undefined}
+                >
+                  <span class="product-menu__name">{column.root!.label}</span>
+                  {column.root!.note && (
+                    <span class="product-menu__note">{column.root!.note}</span>
+                  )}
+                </a>
+                {column.children.length > 0 && (
+                  <ul class="product-menu__sub">
+                    {column.children.map((child) => (
+                      <li>
+                        <a
+                          href={child!.href}
+                          aria-current={child!.href === current ? 'page' : undefined}
+                        >
+                          <span class="product-menu__name">{child!.label}</span>
+                          {child!.note && <span class="product-menu__note">{child!.note}</span>}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -102,15 +138,26 @@ const sheetItems = items.filter((item) => !item.items);
               <li class="site-menu__item">
                 <a href="/#products">Products</a>
                 <ul class="site-menu__sub">
-                  {productLinks.map((entry) => (
+                  {columns.map((column) => (
                     <li>
                       <a
-                        href={entry.href}
-                        aria-current={entry.href === current ? 'page' : undefined}
+                        href={column.root!.href}
+                        aria-current={column.root!.href === current ? 'page' : undefined}
                       >
-                        <span>{entry.label}</span>
-                        {entry.note && <span class="site-menu__note">{entry.note}</span>}
+                        <span>{column.root!.label}</span>
+                        {column.root!.note && (
+                          <span class="site-menu__note">{column.root!.note}</span>
+                        )}
                       </a>
+                      {column.children.length > 0 && (
+                        <ul class="site-menu__sub2">
+                          {column.children.map((child) => (
+                            <li>
+                              <a href={child!.href}>{child!.label}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>

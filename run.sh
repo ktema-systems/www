@@ -53,8 +53,10 @@ usage() {
 run.sh: every surface this repository publishes, here or on the web.
 
   ./run.sh                     serve the homepage, the corpus hub, the demo and the corpus
+  ./run.sh --home              serve the homepage alone, and nothing else
   ./run.sh --deploy            take the published corpus, build both renderings, and publish them
   ./run.sh --rebuild           rebuild the cockpits before serving them
+  ./run.sh --take-ports        stop whatever holds a port this run needs
   ./run.sh --board NAME        serve that board instead of the exhibition, through the cockpit's launcher
   ./run.sh --brand NAME        the name the board's cockpit goes by
   ./run.sh --help              this text
@@ -65,17 +67,24 @@ BLOG_PORT (4323).
 NODE names the interpreter to run the servers with. DELTA_DIR names another cockpit
 checkout, DELTA_URL a cockpit this host is not serving. CORPUS_URL names the export a
 deploy takes, and CORPUS_SOURCE an export beside this checkout.
+
+A port that is already taken is reported and left alone. Stopping the holder is what
+--take-ports does, and a run without it never touches a server it did not start.
 USAGE
 }
 
 rebuild=0
 deploy=0
+home_only=0
+take_ports=0
 board=
 brand=
 while [ $# -gt 0 ]; do
   case "$1" in
     --rebuild) rebuild=1 ;;
     --deploy) deploy=1 ;;
+    --home) home_only=1 ;;
+    --take-ports) take_ports=1 ;;
     # The viewer is what this launcher already serves, and the board is how another one is drawn here. Naming the
     # viewer's own launcher in this one is a command for the other tree, and it is answered where it can be followed.
     --delta | --web)
@@ -96,6 +105,14 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+# --home is the smallest run there is, so it refuses the modes that would do more than serve one
+# surface. Checked here rather than where the work starts, because a deploy is answered earlier.
+if [ "$home_only" -eq 1 ]; then
+  [ "$deploy" -eq 0 ] || die '--home serves the homepage; --deploy is its own run'
+  [ -z "$board" ] || die '--home serves the homepage; --board needs the cockpit at its side'
+  [ -z "$brand" ] || die '--home serves the homepage; --brand names the cockpit'
+fi
 
 # Astro refuses to start below the Node floor this package declares, and an unchecked run
 # repeats that refusal once per surface. The interpreter is resolved here, once, and every
@@ -165,14 +182,29 @@ trap 'exit 130' INT TERM
 
 # A bound socket tells the truth a file check cannot: another checkout of this site
 # holding 4321 is the common case, and it is the one that would be served instead.
+# lsof is asked first because a listener on ::1 is invisible to a socket bound to 127.0.0.1,
+# and astro dev listens on localhost, which resolves to ::1 on this platform.
 port_free() {
+  if command -v lsof >/dev/null 2>&1; then
+    [ -z "$(lsof -ti "tcp:$1" -sTCP:LISTEN 2>/dev/null)" ]
+    return
+  fi
   node -e 'const s=require("net").createServer();s.once("error",()=>process.exit(1));s.listen(Number(process.argv[1]),"127.0.0.1",()=>s.close(()=>process.exit(0)))' "$1" 2>/dev/null
 }
 
-# A port this run needs is taken from whatever held it: a server left behind by a launcher that died is the thing this
-# run replaces, and it is not a reason to ask a person to clean up first. One that ignores the signal is killed.
+# A port another checkout holds is a person's work in progress, not a leftover. It is
+# reported and left alone: stopping it is what --take-ports asks for, and a run without it
+# never touches a server it did not start.
 take_port() {
-  for pid in $(lsof -ti "tcp:$1" -sTCP:LISTEN 2>/dev/null || true); do
+  port_free "$1" && return 0
+  holder=$(lsof -ti "tcp:$1" -sTCP:LISTEN 2>/dev/null | head -1 || true)
+  if [ "$take_ports" -ne 1 ]; then
+    if [ -n "$holder" ]; then
+      die "port $1 is held by $holder ($(ps -o command= -p "$holder" 2>/dev/null | cut -c1-72)): set $2 to a free port, or pass --take-ports to stop it"
+    fi
+    die "port $1 is held: set $2 to a free port, or pass --take-ports to stop it"
+  fi
+  for pid in $holder; do
     say "port $1 was held by $pid: $(ps -o command= -p "$pid" 2>/dev/null | cut -c1-64); stopping it"
     kill "$pid" 2>/dev/null || true
   done
@@ -188,6 +220,27 @@ take_port() {
   port_free "$1" || die "port $1 is still held: $2"
 }
 
+# astro keeps one dev server per checkout and records it in .astro/dev.json. A record left by a
+# run that died blocks the next one with a message about a server that is not there, so a dead
+# pid is cleared here; a live one is reported rather than replaced.
+astro_lock() {
+  lock=$ROOT/.astro/dev.json
+  [ -f "$lock" ] || return 0
+  pid=$(sed -n 's/.*"pid": *\([0-9][0-9]*\).*/\1/p' "$lock" | head -1)
+  url=$(sed -n 's/.*"url": *"\([^"]*\)".*/\1/p' "$lock" | head -1)
+  [ -n "$pid" ] || return 0
+  if kill -0 "$pid" 2>/dev/null; then
+    if [ "$take_ports" -ne 1 ]; then
+      die "this checkout already has an astro dev server running: pid $pid at ${url:-localhost}; stop it, or pass --take-ports to stop it"
+    fi
+    say "stopping the astro dev server this checkout already has: pid $pid"
+    kill "$pid" 2>/dev/null || true
+    sleep 0.4
+  fi
+  rm -f "$lock"
+  return 0
+}
+
 # A preview server answers in under a second; a cockpit's dev server starts a sim beside it and can take a minute on a
 # cold cache. The wait is long enough for that and ends in a message rather than in a run that looks like it started.
 wait_for() {
@@ -200,6 +253,27 @@ wait_for() {
   done
   die "$1 did not answer after 120s: its log above says why"
 }
+
+# The homepage alone: one surface, no cockpit checkout, no corpus take, and no other port. It
+# is what a person asks for while another tree is being built or deployed next to this one.
+if [ "$home_only" -eq 1 ]; then
+  take_port "$HOME_PORT" HOME_PORT
+  astro_lock
+  say "the homepage is on http://localhost:$HOME_PORT"
+  "$astro" dev --port "$HOME_PORT" &
+  pids="$pids $!"
+
+  cat <<SUMMARY
+
+  homepage       http://localhost:$HOME_PORT
+
+  Ctrl-C stops the server this run started. ./run.sh without --home adds the corpus hub,
+  the demo and the Corpus app.
+
+SUMMARY
+  wait
+  exit 0
+fi
 
 
 
@@ -269,6 +343,7 @@ fi
 # BLOG_PORT. Until then the port is named in the summary and nothing holds it.
 
 take_port "$HOME_PORT" HOME_PORT
+astro_lock
 "$astro" dev --port "$HOME_PORT" &
 pids="$pids $!"
 

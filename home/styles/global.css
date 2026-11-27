@@ -710,7 +710,9 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
 .masthead__item {
   display: flex;
   align-self: stretch;
+  position: relative;
 }
+
 
 .masthead__item > a {
   gap: 7px;
@@ -857,6 +859,18 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   background-color: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 
+/* With no product to park over, the light travels the rail instead of resting on a
+   label. The panel on the homepage has no current entry, so without this the strip
+   opened with a faint line and no light at all. */
+.masthead.is-open .product-menu:not(.has-focus) .product-menu__light {
+  left: 0;
+  width: 100%;
+  transform: none;
+  background-size: 32% 100%;
+  opacity: 1;
+  animation: product-thread 5.5s linear infinite;
+}
+
 @keyframes product-thread {
   from {
     background-position: -40% 0;
@@ -866,11 +880,54 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   }
 }
 
+/* The panel carries the stack's own shape: Ktema down the first column, Kletos with Delta
+   and Telos under it in the second, and Krisis above Kleis in the third. The nav shows
+   the same structure as the Stack band without a second drawing of it. */
+/* The first level sits together in the middle of the panel: three names with air between
+   them, not three columns stretched to the page edges. The parts that expand under a name
+   hang below it, so the distance between names never changes as the panel grows. */
 .product-menu__inner {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 6px;
-  padding-block: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(22px, 4.2vw, 64px);
+  padding-block: 18px;
+}
+
+.product-menu__col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The nested list is closed by height, not by a grid fraction: a collapsed row still
+   reports its contents, which is why the parts arrived complete before. */
+.product-menu__sub {
+  max-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  opacity: 0;
+  transition:
+    max-height 260ms var(--ease),
+    opacity 200ms var(--ease);
+}
+
+.product-menu__col:hover .product-menu__sub,
+.product-menu__col:focus-within .product-menu__sub {
+  max-height: 200px;
+  opacity: 1;
+}
+
+/* The parts that ride under a column are set back in size and colour, so the panel reads
+   as three that carry the stack and three that belong to them. */
+.product-menu__sub .product-menu__name {
+  font-size: 0.95rem;
+  color: var(--fg-2);
+}
+
+.product-menu__sub .product-menu__note {
+  color: var(--fg-3);
 }
 
 .product-menu a {
@@ -1514,27 +1571,37 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   .site-menu__item > a {
     display: flex;
     align-items: center;
-    min-height: 46px;
+    justify-content: center;
+    min-height: 0;
+    padding-block: 13px;
     color: var(--fg);
+    font-size: 17px;
+    text-align: center;
     text-decoration: none;
     border-bottom: 1px solid var(--line);
   }
 
-  .site-menu__sub {
+  /* The sheet is one centred column: every product link on its own line, and the parts
+   under it a step smaller with the role beside the name rather than a second line. The
+   indents and rules that marked the nesting on the panel are dropped here, because a
+   centred column reads the nesting from size and colour alone. */
+.site-menu__sub {
     margin: 0 0 10px;
-    padding: 2px 0 2px 14px;
+    padding: 0;
     list-style: none;
-    border-left: 1px solid var(--line-2);
   }
 
   .site-menu__sub a {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
     justify-content: center;
-    gap: 2px;
-    min-height: 44px;
+    gap: 2px 9px;
+    min-height: 0;
+    padding-block: 7px;
     color: var(--fg-2);
-    font-size: 15.5px;
+    font-size: 16px;
     text-decoration: none;
     opacity: 0;
     transform: translateY(-8px);
@@ -1579,6 +1646,22 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
   .site-menu__note {
     color: var(--fg-3);
     font-size: 12.5px;
+  }
+
+  /* The parts under Kletos and Krisis, a step below their parent and centred with it. */
+  .site-menu__sub2 {
+    margin: -2px 0 6px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-menu__sub2 a {
+    display: block;
+    padding: 5px 0;
+    color: var(--fg-3);
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
   }
 
   .cards--3 {

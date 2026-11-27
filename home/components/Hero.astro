@@ -9,6 +9,9 @@ interface Props {
   eyebrow?: string;
   title: string;
   // A short line under the display line. The company's page carries its scope here.
+  // The claim the hero leads with, set below the display line rather than beside it.
+  // It carries no colour of its own: the accent is reserved for links, and a run of
+  // three sentences at display weight competes with the headline.
   subline?: string;
   lede: string;
   body?: string;
@@ -51,7 +54,7 @@ const lines = (text: string) => text.split('\n').map((line) => line.trim());
     <div class="hero__head">
       {eyebrow && <p class="eyebrow">{eyebrow}</p>}
       <h1>{title}</h1>
-      {subline && <p class="hero__subline">{subline}</p>}
+      {subline && <p class="hero__subline">{lines(subline).map((line, index) => <>{index > 0 && <br />}{line}</>)}</p>}
       <p class="hero__lede">
         {lines(lede).map((line, index) => <>{index > 0 && <br />}{line}</>)}
       </p>
@@ -145,33 +148,34 @@ const lines = (text: string) => text.split('\n').map((line) => line.trim());
     text-wrap: balance;
   }
 
+  /* The claim sits one rank under the display line, on the accent, so it reads as the
+     promise the rest of the hero answers. Its measure is wider than the copy below,
+     because the sentence is long and breaks twice at the copy's measure. */
   .hero__subline {
+    max-width: 46rem;
     margin: 0;
-    /* Set in the display cut the headline uses, one step down, so the two lines read
-       as one statement rather than a heading and a label. */
     font-family: var(--text);
     font-stretch: 115%;
-    font-weight: 600;
-    font-size: clamp(1.3rem, 1rem + 1.05vw, 2rem);
-    letter-spacing: -0.006em;
-    line-height: 1.15;
+    font-weight: 400;
+    font-size: clamp(1.12rem, 1rem + 0.55vw, 1.42rem);
+    letter-spacing: -0.005em;
+    line-height: 1.4;
     color: var(--accent);
-  }
-
-  .hero__lede {
-    color: var(--fg-2);
     text-wrap: pretty;
-    margin: 0;
-    font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-    line-height: 1.55;
   }
 
+  /* The two paragraphs under the claim are one voice: the same size, weight and
+     colour, so they read as a single explanation rather than two ranks. */
+  .hero__lede,
   .hero__body {
     color: var(--fg-2);
     text-wrap: pretty;
     margin: 0;
-    font-size: clamp(1.05rem, 1rem + 0.45vw, 1.3rem);
-    line-height: 1.55;
+    font-family: var(--text);
+    font-weight: 400;
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+    letter-spacing: 0;
+    line-height: 1.62;
   }
 
   /* The copy sits on a plane set back from the reader, so the scene behind it has
