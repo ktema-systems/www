@@ -1,0 +1,152 @@
+---
+// The files a reader fetches rather than reads.
+//
+// The hub's other pages draw what a run measured. This one names what a run produced: the bundle a firmware team
+// links, the cut video of a demonstration, the raw medium log a measurement wrote. Each states where to fetch it
+// from and the digest to check it against, so a reader who downloaded one can establish that what arrived is what
+// was published.
+//
+// A bundle carries a signature inside itself and the page says so. Anything else is a video or a log: its digest
+// establishes that the file is the one stated, which is what a video needs and all it can be given without a key.
+import { getDeliveries, byKind, type Delivery, type DeliveryKind } from '../data/deliveries';
+import Shell from '../layouts/Shell.astro';
+
+const all = getDeliveries();
+
+// One section per kind, in the order a reader needs them. A kind with nothing under it is drawn with a line saying
+// so, because an empty section a reader cannot see is indistinguishable from a page that forgot one.
+const sections: { kind: DeliveryKind; title: string; lede: string }[] = [
+  {
+    kind: 'bundle',
+    title: 'Bundles',
+    lede: 'The engine as a firmware team links it: a header, a static library for the target, the example, and the terms.',
+  },
+  {
+    kind: 'demo',
+    title: 'Recordings',
+    lede: 'The cut video of a demonstration, with the terminal session and the apparatus in one frame.',
+  },
+  {
+    kind: 'bench',
+    title: 'Measurements',
+    lede: 'The raw log a measurement wrote: what the medium cost per record, in the run that produced it.',
+  },
+];
+
+const size = (bytes: number) => {
+  if (bytes >= 1 << 20) return `${(bytes / (1 << 20)).toFixed(1)} MB`;
+  if (bytes >= 1 << 10) return `${(bytes / (1 << 10)).toFixed(1)} KB`;
+  return `${bytes} B`;
+};
+
+const digest = (delivery: Delivery) => delivery.sha256.replace(/^sha256:/, '');
+---
+
+<Shell
+  title="Artifacts"
+  description="The files the hub publishes: bundles, recordings, and measurement logs, each with the digest to check it against."
+  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Artifacts' }]}
+>
+  <section class="hero">
+    <h1>Artifacts</h1>
+    <p class="lede">
+      What this hub publishes as files: the bundle a firmware team links, the recordings of what ran, and the logs the
+      measurements wrote. Each line states where to fetch one and the SHA-256 to check it against. A bundle carries an
+      Ed25519 signature inside itself, and the fingerprint of the key is stated in its <code>SIGNING-KEY</code>; the
+      other files carry a digest, which establishes the file is the one stated.
+    </p>
+  </section>
+
+  {
+    sections.map((section) => {
+      const rows = byKind(all, section.kind);
+      return (
+        <section class="section">
+          <h2>{section.title}</h2>
+          <p class="section__lede">{section.lede}</p>
+          {rows.length === 0 ? (
+            <p class="empty">Nothing of this kind is published yet.</p>
+          ) : (
+            <ul class="files">
+              {rows.map((delivery) => (
+                <li class="file">
+                  <a class="file__name" href={delivery.url}>
+                    {delivery.name}
+                  </a>
+                  <div class="file__meta">
+                    <span>{size(delivery.bytes)}</span>
+                    {delivery.signature ? (
+                      <span class="file__signed">signed, {delivery.signature}</span>
+                    ) : (
+                      <span class="file__unsigned">digest only</span>
+                    )}
+                  </div>
+                  <code class="file__digest">{digest(delivery)}</code>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      );
+    })
+  }
+</Shell>
+
+<style>
+  .section {
+    margin-block-start: 3rem;
+  }
+
+  .section h2 {
+    margin-block-end: 0.25rem;
+  }
+
+  .section__lede {
+    margin-block: 0 1.5rem;
+    color: var(--muted, #666);
+    max-inline-size: 60ch;
+  }
+
+  .empty {
+    color: var(--muted, #666);
+  }
+
+  .files {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 1px;
+    background: var(--rule, #e5e5e5);
+  }
+
+  .file {
+    background: var(--surface, #fff);
+    padding: 1rem;
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .file__name {
+    font-family: var(--mono, ui-monospace, monospace);
+    font-size: 0.9em;
+    overflow-wrap: anywhere;
+  }
+
+  .file__meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85em;
+    color: var(--muted, #666);
+  }
+
+  .file__signed {
+    color: var(--accent, #2c6e49);
+  }
+
+  .file__digest {
+    font-size: 0.75em;
+    color: var(--muted, #666);
+    overflow-wrap: anywhere;
+  }
+</style>

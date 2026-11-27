@@ -1,0 +1,169 @@
+{
+  "format": "corpus-hub/0.3",
+  "digest": "sha256:1b75c17931aaa1b754a83aa9f4b1d3138ad1a40140a59174882438c73f079324",
+  "export": "https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export",
+  "holds": [
+    "vol",
+    "docs",
+    "master",
+    "declarations",
+    "export"
+  ],
+  "artifacts": [
+    {
+      "kind": "bench",
+      "name": "medium-20261022-202403.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261022-202403.txt",
+      "sha256": "sha256:3623b780827e0f0748d8bc7f5898ffdd9da19b8d04abd28d5990eebfbda91e83",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261022-202636.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261022-202636.txt",
+      "sha256": "sha256:96a939bcf1ce0609bf98b26c6a4d688f5651a3fa19b7b11cd969b3a1a6fa67fe",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261026-115125.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261026-115125.txt",
+      "sha256": "sha256:e698aec19bad5742cdab2090070d0e7b77b67bbbd48f5601ee1741c553f1607c",
+      "bytes": 6458
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-053001.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-053001.txt",
+      "sha256": "sha256:05473ebab56462acbe34566d79dea692ebc10f232b857b7c8010215fce03c5cb",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-053224.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-053224.txt",
+      "sha256": "sha256:c1e03b06c2f816c8c3b393da8a9f672213af1c65dc5d3d77a9f0360bab39902f",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-175424.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-175424.txt",
+      "sha256": "sha256:03f0f92c394a3300dbc348d5f8dd02059c013ef669266510b32596e16c6dfead",
+      "bytes": 6968
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-175507.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-175507.txt",
+      "sha256": "sha256:2efba7e340ae659e7c2d6d8b34730462e691e9e9605119565c3715ead5437400",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-175542.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-175542.txt",
+      "sha256": "sha256:2efba7e340ae659e7c2d6d8b34730462e691e9e9605119565c3715ead5437400",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-192719.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-192719.txt",
+      "sha256": "sha256:25e4c6d2d8ef8c0e05e1c7cf0a1ce16ea809b564590f3f3ad7860bde698d838c",
+      "bytes": 6968
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-192808.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-192808.txt",
+      "sha256": "sha256:f3e86765b9856de6d577f43ec3b0a72caf88d48f508588c5d126440ec3db3585",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261106-214416.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261106-214416.txt",
+      "sha256": "sha256:9b2fc98c07206e7b55febbcfae50c57eaee20f11d62d3c1f4c53cc05b0bd0b3b",
+      "bytes": 6047
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261120-082645.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261120-082645.txt",
+      "sha256": "sha256:2138a5ca6e3048e6a8374db5f54cd73f9f973b81ff838761646a1e4721026a01",
+      "bytes": 5877
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261120-084137.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261120-084137.txt",
+      "sha256": "sha256:8a01e528d68fd902400ad74b8590a1e44e6f5b2c4c37f62206e00e4569211b09",
+      "bytes": 5705
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261120-103252.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261120-103252.txt",
+      "sha256": "sha256:75a08a4f3dec328f3746752c4f29486bbd64d880c4ed89b4e32bfe325a23b4c3",
+      "bytes": 5877
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261121-115145.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261121-115145.txt",
+      "sha256": "sha256:7f42f2aec7c544cd90b4595f54f974edffd1fc06efe6ab7d1b91fdaeef3074b9",
+      "bytes": 5719
+    },
+    {
+      "kind": "bench",
+      "name": "medium-20261121-115237.txt",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/medium-20261121-115237.txt",
+      "sha256": "sha256:35421ec59e9ccaacf2a7c9275d2c1a1ba88a66ef21fc06941a822b91429ec65d",
+      "bytes": 5308
+    },
+    {
+      "kind": "bundle",
+      "name": "ktema-fmt0.1-abi7-edc6d30-eval-aarch64-apple-darwin.tar.gz",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/ktema-fmt0.1-abi7-edc6d30-eval-aarch64-apple-darwin.tar.gz",
+      "sha256": "sha256:78f25e4d31e5e71e03cc58de5e666602810d50572c7fa889ef48079ed72debad",
+      "signature": "SHA256SUMS.sig",
+      "bytes": 11319511
+    },
+    {
+      "kind": "demo",
+      "name": "esp32s3_fpga-litewing_icesugarpro-witness-20261117-132019.mp4",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/esp32s3_fpga-litewing_icesugarpro-witness-20261117-132019.mp4",
+      "sha256": "sha256:892bb600e2dacd7dfd2fb546e35e77a5756294e7a93705d85a7461c8c7e3b10c",
+      "bytes": 49581105
+    },
+    {
+      "kind": "demo",
+      "name": "fpga-icesugarpro-audit-20261115-083500.mp4",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/fpga-icesugarpro-audit-20261115-083500.mp4",
+      "sha256": "sha256:c820ff834e0e8308928dfb39881424912d9f36abc60a0f8057767aecc7b936ae",
+      "bytes": 32157723
+    },
+    {
+      "kind": "demo",
+      "name": "fpga-icesugarpro-keyspace-20261114-133841.mp4",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/fpga-icesugarpro-keyspace-20261114-133841.mp4",
+      "sha256": "sha256:bb6002f7bc2f7650aa6412f91eb63a55c554b46181e0a82c0d3c3fa69d2fbd8e",
+      "bytes": 947179
+    }
+  ],
+  "renderings": [
+    {
+      "id": "site",
+      "title": "Ktema Systems Corpus Hub",
+      "url": "https://hub.ktema.systems",
+      "role": "the pages, rendered once"
+    },
+    {
+      "id": "space",
+      "title": "Corpus Space",
+      "url": "https://space.ktema.systems",
+      "role": "the corpus as a board"
+    }
+  ]
+}

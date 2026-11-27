@@ -24,7 +24,7 @@
 
 import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -187,6 +187,13 @@ function sourceOf() {
   say(`corpus: fetching ${url}`);
   for (const name of ['bench.json', 'corpus.json', 'runs.json', 'values.json', 'digest']) {
     if (!fetchFile(`${url}/${name}`, join(into, name))) fail(`${url}/${name} did not answer`);
+  }
+  // The index sits at the repository root rather than under export/, and it is
+  // optional: a hub recorded before version 0.3 states no artifacts, and a build
+  // that insisted on one would refuse the corpus it already carries.
+  if (!fetchFile(`${url}/../index.json`, join(into, 'index.json'))) {
+    say('corpus: no hub index beside the export, so no artifacts are listed');
+    writeFileSync(join(into, 'index.json'), JSON.stringify({ format: 'corpus-hub/0.2', artifacts: [] }));
   }
   say('corpus: fetching the documents');
   for (const file of indexOf(url)) {
@@ -403,6 +410,9 @@ function pairs() {
     ['corpus.json', 'demo/src/data/corpus.json'],
     ['values.json', 'demo/src/data/corpus-values.json'],
     ['digest', 'demo/src/data/corpus-digest.txt'],
+    // The hub's own index, which is where the artifacts it states by reference are
+    // named. A page that lists them reads this rather than walking the repository.
+    ['../index.json', 'demo/src/data/hub-index.json'],
   ];
 }
 

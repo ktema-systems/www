@@ -60,7 +60,7 @@ const askedRange = (row: Row) => size(row.range_bytes ?? 0);
 
 // Where a run's own figures stand in Corpus Space. The app draws the records a project holds, so a link is the app's
 // figures reading at the project that holds the measurements, and the record it opens is the run's own key.
-const appUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
+const appUrl = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://space.ktema.systems/').replace(/\/?$/, '/');
 const figuresOf = (subject: string) =>
   new URL(`figures?project=corpus-bench&pick=${encodeURIComponent(subject)}`, appUrl).href;
 ---

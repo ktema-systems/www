@@ -20,7 +20,7 @@ interface Props {
 
 const { title, description, crumbs = [{ label: 'Corpus Hub' }] } = Astro.props;
 // The Corpus app is deployed on its own, so the bar names its address rather than assuming the hub's.
-const base = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://corpus.ktema.systems/').replace(/\/?$/, '/');
+const base = (import.meta.env.PUBLIC_CENTER_URL ?? 'https://space.ktema.systems/').replace(/\/?$/, '/');
 // A page that is a figure set has a picture of it in Corpus Space, and the app's address is what a link there is built
 // from. It is stated once here so no page has to know where the app is served.
 const viewUrl = base;
@@ -123,7 +123,15 @@ const isBench = Astro.props.kind === 'bench';
           ))
         }
         <span class="bar__spacer"></span>
-        
+
+        {
+          /* The files the hub publishes, beside the pages it renders. A reader who came for a
+             bundle or a recording has one press from any page rather than only from the front. */
+        }
+        <a class="bar__action" href="/artifacts/" title="The files this hub publishes">
+          Artifacts
+        </a>
+
         <slot name="bar" />
         {
           /* The hub's own call, which the hero carries the same of on the front page. The bar's copy takes no width
