@@ -1,13 +1,12 @@
 ---
 // The decoder as a finished layout.
 //
-// The 3D stack carries the page; the stills sit under it as the same window at three levels of detail.
+// The stack opens on the die from above and tilts under a drag; the stills under it cover what the stack does not.
 import Shell from '../layouts/Shell.astro';
 
 const contact = 'mailto:demo@ktema.systems';
-const source = 'https://github.com/ssccsorg/syntagma/blob/main/hw/visuals/render_gds.py';
 
-// The six metal layers, bottom to top, each drawn from the same window of the same GDS.
+// The six metal layers, bottom to top, each drawn from the whole die.
 const stackLayers = [
   { file: 'layer-67', name: 'li1' },
   { file: 'layer-68', name: 'met1' },
@@ -17,15 +16,7 @@ const stackLayers = [
   { file: 'layer-72', name: 'met5' },
 ];
 
-// The stills in the order they read: the whole die, its centre, and the same window without the power.
 const stills = [
-  {
-    src: '/proofs/silicon.png',
-    width: 2317,
-    height: 2400,
-    alt: 'The full die: magenta and white power straps over dense teal and gold routing.',
-    caption: 'The die at its full frame, li1 through met5.',
-  },
   {
     src: '/proofs/silicon-detail.png',
     width: 1800,
@@ -35,10 +26,10 @@ const stills = [
   },
   {
     src: '/proofs/silicon-routing.png',
-    width: 2317,
-    height: 2400,
-    alt: 'The same window without the power straps, leaving only signal routing in blue, teal and gold.',
-    caption: 'The same window without the power straps, so the signal routing stands alone.',
+    width: 1600,
+    height: 1600,
+    alt: 'The whole die without the power straps, leaving only signal routing in blue, teal and gold.',
+    caption: 'The whole die without the power straps, so the signal routing stands alone.',
   },
 ];
 ---
@@ -49,33 +40,34 @@ const stills = [
   crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'On silicon' }]}
 >
   <section class="hero">
-    <div class="hero__copy">
-      <h1>The same decoder, in gates.</h1>
-      <p class="lede">
-        A 16-bit code point enters, three axis labels leave, in one registered stage. The same decode the engine runs in
-        software, built as a finished SkyWater 130 nm layout: standard cells placed and routed by the OpenROAD flow.
-      </p>
-    </div>
-    <div class="hero__stack">
-      <div class="stack3d" data-stack3d>
-        <div class="stack3d__stage" data-stack-stage>
-          {
-            stackLayers.map((layer, index) => (
-              <img
-                src={`/proofs/stack/${layer.file}.png`}
-                alt=""
-                width="1000"
-                height="1000"
-                decoding="async"
-                style={`--i:${index - (stackLayers.length - 1) / 2}`}
-              />
-            ))
-          }
-        </div>
-      </div>
-      <p class="stack3d__key">li1 at the bottom, met5 at the top. Drag to turn.</p>
-    </div>
+    <h1>The same decoder, in gates.</h1>
+    <p class="lede">
+      A 16-bit code point enters, three axis labels leave, in one registered stage. The same decode the engine runs in
+      software, built as a finished SkyWater 130 nm layout: standard cells placed and routed by the OpenROAD flow.
+    </p>
   </section>
+
+  <figure class="showcase">
+    <div class="stack3d" data-stack3d>
+      <div class="stack3d__stage" data-stack-stage>
+        {
+          stackLayers.map((layer, index) => (
+            <img
+              src={`/proofs/stack/${layer.file}.png`}
+              alt=""
+              width="1200"
+              height="1200"
+              decoding="async"
+              style={`--i:${index - (stackLayers.length - 1) / 2}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+    <figcaption class="showcase__key">
+      The die from above, <code>li1</code> at the bottom and <code>met5</code> at the top. Drag to tilt.
+    </figcaption>
+  </figure>
 
   <section class="section">
     <h2>What it is</h2>
@@ -112,11 +104,10 @@ const stills = [
   </ul>
 
   <section class="section">
-    <h2>Where it comes from</h2>
+    <h2>How it was made</h2>
     <p class="section__lede">
-      The RTL, the flow configuration, and the renderer live in the hardware tree of the syntagma repository. The images
-      are drawn from the flow's final GDS: the metal layers only, cropped to the placed cells. The{' '}
-      <a href={source}>renderer</a> is the only step between the two.
+      The RTL is synthesized to SkyWater 130 nm standard cells, then placed and routed by the OpenROAD flow. These images
+      are drawn from that flow's final GDS, keeping the metal layers and cropping to the placed cells.
     </p>
     <p class="call">
       <a class="btn" href="/trial/">The build to evaluate</a>
@@ -129,57 +120,39 @@ const stills = [
 </Shell>
 
 <style>
-  /* The stack is the page's picture, so the hero is two columns on a wide screen and one column below the point
-     where a turned plate stops reading. */
-  .hero {
+  /* The stack is the page's picture and stands in the body at its own size rather than beside the copy. It opens
+     flat on the die and tilts under a drag, so the first view is the whole square. */
+  .showcase {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-    gap: clamp(1.5rem, 4vw, 3rem);
-    align-items: center;
-    max-width: none;
-  }
-
-  .hero__copy {
-    min-width: 0;
-  }
-
-  .hero__stack {
-    min-width: 0;
-    display: grid;
-    gap: 0.75rem;
     justify-items: center;
+    margin: 2.5rem 0 0;
   }
 
-  /* The stack is turned as one object: the six plates keep their own depth and the stage rotates around a
-     shared centre, so a drag moves the whole stack rather than one plate against another. */
   .stack3d {
-    position: relative;
     display: grid;
     place-items: center;
-    width: 100%;
-    perspective: 1800px;
+    width: min(100%, 640px);
     cursor: grab;
     touch-action: pan-y;
     -webkit-user-select: none;
     user-select: none;
-    /* A turned plate projects wider than the box it is drawn in, so the container clips the overflow rather than
-       letting the page scroll sideways. Perspective magnifies the near edge, which reaches a few pixels below the box. */
+    /* A turned plate reaches past its box, so the container clips as a last resort; the script scales the stack to
+       fit, and this only catches a frame before that runs. */
     overflow: clip;
-    padding-block-end: 2%;
   }
 
   .stack3d:active {
     cursor: grabbing;
   }
 
+  /* No perspective: the plates stay parallel, which keeps the layers aligned when the stack is seen from above.
+     The script sets --s so a tilted silhouette stays inside the square. */
   .stack3d__stage {
     position: relative;
-    /* A plate projects about 1.29 times its width at this tilt, so it is drawn at a bit over two thirds of the box to
-       keep every corner inside it. */
-    width: 71%;
+    width: 100%;
     aspect-ratio: 1;
     transform-style: preserve-3d;
-    transform: rotateX(var(--rx, 62deg)) rotateZ(var(--rz, -32deg));
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--s, 1));
   }
 
   .stack3d__stage img {
@@ -187,15 +160,14 @@ const stills = [
     inset: 0;
     width: 100%;
     height: 100%;
-    transform: translateZ(calc(var(--i) * 30px));
-    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+    transform: translateZ(calc(var(--i) * 26px));
     pointer-events: none;
   }
 
-  .stack3d__key {
-    margin: 0;
+  .showcase__key {
+    margin-block-start: 0.9rem;
     color: var(--fg-3);
-    font-size: 0.82em;
+    font-size: 0.85em;
   }
 
   .section {
@@ -230,12 +202,11 @@ const stills = [
     font-size: 0.92em;
   }
 
-  /* Three stills in one row: the die, the centre, and the same window without the power. They read across, so the
-     row is a sequence rather than three separate pictures. */
+  /* Two stills in one row: a close crop and the same die without the power. */
   .gallery {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1.5rem;
     margin: 3rem 0;
     padding: 0;
     list-style: none;
@@ -278,16 +249,6 @@ const stills = [
     max-inline-size: 68ch;
   }
 
-  @media (max-width: 880px) {
-    .hero {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .stack3d__stage {
-      width: 76%;
-    }
-  }
-
   @media (max-width: 640px) {
     .facts {
       grid-template-columns: 1fr;
@@ -301,37 +262,57 @@ const stills = [
 </style>
 
 <script>
-  // The stack turns on its own until a reader takes it, and a drag then sets the two angles directly. The stage keeps
-  // the transform in custom properties so the plates' own depth stays in the sheet.
+  // The stack opens on the die from above. A drag sets the two angles: vertical travel tilts it away from the top
+  // view, horizontal travel turns it about the upright axis. A square does not fit its own silhouette once turned, so
+  // the stack is scaled just enough to keep every corner inside the box.
   const stack = document.querySelector<HTMLElement>('[data-stack3d]');
   const stage = stack?.querySelector<HTMLElement>('[data-stack-stage]');
   if (stack && stage) {
-    let rx = 62;
-    let rz = -32;
-    let spin = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let frame = 0;
+    const plates = stage.querySelectorAll('img').length;
+    const depth = 26 * (plates - 1);
+    let rx = 0;
+    let ry = 0;
+
+    const fit = () => {
+      const side = stage.offsetWidth;
+      const box = stack.clientWidth;
+      const a = (rx * Math.PI) / 180;
+      const b = (ry * Math.PI) / 180;
+      const ca = Math.cos(a);
+      const sa = Math.sin(a);
+      const cb = Math.cos(b);
+      const sb = Math.sin(b);
+      let halfW = 0;
+      let halfH = 0;
+      for (const cx of [-0.5, 0.5]) {
+        for (const cy of [-0.5, 0.5]) {
+          for (const cz of [-0.5, 0.5]) {
+            const x = cx * side;
+            const z = cz * depth;
+            const turnedX = x * cb + z * sb;
+            const turnedZ = -x * sb + z * cb;
+            halfW = Math.max(halfW, Math.abs(turnedX));
+            halfH = Math.max(halfH, Math.abs(cy * side * ca - turnedZ * sa));
+          }
+        }
+      }
+      const scale = Math.min(1, box / 2 / halfW, box / 2 / halfH);
+      stage.style.setProperty('--s', scale.toFixed(3));
+    };
 
     const draw = () => {
       stage.style.setProperty('--rx', `${rx}deg`);
-      stage.style.setProperty('--rz', `${rz}deg`);
-    };
-
-    const tick = () => {
-      if (!spin) return;
-      rz = (rz + 0.18) % 360;
-      draw();
-      frame = requestAnimationFrame(tick);
+      stage.style.setProperty('--ry', `${ry}deg`);
+      fit();
     };
 
     stack.addEventListener('pointerdown', (event) => {
-      spin = false;
-      cancelAnimationFrame(frame);
       stack.setPointerCapture(event.pointerId);
       let x = event.clientX;
       let y = event.clientY;
       const move = (next: PointerEvent) => {
-        rz += (next.clientX - x) * 0.45;
-        rx = Math.min(86, Math.max(16, rx - (next.clientY - y) * 0.35));
+        ry = Math.min(70, Math.max(-70, ry + (next.clientX - x) * 0.4));
+        rx = Math.min(80, Math.max(-70, rx + (next.clientY - y) * 0.35));
         x = next.clientX;
         y = next.clientY;
         draw();
@@ -348,6 +329,6 @@ const stills = [
     });
 
     draw();
-    if (spin) frame = requestAnimationFrame(tick);
+    window.addEventListener('resize', fit);
   }
 </script>
