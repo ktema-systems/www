@@ -27,6 +27,10 @@ const companyNav: readonly NavItem[] = homeSections.map(({ key, label, id }) => 
   ...(key === 'stack' ? { items: productMenu } : {}),
 }));
 
+// The files the hub publishes, named relative to the hub the call opens, so the two
+// addresses are decided in one place.
+const artifactsHref = new URL('artifacts/', demoCta.href).href;
+
 const operationsPanels = [
   {
     kicker: 'The run',
@@ -333,7 +337,10 @@ const assertNever = (value: never): never => {
             fingerprint to check it against."
             band
           >
-            <p><a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a></p>
+            <p class="contact-actions">
+              <a class="btn btn--accent" href={`mailto:${site.contact}`}>Write to us</a>
+              <a class="btn" href={artifactsHref}>Artifacts</a>
+            </p>
           </Section>
         );
       default:
@@ -343,6 +350,15 @@ const assertNever = (value: never): never => {
 </Base>
 
 <style>
+  /* The call and the files sit on one line: asking for a build and taking one are the two
+     ways a reader acts on this section. */
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0;
+  }
+
   /* The note is a footnote to the call: who can ask for a preview now, and when the
      rest can. */
   .hero-cta-note {

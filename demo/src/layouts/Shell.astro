@@ -124,14 +124,6 @@ const isBench = Astro.props.kind === 'bench';
         }
         <span class="bar__spacer"></span>
 
-        {
-          /* The files the hub publishes, beside the pages it renders. A reader who came for a
-             bundle or a recording has one press from any page rather than only from the front. */
-        }
-        <a class="bar__action" href="/artifacts/" title="The files this hub publishes">
-          Artifacts
-        </a>
-
         <slot name="bar" />
         {
           /* The hub's own call, which the hero carries the same of on the front page. The bar's copy takes no width
@@ -163,6 +155,13 @@ const isBench = Astro.props.kind === 'bench';
             </a>
           )
         }
+        {
+          /* One button for the trial build. It opens the page that holds every file this hub
+             publishes, and it sits beside the call because it answers the same question. */
+        }
+        <a class="bar__action" href="/artifacts/" title="The trial build, and every file this hub publishes">
+          Trial
+        </a>
         <a class="bar__action" href="mailto:demo@ktema.systems">Request a demo</a>
       </div>
     </header>

@@ -387,6 +387,13 @@ h1 {
   list-style: none;
 }
 
+/* The call closes the hero, so the grid that follows it starts closer than one that follows a
+   section head. At the old gap the button read as the end of the page rather than as the end
+   of the hero. */
+.hero + .views .bento {
+  margin-block-start: clamp(20px, 2.2vw, 32px);
+}
+
 /* ── a tile ───────────────────────────────────────────────────────────── */
 
 .tile {
