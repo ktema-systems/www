@@ -1,6 +1,6 @@
 {
   "format": "corpus-hub/0.3",
-  "digest": "sha256:1b75c17931aaa1b754a83aa9f4b1d3138ad1a40140a59174882438c73f079324",
+  "digest": "1b75c17931aaa1b754a83aa9f4b1d3138ad1a40140a59174882438c73f079324",
   "export": "https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export",
   "holds": [
     "vol",
