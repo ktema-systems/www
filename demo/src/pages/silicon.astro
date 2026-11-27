@@ -35,15 +35,16 @@ const stills = [
 ---
 
 <Shell
-  title="On silicon"
-  description="The decoder the engine's coordinate model describes, carried to a finished SkyWater 130 nm layout."
-  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'On silicon' }]}
+  title="Physical layout"
+  description="The coordinate decoder block of the engine, carried through synthesis and place-and-route to a finished SkyWater 130 nm GDS layout."
+  crumbs={[{ label: 'Corpus Hub', href: '/' }, { label: 'Physical layout' }]}
 >
   <section class="hero">
     <h1>The same decoder, in gates.</h1>
     <p class="lede">
-      A 16-bit code point enters, three axis labels leave, in one registered stage. The same decode the engine runs in
-      software, built as a finished SkyWater 130 nm layout: standard cells placed and routed by the OpenROAD flow.
+      A 16-bit code point enters, three axis labels leave, in one registered stage. This is that decoder as a finished
+      GDS layout: SkyWater 130 nm standard cells, placed and routed by the OpenROAD flow. It is a layout and not a
+      fabricated part; no wafer has been made.
     </p>
   </section>
 
@@ -72,20 +73,39 @@ const stills = [
   <section class="section">
     <h2>What it is</h2>
     <dl class="facts">
+      <dt>The block</dt>
+      <dd>
+        One decoder, not the engine: the primitive a coordinate resolves through to become its axes. Storage, recovery,
+        and scaling live elsewhere in the engine and are not part of this block.
+      </dd>
       <dt>The unit</dt>
       <dd>
         A 16-bit code point enters and three axis labels leave, in one registered stage. The decode is combinational and
-        the outputs are registered on the clock, so the latency is a number a design can plan around.
+        the outputs are registered on the clock, so the latency is fixed and a design can plan around it.
       </dd>
       <dt>The target</dt>
       <dd>
         SkyWater 130 nm high-density standard cells, placed and routed by the OpenROAD flow, with the clock constrained
-        to 12 MHz.
+        to the 12 MHz the block was built for.
+      </dd>
+      <dt>The area</dt>
+      <dd>
+        The cells cover 4,430 µm², 34% of the core: 410 logic and register cells in 1,920 placed instances, the rest fill
+        and tap.
+      </dd>
+      <dt>The timing</dt>
+      <dd>
+        Worst setup slack +72.77 ns and total negative slack 0.00 at the 12 MHz constraint, from the placed and routed
+        netlist with extracted parasitics.
+      </dd>
+      <dt>The power</dt>
+      <dd>
+        57.8 µW at the tool's default switching activity, 36.6 µW at one code point per clock.
       </dd>
       <dt>The check</dt>
       <dd>
-        The RTL is verified against the software reference over every code point, the gate netlist is simulated against
-        the same anchors, and the RTL and the gate netlist are proven equivalent.
+        The RTL is verified against the software reference over all 65,536 code points, the gate netlist is simulated
+        against the same anchors, and the RTL and the gate netlist are proven equivalent.
       </dd>
     </dl>
   </section>
@@ -107,14 +127,15 @@ const stills = [
     <h2>How it was made</h2>
     <p class="section__lede">
       The RTL is synthesized to SkyWater 130 nm standard cells, then placed and routed by the OpenROAD flow. These images
-      are drawn from that flow's final GDS, keeping the metal layers and cropping to the placed cells.
+      are drawn from that flow's final GDS, keeping the metal layers and cropping to the placed cells. The decoder is
+      published as open hardware; the engine built on it is the product.
     </p>
     <p class="call">
       <a class="btn" href="/trial/">The build to evaluate</a>
       <a class="btn" href="/claims/">What the stack establishes</a>
     </p>
     <p class="note">
-      This is a test chip, not a product die. For a part built to your own workload, <a href={contact}>write to us</a>.
+      This is a test block, not a product die. For a part built to your own workload, <a href={contact}>write to us</a>.
     </p>
   </section>
 </Shell>
