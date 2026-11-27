@@ -1069,6 +1069,7 @@ body:has([data-hero-cta]) .masthead:not(.is-cta-past) .masthead__cta {
 
 .section__head > * + * {
   margin-top: 16px;
+  margin-bottom: 32px;
 }
 
 /* Metrics */
