@@ -128,28 +128,28 @@ const lines = (text: string) => text.split('\n').map((line) => line.trim());
     text-transform: none;
   }
 
-  /* One measure for the hero. The display line, the claim, the copy and the call are
-     one column, so the block reads as a single sheet rather than as three paragraphs of
-     different widths. The measure is the display line's own, so the title sets it and
-     everything under it follows. */
+  /* The copy under the display line is one column: the claim, the paragraphs, and the
+     call share a measure, narrower than the display line so the block sits inside the
+     title rather than under it edge to edge. */
   .hero__head {
-    --hero-measure: calc(22 * var(--headline-size));
+    --hero-copy: 38rem;
   }
 
-  .hero h1,
   .hero__subline,
   .hero__lede,
   .hero__body,
   .hero__actions {
-    max-width: var(--hero-measure);
+    max-width: var(--hero-copy);
   }
 
   .hero h1 {
     font-size: var(--headline-size);
     letter-spacing: -0.022em;
     line-height: 1.06;
+    max-width: 22em;
     margin: 0;
-    /* The display line wraps to balanced lines rather than leaving one word behind. */
+    /* The display line is a line rather than a paragraph, so it runs wider than the
+       copy under it and wraps to balanced lines when the page is narrower. */
     text-wrap: balance;
   }
 
