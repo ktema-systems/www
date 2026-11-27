@@ -1,6 +1,6 @@
 {
   "format": "corpus-hub/0.3",
-  "digest": "1b75c17931aaa1b754a83aa9f4b1d3138ad1a40140a59174882438c73f079324",
+  "digest": "sha256:1b75c17931aaa1b754a83aa9f4b1d3138ad1a40140a59174882438c73f079324",
   "export": "https://raw.githubusercontent.com/ktema-systems/corpus-board/main/export",
   "holds": [
     "vol",
@@ -124,11 +124,11 @@
     },
     {
       "kind": "bundle",
-      "name": "ktema-fmt0.1-abi7-edc6d30-eval-aarch64-apple-darwin.tar.gz",
-      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/ktema-fmt0.1-abi7-edc6d30-eval-aarch64-apple-darwin.tar.gz",
-      "sha256": "sha256:78f25e4d31e5e71e03cc58de5e666602810d50572c7fa889ef48079ed72debad",
+      "name": "ktema-fmt0.1-abi7-a9f5d18-eval-aarch64-apple-darwin.tar.gz",
+      "url": "https://github.com/ktema-systems/ktema-hub/releases/download/v0/ktema-fmt0.1-abi7-a9f5d18-eval-aarch64-apple-darwin.tar.gz",
+      "sha256": "sha256:21e28cafeceb9fc033d3e83550896552ddb8b6f1b42c251638c13b734af92b44",
       "signature": "SHA256SUMS.sig",
-      "bytes": 11319511
+      "bytes": 7024121
     },
     {
       "kind": "demo",
