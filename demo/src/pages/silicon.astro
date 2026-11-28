@@ -66,7 +66,8 @@ const stills = [
       </div>
     </div>
     <figcaption class="showcase__key">
-      The die from above, <code>li1</code> at the bottom and <code>met5</code> at the top. Drag to tilt.
+      The die from above, <code>li1</code> at the bottom and <code>met5</code> at the top. The stack tilts and turns on
+      its own; a drag steers it.
     </figcaption>
   </figure>
 
@@ -322,56 +323,98 @@ const stills = [
 </style>
 
 <script>
-  // The stack opens on the die from above. A drag sets the two angles: vertical travel tilts it away from the top
-  // view, horizontal travel turns it about the upright axis. A square does not fit its own silhouette once turned, so
-  // the stack is scaled just enough to keep every corner inside the box.
+  // The stack opens flat on the die, holds that view, tilts into the metal levels, then turns slowly. A drag takes
+  // it over at any point and the turn stops. The angles go through custom properties so the plates keep their own
+  // depth in the sheet, and the stack is scaled to a bound that holds at every angle, so it does not resize as it
+  // turns.
   const stack = document.querySelector<HTMLElement>('[data-stack3d]');
   const stage = stack?.querySelector<HTMLElement>('[data-stack-stage]');
   if (stack && stage) {
     const plates = stage.querySelectorAll('img').length;
     const depth = 26 * (plates - 1);
+
+    const HOLD_SECONDS = 1.6;
+    const TILT_DEGREES = 58;
+    const TILT_SECONDS = 2.5;
+    const TURN_DEGREES_PER_SECOND = 3.2;
+
     let rx = 0;
     let ry = 0;
+    let elapsed = 0;
+    let frame = 0;
+    let last = 0;
+    let side = 0;
+    let box = 0;
+    let spin = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const wrap = (degrees: number) => ((degrees % 360) + 360) % 360;
+
+    // The two widths are read once and on resize: measuring inside the frame would force layout every frame.
+    const measure = () => {
+      side = stage.offsetWidth;
+      box = stack.clientWidth;
+    };
 
     const fit = () => {
-      const side = stage.offsetWidth;
-      const box = stack.clientWidth;
+      if (!side || !box) return 1;
+      // The bound holds for every yaw, so the stack keeps one size as it turns instead of breathing between the
+      // narrow and the diagonal silhouette.
+      const halfW = 0.5 * Math.hypot(side, depth);
       const a = (rx * Math.PI) / 180;
-      const b = (ry * Math.PI) / 180;
-      const ca = Math.cos(a);
-      const sa = Math.sin(a);
-      const cb = Math.cos(b);
-      const sb = Math.sin(b);
-      let halfW = 0;
-      let halfH = 0;
-      for (const cx of [-0.5, 0.5]) {
-        for (const cy of [-0.5, 0.5]) {
-          for (const cz of [-0.5, 0.5]) {
-            const x = cx * side;
-            const z = cz * depth;
-            const turnedX = x * cb + z * sb;
-            const turnedZ = -x * sb + z * cb;
-            halfW = Math.max(halfW, Math.abs(turnedX));
-            halfH = Math.max(halfH, Math.abs(cy * side * ca - turnedZ * sa));
-          }
-        }
-      }
-      const scale = Math.min(1, box / 2 / halfW, box / 2 / halfH);
-      stage.style.setProperty('--s', scale.toFixed(3));
+      const halfH = 0.5 * side * Math.abs(Math.cos(a)) + halfW * Math.abs(Math.sin(a));
+      return Math.min(1, box / 2 / halfW, box / 2 / halfH);
     };
 
     const draw = () => {
       stage.style.setProperty('--rx', `${rx}deg`);
       stage.style.setProperty('--ry', `${ry}deg`);
-      fit();
+      stage.style.setProperty('--s', fit().toFixed(3));
     };
 
+    // The tilt runs before the turn so the die is never seen squashing in its own plane.
+    const tick = (now: number) => {
+      if (!last) last = now;
+      const step = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      elapsed += step;
+      if (elapsed > HOLD_SECONDS) {
+        if (rx < TILT_DEGREES) {
+          rx = Math.min(TILT_DEGREES, rx + (step * TILT_DEGREES) / TILT_SECONDS);
+        } else {
+          ry = wrap(ry + step * TURN_DEGREES_PER_SECOND);
+        }
+        draw();
+      }
+      frame = requestAnimationFrame(tick);
+    };
+
+    const stop = () => {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const start = () => {
+      if (!spin || frame) return;
+      last = 0;
+      frame = requestAnimationFrame(tick);
+    };
+
+    // A page left open should not turn a picture nobody is looking at.
+    new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      if (entry.isIntersecting) start();
+      else stop();
+    }).observe(stack);
+
     stack.addEventListener('pointerdown', (event) => {
+      spin = false;
+      stop();
       stack.setPointerCapture(event.pointerId);
       let x = event.clientX;
       let y = event.clientY;
       const move = (next: PointerEvent) => {
-        ry = Math.min(70, Math.max(-70, ry + (next.clientX - x) * 0.4));
+        ry = wrap(ry + (next.clientX - x) * 0.4);
         rx = Math.min(80, Math.max(-70, rx + (next.clientY - y) * 0.35));
         x = next.clientX;
         y = next.clientY;
@@ -388,7 +431,11 @@ const stills = [
       stack.addEventListener('pointercancel', up);
     });
 
+    measure();
     draw();
-    window.addEventListener('resize', fit);
+    window.addEventListener('resize', () => {
+      measure();
+      draw();
+    });
   }
 </script>
