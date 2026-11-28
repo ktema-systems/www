@@ -77,7 +77,7 @@ export const demoCta: NavItem = corpusHub;
 
 export const papers = [
   {
-    title: 'Schema–Segment Composition Computing System',
+    title: 'Scheme–Segment Composition Computing System',
     when: 'February 2026',
     href: 'https://doi.org/10.5281/zenodo.18759106',
   },
