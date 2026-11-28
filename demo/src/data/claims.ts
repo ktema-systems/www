@@ -55,6 +55,12 @@ export const claims: ClaimLine[] = [
     states:
       'A fleet, a cell and the people running them are read in one space, and every step, reading and reach resolves at one address.',
   },
+  {
+    id: 'the-assembly-is-the-check',
+    title: 'The assembly is the check',
+    states:
+      'Every artifact in a build passes the check its own tool runs, and the assembled device can still make no sense. What holds is one invariant every layer answers, read back from the part.',
+  },
 ];
 
 /** A line's demonstrations, resolved to the entries the center draws. */
